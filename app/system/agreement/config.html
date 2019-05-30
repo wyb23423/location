@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<link rel="stylesheet" href="../../../public/css/bootstrap.min.css">
+
+	<link rel="stylesheet" type="text/css" href="../../../public/layui/css/layui.css" />
+	<link rel="stylesheet" type="text/css" href="../../../public/css/style.css" />
+
+	<link rel="stylesheet" type="text/css" href="../../../public/css/bootstrap-table.css" />
+	<style type="text/css">
+		.layui-border-box {
+			width: 100% !important;
+			margin: 0;
+		}
+
+		.layui-table-body {
+			background: #FFFFFF;
+		}
+	</style>
+</head>
+
+<body class="clearfix">
+	<div class="haderNav">
+		<div id="header">
+
+		</div>
+
+	</div>
+	<div class="content">
+		<div class="left_silde layui-col-xs1">
+			<ul class="layui-nav layui-nav-tree layui-inline" lay-filter="demo" style="width: 100%;">
+				<li class="layui-nav-item  ">
+					<a href="../area/area.html">区域选择</a>
+				</li>
+				<li class="layui-nav-item ">
+					<a href="../navLink/navlinkIndex.html">路线规划</a>
+				</li>
+				<li class="layui-nav-item ">
+					<a href="../confi/index.html">基站配置</a>
+				</li>
+				<li class="layui-nav-item ">
+					<a href="javascript:;">摄像头</a>
+					<dl class="layui-nav-child">
+						<dd class="">
+							<a href="../camera/index.html">摄像头添加</a>
+						</dd>
+						<dd>
+							<a href="../camera/cameralist.html">摄像头列表</a>
+						</dd>
+
+					</dl>
+				</li>
+
+				<li class="layui-nav-item   ">
+					<a href="../upMap/upmap.html">地图添加</a>
+				</li>
+				<li class="layui-nav-item  layui-nav-itemed ">
+					<a href="javascript:;">协议</a>
+					<dl class="layui-nav-child">
+						<dd>
+							<a href="index.html">协议添加</a>
+						</dd>
+						<dd>
+							<a href="list.html">协议列表</a>
+						</dd>
+						<dd class="layui-this">
+							<a href="config.html">协议配置</a>
+						</dd>
+
+					</dl>
+				</li>
+			</ul>
+		</div>
+		<div id=" " class="min layui-col-xs11">
+			<div class="minCont">
+				<div class="cont">
+					<blockquote class="layui-elem-quote">协议下发 请选择</blockquote>
+					<form class="layui-form" action="">
+						<div class="layui-form-item baseChange">
+							<label class="layui-form-label">选择基站</label>
+							<div class="layui-input-block">
+								<select name="group" id="group" lay-filter="group">
+									<option value="null">请选择</option>
+								</select>
+							</div>
+							<div class="layui-input-block">
+								<select name="base" id="baseInfo" lay-verify="baseInfo">
+									<option value="">请选择</option>
+								</select>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">选择标签</label>
+							<div class="layui-input-block">
+								<select name="tag" id="taglist" lay-verify="required">
+									<option value="">请选择</option>
+								</select>
+							</div>
+
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">选择协议</label>
+							<div class="layui-input-block">
+								<select name="protocol" id="protocol" lay-verify="required">
+									<option value="">请选择</option>
+								</select>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">端口号</label>
+							<div class="layui-input-block">
+								<input type="radio" name="port" value="50000" title="50000端口" checked>
+								<input type="radio" name="port" value="60000" title="60000端口" >
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-input-block">
+								<button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+								<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<style type="text/css">
+		.minCont {
+			padding: 50px;
+			min-height: auto;
+		}
+
+		.layui-form-label {
+			width: 100px;
+		}
+
+		.cont {
+			background: #FFFFFF;
+			min-height: 500px;
+		}
+
+		.layui-form-select {
+			width: 40%;
+		}
+
+		.baseChange .layui-input-block {
+			width: 30%;
+			display: inline-block;
+		}
+
+		.baseChange .layui-input-block {
+			margin-left: 10px;
+		}
+
+		.baseChange .layui-form-select {
+			width: 100%;
+			display: inline-block;
+		}
+	</style>
+
+	<script src=" ../../../public/js/jquery.js"></script>
+	<script src=" ../../../public/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../red/js/header.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../public/fSelect.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+		var tagarrlists = [];
+		function tagarrlist() {
+			var urls = "/api/tag/getall"
+			$.ajax({
+				type: "get",
+				url: urls,
+				datatype: "jsonp",
+				data: {
+					currentPage: 1,
+					pageSize: 10000000,
+				},
+				success: function (red) {
+					tagarrlists = red.pagedData.datas;
+					var form = layui.form;
+					for (var a = 0; a < tagarrlists.length; a++) {
+
+						console.log(tagarrlists[a])
+						var html = `
+							<option value="${tagarrlists[a].tagNo}">姓名：${tagarrlists[a].name}; 编号${tagarrlists[a].tagNo}</option>
+						`
+						$("#taglist").append(html)
+
+					}
+					form.render('select')
+				}
+			});
+		}
+
+		function protocol() {
+			var urls = "/api/protocol/getall"
+			$.ajax({
+				type: "get",
+				url: urls,
+				datatype: "jsonp",
+				data: {
+					currentPage: 1,
+					pageSize: 10000000,
+				},
+				success: function (red) {
+					var protocollist = red.pagedData.datas;
+					var form = layui.form;
+					console.log(protocollist.length)
+					for (var o = 0; o < protocollist.length; o++) {
+						
+						var html = `
+								<option value="${protocollist[o].content}">${protocollist[o].name}</option>
+							`
+						$("#protocol").append(html)
+					}
+					form.render('select')
+				}
+			});
+		}
+		var datas = [];
+		var rows;
+		// 去重
+		function uniq(array) {
+			var temp = []; //一个新的临时数组
+			for (var i = 0; i < array.length; i++) {
+				if (temp.indexOf(array[i]) == -1) {
+					temp.push(array[i]);
+				}
+			}
+			return temp;
+		}
+		// 数组中每个元素出现的次数
+		function getindex(str) {
+			var map = {};
+			for (var i = 0; i < str.length; i++) {
+				var s = str[i];
+				var r = map[s];
+				if (r) {
+					map[s] += 1;
+				} else {
+					map[s] = 1;
+				}
+			}
+			return JSON.stringify(map)
+		}
+		var anchors = []
+
+		function groupList(data) {
+			var groupArr = []
+			var anchorArr = []
+			for (var a = 0; a < data.length; a++) {
+				groupArr.push(data[a].groupCode)
+				anchorArr.push(data[a].baseNo)
+				groupArr.sort()
+			}
+			anchorArr = getindex(groupArr)
+			anchorArr = eval("(" + anchorArr + ")");
+			groupArr = uniq(groupArr)
+			for (var i = 0; i < groupArr.length; i++) {
+
+				var infos = {
+					"id": i,
+					"group": groupArr[i],
+					"baseNo": anchorArr[groupArr[i]]
+				}
+				anchors.push(infos)
+			}
+			return anchors
+
+		}
+
+		var basearrlists;
+		function basearrlist() {
+			var urls = "/api/base/getall"
+			$.ajax({
+				type: "get",
+				url: urls,
+				datatype: "jsonp",
+				data: {
+					currentPage: 1,
+					pageSize: 10000000,
+				},
+				success: function (red) {
+					basearrlists = red.pagedData.datas;
+					var groupLst = groupList(basearrlists);
+					var form = layui.form;
+					for (var o = 0; o < groupLst.length; o++) {
+						var html = `
+							<option value="${groupLst[o].group}">姓名：${groupLst[o].group}; 基站数量${groupLst[o].baseNo}</option>
+						`
+						$("#group").append(html)
+					}
+					form.render('select')
+				}
+			});
+		}
+		tagarrlist();
+		basearrlist();
+		protocol()
+		layui.use('form', function () {
+			var form = layui.form;
+			form.on('select(group)', function (data) {
+				var groupValue = data.value;
+				console.log(groupValue)
+				$("#baseInfo").html(" ")
+				setTimeout(() => {
+					for (var o = 0; o < basearrlists.length; o++) {
+						if (basearrlists[o].groupCode == groupValue) {
+							var form = layui.form;
+							var mains;
+							if (basearrlists[o].main == 1) {
+								mains = "主"
+							}
+							else {
+								mains = '从'
+							}
+							var html = `
+								<option value="${basearrlists[o].ip}">姓名：${basearrlists[o].name}; 编号${basearrlists[o].baseNo}；${mains}基站</option>
+							`
+							$("#baseInfo").append(html)
+							form.render('select')
+						}
+					}
+				}, 0);
+			});
+			//各种基于事件的操作，下面会有进一步介绍
+			form.on('submit(formDemo)', function (data) {
+				console.log(data.field.tag.length)
+				if(data.field.tag.length==7){
+					protocol=data.field.protocol+"0"+data.field.tag;
+				}else{
+					protocol=data.field.protocol+data.field.tag;
+				}
+				var data={
+					"ip":"data.field.base",
+					"port":50000,
+					"protocol":protocol,
+					"tagNo":data.field.tag
+				}
+				var urls="/api/protocol/sendProtocol";
+				// data=JSON.stringify(data)
+				postAjax(urls,data)
+				return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+			});
+		});
+		function postAjax(urls, data) {
+				// var contentType = "application/json;charset=UTF-8";
+				console.log(data)
+				$.ajax({
+					type: "post",
+					url: urls,
+					async: true,
+					data: data,
+					// contentType: contentType,
+					success: function(red) {
+						var cobackInfo = red.success;
+						if(cobackInfo == true) {
+							var ii = layer.load();
+							//此处用setTimeout演示ajax的回调
+							setTimeout(function() {
+								layer.close(ii);
+								layer.msg('协议下发成功');
+								$(window).scrollTop(0);
+							}, 1000);
+							setTimeout(function() {
+							}, 2000)
+						}
+					},
+					error: function() {
+						console.log("err")
+						var ii = layer.load();
+						//此处用setTimeout演示ajax的回调
+						setTimeout(function() {
+							layer.close(ii);
+							layer.msg('协议下发失败');
+							//							location.reload();
+						}, 1000);
+						setTimeout(function() {
+							//							location.reload();
+						}, 1000)
+					}
+				});
+			}
+
+	</script>
+</body>
+
+</html>

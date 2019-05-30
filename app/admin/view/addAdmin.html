@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="../../../public/css/bootstrap.min.css">
+
+		<link rel="stylesheet" type="text/css" href="../../../public/layui/css/layui.css" />
+		<link rel="stylesheet" type="text/css" href="../../../public/css/style.css" />
+		<style type="text/css">
+			.layui-border-box {
+				width: 100% !important;
+				margin: 0;
+			}
+			
+			.layui-table-body {
+				background: #FFFFFF;
+			}
+		</style>
+	</head>
+
+	<body class="clearfix">
+		<div id="header">
+
+		</div>
+
+		<div class="content">
+			<div class="left_silde layui-col-xs1">
+				<ul class="layui-nav layui-nav-tree layui-inline" lay-filter="demo" style="width: 100%;">
+					<li class="layui-nav-item ">
+						<a href="admin.html">管理员</a>
+					</li>
+
+					<li class="layui-nav-item layui-nav-itemed">
+						<a href="addAdmin.html">增加人员</a>
+					</li>
+					<li class="layui-nav-item">
+						<a href="Permission.html">权限管理</a>
+					</li>
+				</ul>
+			</div>
+			<div id=" " class="min layui-col-xs11">
+				<div class="minCont">
+					<div class="listIcon formCont">
+						<form class="layui-form" action="">
+							<div class="flist" style="margin-bottom: 3%;">
+								<h3 style="color: #009688;">
+									管理员基础信息
+									<span style="font-size: 11px ;">(注意: 增加管理员后需要在管理员权限管理更改新增管理员的权限)</span>
+								</h3>
+
+							</div>
+
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">管理者名称：</label>
+									<div class="layui-input-inline">
+										<input type="tel" name="adminName" lay-verify="required" autocomplete="off" class="layui-input">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">用户姓名：</label>
+									<div class="layui-input-inline">
+										<input type="tel" name="userName" lay-verify="required " autocomplete="off" class="layui-input">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">登录密码：</label>
+									<div class="layui-input-inline">
+										<input type="tel" name="password" lay-verify="required " autocomplete="off" class="layui-input">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">性别：</label>
+									<div class="layui-input-block" style="margin-top: 10px;">
+										<input type="radio" name="sex" value="1" title="男" checked="">
+										<input type="radio" name="sex" value="0" title="女">
+
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline" style="width: 100%;">
+									<label class="layui-form-label" style="    width: 9.7%;">所属职位：</label>
+									<div class="layui-input-inline" style="width: 25%;">
+										<select name="department">
+											<option value="">选择部门</option>
+											<option value="技术部">技术部</option>
+											<option value="研发部">研发部</option>
+											<option value="销售部">销售部</option>
+										</select>
+									</div>
+									<div class="layui-input-inline" style="width: 25%;">
+										<select name="job">
+											<option value="">选择职位</option>
+											<option value="技术主管">技术主管</option>
+											<option value="项目经理" disabled="">项目经理</option>
+											<option value="产品经理">产品经理</option>
+											<option value="技术员">技术员</option>
+											<option value="测试">测试</option>
+										</select>
+									</div>
+									<div class="layui-input-inline" style="width: 25%;">
+										<select name="level">
+											<option value="">职位等级</option>
+											<option value="T1">T1</option>
+											<option value="T2">T2</option>
+											<option value="T3">T3</option>
+										</select>
+									</div>
+
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">电话号码：</label>
+									<div class="layui-input-inline">
+										<input type="tel" name="phone" lay-verify="required|phone" autocomplete="off" class="layui-input">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">工号：</label>
+									<div class="layui-input-inline">
+										<input type="tel" name="workNo" lay-verify="required " autocomplete="off" class="layui-input">
+									</div>
+								</div>
+							</div>
+
+							<div class="layui-form-item" style="margin-top: 60px;">
+								<div class="layui-input-block">
+									<button class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+									<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+								</div>
+							</div>
+
+						</form>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<script src=" ../../../public/js/jquery.js"></script>
+		<script src="../../red/js/header.js" type="text/javascript" charset="utf-8"></script>
+		<script src=" ../../../public/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var urls = "/api/admin/addAdmin";
+			layui.use(['form', 'layedit', 'laydate'], function() {
+				//监听提交
+				var Dat = new Date();
+				var timestamp = new Date().getTime();
+				var form = layui.form,
+					layer = layui.layer,
+					layedit = layui.layedit,
+					laydate = layui.laydate;
+				form.on('submit(demo1)', function(data) {
+					var formeInfo = data.field;
+					var datalist = {
+						"adminName": formeInfo.adminName, //用户姓名
+						"createTime": timestamp,//录入日期
+						"createUser":formeInfo.createUser,//录入人	
+						"department": formeInfo.department, //部门
+						
+						"job":formeInfo.job,//职位
+						"level": formeInfo.level, //等级
+						"password": formeInfo.password, //密码
+						"phone": formeInfo.phone,//电话号码
+						"role": "string", //权限
+						"sex":formeInfo.sex, //性别
+						"updateTime": timestamp,//修改日期
+						"updateUser": formeInfo.updateUser,//修改人
+						"userName":formeInfo.userName, //管理者名称(登录名)
+						"workNo": formeInfo.workNo//工号
+					}
+					datalist=JSON.stringify(datalist);
+					postAjax(urls, datalist)
+					return false;
+				});
+			});
+
+			function postAjax(urls, data) {
+				var contentType = "application/json;charset=UTF-8";
+				console.log(data)
+				$.ajax({
+					type: "post",
+					url: urls,
+					async: true,
+					data: data,
+					contentType: contentType,
+					success: function(red) {
+						var cobackInfo = red.success;
+						if(cobackInfo == true) {
+							var ii = layer.load();
+							//此处用setTimeout演示ajax的回调
+							setTimeout(function() {
+								layer.close(ii);
+								layer.msg('管理员添加成功，请跳转管理员权限页面增加管理员权限');
+								$(window).scrollTop(0);
+								//								window.location.href="anchornumInfo.html?id="+data.id
+							}, 1000);
+							setTimeout(function() {
+								//								location.reload();
+
+							}, 2000)
+						}
+					},
+					error: function() {
+						console.log("err")
+						var ii = layer.load();
+						//此处用setTimeout演示ajax的回调
+						setTimeout(function() {
+							layer.close(ii);
+							layer.msg('人员标签添加失败，请重新填写');
+							//							location.reload();
+						}, 1000);
+						setTimeout(function() {
+							//							location.reload();
+						}, 1000)
+					}
+				});
+			}
+		</script>
+
+	</body>
+
+</html>

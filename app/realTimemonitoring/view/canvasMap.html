@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<link rel="stylesheet" href="../../../public/css/bootstrap.min.css">
+
+	<link rel="stylesheet" type="text/css" href="../../../public/layui/css/layui.css" />
+	<link rel="stylesheet" type="text/css" href="../../../public/css/style.css" />
+	<style type="text/css">
+		#fengMap canvas {
+			width: 100% !important;
+			height: 100% !important;
+		}
+
+		#tagInfo {
+			position: absolute;
+			width: 16%;
+			height: 30%;
+			right: 0;
+			background-color: rgba(0, 0, 0, 0.24);
+		}
+
+		#tagnames p {
+			line-height: 30px;
+		}
+
+		#tagInfolist p {
+			color: #FFFFFF;
+			line-height: 30px;
+		}
+
+		#fengMap {
+			background: #FFFFFF;
+		}
+
+		#peopleCtx,
+		#drawfences {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+
+		.peopleinfo {
+			background: #dddddd;
+			position: absolute;
+			top: 0;
+			left: 0;
+			border-radius: 4px;
+			padding: 4px;
+			font-size: 13px
+		}
+
+		.porpleinfoCont {
+			position: absolute;
+			top: 8%;
+			right: 0;
+			background: #ddd;
+			min-height: 290px;
+			width: 250px;
+			padding: 16px;
+		}
+
+		.porpleinfoCont .headImg {
+			width: 120px;
+			height: 140px;
+
+		}
+
+		.headImgCont {
+			text-align: center;
+			margin-bottom: 30px
+		}
+
+		.porpleInfoCont {
+			text-align: center
+		}
+
+		.porpleInfoCont p {
+			line-height: 30px
+		}
+
+		.Gn_ {
+			z-index: 88888;
+			position: absolute;
+			width: 100%;
+			height: 8%;
+			padding: 15px;
+			background: #f5f5f5;
+			box-shadow: 0px 2px 9px #666;
+		}
+
+		.searchCont {
+			width: 50%;
+			float: left;
+		}
+
+		.orther_btn {
+			float: right;
+			width: 50%;
+			text-align: right
+		}
+
+		.porpleundefined {
+			text-align: center;
+			margin-bottom: 13%;
+		}
+
+		.P_info {
+			text-align: center;
+			line-height: 30px;
+		}
+	</style>
+</head>
+
+<body class="clearfix">
+	<div id="header">
+
+	</div>
+
+	<div class="content">
+		<div class="left_silde layui-col-xs1">
+			<ul class="layui-nav layui-nav-tree layui-inline" lay-filter="demo" style="width: 100%;">
+				<li class="layui-nav-item ">
+					<a href="javascript:;">实时监控</a>
+					<dl class="layui-nav-child">
+						<dd class="">
+							<a href="realTimemonitoring.html">办公室</a>
+						</dd>
+
+					</dl>
+				</li>
+				<li class="layui-nav-item layui-nav-itemed">
+					<a href="javascript:;">平面监控</a>
+					<dl class="layui-nav-child">
+						<dd class="layui-this">
+							<a href="../view/canvasMap.html">办公室</a>
+						</dd>
+
+					</dl>
+				</li>
+				<li class="layui-nav-item">
+					<a href="javascript:;">监控回放</a>
+					<dl class="layui-nav-child">
+						<dd>
+							<a href="../view/monitoring.html">办公室</a>
+						</dd>
+					</dl>
+				</li>
+
+			</ul>
+		</div>
+		<div id="main" class="min main layui-col-xs11">
+
+			<div class="Gn_">
+				<div class="searchCont">
+					<form class="layui-form" action="">
+						<input id="serachInput" style="width:30%;display: inline-block;" type="text" class="layui-input"
+							placeholder="请输入标签编号">
+						<button type="button" id="serach" class="btn layui-btn">搜索</button>
+					</form>
+				</div>
+				<div class="orther_btn measurement">
+					<button class="layui-btn " data-method="people" data-type="datetab">人员信息列表</button>
+				</div>
+			</div>
+
+			<div id="fengMap" style="width: 100%;height: 100%;"></div>
+		</div>
+	</div>
+	<script src=" ../../../public/js/jquery.js"></script>
+	<script src=" ../../../public/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+	<script src=" ../../../public/js/coordtransformer.js" type="text/javascript" charset="utf-8"></script>
+	<script src=" ../../../public/js/socket.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../red/js/header.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../public/js/mode.js"></script>
+
+	<script src="../public/js/tag.js"></script>
+	<script src=" ../../../public/js/ws-gui.js"></script>
+	<script src="../public/js/canvasMap.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		function addEvent(obj, xEvent, fn) {
+			if (obj.attachEvent) {
+				obj.attachEvent('on' + xEvent, fn);
+			} else {
+				obj.addEventListener(xEvent, fn, false);
+			}
+		}
+
+		function removeEvent(obj, xEvent, fn) {
+			if (obj.attachEvent) {
+				obj.detachEvent('on' + xEvent, fn);
+			} else {
+				obj.removeEventListener(xEvent, fn, false);
+			}
+		}
+
+		function onMouseWheel(ev) {
+			ev = ev || window.event;
+			ev.returnValue = false;
+			if (ev.preventDefault) {
+				ev.preventDefault();
+			}
+
+			if (!map) return;
+
+			var scale = map.style.scale[0];
+			var down = ev.wheelDelta ? ev.wheelDelta < 0 : ev.detail > 0;
+			if (down) {
+				scale *= 9 / 10;
+				map.attr('scale', map.style.scale[0] * 9 / 10);
+			} else {
+				scale *= 11 / 10
+			}
+
+			scale = Math.max(0.3, Math.min(3, scale));
+			map.attr('scale', scale);
+		}
+
+		var downX = 0,
+			downY = 0;
+
+		function getPosition(e) {
+			var clientX = e.clientX,
+				clientY = e.clientY;
+			if (e.touches) {
+				if (!e.touches.length) {
+					return {
+						x: 0,
+						y: 0
+					};
+				}
+				clientX = e.touches[0].clientX;
+				clientY = e.touches[0].clientY;
+			}
+
+			return {
+				x: clientX,
+				y: clientY
+			};
+		}
+
+		function downHandler(e, type) {
+			var pos = getPosition(e);
+			downX = pos.x;
+			downY = pos.y;
+			addEvent(document, type, moveHandler);
+		}
+
+		function moveHandler(ev) {
+			if (!map) {
+				return;
+			}
+
+			ev = ev || window.event;
+
+			var pos = getPosition(ev);
+			var left = map.style.left + pos.x - downX;
+			var top = map.style.top + pos.y - downY;
+
+			map.attr({
+				left: left,
+				top: top
+			});
+
+			downX = pos.x;
+			downY = pos.y;
+		}
+
+		function upHandler(type) {
+			removeEvent(document, type, moveHandler);
+		}
+
+		window.addEventListener('load', function () {
+			var root = init();
+			addEvent(root, 'mousewheel', onMouseWheel);
+			addEvent(root, 'DOMMouseScroll', onMouseWheel);
+			addEvent(root, 'mousedown', function (ev) {
+				downHandler(ev, 'mousemove');
+			});
+			addEvent(root, 'mouseup', function () {
+				upHandler('mousemove');
+			});
+
+			addEvent(root, 'touchstart', function (ev) {
+				downHandler(ev, 'touchmove');
+			});
+			addEvent(root, 'touchend', function () {
+				upHandler('touchmove');
+			});
+		});
+
+		// var clicknums = false;
+		// var device = {
+		// 	existtages: {},
+		// 	anchaorobj: {},
+		// 	fenceobj: [],
+		// 	init: function () {},
+		// 	getExisttage: function () {
+		// 		var url = "/api/tag/getall",
+		// 			type = "get",
+		// 			data = {
+		// 				currentPage: 100,
+		// 				pageSize: 100
+		// 			};
+		// 		var datalist = Ajaxfun(url, type, data, false);
+		// 		for (var a = 0; a < datalist.length; a++) {
+		// 			var lists = {
+		// 				ge: null,
+		// 				avatar: null,
+		// 				avatarpath: datalist[a].avatar,
+		// 				businessid: "",
+		// 				classify: datalist[a].zone,
+		// 				color: "45b035",
+		// 				create_time: "1513125716",
+		// 				id: datalist[a].id,
+		// 				name: datalist[a].name,
+		// 				serialnumber: datalist[a].tagNo,
+		// 				sex: datalist[a].sex,
+		// 				status: datalist[a].type,
+		// 				update_time: datalist[a].updateTime,
+		// 			};
+		// 			device.existtages[datalist[a].tagNo] = lists;
+		// 		}
+
+		// 	},
+		// 	getAnchaorobj: function () {
+		// 		var url = "/api/base/getall",
+		// 			type = "get",
+		// 			data = {
+		// 				currentPage: 100,
+		// 				pageSize: 100
+		// 			};
+		// 		var datalist = Ajaxfun(url, type, data, false);
+
+		// 		for (var a = 0; a < datalist.length; a++) {
+		// 			if (datalist[a].groupCode == 0001) {
+		// 				var anchorlist = {
+		// 					x: datalist[a].coordx,
+		// 					y: datalist[a].coordy,
+		// 					z: datalist[a].coordz
+		// 				}
+		// 				device.anchaorobj[datalist[a].baseNo] = anchorlist;
+		// 			}
+
+		// 		}
+
+		// 	},
+		// 	getZone: function (data) {
+		// 		var positions = data.position;
+		// 		positions = eval("(" + positions + ")")
+		// 		var zones = {
+		// 			belongszone: data.enable,
+		// 			create_time: data.createTime,
+		// 			fencetype: "",
+		// 			id: data.id,
+		// 			inout: "1",
+		// 			name: data.name,
+		// 			param: {
+		// 				0: positions[0],
+		// 				1: positions[1],
+		// 				2: positions[2],
+		// 				3: positions[3],
+		// 			},
+		// 			status: "1",
+		// 			update_time: data.updateTime
+		// 		}
+		// 		this.fenceobj.push(zones)
+		// 	}
+
+		// }
+		// window.onload = function () {
+		// 	// canvasdraw.taginfoGet()
+		// 	// canvasdraw.zoneGet();
+		// 	// for(var a=0;a<canvasdraw.zonelist.length;a++){
+
+		// 	// 	// device.getZone(canvasdraw.zonelist[a])
+		// 	// }
+		// 	canvasdraw.drawfences()
+		// }
+		// var thisclicknum = 1;
+		// var movenums = 1;
+
+		// function Ajaxfun(url, type, data, async) {
+		// 	var datalist;
+		// 	$.ajax({
+		// 		type: type,
+		// 		url: url,
+		// 		data: data,
+		// 		async: true,
+		// 		success: function (data) {
+		// 			datalist = data.pagedData.datas;
+		// 		}
+		// 	});
+		// 	return datalist
+		// }
+		// $(document).ready(function () {
+		// 	device.init()
+		// })
+		// canvasdraw.init("canvasmap", "", device, "peopleCtx", "drawfences");
+
+		// $(".measurement .btn").click(function (even) {
+		// 	if ($(this).hasClass("clicktrue")) {} else {}
+		// });
+
+		// $(".porpleinfoCont").hide()
+		// $("#serach").click(function () {
+		// 	canvasdraw.serachChange()
+		// });
+
+		// function changemodel(obj) {
+		// 	canvasdraw.tagshowmodel = obj.value;
+		// }
+
+		// function zoneclick(obj) {
+		// 	location.href = "/admin.php/realtime/realtime/index.html?zoneid=" + obj.value;
+
+		// }
+
+		// var canvasObj = document.getElementById("peopleCtx")
+		// var drawfencesObj = document.getElementById('drawfences')
+		// addEvent(drawfencesObj, 'mousewheel', onMouseWheel);
+		// addEvent(drawfencesObj, 'DOMMouseScroll', onMouseWheel);
+		// addEvent(drawfencesObj, 'mousedown', mdownHandler);
+		// addEvent(drawfencesObj, 'mouseup', upHandler);
+		// addEvent(canvasdraw.obj, 'touchstart', touchstartHandler);
+		// addEvent(canvasdraw.obj, 'touchend', touchendHandler);
+
+		// function mdownHandler(e) {
+		// 	if (clicknums == false) {
+		// 		canvasdraw.resetorigin(false, e.offsetX, e.offsetY, e);
+		// 		canvasdraw.drawflow();
+		// 		addEvent(drawfencesObj, 'mousemove', moveHandler);
+		// 	}
+
+		// }
+
+		// function onclickshock(e) {
+
+		// 	var e = e || window.event;
+		// 	if (thisclicknum == 1) {
+		// 		canvasdraw.drawments(e, thisclicknum, true);
+		// 		thisclicknum = 2;
+		// 		addEvent(drawfencesObj, "mousemove", onmousverthis)
+
+		// 	} else if (thisclicknum == 2) {
+		// 		removeEvent(drawfencesObj, "mousemove", onmousverthis)
+		// 		canvasdraw.drawments(e, thisclicknum)
+		// 		thisclicknum = 1
+		// 	}
+		// }
+
+		// function onmousverthis(even) {
+		// 	movenums = 3;
+
+		// 	canvasdraw.drawments(even, movenums)
+		// }
+
+		// function moveHandler(e) {
+
+		// 	if (clicknums == false) {
+		// 		canvasdraw.resetorigin(true, e.offsetX, e.offsetY, e);
+		// 		canvasdraw.drawflow();
+		// 	}
+		// }
+
+		// function upHandler() {
+
+		// 	drawfencesObj.removeEventListener("mousemove", moveHandler);
+		// }
+
+		// function touchstartHandler(e) {
+
+		// 	var e = e || window.event;
+		// 	if (clicknums == false) {
+		// 		canvasdraw.resetorigin(false, e.touches[0].offsetX, e.touches[0].offsetY, e);
+		// 		addEvent(canvasdraw.obj, 'touchmove', touchmoveHandler);
+		// 	}
+		// }
+
+		// function touchmoveHandler(e) {
+		// 	var e = e || window.event;
+		// 	if (clicknums == false) {
+		// 		canvasdraw.resetorigin(true, e.touches[0].offsetX, e.touches[0].offsetY, e);
+		// 		canvasdraw.drawflow();
+		// 	}
+		// }
+
+		// function touchendHandler() {
+		// 	canvasdraw.obj.removeEventListener("touchmove", touchendHandler);
+		// }
+
+		// function viewdown() {
+		// 	canvasdraw.setrate(true, canvasdraw.obj.width * 0.5, canvasdraw.obj.height * 0.5);
+		// 	canvasdraw.drawflow();
+		// }
+
+		// function viewup() {
+		// 	canvasdraw.setrate(false, canvasdraw.obj.width * 0.5, canvasdraw.obj.height * 0.5);
+		// 	canvasdraw.drawflow();
+		// }
+
+		// function onMouseWheel(ev) {
+		// 	var ev = ev || window.event;
+		// 	var down = ev.wheelDelta ? ev.wheelDelta < 0 : ev.detail > 0;
+
+		// 	canvasdraw.setrate(down, ev.offsetX, ev.offsetY);
+		// 	canvasdraw.drawflow();
+		// 	if (ev.preventDefault) {
+		// 		ev.preventDefault();
+		// 	}
+		// 	return false;
+		// }
+
+		// function drawwindow() {
+		// 	canvasdraw.drawflow();
+		// }
+		// $(function () {
+
+		// });
+		// canvasdraw.loadbgimg("../public/image/5ad8909aeff13.png");
+
+		// canvasdraw.resizeCanvas();
+		// canvasdraw.planscalex = 0.0145;
+		// canvasdraw.planscaley = 0.0145
+		// $("#mapdiv").mousemove(function (e) {
+		// 	var xx = e.originalEvent.x || e.originalEvent.layerX || 0;
+		// 	var yy = e.originalEvent.y || e.originalEvent.layerY || 0;
+		// 	var arrlistxy = [xx - 220, yy - 100]
+		// 	canvasdraw.moveover(arrlistxy, e)
+		// });
+	</script>
+	<script src="../public/js/workerList.js"></script>
+</body>
+
+</html>

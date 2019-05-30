@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="../../../public/css/bootstrap.min.css">
+
+		<link rel="stylesheet" type="text/css" href="../../../public/layui/css/layui.css" />
+		<link rel="stylesheet" type="text/css" href="../../../public/css/style.css" />
+		<style type="text/css">
+			.layui-border-box {
+				width: 100% !important;
+				margin: 0;
+			}
+			
+			.layui-table-body {
+				background: #FFFFFF;
+			}
+			
+			.left_silde>ul,
+			#fengMap {
+				min-height: 1210px;
+			}
+		</style>
+	</head>
+
+	<body class="clearfix">
+			<div id="header">
+			
+		</div>
+		
+		<div class="content">
+			<div class="left_silde layui-col-xs1">
+				<ul class="layui-nav layui-nav-tree layui-inline" lay-filter="demo" style="width: 100%;">
+					<li class="layui-nav-item ">
+						<a href="equipment.html">设备信息</a>
+
+					</li>
+					<li class="layui-nav-item layui-nav-itemed">
+						<a href="addEqu.html">设备添加</a>
+
+					</li>
+					<li class="layui-nav-item ">
+						<a href="amendment.html">基站配置</a>
+
+					</li>
+				</ul>
+			</div>
+			<div id=" " class="min layui-col-xs11">
+				<div class="minCont">
+					<div class="listIcon formCont">
+						<form class="layui-form">
+							<div class="flist" style="margin-bottom: 3%;">
+								<h3 style="color: #009688;">设备添加</h3>
+							</div>
+
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">设备名称：</label>
+									<div class="layui-input-inline">
+										<input type="tel" name="name" placeholder="基站名称" lay-verify="required" autocomplete="off" class="layui-input">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">设备编号：</label>
+									<div class="layui-input-inline">
+										<input type="tel" name="base_no" placeholder="基站编号" lay-verify="required" autocomplete="off" class="layui-input">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">主机站：</label>
+									<div class="layui-input-block" style="margin-top: 10px;">
+										<input type="radio" name="main" value="0" title="否" checked="">
+										<input type="radio" name="main" value="1" title="是">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label" style="height: 120px;">设备坐标：</label>
+									<div class="layui-input-inline">
+										<input type="tel" name="coordx" placeholder="X坐标" lay-verify="required" autocomplete="off" class="layui-input">
+									</div>
+									<div class="layui-input-inline">
+										<input type="tel" name="coordy" placeholder="Y坐标" lay-verify="required" autocomplete="off" class="layui-input">
+									</div>
+									<div class="layui-input-inline">
+										<input type="tel" name="coordz" placeholder="Z坐标" lay-verify="required" autocomplete="off" class="layui-input">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">安装地址：</label>
+									<div class="layui-input-inline">
+										<input type="tel" name="location" placeholder="地址" lay-verify="required" autocomplete="off" class="layui-input">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">IP地址：</label>
+									<div class="layui-input-inline">
+										<input type="tel" name="ip" placeholder="请输入IP" lay-verify="required" autocomplete="off" class="layui-input">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">数据类型：</label>
+									<div class="layui-input-block" style="margin-top: 10px;">
+										<input type="radio" name="uploadType" value="1" title="心跳" checked="">
+										<input type="radio" name="uploadType" value="2" title="标签数据">
+
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">是否工作：</label>
+									<div class="layui-input-block" style="margin-top: 10px;">
+										<input type="radio" name="work" value="false" title="否" checked="">
+										<input type="radio" name="work" value="true" title="是">
+
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline" style="width: 100%;">
+									<label class="layui-form-label" style="    width: 9.7%;">区域/等级：</label>
+									<div class="layui-input-inline" style="width: 25%;">
+										<select name="zone" id="zone">
+											
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">基站简介：</label>
+									<div class="layui-input-inline">
+										<input type="tel" name="description" autocomplete="off" class="layui-input">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">基站组号：</label>
+									<div class="layui-input-inline">
+										<input type="tel" name="group_code" autocomplete="off" class="layui-input">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">安装负责人：</label>
+									<div class="layui-input-inline">
+										<input type="tel" name="owner" placeholder="请输入该区域安装负责人" lay-verify="required " autocomplete="off" class="layui-input">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">最小基站数量：</label>
+									<div class="layui-input-inline">
+										<input type="tel" name="min_base_size" placeholder="最小基站数量" lay-verify="required " autocomplete="off" class="layui-input">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">总基站数量：</label>
+									<div class="layui-input-inline">
+										<input type="tel" name="group_base_size" placeholder="分组基站数量" lay-verify="required " autocomplete="off" class="layui-input">
+									</div>
+								</div>
+							</div>
+
+							<div class="layui-form-item" style="margin-top: 60px;">
+								<div class="layui-input-block">
+									<button class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+									<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+								</div>
+							</div>
+
+						</form>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<script src=" ../../../public/js/jquery.js"></script>
+		<script src="../../red/js/header.js" type="text/javascript" charset="utf-8"></script>
+		<script src=" ../../../public/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../red/js/header.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			$(function() {
+
+				var zonelist;
+				$.ajax({
+					type: "get",
+					url: "/api/zone/getall",
+					async: true,
+					data: {
+						'currentPage': 10,
+						"pageSize": 100
+					},
+					success: function(data) {
+						var zonelist = data.pagedData.datas;
+						console.log()
+						for(var a = 0; a < zonelist.length; a++) {
+							var htmls = `
+								<option value="${zonelist[a].id}">${zonelist[a].name}</option>
+							`
+							var optionhtmls = `
+								<dd lay-value="${zonelist[a].id}" >${zonelist[a].name}</dd>
+							`
+							$("#zone").append(htmls);
+							//							$("#zone").next(".layui-unselect").find(".layui-anim-upbit").append(optionhtmls);
+						}
+						layui.use('form', function() {
+							var form = layui.form;
+
+							form.render('select'); //刷新select选择框渲染
+							//各种基于事件的操作，下面会有进一步介绍
+						});
+					}
+				});
+
+			})
+		</script>
+		<script type="text/javascript">
+			var urls = "/api/base/addBase";
+			layui.use(['form', 'layedit', 'laydate'], function() {
+				var form = layui.form,
+					layer = layui.layer;
+				form.on('submit(demo1)', function(data) {
+					var Dat = new Date();
+					var timestamp=new Date().getTime();
+					var formeInfo = data.field;
+					var create_use=$("#adminName .Idname").text();
+					console.log(create_use)
+					//					console.log(formeInfo)
+
+					var work = formeInfo.work;
+					var data = {
+						"alarm": 1,
+						"baseNo": formeInfo.base_no,
+						"coordx": formeInfo.coordx,
+						"coordy": formeInfo.coordy,
+						"coordz": formeInfo.coordz,
+						"createTime": timestamp,
+						"createUser": create_use,
+						"description": formeInfo.description,
+						"groupCode": formeInfo.group_code,
+						"install_time": timestamp,
+						'ip': formeInfo.ip,
+						'location': formeInfo.location,
+						'loseRate': "0",
+						"main":formeInfo.main,
+						'name': formeInfo.name,
+						'owner': formeInfo.owner,
+						"group_base_size":formeInfo.group_base_size,
+						"min_base_size":formeInfo.min_base_size,
+						'update_time': timestamp,
+						'update_user': 'string',
+						'upload_type': formeInfo.uploadType,
+						'work': work,
+						'zone': formeInfo.zone
+					};
+					
+					var data = JSON.stringify(data);
+					console.log(data)
+					postAjax(urls, data)
+
+					return false;
+				});
+				//表单初始赋值
+
+			});
+
+			function postAjax(urls, data) {
+				var contentType = "application/json;charset=UTF-8";
+				console.log(data)
+				$.ajax({
+					type: "post",
+					url: urls,
+					async: true,
+					data: data,
+					contentType: contentType,
+					success: function(red) {
+						var cobackInfo = red.success;
+						var ids=red.resultMap.id;
+//						console.log(ids)
+						if(cobackInfo == true) {
+							var ii = layer.load();
+							//此处用setTimeout演示ajax的回调
+							setTimeout(function() {
+								layer.close(ii);
+								layer.msg('基站设备添加成功');
+//								location.reload();
+//								window.location.href="./anchornumInfo.html?id="+ids
+							}, 1000);
+
+						}
+					},
+					error: function() {
+						console.log("err")
+						var ii = layer.load();
+						//此处用setTimeout演示ajax的回调
+						setTimeout(function() {
+							layer.close(ii);
+							layer.msg('基站设备添加失败，请重新填写');
+//							location.reload();
+						}, 1000);
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

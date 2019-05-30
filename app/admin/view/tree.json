@@ -1,0 +1,29 @@
+{
+  "code": 0,
+  "msg": "获取成功",
+  "data": {
+    "trees":[
+    	{"name": "添加人员权限", "value": "xsgl", "checked": false, "list":[
+    		{"name": "角色管理", "value": "sbgl-sbsjlb", "checked": false, "list":[
+    			{"name": "添加临时人员", "value": "sbgl-sbsjlb-dj", "checked": false},
+    			{"name": "添加常驻人员", "value": "sbgl-sbsjlb-yl", "checked": false}
+    		]}
+    	]},
+    	{"name": "设备信息权限", "value": "sbgl", "checked": false, "list": [
+    		{"name": "设备管理", "value": "sbgl-sbsjlb", "checked": false, "list":[
+    			{"name": "更改设备信息", "value": "sbgl-sbsjlb-dj", "checked": false},
+    			{"name": "添加设备", "value": "sbgl-sbsjlb-dj", "checked": false},
+    			{"name": "删除设备", "value": "sbgl-sbsjlb-yl", "checked": false}
+    		]}
+    	]},
+    	{"name": "管理员设置权限", "value": "xsgl", "checked": false, "list":[
+    		{"name": "管理员管理权限", "value": "sbgl-sbsjlb", "checked": false, "list":[
+    			{"name": "添加管理员", "value": "sbgl-sbsjlb-dj", "checked": false},
+    			{"name": "更改管理员", "value": "sbgl-sbsjlb-yl", "checked": false},
+    			{"name": "删除管理员", "value": "sbgl-sbsjlb-yl", "checked": false}
+    		]}
+        
+    	]}
+    ]
+  }
+}

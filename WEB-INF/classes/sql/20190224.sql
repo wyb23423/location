@@ -1,0 +1,2 @@
+ALTER TABLE pos_base_station ADD COLUMN `algorithm_type` INT DEFAULT 1 NULL COMMENT '算法类型' AFTER `alarm`;
+ALTER TABLE pos_base_station ADD COLUMN `time_correction_value` DOUBLE DEFAULT 0 NULL COMMENT '时间补偿值' AFTER `algorithm_type`;

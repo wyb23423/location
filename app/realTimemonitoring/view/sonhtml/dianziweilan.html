@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<link rel="stylesheet" href="../../../../public/css/bootstrap.min.css">
+
+	<link rel="stylesheet" type="text/css" href="../../../../public/layui/css/layui.css" />
+	<link rel="stylesheet" type="text/css" href="../../../../public/css/style.css" />
+
+	<link rel="stylesheet" type="text/css" href="../../../../public/css/bootstrap-table.css" />
+</head>
+
+<body>
+	<div class="ifm">
+		<form class="layui-form" action="">
+			<div class="layui-form-item">
+				<label class="layui-form-label">选择区域</label>
+				<div class="layui-input-block">
+					<select name="protocol" id="protocol" lay-filter="test" lay-verify="required">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="formDemo" id="formDemo">统计人数</button>
+				</div>
+			</div>
+			<div id="datalist"></div>
+		</form>
+		
+	</div>
+	<style type="text/css">
+		.ifm{
+			background: #ffffff;
+			height: 200px;
+			padding: 5%;
+		}.layui-form-label {
+			width: 100px;
+		}
+
+
+		.layui-form-select {
+			width: 40%;
+		}
+
+		.baseChange .layui-input-block {
+			width: 32%;
+			display: inline-block;
+		}
+
+		.baseChange .layui-input-block {
+			margin-left: 10px;
+		}
+
+		.baseChange .layui-form-select {
+			width: 100%;
+			display: inline-block;
+		}
+		.layui-form-selected dl{
+			height: 132px;
+		}
+	
+	</style>
+
+	<script src=" ../../../../public/js/jquery.js"></script>
+	<script src=" ../../../../public/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../../red/js/header.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../public/js/fSelect.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+		var form = layui.form;	var tagmark=[]
+		var htms=`
+				<option value="all">当前地图</option>
+			`
+		$('#protocol').append(htms)
+		var tagimgMarkerAry=parent.imgMarkerAry
+		
+		var zonlistarr=parent.zonelist;
+		for(var a =0;a<tagimgMarkerAry.length;a++){
+			console.log(tagimgMarkerAry[a])
+			if(tagimgMarkerAry[a].datas.type ==1){
+				tagmark.push(tagimgMarkerAry[a])
+			}
+		}
+		
+		if(tagmark.length==0){
+				alert('当前地图没有标签，请查看')
+		}
+		var orgIds = parent.zonelist;
+		for(var a=0;a<orgIds.length;a++){
+			console.log(orgIds[a])
+			var htms=`
+				<option value="${orgIds[a].id}">${orgIds[a].name}</option>
+			`
+			$('#protocol').append(htms)
+		}
+		
+		form.render('select')
+	
+		form.on('submit(formDemo)', function (data) {
+				var vals=data.field.protocol;
+				getzonTag(vals,zonlistarr,tagmark)
+				return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+		}); 
+		function getzonTag(value,zonarr,tagarr){
+			console.log(tagarr)
+			if(value== 'all'){
+				var data=tagarr;
+				addhtmls(data)
+			}else if(value!=="all"){
+				console.log()
+			}
+		}
+		function addhtmls(data){
+			$('#datalist').html(' ')
+			var taglists=parent.tagarrlists;
+			console.log(taglists)
+			var nums=data.length;
+			var htmls=`
+					当前地图标签数据：${nums}个标签
+				<div class="layui-collapse numas"  lay-accordion >
+				</div>
+			`
+			$('#datalist').append(htmls)	
+		}
+	</script>
+</body>
+
+</html>

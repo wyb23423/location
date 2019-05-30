@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="../../../public/css/bootstrap.min.css">
+
+		<link rel="stylesheet" type="text/css" href="../../../public/layui/css/layui.css" />
+		<link rel="stylesheet" type="text/css" href="../../../public/css/style.css" />
+
+		<link rel="stylesheet" type="text/css" href="../../../public/css/bootstrap-table.css" />
+		<style type="text/css">
+			.layui-border-box {
+				width: 100% !important;
+				margin: 0;
+			}
+			
+			.layui-table-body {
+				background: #FFFFFF;
+			}
+			
+			.laytable-cell-1-department {
+				width: 80px !important;
+			}
+			#table tbody tr td {
+				vertical-align: middle;
+			}
+			.layui-form-label{
+				    width: 150px;
+			}
+		</style>
+	</head>
+
+	<body class="clearfix">
+		<div class="haderNav">
+			<div id="header">
+
+			</div>
+
+		</div>
+		<div class="content">
+			<div class="left_silde layui-col-xs1">
+				<ul class="layui-nav layui-nav-tree layui-inline" lay-filter="demo" style="width: 100%;">
+					<li class="layui-nav-item layui-nav-itemed">
+						<a href="javascript:;">人员列表</a>
+						<dl class="layui-nav-child">
+							<dd class="layui-this">
+								<a href="anchornum.html">常驻人员</a>
+							</dd>
+							<dd>
+								<a href="temporaryTable.html">临时人员</a>
+							</dd>
+
+						</dl>
+					</li>
+					<li class="layui-nav-item">
+						<a href="javascript:;">人员添加</a>
+						<dl class="layui-nav-child">
+							<dd>
+								<a href="addLinPerson.html">添加常驻</a>
+							</dd>
+							<dd>
+								<a href="addtemporay.html">添加临时</a>
+							</dd>
+
+						</dl>
+					</li>
+					<!--<li class="layui-nav-item">
+						<a href="javascript:;"></a>
+					</li>
+					<li class="layui-nav-item">
+						<a href="javascript:;">管理员权限</a>
+					</li>-->
+				</ul>
+			</div>
+			<div id=" " class="min layui-col-xs11">
+
+				<div class="minCont">
+
+					<div class=" body-content" style="padding-top:50px;">
+						<div class="panel panel-default">
+							<div class="panel-heading">常驻人员</div>
+							<table id="test" lay-filter="test"></table>
+							<script type="text/html" id="demo">
+								<a class="layui-btn layui-btn-danger layui-btn-xs deleteBtn" lay-event="del">删除标签</a>
+								<a class="layui-btn layui-btn-normal layui-btn-xs configBtn" lay-event="edit">配置标签</a>
+							</script>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="exampleModalLabel">更改标签信息</h4>
+					</div>
+					<div class="modal-body">
+						<form  class="layui-form" action="">
+							<div class="layui-form-item ">
+								<div class="layui-inline" >
+									<label class="layui-form-label" >区域/等级：</label>
+									<div class="layui-input-inline" >
+										<select name="zone" id="zone">
+
+										</select>
+									</div>
+									<div class="layui-input-inline" >
+										<select name="level">
+											<option value="T0">职位等级</option>
+											<option value="T1">T1</option>
+											<option value="T2">T2</option>
+											<option value="T3">T3</option>
+										</select>
+									</div>
+
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">人员名称：</label>
+									<div class="layui-input-inline">
+										<input type="text" name="name" lay-verify="required" autocomplete="off" class="layui-input">
+									</div>
+								</div>
+							</div>
+							
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+								<button type="button" class="btn btn-primary" lay-submit="" lay-filter="demo1" id="testListAction">确定	</button>
+							</div>
+						</form>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		<script src=" ../../../public/js/jquery.js"></script>
+		<script src="../../red/js/header.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../public/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../public/js/bootstrap-table.js" type="text/javascript" charset="utf-8"></script>
+
+		<script src=" ../../../public/layuis/layui.js" type="text/javascript" charset="utf-8"></script>
+
+		<script src=" ../../../public/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var zonelist=null;
+			var adminId=false;
+			$(function() {
+
+				
+				$.ajax({
+					type: "get",
+					url: "/api/zone/getall",
+					async: true,
+					data: {
+						'currentPage': 10,
+						"pageSize": 100
+					},
+					success: function(data) {
+						zonelist = data.pagedData.datas;
+						console.log()
+						for(var a = 0; a < zonelist.length; a++) {
+							var htmls = `
+								<option value="${zonelist[a].id}">${zonelist[a].name}</option>
+							`
+							var optionhtmls = `
+								<dd lay-value="${zonelist[a].id}" >${zonelist[a].name}</dd>
+							`
+							$("#zone").append(htmls);
+							//							$("#zone").next(".layui-unselect").find(".layui-anim-upbit").append(optionhtmls);
+						}
+						layui.use('form', function() {
+							var form = layui.form;
+
+							form.render('select'); //刷新select选择框渲染
+							//各种基于事件的操作，下面会有进一步介绍
+						});
+					}
+				});
+
+			
+			var datas = [];
+			function zoneName(id){
+				console.log(zonelist.length)
+				for(var a=0;a<zonelist.length;a++){
+					if(zonelist[a].id==id){
+						return zonelist[a].name
+					}
+				}
+			}
+			layui.use('table', function() {
+				var table = layui.table;
+				table.render({
+					elem: '#test',
+					url: '/api/tag/getall',
+					toolbar: '#toolbarDemo',
+					request: {
+						pageName: 'currentPage' //页码的参数名称，默认：page
+							,
+						limitName: 'pageSize' //每页数据量的参数名，默认：limit
+					},
+					parseData: function(res) { //res 即为原始返回的数据
+						var rows = res.pagedData.datas;
+						if(res.success == true) {
+							res.success = 0
+						};
+						for(var a = 0; a < rows.length; a++) {
+							if(rows[a].type == 2) {
+								console.log(rows[a].zone)
+								var names=zoneName(rows[a].zone)
+								console.log(names)
+								rows[a].zone=names
+								datas.push(rows[a])
+							}
+						}
+						console.log(datas)
+						return {
+							"code": res.success, //解析接口状态
+							"msg": res.message, //解析提示文本
+							"count": res.pagedData.totalCount, //解析数据长度
+							"data": datas //解析数据列表
+						};
+					},
+					done: function(res, curr, count) {
+						if(adminId==true){
+							$(".deleteBtn").hide();
+							$(".configBtn").hide()
+							$("li[data-id='1']")
+							console.log($("#caozuo[data-field='caozuo']"))
+							$("#caozuo[data-field='caozuo']").find("div").html("没权限操作")
+						}
+					},
+					title: '用户数据表',
+					totalRow: true,
+					cols: [
+						[{
+								field: 'id',
+								title: '基站ID',
+								width: "7%",
+								templet: '#usernameid'
+							}, {
+								field: 'name',
+								title: '人员名称',
+								width: "16%",
+								templet: '#name',
+							},
+							{
+								field: 'tagNo',
+								title: '编号',
+								width: "13%",
+								templet: '#tagNo'
+							},{
+								field: 'department',
+								title: '部门',
+								width: "13%",
+								templet: '#department'
+							},
+							{
+								field: 'job',
+								title: '职位',
+								width: "10%",
+								templet: '#job'
+
+							},
+							{
+								field: 'level',
+								title: '等级',
+								width: "8%",
+								templet: '#level'
+
+							},
+							 {
+								field: 'zone',
+								title: '区域',
+								width: "16%",
+								templet: '#zones',
+								
+							}, {
+								field:"caozuo",
+								fixed: 'right',
+								title: '操作',
+								width: "16%",
+								templet: '#demo'
+							}
+						]
+					],
+					limit:20
+					,page:true
+					
+				});
+				table.on('tool(test)', function(obj) {
+					var data = obj.data;
+					if(obj.event === 'del') {
+						layer.confirm('真的删除该基站么？', function(index) {
+							DeleteBook(data.id)
+							layer.close(index);
+						});
+					} else if(obj.event === 'edit') {
+						EditBook(data.id)
+					}
+				});
+				
+			});
+			
+			layui.use(['form', 'layedit', 'laydate'], function() {
+				var form = layui.form,
+					layer = layui.layer;
+				form.on('submit(demo1)', function(data) {
+					var Dat = new Date();
+					var timestamp = new Date().getTime();
+					var formeInfo = data.field;
+					var avatar = $(".avatarUrl").val()
+					var create_use = $("#adminName .Idname").text();
+					var work = formeInfo.work;
+					var data = {
+						"id":tagid,
+						"name": formeInfo.name, //    人员名称
+						"zone": formeInfo.zone, //    区域
+						"level": formeInfo.level, //    等级
+						"update_user": create_use, //    修改人
+						"update_time": timestamp, //    修改日期
+						"type": 2
+					};
+					var urls="/api/tag/updateTag"
+					var data = JSON.stringify(data);
+					postAjax(urls, data)
+					return false;
+				});
+				//表单初始赋值
+
+			});
+			
+			function postAjax(urls, data) {
+				var contentType = "application/json;charset=UTF-8";
+				console.log(data)
+				$.ajax({
+					type: "post",
+					url: urls,
+					async: true,
+					data: data,
+					contentType: contentType,
+					success: function(red) {
+						var cobackInfo = red.success;
+						if(cobackInfo == true) {
+							var ii = layer.load();
+							//此处用setTimeout演示ajax的回调
+							setTimeout(function() {
+								layer.close(ii);
+								layer.msg('人员标签添加成功');
+								$(window).scrollTop(0);
+							}, 1000);
+							setTimeout(function() {
+								location.reload();
+							}, 2000)
+						}
+					},
+					error: function() {
+						console.log("err")
+						var ii = layer.load();
+						//此处用setTimeout演示ajax的回调
+						setTimeout(function() {
+							layer.close(ii);
+							layer.msg('人员标签添加失败，请重新填写');
+							location.reload();
+						}, 1000);
+						setTimeout(function() {
+							location.reload();
+						}, 1000)
+					}
+				});
+			}
+
+			function EditBook(id) {
+				alert("是否编辑设备：ID" + id);
+				console.log(this)
+				$("#exampleModal").modal("toggle")
+				tagid = id
+
+			}
+			//删除操作
+			function DeleteBook(id) {
+				$.ajax({
+					url: "/api/tag/deleteBase?id=" + id,
+					type: "post",
+					contentType: "application/json",
+					data: {
+						id: id
+					},
+					success: function(red) {
+						console.log(red)
+						if(red.success == true) {
+							alert(red.message)
+							//								location.reload();
+						} else {
+							alert("服务繁忙，请重试")
+						}
+					}
+				})
+
+			}
+			})
+		</script>
+	</body>
+
+</html>

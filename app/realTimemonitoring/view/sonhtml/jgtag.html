@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="../../../../public/css/bootstrap.min.css">
+
+		<link rel="stylesheet" type="text/css" href="../../../../public/layui/css/layui.css" />
+		<link rel="stylesheet" type="text/css" href="../../../../public/css/style.css" />
+		<style type="text/css">
+			.layui-border-box {
+				width: 100% !important;
+				margin: 0;
+			}
+			
+			.layui-table-body {
+				background: #FFFFFF;
+			}
+			.left_silde>ul, #fengMap{
+				    min-height: 1210px;
+			}
+			.laytable-cell-1-230{
+				width:100px !important;
+			}
+			.minCont>div{
+				padding-top: 15px;
+			}
+		</style>
+	</head>
+
+	<body class="clearfix">
+		
+		<div class="content">
+			
+			<div id=" " class="min layui-col-xs12">
+				<div class="minCont">
+					<!--<div class="layui-btn-group demoTable" style="padding-bottom:0;">
+						<button class="layui-btn"></button>
+						<button class="layui-btn" data-type="getCheckLength">获取选中数目</button>
+						<button class="layui-btn" data-type="isAll">验证是否全选</button>
+					</div>-->
+					<table class="layui-hide" id="test"></table>
+					<script type="text/html" id="barDemo">
+						<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">设备详情及设置</a>						
+					</script>
+				</div>
+			</div>
+		</div>
+		<script src=" ../../../../public/js/jquery.js"></script>
+		<script src=" ../../../../public/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			layui.use('table', function() {
+				var table = layui.table,
+					form = layui.form;
+				table.render({
+					elem: '#test',
+					url: '/demo/table/user/',
+					cellMinWidth: 80,
+					cols: [
+						[ {
+								type: 'checkbox'
+							}
+							, {
+								field: 'username',
+								title: '基站编号',
+								width: 150,
+								templet: '#usernameTpl'
+							}, {
+								field: 'sex',
+								title: '人员名称',
+								width: 110,
+								templet: '#switchTpl',
+								unresize: true
+							}, {
+								field: 'sex',
+								title: '标签编号',
+								width: 110,
+								templet: '#switchTpl',
+								unresize: true
+							},  {
+								field: 'department',
+								title: '报警设备坐标',
+								Width: 110,
+								templet: '#usernameTpl'
+								
+							}, {
+								field: 'occupation',
+								title: '地址',
+								maxWidth: 110,
+								templet: '#usernameTpl'
+								
+							},  {
+								field: '230',
+								title: '是否工作',
+								Width: 80,
+								templet: '#usernameTpl'
+								
+							}, {
+								field: 'ssqu',
+								title: '所属区域',
+								Width: 150,
+								templet: '#usernameTpl'
+								
+							}, {
+								field: 'caozuio',
+								 Width:80,
+								 align:'center', 
+								 title: '操作',
+								 toolbar: '#barDemo'
+							}
+						
+						]
+					],
+					page: true
+				});
+
+				//监听性别操作
+				form.on('switch(sexDemo)', function(obj) {
+					layer.tips(this.value + ' ' + this.name + '：' + obj.elem.checked, obj.othis);
+				});
+
+				//监听锁定操作
+				form.on('checkbox(lockDemo)', function(obj) {
+					layer.tips(this.value + ' ' + this.name + '：' + obj.elem.checked, obj.othis);
+				});
+				table.on('tool(demo)', function(obj) {
+					var data = obj.data;
+					if(obj.event === 'detail') {
+						layer.msg('ID：' + data.id + ' 的查看操作');
+					} else if(obj.event === 'del') {
+						layer.confirm('真的删除行么', function(index) {
+							obj.del();
+							layer.close(index);
+						});
+					} else if(obj.event === 'edit') {
+						layer.alert('编辑行：<br>' + JSON.stringify(data))
+					}
+				});
+				$('.demoTable .layui-btn').on('click', function() {
+					var type = $(this).data('type');
+					active[type] ? active[type].call(this) : '';
+				});
+			});
+		</script>
+	</body>
+
+</html>

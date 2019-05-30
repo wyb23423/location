@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+
+		</style>
+		<link rel="stylesheet" href="../../../../public/css/bootstrap.min.css">
+
+		<link rel="stylesheet" type="text/css" href="../../../../public/layui/css/layui.css" />
+		<link rel="stylesheet" type="text/css" href="../../../../public/css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../public/fSelect.css" />
+	</head>
+
+	<body>
+		<style type="text/css">
+			#modles {
+				background: #666;
+				height: 607px;
+				padding: 19px;
+				width: 59%;
+				position: relative;
+			}
+			
+			#imgorname {
+				height: 130px;
+			}
+			
+			#imgorname P {
+				color: #FFFFFF;
+				line-height: 30px;
+				font-size: 15px;
+			}
+			
+			#jiben p {
+				color: #FFFFFF;
+				font-size: 18px;
+				margin-bottom: 15px;
+			}
+			
+			.layui-form-label {
+				width: 35%;
+				padding: 0;
+				text-align: left;
+				line-height: 27px;
+				color: #FFFFFF;
+			}
+			
+			.layui-form-item .layui-input-inline {
+				float: left;
+				width: 35%;
+				margin-right: 0;
+			}
+			
+			.layui-input,
+			.layui-textarea {
+				height: 30px;
+			}
+			
+			.layui-form-pane .layui-form-item[pane] .layui-form-label {
+				position: relative;
+			}
+			
+			.layui-form-pane .layui-form-item[pane] .layui-input-inline {
+				margin-left: 0;
+			}
+			
+			.layui-tab-title li {
+				color: #FFFFFF;
+			}
+			
+			.layui-tab-title .layui-this {
+				color: #FFFFFF;
+			}
+			
+			.layui-form-pane .layui-form-label {
+				width: 35%;
+				border: none;
+				background: transparent;
+				height: 27px;
+				line-height: 27px;
+				padding: 0;
+			}
+			
+			.layui-form-pane .layui-form-item[pane] {
+				border: none;
+			}
+			
+			.postBtn {
+				position: absolute;
+				bottom: 2%;
+				width: 80%;
+				left: 10%;
+			}
+		</style>
+		<div class="container">
+			<div id="configPost">
+				<div id="modles" class="clearfix">
+					<div id="" class="clearfix">
+						<div id="imgorname" class="col-xs-8">
+							<p>基站名称：测试基站</p>
+							<p>基站编号：A0000024</p>
+							<p>分组编号：A0001</p>
+							<p>基站类型：主机站</p>
+
+						</div>
+						<div id="" class="col-xs-3" style="height: 130px;">
+							<img src="../../../public/image/80530151701.png" style="width: 100%;" />
+						</div>
+					</div>
+					<div id="Setup" class="Setup" style="border-top: 1px solid #D0D0D0;margin: 15px 0">
+						<div class="layui-tab">
+							<ul class="layui-tab-title">
+								<li class="layui-this">基本属性设置</li>
+								<li>网络参数设置</li>
+
+							</ul>
+							<div class="layui-tab-content">
+								<div class="layui-tab-item layui-show">
+									<form class="layui-form layui-form-pane" action="">
+										<div id="jiben" class="col-xs-12" style="border-right: 1px solid #FFFFFF;">
+
+											<div class="">
+												<div class="layui-form-item">
+													<label class="layui-form-label">所属组号</label>
+													<div class="layui-input-inline">
+														<input type="text" name="text" lay-verify="pass" placeholder="" class="layui-input">
+													</div>
+												</div>
+												<div class="layui-form-item">
+													<div class="layui-form-item" pane>
+														<label class="layui-form-label">基站标示</label>
+														<div class="layui-input-inline">
+															<select name="city" lay-verify="">
+																<option value="main">主机站</option>
+																<option value="vice" selected>从基站</option>
+															</select>
+														</div>
+													</div>
+												</div>
+												<div class="layui-form-item">
+													<label class="layui-form-label">距离参数</label>
+													<div class="layui-input-inline">
+														<input type="text" name="text" lay-verify="pass" placeholder="" class="layui-input">
+													</div>
+												</div>
+												<div class="layui-form-item">
+													<label class="layui-form-label">时间参数</label>
+													<div class="layui-input-inline">
+														<input type="text" name="text" lay-verify="pass" placeholder="" class="layui-input">
+													</div>
+												</div>
+												<div class="layui-form-item">
+													<label class="layui-form-label">功率等级</label>
+													<div class="layui-input-inline">
+														<input type="text" name="text" lay-verify="pass" placeholder="" class="layui-input">
+													</div>
+												</div>
+												<div class="layui-form-item">
+													<div class="layui-form-item" pane>
+														<label class="layui-form-label">基站信道</label>
+														<div class="layui-input-inline">
+															<select name="city" lay-verify="">
+																<option value="2">2</option>
+																<option value="5" selected>5</option>
+															</select>
+														</div>
+													</div>
+												</div>
+												<div class="layui-form-item">
+													<div class="layui-form-item" pane>
+														<label class="layui-form-label">频率等级</label>
+														<div class="layui-input-inline">
+															<select name="city" lay-verify="">
+																<option value="1">1</option>
+																<option value="1" selected>5</option>
+															</select>
+														</div>
+													</div>
+												</div>
+
+											</div>
+										</div>
+										<div id="" class="postBtn">
+											<button class="layui-btn layui-btn-fluid">设置基本属性</button>
+										</div>
+									</form>
+								</div>
+								<div class="layui-tab-item">
+									<form class="layui-form layui-form-pane" action="">
+										<div id="jiben" class="col-xs-12" style="border-right: 1px solid #FFFFFF;">
+
+											<div class="">
+												<div class="layui-form-item">
+													<label class="layui-form-label">基站IP</label>
+													<div class="layui-input-inline">
+														<input type="text" name="text" lay-verify="pass" placeholder="" class="layui-input">
+													</div>
+												</div>
+
+												<div class="layui-form-item">
+													<label class="layui-form-label">基站MASK</label>
+													<div class="layui-input-inline">
+														<input type="text" name="text" lay-verify="pass" placeholder="" class="layui-input">
+													</div>
+												</div>
+												<div class="layui-form-item">
+													<label class="layui-form-label">基站MAC</label>
+													<div class="layui-input-inline">
+														<input type="text" name="text" lay-verify="pass" placeholder="" class="layui-input">
+													</div>
+												</div>
+												<div class="layui-form-item">
+													<label class="layui-form-label">基站端口</label>
+													<div class="layui-input-inline">
+														<input type="text" name="text" lay-verify="pass" placeholder="" class="layui-input">
+													</div>
+												</div>
+												<div class="layui-form-item">
+													<label class="layui-form-label">服务器IP</label>
+													<div class="layui-input-inline">
+														<input type="text" name="text" lay-verify="pass" placeholder="" class="layui-input">
+													</div>
+												</div>
+												<div class="layui-form-item">
+													<label class="layui-form-label">服务器端口</label>
+													<div class="layui-input-inline">
+														<input type="text" name="text" lay-verify="pass" placeholder="" class="layui-input">
+													</div>
+												</div>
+
+											</div>
+										</div>
+										<div id="" class="postBtn">
+											<button class="layui-btn layui-btn-fluid">设置网络参数</button>
+										</div>
+
+									</form>
+								</div>
+
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+		<script src=" ../../../public/js/jquery.js"></script>
+		<script src=" ../../../public/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../red/js/header.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../public/fSelect.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			$(function() {
+				$('.demo').fSelect();
+			});
+		</script>
+	</body>
+
+</html>

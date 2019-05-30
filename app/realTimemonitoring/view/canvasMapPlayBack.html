@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="../../../public/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="../../../public/layui/css/layui.css" />
+		<link rel="stylesheet" type="text/css" href="../../../public/css/style.css" />
+		<link rel="stylesheet" type="text/css" href="../../../public/css/barstyle.css" />
+		<link rel="stylesheet" type="text/css" href="../public/js/fSelect.css" />
+		<link rel="stylesheet" type="text/css" href="../../../public/layui/css/layui.css" />
+		<link rel="stylesheet" type="text/css" href="../../../public/css/style.css" />
+		<style type="text/css">
+			#fengMap canvas {
+				width: 100% !important;
+				height: 100% !important;
+			}
+			
+			#tagInfo {
+				position: absolute;
+				width: 16%;
+				height: 30%;
+				right: 0;
+				background-color: rgba(0, 0, 0, 0.24);
+			}
+			
+			#tagnames p {
+				line-height: 30px;
+			}
+			
+			#tagInfolist p {
+				color: #FFFFFF;
+				line-height: 30px;
+			}
+			
+			#fengMap {
+				background: #FFFFFF;
+			}
+			
+			.menuselections {
+				position: absolute;
+				bottom: 34%;
+				right: 1%;
+				width: 45%;
+				height: 8%;
+				opacity: 1;
+				background: #fff;
+				box-shadow: 0px 0px 4px #000;
+			}
+		</style>
+		<style type="text/css">
+			.BarFinishTime {
+				margin-left: 0;
+			}
+			
+			.fs-dropdown {
+				width: 112%;
+				z-index: 1000;
+				left: -6%;
+			}
+			.layui-btn-container .layui-btn{
+				margin-top:6px;
+			}
+		</style>
+	</head>
+
+	<body class="clearfix">
+		<div id="header">
+
+		</div>
+
+		<div class="content">
+			<div class="left_silde layui-col-xs1">
+				<ul class="layui-nav layui-nav-tree layui-inline" lay-filter="demo" style="width: 100%;">
+					<li class="layui-nav-item ">
+						<a href="javascript:;">实时监控</a>
+						<dl class="layui-nav-child">
+							<dd class="">
+								<a href="javascript:;">办公室</a>
+							</dd>
+
+						</dl>
+					</li>
+					<li class="layui-nav-item layui-nav-itemed">
+						<a href="javascript:;">canvas</a>
+						<dl class="layui-nav-child">
+							<dd class="layui-this">
+								<a href="../view/canvasMap.html">办公室</a>
+							</dd>
+
+						</dl>
+					</li>
+					<li class="layui-nav-item">
+						<a href="javascript:;">监控回放</a>
+						<dl class="layui-nav-child">
+							<dd>
+								<a href="../view/monitoring.html">办公室</a>
+							</dd>
+						</dl>
+					</li>
+
+				</ul>
+			</div>
+			<style type="text/css">
+				#peopleCtx,
+				#drawfences {
+					position: absolute;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+				}
+				
+				.peopleinfo {
+					background: #dddddd;
+					position: absolute;
+					top: 0;
+					left: 0;
+					border-radius: 4px;
+					padding: 4px;
+					font-size: 13px
+				}
+				
+				.porpleinfoCont {
+					position: absolute;
+					top: 8%;
+					right: 0;
+					background: #ddd;
+					min-height: 290px;
+					width: 250px;
+					padding: 16px;
+				}
+				
+				.porpleinfoCont .headImg {
+					width: 120px;
+					height: 140px;
+				}
+				
+				.headImgCont {
+					text-align: center;
+					margin-bottom: 30px
+				}
+				
+				.porpleInfoCont {
+					text-align: center
+				}
+				
+				.porpleInfoCont p {
+					line-height: 30px
+				}
+				
+				.Gn_ {
+					z-index: 88888;
+					position: absolute;
+					width: 100%;
+					height: 8%;
+					padding: 15px;
+					background: #f5f5f5;
+					box-shadow: 0px 2px 9px #666;
+				}
+				
+				.searchCont {
+					width: 50%;
+					float: left;
+				}
+				
+				.orther_btn {
+					float: right;
+					width: 50%;
+					text-align: right
+				}
+				
+				.porpleundefined {
+					text-align: center;
+					margin-bottom: 13%;
+				}
+				
+				.P_info {
+					text-align: center;
+					line-height: 30px;
+				}
+				.fs-label-wrap .fs-label{
+					    padding: 12px 25px 6px 8px;
+					    text-overflow: ellipsis;
+					    white-space: nowrap;
+					    overflow: hidden;
+				}
+				.fs-wrap{
+					width: 125px;
+				}
+			</style>
+			<div id="main" class="min main layui-col-xs11">
+
+				
+				<div id="fengMap" style="width: 100%;height: 100%;">
+					<canvas id="canvasmap"></canvas>
+					<canvas id="peopleCtx"></canvas>
+					<canvas id="drawfences"></canvas>
+				</div>
+				<div id="peopleCont">
+
+				</div>
+				<div class="menuselections" style="">
+					<ul class="clearfix">
+						<li class="layui-col-xs2 text-center">
+							<div class="timechange">
+								<div class="col-lg-12" style="padding: 0;padding-left: 10px;margin-top: 10px;">
+									<div class="fs-wrap multiple">
+										<select class="demo hidden" multiple="multiple">
+											<optgroup label="Scripts" id="typeOne">
+												<!--<option value="00000015" data-tid="19">00000015</option>
+												<option value="0001" data-tid="23">0001</option>-->
+											</optgroup>
+										</select>
+									</div>
+								</div>
+							</div>
+						</li>
+						<li class="layui-col-xs2 text-center">
+							<div class="timechange">
+								<div class="layui-inline">
+									<div class="layui-btn-container layui-col-xs12 ">
+										<button class="layui-btn layui-btn-primary timebtn " data-method="notice" style="border: none;margin-left: 20px;">
+										  	<img src="../../../public/image/time.png"  style="width:30px;height: 30px;vertical-align: middle;"/>
+										</button>
+									</div>
+								</div>
+
+							</div>
+						</li>
+						<li class="layui-col-xs6 clearfix">
+							<ul class="clearfix">
+								<li class="col-xs-2 clearfix">
+									<button class="layui-btn layui-btn-primary contral site-demo-active" data-type="loading" id="timeBtn" style="padding:0 12px;margin-top: 8px;">
+										<img src="../../../public/image/play.png"  style="">
+									</button>
+								</li>
+								<li class="col-xs-8 clearfix" style="padding: 0;margin-left: 36px;margin-top: 5px;visibility: hidden;;">
+									<div class="test" style="margin-top: 15px;">
+										<div class="BarControl">
+											<div class="BarBeginTime">00:00</div>
+											<div class="TheBar">
+												<div class="TimeBall" style="background: rgb(114, 223, 255); left: 0px;"></div>
+												<div class="TheColorBar" style="background: rgb(114, 223, 255); width: 0px;"></div>
+											</div>
+											<div class="BarFinishTime">00:00</div>
+										</div>
+									</div>
+
+								</li>
+							</ul>
+						</li>
+						<li class="layui-col-xs2 clearfix" style="visibility: hidden;">
+
+							<form class="layui-form" action="" lay-filter="example" style="margin-top: 10%;">
+								<div class="layui-form-item">
+									<div>
+										<input type="checkbox" name="open" lay-skin="switch" lay-filter="switchTest" lay-text="显示轨迹|不显轨迹">
+									</div>
+								</div>
+							</form>
+						</li>
+
+					</ul>
+				</div>
+
+				<div class="porpleinfoCont">
+					<div>
+						<div>
+							<div class="porple${info.tagno}  headImgCont">
+								<img class='headImg' src="info.url" />
+							</div>
+							<div class="porpleInfoCont">
+								<div>
+									<p>标签编号：${info.tagno}</p>
+									<p>标签名称：${info.name}</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+	
+		
+		<script src=" ../../../public/js/jquery.js"></script>
+		<script src=" ../../../public/js/socket.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../red/js/header.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../../public/js/jquery-PlayBar.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src=" ../../../public/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+		<script src=" ../../../public/js/socket.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../public/js/canvasMpas.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../public/js/devices.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../public/js/canvasMap.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../public/js/fSelect.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../public/js/canvasmonitoring.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var changeType=false
+			var changeNum,newTimeHms;
+//			WebSocketTest()
+			var jsonmsglist = [];
+			var clicknums = false;
+			candrawCanvs.init(canvasdraw)
+			var device = {
+				existtages: {},
+				anchaorobj: {},
+				fenceobj: [],
+				init: function() {},
+				getExisttage: function() {
+					var url = "/api/tag/getall",
+						type = "get",
+						data = {
+							currentPage: 100,
+							pageSize: 100
+						};
+					var datalist = Ajaxfun(url, type, data, false);
+					for(var a = 0; a < datalist.length; a++) {
+						var lists = {
+							ge: null,
+							avatar: null,
+							avatarpath: datalist[a].avatar,
+							businessid: "",
+							classify: datalist[a].zone,
+							color: "45b035",
+							create_time: "1513125716",
+							id: datalist[a].id,
+							name: datalist[a].name,
+							serialnumber: datalist[a].tagNo,
+							sex: datalist[a].sex,
+							status: datalist[a].type,
+							update_time: datalist[a].updateTime,
+						};
+						device.existtages[datalist[a].tagNo] = lists;
+					}
+
+				},
+				getAnchaorobj: function() {
+					var url = "/api/base/getall",
+						type = "get",
+						data = {
+							currentPage: 100,
+							pageSize: 100
+						};
+					var datalist = Ajaxfun(url, type, data, false);
+
+					for(var a = 0; a < datalist.length; a++) {
+						if(datalist[a].groupCode == 0001) {
+							var anchorlist = {
+								x: datalist[a].coordx,
+								y: datalist[a].coordy,
+								z: datalist[a].coordz
+							}
+							device.anchaorobj[datalist[a].baseNo] = anchorlist;
+						}
+
+					}
+
+				},
+				getZone: function(data) {
+					var positions = data.position;
+					positions = eval("(" + positions + ")")
+					var zones = {
+						belongszone: data.enable,
+						create_time: data.createTime,
+						fencetype: "",
+						id: data.id,
+						inout: "1",
+						name: data.name,
+						param: {
+							0: positions[0],
+							1: positions[1],
+							2: positions[2],
+							3: positions[3],
+						},
+						status: "1",
+						update_time: data.updateTime
+					}
+					this.fenceobj.push(zones)
+				}
+
+			}
+			window.onload = function() {
+				canvasdraw.taginfoGet()
+				canvasdraw.zoneGet();
+				for(var a = 0; a < canvasdraw.zonelist.length; a++) {
+
+					device.getZone(canvasdraw.zonelist[a])
+				}
+				canvasdraw.drawfences()
+				getTgadata()
+			}
+			var thisclicknum = 1;
+			var movenums = 1;
+
+			function Ajaxfun(url, type, data, async) {
+				var datalist;
+				$.ajax({
+					type: type,
+					url: url,
+					data: data,
+					async: true,
+					success: function(data) {
+						datalist = data.pagedData.datas;
+					}
+				});
+				return datalist
+			}
+			$(document).ready(function() {
+				device.init()
+			})
+			canvasdraw.init("canvasmap", "", device, "peopleCtx", "drawfences");
+
+			var mapdivs = document.getElementById("fengMap");
+
+			$(".measurement .btn").click(function(even) {
+				if($(this).hasClass("clicktrue")) {} else {}
+			})
+
+			function WebSocketTest(currentGid) {
+
+				if("WebSocket" in window) {
+					// 打开一个 web socket
+					var ws = new WebSocket("ws://192.168.1.202:80/realtime/position/0001");
+					ws.onopen = function() {
+						// Web Socket 已连接上，使用 send() 方法发送数据
+						ws.send("发送数据");
+					};
+					ws.onmessage = function(evt) {
+						var received_msg = evt.data;
+						// console.log(received_msg)
+						jsonMSg = eval("(" + received_msg + ")");
+						//												console.log(jsonMSg)
+						if(jsonMSg.length == 1) {} else {
+							var x = parseFloat(jsonMSg.position[0]),
+								y = parseFloat(jsonMSg.position[1]),
+								z = parseFloat(jsonMSg.position[0])
+							if(x < 0 || y < 0) {
+								return false
+							} else {
+								var jsonMSgArr = [jsonMSg.sTagNo, 560 + x, 450 + y, 0, 0, tagfor];
+//								 console.log(jsonMSgArr)	
+							}
+
+//							canvasdraw.addimglist.init(jsonMSgArr, currentGid)
+						}
+					};
+					ws.onclose = function() {
+						// 关闭 websocket	
+					};
+				} else {
+					// 浏览器不支持 WebSocket
+
+				}
+			}
+
+			$(".porpleinfoCont").hide()
+			$("#serach").click(function() {
+				canvasdraw.serachChange()
+			})
+
+			function tagGet(tag_no) {
+				var tag_no = tag_no;
+				var taginfo;
+				var urls = "http://192.168.1.202/api/tag/getall"
+				$.ajax({
+					type: "get",
+					url: urls,
+					async: true,
+					data: {
+						currentPage: 1,
+						pageSize: 10,
+						tagNo: tag_no
+					},
+					success: function(red) {
+						taginfo = red
+					}
+				});
+				return taginfo.pagedData.datas
+			}
+			var tagarrlists;
+
+			function tagarrlist() {
+				var urls = "http://192.168.1.202/api/tag/getall"
+				$.ajax({
+					type: "get",
+					url: urls,
+					async: true,
+					data: {
+						currentPage: 1,
+						pageSize: 10,
+					},
+					success: function(red) {
+						tagarrlists = red.pagedData.datas
+					}
+				});
+			}
+			var tagfor = []
+
+			function fortag(tagno) {
+				tagfor = []
+				for(var a = 0; a < tagarrlists.length; a++) {
+					if(tagno == tagarrlists[a].tagNo) {
+						tagfor.push(tagarrlists[a]);
+					}
+				}
+			}
+			//			tagarrlist()
+
+			devices.alertsongobj = document.getElementById('alertsong');
+
+			function changemodel(obj) {
+				canvasdraw.tagshowmodel = obj.value;
+			}
+
+			function zoneclick(obj) {
+				location.href = "/admin.php/realtime/realtime/index.html?zoneid=" + obj.value;
+
+			}
+
+			function addEvent(obj, xEvent, fn) {
+				if(obj.attachEvent) {
+					obj.attachEvent('on' + xEvent, fn);
+				} else {
+					obj.addEventListener(xEvent, fn, false);
+				}
+			}
+
+			function removeEvent(obj, xEvent, fn) {
+				if(obj.attachEvent) {
+					obj.detachEvent('on' + xEvent, fn);
+				} else {
+					obj.removeEventListener(xEvent, fn, false);
+				}
+			}
+			var canvasObj = document.getElementById("peopleCtx")
+			var drawfencesObj = document.getElementById('drawfences')
+			addEvent(drawfencesObj, 'mousewheel', onMouseWheel);
+			addEvent(drawfencesObj, 'DOMMouseScroll', onMouseWheel);
+			addEvent(drawfencesObj, 'mousedown', mdownHandler);
+			addEvent(drawfencesObj, 'mouseup', upHandler);
+			addEvent(canvasdraw.obj, 'touchstart', touchstartHandler);
+			addEvent(canvasdraw.obj, 'touchend', touchendHandler);
+
+			function mdownHandler(e) {
+				if(clicknums == false) {
+					canvasdraw.resetorigin(false, e.offsetX, e.offsetY, e);
+					canvasdraw.drawflow();
+					addEvent(drawfencesObj, 'mousemove', moveHandler);
+				}
+
+			}
+
+			function onclickshock(e) {
+
+				var e = e || window.event;
+				if(thisclicknum == 1) {
+					canvasdraw.drawments(e, thisclicknum, true);
+					thisclicknum = 2;
+					addEvent(drawfencesObj, "mousemove", onmousverthis)
+
+				} else if(thisclicknum == 2) {
+					removeEvent(drawfencesObj, "mousemove", onmousverthis)
+					canvasdraw.drawments(e, thisclicknum)
+					thisclicknum = 1
+				}
+			}
+
+			function onmousverthis(even) {
+				movenums = 3;
+
+				canvasdraw.drawments(even, movenums)
+			}
+
+			function moveHandler(e) {
+
+				if(clicknums == false) {
+					canvasdraw.resetorigin(true, e.offsetX, e.offsetY, e);
+					canvasdraw.drawflow();
+				}
+			}
+
+			function upHandler() {
+
+				drawfencesObj.removeEventListener("mousemove", moveHandler);
+			}
+
+			function touchstartHandler(e) {
+
+				var e = e || window.event;
+				if(clicknums == false) {
+					canvasdraw.resetorigin(false, e.touches[0].offsetX, e.touches[0].offsetY, e);
+					addEvent(canvasdraw.obj, 'touchmove', touchmoveHandler);
+				}
+			}
+
+			function touchmoveHandler(e) {
+				var e = e || window.event;
+				if(clicknums == false) {
+					canvasdraw.resetorigin(true, e.touches[0].offsetX, e.touches[0].offsetY, e);
+					canvasdraw.drawflow();
+				}
+			}
+
+			function touchendHandler() {
+				canvasdraw.obj.removeEventListener("touchmove", touchendHandler);
+			}
+
+			function viewdown() {
+				canvasdraw.setrate(true, canvasdraw.obj.width * 0.5, canvasdraw.obj.height * 0.5);
+				canvasdraw.drawflow();
+			}
+
+			function viewup() {
+				canvasdraw.setrate(false, canvasdraw.obj.width * 0.5, canvasdraw.obj.height * 0.5);
+				canvasdraw.drawflow();
+			}
+
+			function onMouseWheel(ev) {
+				var ev = ev || window.event;
+				var down = ev.wheelDelta ? ev.wheelDelta < 0 : ev.detail > 0;
+
+				canvasdraw.setrate(down, ev.offsetX, ev.offsetY);
+				canvasdraw.drawflow();
+				if(ev.preventDefault) {
+					ev.preventDefault();
+				}
+				return false;
+			}
+
+			function drawwindow() {
+				canvasdraw.drawflow();
+			}
+			$(function() {
+
+			});
+			canvasdraw.loadbgimg("../public/image/5ad8909aeff13.png");
+
+			canvasdraw.resizeCanvas();
+			canvasdraw.planscalex = 0.0145;
+			canvasdraw.planscaley = 0.0145
+			$("#mapdiv").mousemove(function(e) {
+				var xx = e.originalEvent.x || e.originalEvent.layerX || 0;
+				var yy = e.originalEvent.y || e.originalEvent.layerY || 0;
+				var arrlistxy = [xx - 220, yy - 100]
+				canvasdraw.moveover(arrlistxy, e)
+			});
+		</script>
+	</body>
+
+</html>

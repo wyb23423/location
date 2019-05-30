@@ -1,0 +1,273 @@
+/* logion HTML*/
+
+.logion {}
+
+body {
+	background-color: #393d49;
+}
+
+.logionBack {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 0;
+	margin: auto;
+	background: #007DDB;
+}
+
+.logionCont {
+	width: 500px;
+	height: 500px;
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 0;
+	margin: auto;
+	background: #FFFFFF;
+	border-radius: 10px;
+	-moz-box-shadow: 0px 0px 22px #666;
+	-webkit-box-shadow: 0px 0px 22px #666;
+	box-shadow: 0px 0px 22px #666;
+	padding: 85px 15px;
+}
+
+.logionCont h1,
+.logionCont h3 {
+	margin-bottom: 25px;
+	color: #2699ed;
+}
+
+.logionCont h1 {
+	margin-bottom: 50px;
+}
+
+.logionForm {
+	margin-top: 15%;
+}
+
+.logionForm .layui-input {
+	width: 93%;
+}
+
+.logionForm label {
+	width: 120px;
+}
+
+.logionForm .layui-input-block {
+	margin-left: 120px;
+}
+
+.floating-btn {
+	background: #1685d0;
+	width: 149px;
+	height: 60px;
+	border-radius: 45px 0px 45px 1px;
+	color: #fff;
+	font-size: 24px;
+	border: none;
+	position: absolute;
+	margin: auto;
+	-webkit-transition: 0.3s;
+	transition: 0.3s;
+	box-shadow: 1px 0px 0px rgba(0, 0, 0, 0.3) inset;
+	right: -30px;
+	bottom: -100%;
+	cursor: pointer;
+}
+
+.floating-btn:hover {
+	box-shadow: 149px 0px 0px #009688 inset;
+}
+
+
+/* 首页 index*/
+
+
+/*  addadmin*/
+
+.formCont form {
+	margin: 15px 0;
+}
+
+.formCont .layui-inline {
+	width: 80%;
+}
+
+.formCont .layui-input-inline {
+	width: 50%;
+	margin: 10px 0;
+}
+
+.formCont .layui-form-label {
+	width: 12%;
+	color: #000000;
+	text-align: left;
+	padding: 0 15px;
+	line-height: 57px;
+}
+
+.left_silde {
+	height: 100%;
+	/*min-height: 920px;*/
+}
+
+
+
+.btn-group-vertical {
+	position: absolute;
+	left: 2%;
+	bottom: 2%;
+}
+
+.minCont {
+	min-height: 920px;
+	background: #E2E2E2;
+}
+
+.layui-nav {
+	border-radius: 0;
+}
+
+.minCont>div {
+	padding: 3% 4%
+}
+
+#listIcon li {
+	margin-bottom: 50px;
+}
+
+.listDiv {
+	padding: 5%;
+	background: #FFFFFF;
+}
+
+#listIcon {
+	padding: 1% 3% 0 3%;
+}
+
+#fengMap canvas {
+	width: 100% !important;
+}
+
+.logocont img {
+	width: 100%;
+	vertical-align: top;
+}
+
+.logocont ul,
+.logocont a {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
+.menuselections {
+	position: absolute;
+	bottom: 34%;
+	right: 1%;
+	width: 45%;
+	height: 6%;
+	opacity: 1;
+	background: #fff;
+}
+
+.menuselections ul {
+	height: 100%;
+}
+
+.menuselections ul li:last-child {
+	border-right: none;
+}
+
+.menuselections ul li img {
+	cursor: pointer;
+}
+
+.menuselections ul {
+	height: 100%;
+}
+
+.menuselections ul li:last-child {
+	border-right: none;
+}
+
+.menuselections ul li img {
+	cursor: pointer;
+}
+
+.timechange {
+	width: 100%;
+}
+
+
+/*
+.left_silde>ul, #fengMap ,.minCont{
+    min-height: 1210px;
+}*/
+
+#LAY_layuipro {
+	padding: 5%;
+}
+
+.tablelis {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	background: #fff;
+	height: 24%;
+}
+
+
+/**/
+
+#heatInfo {
+	width: 350px;
+	height: 450px;
+	background: #F2F2F2;
+	margin: auto;
+	padding: 15px;
+	box-shadow: 0px 0px 5px #100f0f6e;
+}
+
+#heatImg img {
+	width: 100%;
+	border: 1px solid #31708f;
+}
+
+#heatTag p {
+	height: 36px;
+	line-height: 36px;
+	font-size: 15px;
+	font-weight: 600;
+}
+
+#heatInfo hr {
+	border: 0;
+	height: 5px;
+	background-image: linear-gradient(to right, #31708f, #3c763d, #009688);
+}
+
+#hearimg {
+	position: absolute;
+	right: 13px;
+	top: 25px
+}
+
+#hearimg>span {
+	color: #f25168;
+	font-weight: 600;
+	font-size: 20px;
+	vertical-align: -webkit-baseline-middle;
+}
+
+.heatTitle {
+	position: absolute;
+	top: 11%;
+	color: #f25168;
+	font-weight: 600;
+	color: #a51c1c;
+	font-size: 17px;
+	text-shadow: inset -1px -1px black;
+	box-shadow: 0 0 0px black;
+}

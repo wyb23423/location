@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body> 
+		<div >
+			<ul id="webscoket">
+				
+			</ul>
+		</div>
+	</body>
+	<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+	<script type="text/javascript">
+		function WebSocketTest(currentGid) {
+
+		if("WebSocket" in window) {
+			// 打开一个 web socket
+			var ws = new WebSocket("ws://192.168.1.202:80/realtime/position/0002,0001,0003");
+			ws.onopen = function() {
+				// Web Socket 已连接上，使用 send() 方法发送数据
+				$("#webscoket").append("已经连接到服务器")
+				var htmls=`
+					<li>连接成功</li>
+				`
+				ws.send("发送数据");
+			};
+			ws.onmessage = function(evt) {
+				var socketData=evt.data;
+				var socketData=eval("(" + socketData + ")");
+				var x = socketData.position[0],
+					y = socketData.position[1],
+					z = socketData.position[0],
+					sGroupNo=socketData.sGroupNo,
+					sTagNo=jsonMSg.sTagNo
+				var htmls=`
+					<li>编号:${sTagNo},基站坐标:x(${x})y(${y})z(${z}),分组:${sGroupNo}</li>
+				`
+				$("#webscoket").append("socketData")
+			};
+			ws.onclose = function() {
+				// 关闭 websocket	
+			};
+		} else {
+			// 浏览器不支持 WebSocket
+
+		}
+	}
+		WebSocketTest()
+	</script>
+</html>

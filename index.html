@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href=" public/css/bootstrap.min.css">
+
+		<link rel="stylesheet" type="text/css" href=" public/layui/css/layui.css" />
+		<link rel="stylesheet" type="text/css" href=" public/css/style.css" />
+	</head>
+
+	<body class="clearfix">
+
+		<div class="haderNav">
+			<div class="layui-col-xs1">
+				<div class="logocont">
+
+					<ul class="layui-nav">
+						<li class="layui-nav-item">
+							<a href="" style="text-align: center;">
+								<!--<img src=" public/image/log.jpg"/>-->
+								LOGO
+							</a>
+						</li>
+
+					</ul>
+				</div>
+			</div>
+			<div class="layui-col-xs8">
+				<div>
+					<ul class="layui-nav">
+						<li class="layui-nav-item layui-this">
+							<a href=" app/index/view/index.html">首页</a>
+						</li>
+						<li class="layui-nav-item ">
+							<a href=" app/admin/view/admin.html">管理员设置</a>
+
+						</li>
+						<li class="layui-nav-item ">
+							<a href=" app/equipment/view/equipment.html">设备管理</a>
+						</li>
+						<li class="layui-nav-item  ">
+							<a href=" app/anchornum/view/anchornum.html">人员管理</a>
+
+						</li>
+						<li class="layui-nav-item">
+							<a href=" app/realTimemonitoring/view/realTimemonitoring.html">实时监控</a>
+						</li>
+						<li class="layui-nav-item ">
+							<a href=" app/fence/vlew/fence.html">电子围栏</a>
+						</li>
+						<li class="layui-nav-item ">
+							<a href=" app/ALARM/view/Alarm.html">报警信息</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="layui-col-xs3">
+				<ul class="layui-nav">
+					<li class="layui-nav-item">
+						<a href="">控制台<span class="layui-badge">9</span></a>
+					</li>
+					<li class="layui-nav-item">
+						<a href="">个人中心<span class="layui-badge-dot"></span></a>
+					</li>
+					<li class="layui-nav-item" lay-unselect="">
+						<a href="javascript:;"><img src=" public/layui/images/face/71.gif" id="myheaderimg" class="layui-nav-img">我</a>
+						<dl class="layui-nav-child">
+							<dd>
+								<a href="javascript:;">修改信息</a>
+							</dd>
+							<dd>
+								<a href="javascript:;">安全管理</a>
+							</dd>
+							<dd>
+								<a href="javascript:;">退了</a>
+							</dd>
+						</dl>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="content">
+
+			<div id=" " class="min layui-col-xs12">
+
+				<div class="minCont">
+					<div class="alert alert-warning alert-dismissible" role="alert" style="padding: 20px;">
+						<button type="button" class="close" data-dismiss="alert" onclick="$(this).parent().hide()"><span aria-hidden="true">&times;</span></button>
+						<strong>警告!</strong> 监控区域1->三号楼 F区域设备损坏报警，请尽快维修检查
+					</div>
+					<div id="listIcon" style="padding-bottom: 10px;">
+						<ul class="clearfix">
+							<li class="col-lg-2">
+								<a href=" app/realTimemonitoring/view/realTimemonitoring.html">
+									<div class="col-xs-12 listDiv clearfix">
+										<div class="col-xs-4" style="border-right:1px solid #DDDDDD;">
+											<img src=" public/image/qy.png" style="width: 80%;" />
+										</div>
+										<div class="col-xs-8 listText text-center">
+											<h3 style="margin-bottom: 10px;">监控区域</h3>
+											<h3>3</h3>
+										</div>
+									</div>
+								</a>
+							</li>
+							<li class="col-lg-2">
+								<a href=" app/admin/view/admin.html">
+									<div class="col-xs-12 listDiv clearfix">
+										<div class="col-xs-4" style="border-right:1px solid #DDDDDD;">
+											<img src=" public/image/adminbg.png" style="width: 80%;" />
+										</div>
+										<div class="col-xs-8 listText text-center">
+											<h3 style="margin-bottom: 10px;">管理人员</h3>
+											<h3>3</h3>
+										</div>
+									</div>
+								</a>
+							</li>
+							<li class="col-lg-2">
+								<a href=" app/anchornum/view/temporaryTable.html">
+									<div class="col-xs-12 listDiv">
+										<div class="col-xs-4" style="border-right:1px solid #DDDDDD;">
+											<img src=" public/image/ter.png" style="width: 80%;" />
+										</div>
+										<div class="col-xs-8 listText text-center">
+											<h3 style="margin-bottom: 10px;">监控人员</h3>
+											<h3>3</h3>
+										</div>
+									</div>
+								</a>
+
+							</li>
+							<li class="col-lg-2">
+								<a href=" app/fence/vlew/fence.html">
+									<div class="col-xs-12 listDiv">
+										<div class="col-xs-4" style="border-right:1px solid #DDDDDD;">
+											<img src=" public/image/bj.png" style="width: 80%;" />
+										</div>
+										<div class="col-xs-8 listText text-center">
+											<h3 style="margin-bottom: 10px;">报警次数</h3>
+											<h3>3</h3>
+										</div>
+									</div>
+								</a>
+							</li>
+							<li class="col-lg-2">
+								<a href=" app/fence/vlew/fence.html">
+									<div class="col-xs-12 listDiv">
+										<div class="col-xs-4" style="border-right:1px solid #DDDDDD;">
+											<img src="public/image/bj.png" style="width: 80%;" />
+										</div>
+										<div class="col-xs-8 listText text-center">
+											<h3 style="margin-bottom: 10px;">暂停功能</h3>
+											<h3>3</h3>
+										</div>
+									</div>
+								</a>
+							</li>
+							<li class="col-lg-2">
+								<a href="./ app/fence/vlew/fence.html">
+									<div class="col-xs-12 listDiv">
+										<div class="col-xs-4" style="border-right:1px solid #DDDDDD;">
+											<img src=" public/image/bj.png" style="width: 80%;" />
+										</div>
+										<div class="col-xs-8 listText text-center">
+											<h3 style="margin-bottom: 10px;">暂停功能</h3>
+											<h3>3</h3>
+										</div>
+									</div>
+								</a>
+							</li>
+
+						</ul>
+					</div>
+					<div id="echarts_cont" style="padding-top: 0;">
+						<div class="close open" style="margin-right: 25px;margin-top: 25px;">
+							<i class="layui-icon layui-icon-spread-left" style="font-size: 25px;"></i>
+						</div>
+						<div id="" class="clearfix" style="padding: 15px;background: #FFFFFF;">
+
+							<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+								<legend>监控信息：图表</legend>
+							</fieldset>
+							<div class="chartCont listhide">
+								<div class="">
+									<div id="main" class="layui-col-xs6 text-center" style="height:400px;border-right: 1px solid #FFF9EC;">
+
+									</div>
+									<div id="myChart2" class="layui-col-xs6 text-center" style="height:400px;padding-left: 10%;">
+
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+					<div class="listJl" style="padding-top: 0;">
+						<div class="close open" style="margin-right: 25px;margin-top: 25px;">
+							<i class="layui-icon layui-icon-spread-left" style="font-size: 25px;"></i>
+						</div>
+						<div class="" style="background: #FFF;padding: 10px;">
+							<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+								<legend>区域信息：记录</legend>
+							</fieldset>
+							<ul class="layui-timeline listhide">
+								<li class="layui-timeline-item">
+									<i class="layui-icon layui-timeline-axis"></i>
+									<div class="layui-timeline-content layui-text">
+										<div class="layui-timeline-title">2018年5月3号 13：00 ，监控区域1设备损坏，需要紧急检查维修。2018年5月3号 14：00，维修员XX维修成功，问题原因为。。。。。。。。 </div>
+									</div>
+								</li>
+								<li class="layui-timeline-item">
+									<i class="layui-icon layui-timeline-axis"></i>
+									<div class="layui-timeline-content layui-text">
+										<div class="layui-timeline-title">2018年5月4号 13：00 ，监控区域1，监控人员XX，在该区域F地区越界警告，</div>
+									</div>
+								</li>
+								<li class="layui-timeline-item">
+									<i class="layui-icon layui-timeline-axis"></i>
+									<div class="layui-timeline-content layui-text">
+										<div class="layui-timeline-title">2018年5月4号 13：40 ，监控区域2，监控人员XX，穿过禁止通过通道</div>
+									</div>
+								</li>
+								<li class="layui-timeline-item">
+									<i class="layui-icon layui-timeline-axis"></i>
+									<div class="layui-timeline-content layui-text">
+										<div class="layui-timeline-title">2018年5月4号 14：00 ，监控区域2，监控人员XX，禁止区域，请负责人尽快处理</div>
+									</div>
+								</li>
+								<li class="layui-timeline-item">
+									<i class="layui-icon layui-timeline-axis"></i>
+									<div class="layui-timeline-content layui-text">
+										<div class="layui-timeline-title">2018年5月4号 14：30 ，监控区域2，监控人员XX，损坏监控标签，请负责人前往处理。</div>
+									</div>
+								</li>
+								<li class="layui-timeline-item">
+									<i class="layui-icon layui-timeline-axis"></i>
+									<div class="layui-timeline-content layui-text">
+										<div class="layui-timeline-title">2018年5月4号 14：40 ，监控区域2，监控人员XX，被负责人XX带回区域。</div>
+									</div>
+								</li>
+								<li class="layui-timeline-item">
+									<i class="layui-icon layui-timeline-axis"></i>
+									<div class="layui-timeline-content layui-text">
+										<div class="layui-timeline-title"> 警告！：监控区域1：三号楼 F区域设备损坏报警，请尽快维修检查</div>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="  public/js/jquery.js"></script>
+		<script src="  public/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+		<script src="  public/echart/echarts.js"></script>
+		<script type="text/javascript">
+			var myChart = echarts.init(document.getElementById('main'));
+			option = {
+				tooltip: {
+					trigger: 'item',
+					formatter: "{a} <br/>{b}: {c} ({d}%)"
+				},
+				legend: {
+					orient: 'vertical',
+					x: 'left',
+					data: ['设备管理', '警报', '标签']
+				},
+				series: [{
+						name: '信息',
+						type: 'pie',
+						selectedMode: 'single',
+						radius: [0, '30%'],
+
+						label: {
+							normal: {
+								position: 'inner'
+							}
+						},
+						labelLine: {
+							normal: {
+								show: false
+							}
+						},
+						data: [{
+								value: 335,
+								name: '设备管理',
+								selected: true
+							},
+							{
+								value: 679,
+								name: '警报'
+							},
+							{
+								value: 1548,
+								name: '标签'
+							}
+						]
+					},
+					{
+						name: '信息来源',
+						type: 'pie',
+						radius: ['40%', '55%'],
+						label: {
+							normal: {
+								formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+								backgroundColor: '#eee',
+								borderColor: '#aaa',
+								borderWidth: 1,
+								borderRadius: 4,
+								rich: {
+									a: {
+										color: '#999',
+										lineHeight: 22,
+										align: 'center'
+									},
+
+									hr: {
+										borderColor: '#aaa',
+										width: '100%',
+										borderWidth: 0.5,
+										height: 0
+									},
+									b: {
+										fontSize: 16,
+										lineHeight: 33
+									},
+									per: {
+										color: '#eee',
+										backgroundColor: '#334455',
+										padding: [2, 4],
+										borderRadius: 2
+									}
+								}
+							}
+						},
+						data: [{
+								value: 335,
+								id:1,
+								name: '标签数量'
+							},
+							{
+								value: 310,
+								id:2,
+								name: '标签'
+							},
+							{
+								value: 234,
+								id:3,
+								name: '电子围栏'
+							}
+						]
+					}
+				]
+			};
+			myChart.setOption(option);
+			var weatherIcons = {
+				'Sunny': ' public/image/qy.png',
+				'Cloudy': ' public/image/ter.png',
+				'Showers': ' public/image/dzwl.png'
+			};
+
+			var seriesLabel = {
+				normal: {
+					show: true,
+					textBorderColor: '#333',
+					textBorderWidth: 2
+				}
+			}
+
+			var myChart2 = echarts.init(document.getElementById('myChart2'));
+			option2 = {
+				title: {
+					text: '区域信息'
+				},
+				tooltip: {
+					trigger: 'axis',
+					axisPointer: {
+						type: 'shadow'
+					}
+				},
+				legend: {
+					data: ['报警信息', '标签数量', '负责人数']
+				},
+				grid: {
+					left: 100
+				},
+				toolbox: {
+					show: true,
+					feature: {
+						saveAsImage: {}
+					}
+				},
+				xAxis: {
+					type: 'value',
+					name: 'Days',
+					axisLabel: {
+						formatter: '{value}'
+					}
+				},
+				yAxis: {
+					type: 'category',
+					inverse: true,
+					data: ['监控区域1', '监控区域2', '监控区域3'],
+					axisLabel: {
+						formatter: function(value) {
+							return '{' + value + '| }\n{value|' + value + '}';
+						},
+						margin: 20,
+						rich: {
+							value: {
+								lineHeight: 30,
+								align: 'center'
+							},
+							Sunny: {
+								height: 40,
+								align: 'center',
+								backgroundColor: {
+									image: weatherIcons.Sunny
+								}
+							},
+							Cloudy: {
+								height: 40,
+								align: 'center',
+								backgroundColor: {
+									image: weatherIcons.Cloudy
+								}
+							},
+							Showers: {
+								height: 40,
+								align: 'center',
+								backgroundColor: {
+									image: weatherIcons.Showers
+								}
+							}
+						}
+					}
+				},
+				series: [{
+						name: '报警信息',
+						type: 'bar',
+						data: [165, 170, 30],
+						label: seriesLabel,
+						markPoint: {
+							symbolSize: 1,
+							symbolOffset: [0, '50%'],
+							label: {
+								normal: {
+									formatter: '{a|{a}\n}{b|{b} }{c|{c}}',
+									backgroundColor: 'rgb(242,242,242)',
+									borderColor: '#aaa',
+									borderWidth: 1,
+									borderRadius: 4,
+									padding: [4, 10],
+									lineHeight: 26,
+									// shadowBlur: 5,
+									// shadowColor: '#000',
+									// shadowOffsetX: 0,
+									// shadowOffsetY: 1,
+									position: 'right',
+									distance: 20,
+									rich: {
+										a: {
+											align: 'center',
+											color: '#fff',
+											fontSize: 18,
+											textShadowBlur: 2,
+											textShadowColor: '#000',
+											textShadowOffsetX: 0,
+											textShadowOffsetY: 1,
+											textBorderColor: '#333',
+											textBorderWidth: 2
+										},
+										b: {
+											color: '#333'
+										},
+										c: {
+											color: '#ff8811',
+											textBorderColor: '#000',
+											textBorderWidth: 1,
+											fontSize: 22
+										}
+									}
+								}
+							}
+
+						}
+					},
+					{
+						name: '标签数量',
+						type: 'bar',
+						label: seriesLabel,
+						data: [150, 105, 110]
+					},
+					{
+						name: '负责人数',
+						type: 'bar',
+						label: seriesLabel,
+						data: [220, 82, 63]
+					}
+				]
+			};
+			myChart2.setOption(option2);
+
+			function eConsole(param){
+				if(typeof param.seriesIndex != 'undefined') {
+					if(param.type == 'click') { //判断事件类型：点击
+						
+						//写法一：获取饼图散区个数,按照图例获取 
+						var peiLenght = option.legend.data.length;
+						
+						//写法二：获取饼图散区个数,按照series中data获取
+						var peiLenght= option.series[0].data.length;
+						
+						for(var i = 0; i < peiLenght; i++) {
+							//seriesIndex==0：选择内环饼图；param.dataIndex==i：散区
+							if(param.seriesIndex == 0 && param.dataIndex == i) {
+								
+								if(i == 0) {
+								   var name=param.data.name;
+								   var option_1 = myChart.getOption();
+								  
+									getOption(1,name,option_1)
+								} else if(i == 1) {
+									 
+									 var name=param.data.name;
+								   	var option_2 = myChart.getOption();
+								  
+									getOption(1,name,option_2)
+//									var option_2 = myecharts.getOption();
+									
+								} else if(i == 2) {
+									 var name=param.data.name;
+								   	var option_3 = myChart.getOption();
+								  
+									getOption(1,name,option_3)
+									
+								}
+							}
+						}
+					}
+				}
+			}
+			myChart.on("click", eConsole);
+			function getOption(num,name,option){
+				var url="./data.json"
+				$.getJSON(
+					url,function(Reddata){
+						var msgData=Reddata.data; 
+						ForOption(num,name,msgData,option)
+					}
+				)
+			}
+			function ForOption(num,name,msgData,option){
+				var data=msgData.trees,
+					clickthinum=num,
+					names=name;
+				for(var i=0;i<data.length;i++){
+					if(data[i].name==names){
+						var datalist=data[i].list;
+						option.series[1].data=datalist
+						myChart.setOption(option);
+					}
+				}
+			}
+
+		</script>
+		<script type="text/javascript">
+			$("body").on("click", ".close", function() {
+				if($(this).hasClass("open")) {
+					$(this).next().find(".listhide").stop().slideUp();
+					$(this).removeClass("open");
+					$(this).find("i").removeClass("layui-icon-spread-left").addClass("layui-icon-shrink-right")
+				} else {
+					$(this).addClass("open");
+					$(this).next().find(".listhide").stop().slideDown();
+					$(this).find("i").removeClass("layui-icon-shrink-right").addClass("layui-icon-spread-left")
+				}
+			})
+//			setInterval(function() {
+//				var myDate = new Date();
+//				var ajaxurls = "test.json",
+//					time = myDate.getMilliseconds(),
+//					data0 = option.series.data,
+//					data1 = option2.series.data;
+//				$.getJSON("test2.js", {
+	
+	
+	
+//					time: time
+//				}, function(data) {
+//					console.log(data)
+//					if(data) {
+//						var listdome = $(".listJl ul");
+//						$(listdome).firstChild().remove();
+//
+//						var newhtml = `
+//								<li class="layui-timeline-item">
+//									<i class="layui-icon layui-timeline-axis"></i>
+//									<div class="layui-timeline-content layui-text">
+//										<div class="layui-timeline-title">${data.msg}</div>
+//									</div>
+//								</li>
+//						`
+//						$(listdome).append(newhtml)
+//					}
+//				})
+//			}, 2100)
+		</script>
+	</body>
+
+</html>

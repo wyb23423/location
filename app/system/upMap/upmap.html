@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<link rel="stylesheet" href="../../../public/css/bootstrap.min.css">
+
+	<link rel="stylesheet" type="text/css" href="../../../public/layui/css/layui.css" />
+	<link rel="stylesheet" type="text/css" href="../../../public/css/style.css" />
+
+	<style type="text/css">
+		.layui-border-box {
+			width: 100% !important;
+			margin: 0;
+		}
+
+		.layui-table-body {
+			background: #FFFFFF;
+		}
+
+		.laytable-cell-1-ssqu {
+			width: 80px !important;
+		}
+
+		.laytable-cell-1-230 {
+			width: 100px !important;
+		}
+
+		.left_silde {
+			min-height: 200px;
+		}
+
+		.menuselection {
+			position: absolute;
+			top: 0%;
+			height: auto;
+			opacity: 1;
+			right: 0;
+		}
+
+		.alert-dismissible {
+			padding: 20px;
+			margin-bottom: 0;
+			width: 100%;
+		}
+
+		.alert-dismissable .close,
+		.alert-dismissible .close {
+			right: 0px;
+		}
+
+
+		#tagInfo {
+			position: absolute;
+			width: 16%;
+			height: 45%;
+			right: 0;
+			background-color: rgba(0, 0, 0, 0.24);
+		}
+
+		#tagnames p {
+			line-height: 30px;
+		}
+
+		#tagInfolist p {
+			color: #FFFFFF;
+			line-height: 30px;
+		}
+
+		#colose {
+			position: absolute;
+			right: 5px;
+			top: 0px;
+			z-index: 99999;
+		}
+
+		#colose span {
+			font-size: 26px;
+			cursor: pointer;
+		}
+
+		.pluginCOnt {
+			position: absolute;
+			width: 3%;
+			height: 6%;
+			z-index: 999;
+			top: 20%;
+			right: 10%;
+			z-index: 111;
+		}
+
+		.btn-group-vertical {
+			bottom: 10%;
+		}
+
+		#alarmlist {
+			margin-top: 20px;
+			padding: 15px;
+		}
+
+		.alarmlist ul li {
+			line-height: 40px;
+			font-size: 17px;
+		}
+
+		.instrument button {
+			display: inline-block !important;
+			width: 100% !important;
+			height: 43px;
+		}
+
+		.instrument img {
+			width: 67%;
+		}
+
+		.btn-primary {
+			background-color: #009688;
+			border-color: #009688;
+		}
+
+		.btn-primary:hover {
+			background-color: #009688;
+			border-color: #009688;
+		}
+
+		.btn-primary:active,
+		.btn-primary:focus {
+			background-color: #009688;
+			border-color: #009688;
+		}
+
+		/*.zoneApplyCont{
+				position: absolute;
+			    top: 38px;
+			    left: -64px;
+			}*/
+
+		.upmapFile {
+			width: 14%;
+			height: 89px;
+			position: absolute;
+			top: 0;
+			z-index: 9999;
+			opacity: 0;
+		}
+
+		.upmap {
+			width: 14%;
+			border: 1px solid #666;
+			padding: 12px;
+		}
+
+		.flieNmae {
+			vertical-align: bottom;
+			color: #666;
+			font-family: -webkit-body;
+			margin-left: 36px;
+		}
+	</style>
+</head>
+
+<body class="clearfix">
+	<div id="header">
+
+	</div>
+	<div class="content">
+
+		<div id=" " class="min layui-col-xs12">
+			<div class="left_silde layui-col-xs1">
+				<ul class="layui-nav layui-nav-tree layui-inline" lay-filter="demo" style="width: 100%;">
+					<li class="layui-nav-item  ">
+						<a href="../area/area.html">电子围栏</a>
+					</li>
+					<li class="layui-nav-item ">
+						<a href="../navLink/navlinkIndex.html">路线规划</a>
+					</li>
+					<li class="layui-nav-item ">
+						<a href="../confi/index.html">基站配置</a>
+					</li>
+					<li class="layui-nav-item ">
+						<a href="javascript:;">摄像头</a>
+						<dl class="layui-nav-child">
+							<dd class="">
+								<a href="../camera/index.html">摄像头添加</a>
+							</dd>
+							<dd>
+								<a href="../camera/cameralist.html">摄像头列表</a>
+							</dd>
+
+						</dl>
+					</li>
+
+					<li class="layui-nav-item  layui-nav-itemed ">
+						<a href="upmap.html">地图添加</a>
+					</li>
+					<li class="layui-nav-item  ">
+						<a href="javascript:;">协议</a>
+						<dl class="layui-nav-child">
+							<dd class="">
+								<a href="../agreement/index.html">协议添加</a>
+							</dd>
+							<dd>
+								<a href="../agreement/list.html">协议</a>
+							</dd>
+							<dd>
+								<a href="../agreement/config.html">下发协议</a>
+							</dd>
+
+						</dl>
+					</li>
+
+				</ul>
+			</div>
+
+			<div id=" " class="min layui-col-xs11">
+				<div class="minCont">
+					<div class="listIcon formCont">
+						<form class="layui-form" action="" id="fileupload">
+							<div class="flist" style="margin-bottom: 3%;">
+								<h3 style="color: #009688;">地图添加</h3>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">地图名称：</label>
+									<div class="layui-input-inline">
+										<input type="text" name="mapNmae" lay-verify="required" autocomplete="off"
+											class="layui-input">
+									</div>
+								</div>
+							</div>
+
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">X坐标最小值：</label>
+									<div class="layui-input-inline">
+										<input type="text" name="x_min" lay-verify="required" autocomplete="off"
+											class="layui-input">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">X坐标最大值：</label>
+									<div class="layui-input-inline">
+										<input type="text" name="x_max" lay-verify="required" autocomplete="off"
+											class="layui-input">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">Y坐标最小值：</label>
+									<div class="layui-input-inline">
+										<input type="text" name="y_min" lay-verify="required" autocomplete="off"
+											class="layui-input">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">Y坐标最大值：</label>
+									<div class="layui-input-inline">
+										<input type="text" name="y_max" lay-verify="required" autocomplete="off"
+											class="layui-input">
+									</div>
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<div class="layui-inline">
+									<label class="layui-form-label">地图添加：</label>
+									<div class="layui-input-inline">
+										<button type="button" class="layui-btn" id="test1">
+											<i class="layui-icon">&#xe67c;</i>上传文件
+										</button>
+									</div>
+									<div class="layui-form-item">
+										<div class="layui-input-block">
+											<button class="layui-btn" lay-submit lay-filter="upmaps">立即提交</button>
+											<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+										</div>
+									</div>
+
+						</form>
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+	<script src=" ../../../public/js/jquery.js"></script>
+	<script src=" ../../../public/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../red/js/header.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		$(".flieNmae").hide()
+		var mpUrl_
+		layui.use('upload', function () {
+			var upload = layui.upload;
+			//执行实例
+			var mapName;
+			var uploadInst = upload.render({
+				elem: '#test1' //绑定元素
+				, url: '/api/map/upload/mapfile' //上传接口
+				
+				,choose:function(obj){
+					//预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+					obj.preview(function(index, file, result){
+						console.log(file.name)
+						mapName=file.name
+					});
+				}
+				,before:(obj) =>{
+					obj.preview(function(index, file, result){
+						mapName=file.name
+						console.log(index); //得到文件索引
+						console.log(file); //得到文件对象
+						console.log(result); //得到文件base64编码，比如图片
+					});
+				}
+				,data: {
+					mapName: "huijinguangchang"
+				}
+				, done: function (res) {
+					mpUrl_ = res.resultMap.mapUrl;
+					
+					console.log(mpUrl_)
+				}
+				, accept: 'file'
+				, error: function (err) {
+					//请求异常回调
+				}
+			});
+		});
+		layui.use(['form', 'layedit', 'laydate'], function() {
+				//监听提交
+				var Dat = new Date();
+				var timestamp = new Date().getTime();
+				var form = layui.form,
+					layer = layui.layer,
+					layedit = layui.layedit,
+					laydate = layui.laydate;
+				form.on('submit(upmaps)', function(data) {
+					console.log(mpUrl_)
+					var formeInfo = data.field;
+					var datalist = {
+						"createTime": timestamp,
+						"createUser": "null",
+						"filepath": mpUrl_,
+						"name": formeInfo.mapNmae,
+						"updateTime": timestamp,
+						"updateUser": "null",
+						"xMax": formeInfo.x_max,
+						"xMin": formeInfo.x_min,
+						"yMax": formeInfo.y_max,
+						"yMin": formeInfo.y_min
+					}
+					console.log(datalist)
+					var posturls="/api/map/addMap"
+					datalist=JSON.stringify(datalist);
+					postAjax(posturls,datalist)
+					return false;
+				});
+			});
+			
+		function postAjax(urls, data) {
+			var contentType = "application/json;charset=UTF-8";
+			console.log(data)
+			$.ajax({
+				type: "post",
+				url: urls,
+				async: true,
+				data: data,
+				contentType: contentType,
+				success: function (red) {
+					var cobackInfo = red.success;
+					var ids = red.resultMap.id;
+					console.log(ids)
+					if (cobackInfo == true) {
+						var ii = layer.load();
+						//此处用setTimeout演示ajax的回调
+						setTimeout(function () {
+							layer.close(ii);
+							layer.msg('添加成功');
+						}, 1000);
+
+					}
+				},
+				error: function () {
+					console.log("err")
+					var ii = layer.load();
+					//此处用setTimeout演示ajax的回调
+					setTimeout(function () {
+						layer.close(ii);
+						layer.msg('添加失败，请重新填写');
+						//							location.reload();
+					}, 1000);
+				}
+			});
+		}
+	</script>
+
+</body>
+
+</html>
