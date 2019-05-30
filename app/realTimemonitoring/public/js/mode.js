@@ -137,7 +137,7 @@ layui.use('layer', function () { //独立版的layer无需执行这一句
 
 			layer.open({
 				type: 1,
-				title: "注意报警弹出信息!!",
+				title: "人员信息",
 				offset: type //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
 					,
 				resize: true,
@@ -158,10 +158,10 @@ layui.use('layer', function () { //独立版的layer无需执行这一句
 						    <tr>
 						      <th>ID</th>
 						      <th>人员名称</th>
-						      <th>人员编号</th>
-						      <th>所属区域</th>
-						      <th>所属职位</th>
-						      <th>操作</th>
+						      <th>编号</th>
+									<th>区域</th>
+									<th>部门</th>
+						      <th>职位</th>
 						    </tr> 
 						  </thead>
 						  <tbody id="tabid">
@@ -169,41 +169,23 @@ layui.use('layer', function () { //独立版的layer无需执行这一句
 					</table>
 					`,
 				success: function () {
-					for (var a = 0; a < tagarrlists.length; a++) {
+					var people = tagarrlists.filter(function (v) {
+						return !!ids[v.tagNo];
+					});
 
-						var id = a,
-							tagaddr = tagarrlists[a].bjdate.tagaddr,
-							x = tagarrlists[a].bjdate.x,
-							y = tagarrlists[a].bjdate.y,
-							bjinfo = tagarrlists[a].gjinfo,
-							bjday = tagarrlists[a].time,
-							chuli = tagarrlists[a].chuli,
-							quyu = "办公室";
+					for (var a = 0; a < people.length; a++) {
+						var person = people[a];
 
-						if (chuli == false) {
-							var caozuo = "caozuo"
-							var caozuotext = "确认处理"
-							var btncolo = ""
-						} else if (chuli == true) {
-							var caozuo = "ycaozuo"
-							var caozuotext = "已处理"
-							var btncolo = "layui-btn-warm"
-						}
-						var htmls = `
-								<tr>
-							      <td class="theid">${id}</td>
-							      <td>${tagaddr}</td>
-							      <td>${bjday}</td>
-							      <td>x:${x},y:${y}</td>
-							      <td>${quyu}</td>
-							      <td>${bjinfo}</td>
-							      <td>
-							      	<a class="layui-btn  ${caozuo} ${btncolo} layui-btn-xs" lay-event="del">${caozuotext}</a>
-							      	<a class="layui-btn layui-btn-danger delete layui-btn-xs" lay-event="del">删除</a>
-							      </td>
-							    </tr>
-							`
-						$("#tabid").append(htmls)
+						$("#tabid").append(`
+							<tr>
+								<td class="theid">${person.id}</td>
+								<td>${person.name}</td>
+								<td>${person.tagNo}</td>
+								<td>${person.zone}</td>
+								<td>${person.department}</td>
+								<td>${person.job}</td>
+							</tr>
+						`)
 					}
 				},
 				btn: '关闭全部框',

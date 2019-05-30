@@ -141,14 +141,17 @@
 var config = {
 	bg: '../public/image/5ad8909aeff13.png',
 	width: 3062,
-	height: 2302
+	height: 2302,
+	time: 5000
 }
 
 var map;
+var ids = {}; // 在地图上的标签编号, 用于筛选人员
 
+// 初始化地图
 function init() {
 	var root = document.getElementById('fengMap');
-	var engine = new WsGui.Engine(root);
+	var engine = new WsGui.Engine(root).addLayer(1);
 
 	var bg = new WsGui.Canvas2DImage('bg').attr({
 		src: config.bg,
@@ -167,13 +170,14 @@ function init() {
 			})
 			.add(bg);
 
-		engine.addLayer(1).getLayer(1).add(map);
+		engine.getLayer(1).add(map);
 	})
 	engine.render();
 
 	return root;
 }
 
+// 获取标签相关对象
 var getTag = (function () {
 	var tags = {}; // 标签
 
@@ -183,17 +187,17 @@ var getTag = (function () {
 			var icon = tagfor[0].photo;
 			var tag = new WsGui.Canvas2DImage('tag_' + id + '_icon').attr('src', icon);
 
-			tag.animation = new WsGui.Canvas2DAnimation(1000, 'quadraticInOut')
+			tag.animation = new WsGui.Canvas2DAnimation(1000)
 				.addEndCall(function () {
-					tagObj.ismoving = false;
 					paint(tagObj);
 				});
 
 			tags[id] = tagObj = {
 				isInit: true,
-				ismoving: false,
 				pos: [],
-				tag: tag
+				tag: tag,
+				timer: null,
+				id: id
 			}
 		}
 
@@ -201,24 +205,30 @@ var getTag = (function () {
 	}
 })();
 
+// 刷新标签
 function paint(tagObj) {
-	if (tagObj.ismoving) {
-		return;
+	if (tagObj.timer) {
+		clearTimeout(tagObj.timer);
+		tagObj.timer = null;
 	}
 
 	var pos = tagObj.pos.shift();
+	var tag = tagObj.tag;
 	if (pos) {
-		var tag = tagObj.tag;
+		tag.isVisible = true;
 		var attr = {
 			left: pos[0],
 			bottom: pos[1]
 		};
 
-		if (tagObj.isInit) {
+		if (tagObj.isInit) { // 标签没有在地图上, 直接添加
 			tagObj.isInit = false;
 			map.add(tag.attr(attr));
-		} else {
-			tagObj.ismoving = true;
+			ids[tagObj.id] = true;
+
+			tagObj.timer = setTimeout(paint, config.time, tagObj);
+		} else { // 标签在地图上, 移动标签
+			tag.animation.stop();
 			tag.animation
 				.addFrame(0, {
 					left: tag.style.left,
@@ -227,6 +237,15 @@ function paint(tagObj) {
 				.addFrame(1, attr)
 				.start();
 		}
+	} else {
+		tagObj.timer = setTimeout(function () {
+			// 信号消失, 移除标签
+			tagObj.isInit = true;
+			tag.animation.stop();
+			map.remove(tag, false);
+
+			ids[tagObj.id] = false;
+		}, config.time);
 	}
 }
 
