@@ -131,21 +131,17 @@ layui.use('layer', function () { //独立版的layer无需执行这一句
 			});
 		},
 		people: function (othis) {
-			var type = othis.data('type'),
-				text = othis.text();
-
+			var type = othis.data('type');
 
 			layer.open({
 				type: 1,
 				title: "人员信息",
-				offset: type //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
-					,
+				offset: type, //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
 				resize: true,
 				moveOut: true,
 				anim: 5,
 				Boolean: true,
-				id: 'layerDemo' + type //防止重复弹出
-					,
+				id: 'layerDemo' + type, //防止重复弹出
 				area: ['1200px', '750px'],
 				content: `
 						<table class="layui-table">
@@ -172,27 +168,35 @@ layui.use('layer', function () { //独立版的layer无需执行这一句
 					var people = tagarrlists.filter(function (v) {
 						return !!ids[v.tagNo];
 					});
+					var table = $("#tabid");
 
-					for (var a = 0; a < people.length; a++) {
-						var person = people[a];
+					fetch('/api/zone/getall?currentPage=10&pageSize=100', {
+							method: 'GET'
+						})
+						.then(res => res.json())
+						.then(res => {
+							var zoneList = res.pagedData.datas;
+							for (var a = 0; a < people.length; a++) {
+								var person = people[a];
+								var zone = zoneList.find(v => v.id == person.zone);
 
-						$("#tabid").append(`
-							<tr>
-								<td class="theid">${person.id}</td>
-								<td>${person.name}</td>
-								<td>${person.tagNo}</td>
-								<td>${person.zone}</td>
-								<td>${person.department}</td>
-								<td>${person.job}</td>
-							</tr>
-						`)
-					}
+								table.append(`
+									<tr>
+										<td class="theid">${person.id}</td>
+										<td>${person.name}</td>
+										<td>${person.tagNo}</td>
+										<td>${zone ? zone.name : '未知区域'}</td>
+										<td>${person.department}</td>
+										<td>${person.job}</td>
+									</tr>
+								`)
+							}
+						})
+						.catch(e => console.log(e));
 				},
 				btn: '关闭全部框',
-				btnAlign: 'r' //按钮居中
-					,
-				shade: 0 //不显示遮罩
-					,
+				btnAlign: 'r', //按钮居中
+				shade: 0, //不显示遮罩
 				yes: function () {
 					layer.closeAll()
 				}
