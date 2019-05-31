@@ -56,22 +56,8 @@
 	<script src=" ../../../public/js/jquery.js"></script>
 	<script src=" ../../../public/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
-		layui.use(['form' /*, 'layedit', 'laydate'*/ ], function () {
+		layui.use(['form'], function () {
 			var form = layui.form;
-			// layer = layui.layer,
-			// layedit = layui.layedit,
-			// laydate = layui.laydate;
-
-			//日期
-			// laydate.render({
-			// 	elem: '#date'
-			// });
-			// laydate.render({
-			// 	elem: '#date1'
-			// });
-
-			//创建一个编辑器
-			// var editIndex = layedit.build('LAY_demo_editor');
 
 			//自定义验证规则
 			form.verify({
@@ -84,10 +70,7 @@
 					if (value.length < 6 || value.length > 12) {
 						return '密码必须6到12位';
 					}
-				},
-				// content: function (value) {
-				// 	layedit.sync(editIndex);
-				// }
+				}
 			});
 
 			//监听提交
