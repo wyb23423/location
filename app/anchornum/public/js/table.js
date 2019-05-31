@@ -2,7 +2,6 @@
  * 人员列表
  */
 $(function () {
-    var zonelist = null;
     var adminId = false;
 
     var result = location.search.match(/type=(\d+)/);
@@ -25,7 +24,7 @@ $(function () {
                 var htmls = `<option value="${zonelist[a].id}">${zonelist[a].name}</option>`
                 $("#zone").append(htmls);
             }
-            render();
+            render(zonelist);
 
             layui.use('form', function () {
                 var form = layui.form;
@@ -37,15 +36,13 @@ $(function () {
     });
     var datas = [];
 
-    function zoneName(id) {
-        for (var a = 0; a < zonelist.length; a++) {
-            if (zonelist[a].id == id) {
-                return zonelist[a].name
-            }
-        }
+    function zoneName(id, list) {
+        var zone = list.find(v => v.id == id);
+
+        return zone ? zone.name : '未知区域';
     }
 
-    function render() {
+    function render(zoneList) {
         layui.use('table', function () {
             var table = layui.table;
             table.render({
@@ -65,7 +62,7 @@ $(function () {
 
                     datas.length = 0;
                     for (var a = 0; a < rows.length; a++) {
-                        var names = zoneName(rows[a].zone);
+                        var names = zoneName(rows[a].zone, zoneList);
                         rows[a].zone = names;
                         datas.push(rows[a]);
                     }
