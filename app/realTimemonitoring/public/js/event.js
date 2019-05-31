@@ -134,7 +134,9 @@ addEvent(window, 'load', function () {
                 search = id;
             } else {
                 search = null;
-                layui.layer.alert('未搜索到对应信息!');
+                if (id) {
+                    layui.layer.alert('未搜索到对应信息!');
+                }
             }
         }
 
