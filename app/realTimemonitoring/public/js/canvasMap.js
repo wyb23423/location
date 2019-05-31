@@ -12,28 +12,37 @@ var ids = {}; // 在地图上的标签编号, 用于筛选人员
 // 初始化地图
 function init() {
 	var root = document.getElementById('fengMap');
-	var engine = new WsGui.Engine(root).addLayer(1);
 
-	var bg = new WsGui.Canvas2DImage('bg').attr({
-		src: config.bg,
-		width: '100%',
-		height: '100%'
-	});
-	bg.style.loadImg().then(function (img) {
-		var width = root.offsetWidth / 2;
-		var height = width * img.height / img.width;
-		map = new WsGui.Container('map')
-			.attr({
-				width: width,
-				height: height,
-				left: width / 2,
-				top: (root.offsetHeight - height) / 2
+	function createMap() {
+		if (root.offsetHeight) {
+			var engine = new WsGui.Engine(root).addLayer(1);
+
+			var bg = new WsGui.Canvas2DImage('bg').attr({
+				src: config.bg,
+				width: '100%',
+				height: '100%'
+			});
+			bg.style.loadImg().then(function (img) {
+				var width = root.offsetWidth / 2;
+				var height = width * img.height / img.width;
+				map = new WsGui.Container('map')
+					.attr({
+						width: width,
+						height: height,
+						left: width / 2,
+						top: (root.offsetHeight - height) / 2
+					})
+					.add(bg);
+
+				engine.getLayer(1).add(map);
 			})
-			.add(bg);
+			engine.render();
+		} else {
+			requestAnimationFrame(createMap);
+		}
+	}
 
-		engine.getLayer(1).add(map);
-	})
-	engine.render();
+	createMap();
 
 	return root;
 }

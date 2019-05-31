@@ -1,3 +1,112 @@
-//$("#header").load('../../header/view/header.html', function(data, status, xhr) {})
-var htmls = "\n\t<link rel=\"stylesheet\" type=\"text/css\" href=\"../../../public/css/media.css\"/>\n\t<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no\" />\n\t\t\n\t<script src=\"../../../public/js/all.js\" type=\"text/javascript\" charset=\"utf-8\"></script>\n\t<div class=\"haderNav\">\n\t\t<div id=\"maxnav\" class=\"clearfix maxnav\">\n\t\t\t<div class=\"layui-col-xs1\">\n\t\t\t\t<div class=\"logocont\">\n\t\n\t\t\t\t\t<ul class=\"layui-nav\">\n\t\t\t\t\t\t<li class=\"layui-nav-item\">\n\t\t\t\t\t\t\t<a href=\"\" style=\"text-align: center;\">\n\t\t\t\t\t\t\t\t<!--<img src=\"../../../public/image/log.jpg\"/>-->\n\t\t\t\t\t\t\t\tLOGO\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t</li>\n\t\n\t\t\t\t\t</ul>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<div class=\"layui-col-xs8\" id=\"navlist\">\n\t\t\t\t<div>\n\t\t\t\t\t<ul class=\"layui-nav\">\n\t\t\t\t\t\t<li class=\"layui-nav-item layui-this\">\n\t\t\t\t\t\t\t<a href=\"../../index/view/index.html?indexof=1\">\u9996\u9875</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<li class=\"layui-nav-item \">\n\t\t\t\t\t\t\t<a href=\"../../admin/view/admin.html?indexof=2\">\u7BA1\u7406\u5458\u8BBE\u7F6E</a>\n\t\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<li class=\"layui-nav-item  \">\n\t\t\t\t\t\t\t<a href=\"../../system/area/area.html?indexof=3\">\u7CFB\u7EDF\u8BBE\u7F6E</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<!--<li class=\"layui-nav-item \">\n\t\t\t\t\t\t\t<a href=\"../../DataObj/vlew/index.html?indexof=4\">\u6570\u636E\u5C55\u793A</a>\n\t\t\t\t\t\t</li>-->\n\t\t\t\t\t\t<!--<li class=\"layui-nav-item \">\n\t\t\t\t\t\t\t\t<a href=\"../../equipment/view/equipment.html?indexof=5\">\u76D1\u63A7\u5C55\u793A</a>\n\t\t\t\t\t\t\t</li>-->\n\t\t\t\t\t\t<li class=\"layui-nav-item \">\n\t\t\t\t\t\t\t<a href=\"../../equipment/view/equipment.html?indexof=5\">\u8BBE\u5907\u7BA1\u7406</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<li class=\"layui-nav-item  \">\n\t\t\t\t\t\t\t<a href=\"../../anchornum/view/anchornum.html?indexof=6\">\u4EBA\u5458\u7BA1\u7406</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<li class=\"layui-nav-item\">\n\t\t\t\t\t\t\t<a href=\"../../realTimemonitoring/view/realTimemonitoring.html?indexof=7\">\u5B9E\u65F6\u76D1\u63A7</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\u7535\u5B50\u56F4\u680F</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<li class=\"layui-nav-item \">\n\t\t\t\t\t\t\t<a href=\"../../ALARM/view/Alarm.html?indexof=9\">\u62A5\u8B66\u4FE1\u606F</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t</ul>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<div class=\"layui-col-xs3\">\n\t\t\t\t<ul class=\"layui-nav\">\n\t\t\t\t\t<li class=\"layui-nav-item\">\n\t\t\t\t\t\t<a href=\"\">\u63A7\u5236\u53F0<span class=\"layui-badge\">9</span></a>\n\t\t\t\t\t</li>\n\t\t\t\t\t<li class=\"layui-nav-item\">\n\t\t\t\t\t\t<a href=\"\">\u4E2A\u4EBA\u4E2D\u5FC3<span class=\"layui-badge-dot\"></span></a>\n\t\t\t\t\t</li>\n\t\t\t\t\t<li class=\"layui-nav-item\" lay-unselect=\"\">\n\t\t\t\t\t\t<a href=\"javascript:;\"><img src=\"../../../public/layui/images/face/71.gif\" id=\"myheaderimg\" class=\"layui-nav-img\">\u6211</a>\n\t\t\t\t\t\t<dl class=\"layui-nav-child\">\n\t\t\t\t\t\t\t<dd>\n\t\t\t\t\t\t\t\t<a href=\"javascript:;\">\u4FEE\u6539\u4FE1\u606F</a>\n\t\t\t\t\t\t\t</dd>\n\t\t\t\t\t\t\t<dd>\n\t\t\t\t\t\t\t\t<a href=\"javascript:;\">\u5B89\u5168\u7BA1\u7406</a>\n\t\t\t\t\t\t\t</dd>\n\t\t\t\t\t\t\t<dd>\n\t\t\t\t\t\t\t\t<a href=\"javascript:;\">\u9000\u4E86</a>\n\t\t\t\t\t\t\t</dd>\n\t\t\t\t\t\t</dl>\n\t\t\t\t\t</li>\n\t\t\t\t</ul>\n\t\t\t</div>\n\t\t</div>\n\t\t<div id=\"xsNav\" class=\"clearfix xsNav\">\n\t\t\t<div id=\"\">\n\t\t\t\t<div id=\"Logo\" class=\"col-xs-3\">\n\t\t\t\t\t<p>LOgo</p>\n\t\t\t\t</div>\n\t\t\t\t<div id=\"titile\" class=\"col-xs-6\">\n\t\t\t\t\t<p >\u83B1\u6069\u5FAE\u5B9A\u4F4D</p>\n\t\t\t\t</div>\n\t\t\t\t<div id=\"icon\" class=\"col-xs-3\" style=\"text-align: center;\">\n\t\t\t\t\t<span id=\"\" class=\"layui-icon-menu-fill layui-icon\">\n\t\t\t\t\t</span>\n\t\t\t\t\t<div id=\"\" class=\"xsnavList\">\n\t\t\t\t\t\t<ul>\n\t\t\t\t\t\t\t<li class=\"layui-nav-item layui-this\">\n\t\t\t\t\t\t\t<a href=\"../../index/view/index.html?indexof=1\">\u9996\u9875</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<li class=\"layui-nav-item \">\n\t\t\t\t\t\t\t<a href=\"../../admin/view/admin.html?indexof=2\">\u7BA1\u7406\u5458\u8BBE\u7F6E</a>\n\t\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<li class=\"layui-nav-item  \">\n\t\t\t\t\t\t\t<a href=\"../../system/area/area.html?indexof=3\">\u7CFB\u7EDF\u8BBE\u7F6E</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<li class=\"layui-nav-item \">\n\t\t\t\t\t\t\t<a href=\"../../DataObj/vlew/index.html?indexof=4\">\u6570\u636E\u5C55\u793A</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<!--<li class=\"layui-nav-item \">\n\t\t\t\t\t\t\t\t<a href=\"../../equipment/view/equipment.html?indexof=5\">\u76D1\u63A7\u5C55\u793A</a>\n\t\t\t\t\t\t\t</li>-->\n\t\t\t\t\t\t<li class=\"layui-nav-item \">\n\t\t\t\t\t\t\t<a href=\"../../equipment/view/equipment.html?indexof=5\">\u8BBE\u5907\u7BA1\u7406</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<li class=\"layui-nav-item  \">\n\t\t\t\t\t\t\t<a href=\"../../anchornum/view/anchornum.html?indexof=6\">\u4EBA\u5458\u7BA1\u7406</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<li class=\"layui-nav-item\">\n\t\t\t\t\t\t\t<a href=\"../../realTimemonitoring/view/realTimemonitoring.html?indexof=7\">\u5B9E\u65F6\u76D1\u63A7</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<li class=\"layui-nav-item \">\n\t\t\t\t\t\t\t<a href=\"../../fence/vlew/fence.html?indexof=8\">\u7535\u5B50\u56F4\u680F</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<li class=\"layui-nav-item \">\n\t\t\t\t\t\t\t<a href=\"../../ALARM/view/Alarm.html?indexof=9\">\u62A5\u8B66\u4FE1\u606F</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t</ul>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n\t<script type=\"text/javascript\">\n\t\t$(\".xsnavList\").hide();\n\t\t$(\"#icon\").click(function(){\n\t\t\t$(\".xsnavList\").slideToggle()\n\t\t})\n\t//\t$(document).ready(function(){\n\t//\t\t$(\"#tagInfo\").hide()\n\t//\t})\n\t</script>\n";
+var htmls = `
+    <nav class="haderNav">
+        <div id="maxnav" class="clearfix maxnav">
+            <div class="layui-col-xs1">
+                <div class="logocont">
+                    <ul class="layui-nav">
+                        <li class="layui-nav-item">
+                            <a href="" style="text-align: center;">
+                                <!--<img src="../../../public/image/log.jpg"/>-->
+                                LOGO
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <ul class="layui-nav layui-col-xs8" id="navlist">
+                <li class="layui-nav-item">
+                    <a data-href="../../index/view/index.html" href="javascript:;">首页</a>
+                </li>
+                <li class="layui-nav-item ">
+                    <a data-href="../../admin/view/admin.html" href="javascript:;">管理员设置</a>
+                </li>
+                <li class="layui-nav-item  ">
+                    <a data-href="../../system/area/area.html" href="javascript:;">系统设置</a>
+                </li>
+                <!--<li class="layui-nav-item ">
+                    <a data-href="../../DataObj/vlew/index.html" href="javascript:;">数据展示</a>
+                </li>-->
+                <!--<li class="layui-nav-item ">
+                        <a data-href="../../equipment/view/equipment.html" href="javascript:;">监控展示</a>
+                    </li>-->
+                <li class="layui-nav-item ">
+                    <a data-href="../../equipment/view/equipment.html" href="javascript:;">设备管理</a>
+                </li>
+                <li class="layui-nav-item  ">
+                    <a data-href="../../anchornum/view/anchornum.html" href="javascript:;">人员管理</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a data-href="../../realTimemonitoring/view/realTimemonitoring.html" href="javascript:;">实时监控</a>
+                </li>
+                <!--<li class="layui-nav-item ">
+                    <a data-href="../../fence/vlew/fence.html" href="javascript:;">电子围栏</a>
+                </li>-->
+                <li class="layui-nav-item">
+                    <a data-href="../../ALARM/view/Alarm.html" href="javascript:;">报警信息</a>
+                </li>
+            </ul>
+            <div class="layui-col-xs3">
+                <ul class="layui-nav">
+                    <li class="layui-nav-item">
+                        <a href="">控制台<span class="layui-badge">9</span></a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="">个人中心<span class="layui-badge-dot"></span></a>
+                    </li>
+                    <li class="layui-nav-item" lay-unselect="">
+                        <a href="javascript:;"><img src="../../../public/layui/images/face/71.gif" id="myheaderimg" class="layui-nav-img">我</a>
+                        <dl class="layui-nav-child">
+                            <dd>
+                                <a href="javascript:;">修改信息</a>
+                            </dd>
+                            <dd>
+                                <a href="javascript:;">安全管理</a>
+                            </dd>
+                            <dd>
+                                <a href="javascript:;">退了</a>
+                            </dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+`;
 $("#header").html(htmls);
+
+$(window).ready(function () {
+    initHead();
+
+    var index = sessionStorage.getItem('navIndex') || 0;
+    var nav = $('#navlist');
+    var list = Array.from(nav.children());
+    list[index].classList.add('layui-this');
+
+    nav.click(function (e) {
+        var target = e.target;
+        var url;
+        if (target.tagName === 'A') {
+            url = target.getAttribute('data-href');
+            target = target.parentNode;
+        } else if (target.tagName === 'LI') {
+            url = target.children[0].getAttribute('data-href');
+        }
+
+        if (url) {
+            sessionStorage.setItem('navIndex', list.indexOf(target));
+            location.href = url;
+        }
+    })
+})
+
+function initHead() {
+    document.head.innerHTML += `
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+        <link rel="stylesheet" type="text/css" href="../../../public/css/media.css"/>
+    `;
+
+    var script = document.createElement("script");
+    script.setAttribute("type", "text/javascript");
+    script.setAttribute("src", "../../../public/js/all.js");
+    document.body.appendChild(script);
+}
