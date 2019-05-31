@@ -126,14 +126,16 @@
 							<div class="layui-inline">
 								<label class="layui-form-label">人员名称：</label>
 								<div class="layui-input-inline">
-									<input type="text" name="name" lay-verify="required" autocomplete="off" class="layui-input">
+									<input type="text" name="name" lay-verify="required" autocomplete="off"
+										class="layui-input">
 								</div>
 							</div>
 						</div>
 
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-							<button type="button" class="btn btn-primary" lay-submit="" lay-filter="demo1" id="testListAction">确定
+							<button type="button" class="btn btn-primary" lay-submit="" lay-filter="demo1"
+								id="testListAction">确定
 							</button>
 						</div>
 					</form>
@@ -146,16 +148,11 @@
 	<script src="../../red/js/header.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../../../public/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../../../public/js/bootstrap-table.js" type="text/javascript" charset="utf-8"></script>
-
-	<script src=" ../../../public/layuis/layui.js" type="text/javascript" charset="utf-8"></script>
-
 	<script src=" ../../../public/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
 		var zonelist = null;
 		var adminId = false;
 		$(function () {
-
-
 			$.ajax({
 				type: "get",
 				url: "/api/zone/getall",
@@ -185,19 +182,6 @@
 					});
 				}
 			});
-			$.ajax({
-				type: "get",
-				url: "/api/tag/getall",
-				async: true,
-				data: {
-					'currentPage': 10,
-					"pageSize": 100
-				},
-				success: function (data) {
-
-				}
-			})
-
 			var datas = [];
 
 			function zoneName(id) {
@@ -215,39 +199,36 @@
 						elem: '#test',
 						url: '/api/tag/getall',
 						toolbar: '#toolbarDemo',
+						where: {
+							type: 1
+						},
 						request: {
-							pageName: 'currentPage' //页码的参数名称，默认：page
-								,
+							pageName: 'currentPage', //页码的参数名称，默认：page
 							limitName: 'pageSize' //每页数据量的参数名，默认：limit
 						},
 						limit: 20,
 						parseData: function (res) { //res 即为原始返回的数据
 							var rows = res.pagedData.datas;
-							if (res.success == true) {
-								res.success = 0
-							};
+
+							datas.length = 0;
 							for (var a = 0; a < rows.length; a++) {
-								if (rows[a].type == 1) {
-									var names = zoneName(rows[a].zone)
-									rows[a].zone = names
-									datas.push(rows[a])
-								}
+								var names = zoneName(rows[a].zone);
+								rows[a].zone = names;
+								datas.push(rows[a]);
 							}
-							console.log(datas)
+
 							return {
-								"code": res.success, //解析接口状态
+								"code": res.success === true ? 0 : res.success, //解析接口状态
 								"msg": res.message, //解析提示文本
-								"count": datas.length, //解析数据长度
+								"count": res.pagedData.totalCount, //解析数据长度
 								"data": datas //解析数据列表
 							};
 						},
 						done: function (res, curr, count) {
 							if (adminId == true) {
 								$(".deleteBtn").hide();
-								$(".configBtn").hide()
-								$("li[data-id='1']")
-								console.log($("#caozuo[data-field='caozuo']"))
-								$("#caozuo[data-field='caozuo']").find("div").html("没权限操作")
+								$(".configBtn").hide();
+								$("#caozuo[data-field='caozuo']").find("div").html("没权限操作");
 							}
 						},
 						title: '用户数据表',
@@ -328,22 +309,17 @@
 							};
 							var urls = "/api/base/updateBase"
 							var data = JSON.stringify(data);
-							console.log(data)
-							postAjax(urls, data)
+							postAjax(urls, data);
+
 							return false;
 						});
-						//表单初始赋值
-
 					});
 					var $ = layui.$,
 						active = {
 							reload: function () {
-
 								var demoReload = $('#demoReload');
-								console.log(demoReload.val())
 								//执行重载
 								table.reload('testReload', {
-
 									page: {
 										curr: 1 //重新从第 1 页开始
 									},
@@ -361,14 +337,12 @@
 					});
 
 					function postAjax(urls, data) {
-						var contentType = "application/json;charset=UTF-8";
-						console.log(data)
 						$.ajax({
 							type: "post",
 							url: urls,
 							async: true,
 							data: data,
-							contentType: contentType,
+							contentType: "application/json;charset=UTF-8",
 							success: function (red) {
 								var cobackInfo = red.success;
 								if (cobackInfo == true) {
