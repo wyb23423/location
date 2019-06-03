@@ -309,6 +309,7 @@
 		$(".flieNmae").hide();
 		layui.use(['form', 'upload'], function () {
 			var map = null;
+			var fileBox = document.getElementById('preview');
 
 			layui.upload.render({
 				elem: '#test1', //绑定元素
@@ -319,17 +320,16 @@
 					obj.preview(function (index, file, result) {
 						map = file;
 
-						var imgBox = document.getElementById('preview');
 						if (file.type.startsWith('image/')) {
-							imgBox.innerText = '';
-							var img = imgBox.children.length ? imgBox.children[0] : new Image();
+							fileBox.innerText = '';
+							var img = fileBox.children.length ? fileBox.children[0] : new Image();
 							img.src = result;
 
-							if (!imgBox.children.length) {
-								imgBox.appendChild(img);
+							if (!fileBox.children.length) {
+								fileBox.appendChild(img);
 							}
 						} else {
-							imgBox.innerHTML = file.name;
+							fileBox.innerHTML = file.name;
 						}
 					});
 				}
@@ -387,28 +387,19 @@
 				data: data,
 				contentType: "application/json;charset=UTF-8",
 				success: function (red) {
-					var cobackInfo = red.success;
-					var ids = red.resultMap.id;
-					console.log(ids)
-					if (cobackInfo == true) {
-						var ii = layer.load();
-						//此处用setTimeout演示ajax的回调
-						setTimeout(function () {
-							layer.close(ii);
-							layer.msg('添加成功');
-						}, 1000);
-
+					if (red.success == true) {
+						layer.msg('添加成功');
+					} else {
+						layer.msg('添加失败，请重新填写');
 					}
 				},
-				error: function () {
-					console.log("err")
-					var ii = layer.load();
-					//此处用setTimeout演示ajax的回调
-					setTimeout(function () {
-						layer.close(ii);
-						layer.msg('添加失败，请重新填写');
-						//							location.reload();
-					}, 1000);
+				error: function (e) {
+					layer.msg('添加失败，请重新填写');
+					console.error(e);
+				},
+				complete: function () {
+					layer.close(layer.load());
+					fileBox.innerHTML = '';
 				}
 			});
 		}
