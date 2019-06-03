@@ -157,6 +157,17 @@
 			font-family: -webkit-body;
 			margin-left: 36px;
 		}
+
+		#preview {
+			padding-left: 12%;
+			box-sizing: border-box;
+			margin: 10px 0;
+		}
+
+		#preview img {
+			max-width: 100%;
+			max-height: 100%;
+		}
 	</style>
 </head>
 
@@ -222,7 +233,7 @@
 							</div>
 							<div class="layui-form-item">
 								<div class="layui-inline">
-									<label class="layui-form-label">地图名称：</label>
+									<label class="layui-form-label">名称：</label>
 									<div class="layui-input-inline">
 										<input type="text" name="mapNmae" lay-verify="required" autocomplete="off"
 											class="layui-input">
@@ -232,7 +243,7 @@
 
 							<div class="layui-form-item">
 								<div class="layui-inline">
-									<label class="layui-form-label">X坐标最小值：</label>
+									<label class="layui-form-label">minX：</label>
 									<div class="layui-input-inline">
 										<input type="text" name="x_min" lay-verify="required" autocomplete="off"
 											class="layui-input">
@@ -241,7 +252,7 @@
 							</div>
 							<div class="layui-form-item">
 								<div class="layui-inline">
-									<label class="layui-form-label">X坐标最大值：</label>
+									<label class="layui-form-label">maxX：</label>
 									<div class="layui-input-inline">
 										<input type="text" name="x_max" lay-verify="required" autocomplete="off"
 											class="layui-input">
@@ -250,7 +261,7 @@
 							</div>
 							<div class="layui-form-item">
 								<div class="layui-inline">
-									<label class="layui-form-label">Y坐标最小值：</label>
+									<label class="layui-form-label">minY：</label>
 									<div class="layui-input-inline">
 										<input type="text" name="y_min" lay-verify="required" autocomplete="off"
 											class="layui-input">
@@ -259,7 +270,7 @@
 							</div>
 							<div class="layui-form-item">
 								<div class="layui-inline">
-									<label class="layui-form-label">Y坐标最大值：</label>
+									<label class="layui-form-label">maxY：</label>
 									<div class="layui-input-inline">
 										<input type="text" name="y_max" lay-verify="required" autocomplete="off"
 											class="layui-input">
@@ -268,22 +279,23 @@
 							</div>
 							<div class="layui-form-item">
 								<div class="layui-inline">
-									<label class="layui-form-label">地图添加：</label>
+									<label class="layui-form-label">地图：</label>
 									<div class="layui-input-inline">
 										<button type="button" class="layui-btn" id="test1">
 											<i class="layui-icon">&#xe67c;</i>上传文件
 										</button>
 									</div>
+									<div id="preview" class="layui-form-item"></div>
 									<div class="layui-form-item">
-										<div class="layui-input-block">
-											<button class="layui-btn" lay-submit lay-filter="upmaps">立即提交</button>
-											<button type="reset" class="layui-btn layui-btn-primary">重置</button>
-										</div>
+										<button class="layui-btn" lay-submit lay-filter="upmaps"
+											style="margin-left: 12%" id="submit">
+											立即提交
+										</button>
 									</div>
-
+								</div>
+							</div>
 						</form>
 					</div>
-
 				</div>
 			</div>
 
@@ -294,85 +306,86 @@
 	<script src=" ../../../public/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../../red/js/header.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
-		$(".flieNmae").hide()
-		var mpUrl_
-		layui.use('upload', function () {
-			var upload = layui.upload;
-			//执行实例
-			var mapName;
-			var uploadInst = upload.render({
-				elem: '#test1' //绑定元素
-				, url: '/api/map/upload/mapfile' //上传接口
-				
-				,choose:function(obj){
-					//预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
-					obj.preview(function(index, file, result){
-						console.log(file.name)
-						mapName=file.name
+		$(".flieNmae").hide();
+		layui.use(['form', 'upload'], function () {
+			var map = null;
+
+			layui.upload.render({
+				elem: '#test1', //绑定元素
+				auto: false,
+				accept: 'file',
+				exts: 'fmap|png|jpg|jpeg',
+				choose: function (obj) {
+					obj.preview(function (index, file, result) {
+						map = file;
+
+						var imgBox = document.getElementById('preview');
+						if (file.type.startsWith('image/')) {
+							imgBox.innerText = '';
+							var img = imgBox.children.length ? imgBox.children[0] : new Image();
+							img.src = result;
+
+							if (!imgBox.children.length) {
+								imgBox.appendChild(img);
+							}
+						} else {
+							imgBox.innerHTML = file.name;
+						}
 					});
 				}
-				,before:(obj) =>{
-					obj.preview(function(index, file, result){
-						mapName=file.name
-						console.log(index); //得到文件索引
-						console.log(file); //得到文件对象
-						console.log(result); //得到文件base64编码，比如图片
+			});
+
+			//监听提交
+			var timestamp = new Date().getTime();
+			var form = layui.form,
+				layer = layui.layer;
+			form.on('submit(upmaps)', function (data) {
+				if (!map) {
+					layer.msg('地图文件不能为空', {
+						icon: 5,
+						anim: 6
 					});
+
+					return false;
 				}
-				,data: {
-					mapName: "huijinguangchang"
-				}
-				, done: function (res) {
-					mpUrl_ = res.resultMap.mapUrl;
-					
-					console.log(mpUrl_)
-				}
-				, accept: 'file'
-				, error: function (err) {
-					//请求异常回调
-				}
+
+				var formData = new FormData();
+				formData.append('file', map);
+				formData.append('mapName', map.name.split('.')[0] || 'map');
+				fetch('/api/map/upload/mapfile', {
+						method: 'POST',
+						body: formData
+					})
+					.then(res => res.json())
+					.then(res => res.resultMap.mapUrl)
+					.then(url => {
+						var formeInfo = data.field;
+						postAjax("/api/map/addMap", JSON.stringify({
+							"createTime": timestamp,
+							"createUser": "null",
+							"filepath": url,
+							"name": formeInfo.mapNmae,
+							"updateTime": timestamp,
+							"updateUser": "null",
+							"xMax": formeInfo.x_max,
+							"xMin": formeInfo.x_min,
+							"yMax": formeInfo.y_max,
+							"yMin": formeInfo.y_min
+						}));
+					})
+					.catch(e => console.error(e));
+
+				return false;
 			});
 		});
-		layui.use(['form', 'layedit', 'laydate'], function() {
-				//监听提交
-				var Dat = new Date();
-				var timestamp = new Date().getTime();
-				var form = layui.form,
-					layer = layui.layer,
-					layedit = layui.layedit,
-					laydate = layui.laydate;
-				form.on('submit(upmaps)', function(data) {
-					console.log(mpUrl_)
-					var formeInfo = data.field;
-					var datalist = {
-						"createTime": timestamp,
-						"createUser": "null",
-						"filepath": mpUrl_,
-						"name": formeInfo.mapNmae,
-						"updateTime": timestamp,
-						"updateUser": "null",
-						"xMax": formeInfo.x_max,
-						"xMin": formeInfo.x_min,
-						"yMax": formeInfo.y_max,
-						"yMin": formeInfo.y_min
-					}
-					console.log(datalist)
-					var posturls="/api/map/addMap"
-					datalist=JSON.stringify(datalist);
-					postAjax(posturls,datalist)
-					return false;
-				});
-			});
-			
+
 		function postAjax(urls, data) {
-			var contentType = "application/json;charset=UTF-8";
-			console.log(data)
 			$.ajax({
 				type: "post",
 				url: urls,
 				async: true,
 				data: data,
-				contentType: contentType,
+				contentType: "application/json;charset=UTF-8",
 				success: function (red) {
 					var cobackInfo = red.success;
 					var ids = red.resultMap.id;
