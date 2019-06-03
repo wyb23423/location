@@ -336,10 +336,8 @@
 			});
 
 			//监听提交
-			var timestamp = new Date().getTime();
-			var form = layui.form,
-				layer = layui.layer;
-			form.on('submit(upmaps)', function (data) {
+			var layer = layui.layer;
+			layui.form.on('submit(upmaps)', function (data) {
 				if (!map) {
 					layer.msg('地图文件不能为空', {
 						icon: 5,
@@ -360,6 +358,7 @@
 					.then(res => res.resultMap.mapUrl)
 					.then(url => {
 						var formeInfo = data.field;
+						var timestamp = Date.now();
 						postAjax("/api/map/addMap", JSON.stringify({
 							"createTime": timestamp,
 							"createUser": "null",
@@ -373,7 +372,10 @@
 							"yMin": formeInfo.y_min
 						}));
 					})
-					.catch(e => console.error(e));
+					.catch(e => {
+						err(e);
+						complete();
+					});
 
 				return false;
 			});
@@ -390,18 +392,26 @@
 					if (red.success == true) {
 						layer.msg('添加成功');
 					} else {
-						layer.msg('添加失败，请重新填写');
+						err();
 					}
 				},
-				error: function (e) {
-					layer.msg('添加失败，请重新填写');
-					console.error(e);
-				},
-				complete: function () {
-					layer.close(layer.load());
-					fileBox.innerHTML = '';
-				}
+				error: err,
+				complete: complete
 			});
+		}
+
+		function err(e) {
+			if (e) {
+				console.error(e);
+			}
+
+			layer.msg('添加失败，请重新填写');
+		}
+
+		function complete() {
+			layer.close(layer.load());
+			fileBox.innerHTML = '';
+			map = null;
 		}
 	</script>
 
