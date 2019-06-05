@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<link rel="stylesheet" href="../../../public/css/bootstrap.min.css">
+
+	<link rel="stylesheet" type="text/css" href="../../../public/layui/css/layui.css" />
+	<link rel="stylesheet" type="text/css" href="../../../public/css/style.css" />
+	<link rel="stylesheet" type="text/css" href="../public/css/cropper.min.css" />
+	<link rel="stylesheet" type="text/css" href="../public/css/main.css" />
+	<style type="text/css">
+		.layui-border-box {
+			width: 100% !important;
+			margin: 0;
+		}
+
+		.layui-table-body {
+			background: #FFFFFF;
+		}
+
+		.layui-upload-list {
+			width: 34%;
+			min-height: 165px;
+			/*background: #c2c2c2;*/
+		}
+
+		.layui-upload-list>img {
+			width: 100%;
+		}
+
+		body {
+			background-color: #393d49;
+		}
+
+		.avatar-upload input {
+			position: absolute;
+			top: 4%;
+			z-index: 9999;
+			opacity: 0;
+			cursor: pointer;
+			left: -7%;
+		}
+
+		.canvasTopng {
+			width: 0;
+			height: 0;
+			overflow: hidden;
+		}
+	</style>
+</head>
+
+<body class="clearfix">
+	<div id="header">
+
+	</div>
+
+	<div class="content">
+		<div class="left_silde layui-col-xs1">
+			<ul class="layui-nav layui-nav-tree layui-inline" lay-filter="demo" style="width: 100%;">
+				<li class="layui-nav-item ">
+					<a href="javascript:;">人员列表</a>
+					<dl class="layui-nav-child">
+						<dd class="">
+							<a href="anchornum.html?type=1">常驻人员</a>
+						</dd>
+						<dd>
+							<a href="anchornum.html?type=2">临时人员</a>
+						</dd>
+
+					</dl>
+				</li>
+				<li class="layui-nav-item layui-nav-itemed">
+					<a href="javascript:;">人员添加</a>
+					<dl class="layui-nav-child">
+						<dd class="tag">
+							<a href="addLinPerson.html?type=1">添加常驻</a>
+						</dd>
+						<dd class="tag">
+							<a href="addLinPerson.html?type=2">添加临时</a>
+						</dd>
+
+					</dl>
+				</li>
+			</ul>
+		</div>
+		<div id=" " class="min layui-col-xs11">
+			<div class="minCont">
+				<div class="listIcon formCont">
+					<form class="layui-form" action="">
+						<div class="flist" style="margin-bottom: 3%;">
+							<h3 style="color: #009688;">常驻人员添加</h3>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">标签头像：</label>
+								<div class="layui-input-inline">
+									<div class="layui-upload-list" id="crop-avatar">
+										<div class="avatar-view" title="" data-original-title="Change the avatar"
+											aria-describedby="tooltip276955">
+											<img class="layui-upload-img" id="image"
+												src="../../../public/image/true.png">
+											<input type="hidden" class="avatarUrl" name="" id="" value="" />
+										</div>
+
+										<div class="modal fade" id="avatar-modal" aria-hidden="true"
+											aria-labelledby="avatar-modal-label" role="dialog" tabindex="-1">
+											<div class="modal-dialog modal-lg">
+												<div class="modal-content">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button class="close" data-dismiss="modal"
+																type="button">×</button>
+															<h4 class="modal-title" id="avatar-modal-label">裁剪头像</h4>
+														</div>
+														<div class="modal-body">
+															<div class="avatar-body">
+
+																<div class="avatar-upload">
+																	<input class="avatar-src" name="avatar_src"
+																		type="hidden">
+																	<input class="avatar-data" name="avatar_data"
+																		type="hidden">
+																	<label for="avatarInput">本地上传</label>
+																	<button class="layui-btn">选择文件</button>
+																	<input class="avatar-input" id="avatarInput"
+																		name="avatar_file" type="file">
+																</div>
+
+																<div class="row">
+																	<div class="col-md-9">
+																		<div class="avatar-wrapper"></div>
+																	</div>
+																	<div class="col-md-3">
+																		<div class="avatar-preview preview-lg"></div>
+																		<div class="avatar-preview preview-md"></div>
+																		<div class="avatar-preview preview-sm"></div>
+																	</div>
+																</div>
+																<div class="row avatar-btns">
+
+																	<div class="col-md-3">
+																		<button
+																			class="btn btn-primary btn-block avatar-save"
+																			type="button">确定</button>
+																	</div>
+																</div>
+															</div>
+														</div>
+
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="loading" aria-label="Loading" role="img" tabindex="-1"></div>
+
+								</div>
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">人员名称：</label>
+								<div class="layui-input-inline">
+									<input type="text" name="name" id="changepng" lay-verify="required"
+										autocomplete="off" class="layui-input">
+								</div>
+							</div>
+						</div>
+						<div class="canvasTopng">
+							<canvas id="myCanvas" width="100" height="100"></canvas>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">性别：</label>
+								<div class="layui-input-block" style="margin-top: 10px;">
+									<input type="radio" name="sex" value="1" title="男" checked="">
+									<input type="radio" name="sex" value="2" title="女">
+
+								</div>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">部门：</label>
+								<div class="layui-input-inline">
+									<input type="text" name="department" lay-verify="required" autocomplete="off"
+										class="layui-input">
+								</div>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">职位：</label>
+								<div class="layui-input-inline">
+									<input type="text" name="job" lay-verify="required" autocomplete="off"
+										class="layui-input">
+								</div>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">带领人：</label>
+								<div class="layui-input-inline">
+									<input type="text" name="leaderint" lay-verify="required" autocomplete="off"
+										class="layui-input">
+								</div>
+							</div>
+						</div>
+
+						<div class="layui-form-item">
+							<div class="layui-inline" style="width: 100%;">
+								<label class="layui-form-label" style="    width: 9.7%;">区域/等级：</label>
+								<div class="layui-input-inline" style="width: 25%;">
+									<select name="zone" id="zone">
+
+									</select>
+								</div>
+
+								<div class="layui-input-inline" style="width: 25%;">
+									<select name="level">
+										<option value="T0">职位等级</option>
+										<option value="T1">T1</option>
+										<option value="T2">T2</option>
+										<option value="T3">T3</option>
+									</select>
+								</div>
+
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">电话号码：</label>
+								<div class="layui-input-inline">
+									<input type="text" name="phone" lay-verify="required|phone" autocomplete="off"
+										class="layui-input">
+								</div>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">标签号：</label>
+								<div class="layui-input-inline">
+									<input type="text" name="tag_no" lay-verify="required " autocomplete="off"
+										class="layui-input">
+								</div>
+							</div>
+						</div>
+
+						<div class="layui-form-item" style="margin-top: 60px;">
+							<div class="layui-input-block">
+								<button class="layui-btn" lay-submit="" lay-filter="demo1"
+									id="testListAction">立即提交</button>
+								<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+							</div>
+						</div>
+
+					</form>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+
+	<style type="text/css">
+		#image {
+			max-width: 100%;
+		}
+	</style>
+	<script src=" ../../../public/js/jquery.js"></script>
+	<script src=" ../../../public/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../public/js/cropper.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../red/js/header.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../../lib/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../public/js/cropper.min.js"></script>
+	<script src="../public/js/main.js"></script>
+	<script type="text/javascript">
+		$(function () {
+
+			var zonelist;
+			$.ajax({
+				type: "get",
+				url: "/api/zone/getall",
+				async: true,
+				data: {
+					'currentPage': 10,
+					"pageSize": 100
+				},
+				success: function (data) {
+					var zonelist = data.pagedData.datas;
+					var zone = $("#zone");
+					for (var a = 0; a < zonelist.length; a++) {
+						var htmls = `<option value="${zonelist[a].id}">${zonelist[a].name}</option>`;
+						zone.append(htmls);
+					}
+					layui.use('form', function () {
+						layui.form.render('select'); //刷新select选择框渲染
+					});
+				}
+			});
+
+		})
+	</script>
+
+	<script type="text/javascript">
+		var result = location.search.match(/type=(\d+)/);
+		var tagType = result ? +result[1] : 1;
+
+		var tags = document.getElementsByClassName('tag');
+		tags[tagType - 1].classList.add('layui-this');
+
+		var tagPhotoUrl;
+		function getcanvas(text, formeInfo) {
+			var c = document.getElementById("myCanvas");
+			var ctx = c.getContext("2d");
+
+			ctx.font = "20px Arial";
+			ctx.strokeStyle = "blue";
+			ctx.textAlign = "center"
+			var img = new Image();
+			img.src = "../../../public/image/P.png";
+			img.onload = function () {
+				ctx.fillText(text, 50, 80);
+				ctx.drawImage(img, 25, 10, 50, 50);
+				var base64ImgSrc = c.toDataURL("image/png", 1.0)
+				/* 如果只是显示,可用以下代码 */
+				var imgs1 = new Image();
+				imgs1.src = base64ImgSrc
+				imgs1.onload = function () {
+					$(".canvasTopng").append(imgs1)
+					var datalist = { tagPhoto: base64ImgSrc }
+					$.ajax("/api/tag/upload/tagPhoto", {
+						type: 'post',
+						async: true,
+						data: datalist,
+						success: function (data) {
+							tagPhotoUrl = data.resultMap.photoUrl;
+							postJson(formeInfo)
+						}
+					});
+				}
+			}
+		}
+		layui.use(['form', 'layedit', 'laydate'], function () {
+			var form = layui.form,
+				layer = layui.layer;
+			form.on('submit(demo1)', function (data) {
+				var formeInfo = data.field;
+				getcanvas(formeInfo.name, formeInfo)
+				return false;
+			});
+			//表单初始赋值
+
+		});
+		function postJson(formeInfo) {
+			var urls = "/api/tag/addTag";
+			var avatar = $(".avatarUrl").val()
+			var create_use = $("#adminName .Idname").text();
+			var Dat = new Date();
+			var timestamp = new Date().getTime();
+			var work = formeInfo.work;
+			var data = {
+				"avatar": avatar,
+				"photo": tagPhotoUrl,
+				"tag_no": formeInfo.tag_no, //    标签号
+				"type": tagType, //    标签类型   1常驻人员 2为临时人员
+				"name": formeInfo.name, //    人员名称
+				"sex": formeInfo.sex, //    性别
+				"department": formeInfo.department, //    部门
+				"job": formeInfo.job, //    职位
+				"zone": formeInfo.zone, //    区域
+				"level": formeInfo.level, //    等级
+				"phone": formeInfo.phone, //    电话号码
+				"leader": formeInfo.leaderint, //    带领人
+				"reason": null, //    临时入驻原因  常驻人员无
+				"lockedtinyint": null, //    锁定标识
+				"create_user": create_use, //    录入人
+				"create_timedatetime": timestamp, //录入日期
+				"update_user": create_use, //    修改人
+				"update_time": timestamp, //    修改日期
+			};
+			var data = JSON.stringify(data);
+			console.log(data); postAjax(urls, data)
+		}
+		function postAjax(urls, data) {
+			var contentType = "application/json;charset=UTF-8";
+			console.log(data)
+			$.ajax({
+				type: "post",
+				url: urls,
+				async: true,
+				data: data,
+				contentType: contentType,
+				success: function (red) {
+					var cobackInfo = red.success;
+					if (cobackInfo == true) {
+						var ii = layer.load();
+						//此处用setTimeout演示ajax的回调
+						setTimeout(function () {
+							layer.close(ii);
+							layer.msg('人员标签添加成功');
+							$(window).scrollTop(0);
+						}, 1000);
+						setTimeout(function () {
+						}, 2000)
+					}
+				},
+				error: function () {
+					console.log("err")
+					var ii = layer.load();
+					//此处用setTimeout演示ajax的回调
+					setTimeout(function () {
+						layer.close(ii);
+						layer.msg('人员标签添加失败，请重新填写');
+						location.reload();
+					}, 1000);
+					setTimeout(function () {
+						location.reload();
+					}, 1000)
+				}
+			});
+		}
+	</script>
+</body>
+
+</html>
