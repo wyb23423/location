@@ -1,5 +1,9 @@
 <template>
-    <div style="background: #007DDB; height: 100vh" class="flex-center">
+    <div
+        style="background: #007DDB;"
+        :style="{ height: `${100 / scale}vh` }"
+        class="flex-center"
+    >
         <el-card :class="$style['box-card']" class="flex-center">
             <div :class="$style.title">
                 <h1>莱恩微定位</h1>
@@ -45,6 +49,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Message } from 'element-ui';
+import { State } from 'vuex-class';
 import Router from 'vue-router';
 
 interface LoginInfo {
@@ -54,6 +59,9 @@ interface LoginInfo {
 
 @Component
 export default class Login extends Vue {
+    @State public baseUrl?: string;
+    @State('rootScale') public scale?: number;
+
     public form: LoginInfo = { password: '', username: '' };
     public rules = {
         username: [
@@ -70,7 +78,7 @@ export default class Login extends Vue {
         const form: any = this.$refs[name];
         form.validate((valid: boolean) => {
             if (valid) {
-                fetch('http://192.168.1.189/api/admin/login', {
+                fetch(this.baseUrl + '/api/admin/login', {
                     body: JSON.stringify(this.form),
                     method: 'POST',
                     headers: {

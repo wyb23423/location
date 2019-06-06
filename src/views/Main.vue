@@ -1,8 +1,11 @@
 <template>
     <el-container>
         <el-header style="padding: 0">
-            <Header></Header>
+            <app-nav></app-nav>
         </el-header>
+        <el-main style="padding: 0">
+            <router-view />
+        </el-main>
     </el-container>
 </template>
 
@@ -10,14 +13,12 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import Header from '../components/Header.vue';
+import { Prop } from 'vue-property-decorator';
 
 @Component({
     components: {
-        Header
+        'app-nav': Header
     }
 })
-export default class Index extends Vue {}
+export default class Main extends Vue {}
 </script>
-
-<style lang="postcss" module>
-</style>

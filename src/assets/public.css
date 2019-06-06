@@ -29,6 +29,7 @@ html {
 body {
     margin: 0;
     overflow-x: hidden;
+    background: #e2e2e2;
 }
 
 /**
@@ -87,6 +88,8 @@ pre {
 
 a {
     background-color: transparent;
+    text-decoration: none;
+    color: #000;
 }
 
 /**
@@ -388,4 +391,28 @@ template {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.main {
+    padding-left: 65px;
+    min-height: 400px;
+}
+
+.card {
+    background: #fff;
+    height: 100%;
+    position: relative;
+
+    & > div {
+        height: 100%;
+    }
+
+    & .top-bottom {
+        background: #ccc;
+        height: 8%;
+        width: 100%;
+        position: absolute;
+        left: 0;
+        border: none;
+    }
 }
