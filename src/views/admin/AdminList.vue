@@ -1,22 +1,23 @@
 <template>
-    <el-card class="card" ref="table">
-        <app-table
-            :max-height="maxHeight"
-            :tableData="tableData"
-            :colCfg="colCfg"
-            :totalCount="totalCount"
-            :op="[{ type: 'danger', name: 'del', desc: '删除' }]"
-            @del="del"
-            @updateData="getData"
-            :class="$style.table"
-            @toExcel="toExcel"
-        ></app-table>
-    </el-card>
+    <div style="padding: 5%; height: 100%">
+        <el-card class="card" ref="table">
+            <app-table
+                :max-height="maxHeight"
+                :tableData="tableData"
+                :colCfg="colCfg"
+                :totalCount="totalCount"
+                :op="[{ type: 'danger', name: 'del', desc: '删除' }]"
+                @del="del"
+                @updateData="getData"
+                :class="$style.table"
+                @toExcel="toExcel"
+            ></app-table>
+        </el-card>
+    </div>
 </template>
 
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
-import Aside from '../../components/Aside.vue';
 import { Getter, State } from 'vuex-class/lib/bindings';
 import Table from '../../components/Table.vue';
 import TableMixin from '../../mixins/table';

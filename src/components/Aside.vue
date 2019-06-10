@@ -48,7 +48,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { Prop } from 'vue-property-decorator';
+import { Prop, Watch } from 'vue-property-decorator';
 import { SX_WIDTH } from '../App.vue';
 import { Getter } from 'vuex-class/lib/bindings';
 
@@ -69,11 +69,20 @@ export default class Aside extends Vue {
     @Prop() public tabs?: TabItem[];
 
     public created() {
-        this.defaultActive = (<TabItem[]>this.tabs)[0].to;
+        this.modifyActiveIndex();
     }
 
     public collapse() {
         this.isCollapse = !this.isCollapse;
+    }
+
+    @Watch('$route', { deep: true })
+    public modifyActiveIndex() {
+        this.defaultActive = this.$route.path;
+        const tabs: TabItem[] = this.tabs || [];
+        if (tabs.every(v => v.to !== this.defaultActive)) {
+            this.defaultActive = tabs[0].to;
+        }
     }
 }
 </script>

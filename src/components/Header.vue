@@ -63,17 +63,17 @@ import { Prop, Watch } from 'vue-property-decorator';
 
 @Component
 export default class Header extends Vue {
-    public activeIndex: string = 'index';
+    public activeIndex: string = '/index';
 
     public tabs: string[][] = [
-        ['首页', 'index'],
-        ['管理员设置', 'admin'],
-        ['系统设置', 'system'],
-        ['设备管理', 'equipment'],
-        ['人员管理', 'person'],
-        ['实时监控', 'monitor'],
-        ['电子围栏', 'fence'],
-        ['报警信息', 'alarm']
+        ['首页', '/index'],
+        ['管理员设置', '/admin'],
+        ['系统设置', '/system'],
+        ['设备管理', '/equipment'],
+        ['人员管理', '/person'],
+        ['实时监控', '/monitor'],
+        ['电子围栏', '/fence'],
+        ['报警信息', '/alarm']
     ];
 
     public created() {
@@ -82,7 +82,7 @@ export default class Header extends Vue {
 
     @Watch('$route', { deep: true })
     public modifyActiveIndex() {
-        this.activeIndex = this.$route.path.split('/')[1] || 'index';
+        this.activeIndex = '/' + (this.$route.path.split('/')[1] || 'index');
     }
 }
 </script>

@@ -6,6 +6,7 @@ import Login from './views/Login.vue';
 import Index from './views/index/Index.vue';
 import Admin from './views/admin/Admin.vue';
 import AdminList from './views/admin/AdminList.vue';
+import AdminAdd from './views/admin/AdminAdd.vue';
 
 Vue.use(Router);
 
@@ -20,12 +21,13 @@ export default new Router({
         {
           path: 'admin', component: Admin,
           children: [
-            { path: 'list', name: 'admin-list', component: AdminList, alias: '' }
+            { path: 'list', name: 'admin-list', component: AdminList, alias: '' },
+            { path: 'add', name: 'admin-add', component: AdminAdd }
           ]
         }
       ]
     },
     { path: '/login', name: 'login', component: Login },
-    { path: '*', redirect: '/index' }
+    // { path: '*', redirect: '/index' }
   ],
 });
