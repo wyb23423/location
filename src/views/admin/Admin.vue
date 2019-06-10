@@ -1,20 +1,9 @@
-<template>
-    <div>
-        <app-aside :tabs="tabs"></app-aside>
-        <div class="main">
-            <div :style="{ height: mainHeight }" style="overflow-y: auto">
-                <router-view />
-            </div>
-        </div>
-    </div>
-</template>
+<template src="../../components/page.html"></template>
 
 <script lang="ts">
-import Component, { mixins } from 'vue-class-component';
+import Component from 'vue-class-component';
 import Aside from '../../components/Aside.vue';
-import { Getter, State } from 'vuex-class/lib/bindings';
-import Table from '../../components/Table.vue';
-import TableMixin from '../../mixins/table';
+import { Getter } from 'vuex-class/lib/bindings';
 import Vue from 'vue';
 
 @Component({

@@ -36,7 +36,7 @@
                         :key="item.to"
                         :index="item.to"
                     >
-                        <i :class="item.icon" v-if="!item.icon"></i>
+                        <i :class="item.icon" v-if="!!item.icon"></i>
                         {{ item.title }}
                     </el-menu-item>
                 </el-submenu>
