@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import echarts from 'echarts';
 import { State } from 'vuex-class';
+import { loopAwait } from '@/assets/utils/util';
 
 interface CardInfo {
     icon: string;
@@ -31,15 +32,29 @@ export default class Main extends Vue {
     ];
     public records: RecordItem[] = [];
 
+    private chart1?: echarts.ECharts;
+    private chart2?: echarts.ECharts;
+
     public created() {
         this.getRecords();
     }
     public mounted() {
-        this.createPie();
-        this.createBar();
+        this.createPie().then(chart => this.chart1 = chart);
+        this.createBar().then(chart => this.chart2 = chart);
+    }
+    public destroyed() {
+        if (this.chart1) {
+            this.chart1.dispose();
+        }
+
+        if (this.chart2) {
+            this.chart2.dispose();
+        }
     }
 
     private getRecords() {
+        // 模拟数据
+        // TODO 替换为向服务器请求数据
         for (let i = 0; i < 10; i++) {
             this.records.push({
                 timestamp: '2018年5月3号 13：00',
@@ -85,7 +100,7 @@ export default class Main extends Vue {
         });
     }
 
-    private createPie() {
+    private async createPie() {
         const option: any = {
             tooltip: {
                 trigger: 'item',
@@ -137,13 +152,15 @@ export default class Main extends Vue {
                 }
             ]
         };
-        this.createChart(<HTMLDivElement>this.$refs.main).then(chart => {
-            chart.setOption(option);
-            chart.on('click', (e: any) => this.eConsole(e, chart, option));
-        });
+
+        const chart = await this.createChart((<HTMLDivElement>this.$refs.main));
+        chart.setOption(option);
+        chart.on('click', (e: any) => this.eConsole(e, chart, option));
+
+        return chart;
     }
 
-    private createBar() {
+    private async createBar() {
         const weatherIcons: any = {
             Sunny: this.baseUrl + '/public/image/qy.png',
             Cloudy: this.baseUrl + '/public/image/ter.png',
@@ -249,19 +266,15 @@ export default class Main extends Vue {
             ]
         };
 
-        this.createChart(<HTMLDivElement>this.$refs.myChart2)
-            .then(chart => chart.setOption(option2));
+        const chart = await this.createChart((<HTMLDivElement>this.$refs.myChart2));
+        chart.setOption(option2);
+
+        return chart;
     }
 
-    private createChart(dom: HTMLDivElement): Promise<echarts.ECharts> {
-        const creator = (resolve: (value?: echarts.ECharts) => void) => {
-            if (dom.offsetWidth && dom.offsetHeight) {
-                resolve(echarts.init(dom));
-            } else {
-                requestAnimationFrame(() => creator(resolve));
-            }
-        };
+    private async createChart(dom: HTMLDivElement): Promise<echarts.ECharts> {
+        await loopAwait(() => !!dom.offsetWidth && !!dom.offsetHeight);
 
-        return new Promise(creator);
+        return echarts.init(dom);
     }
 }

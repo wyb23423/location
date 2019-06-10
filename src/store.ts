@@ -9,8 +9,8 @@ export default new Vuex.Store({
     rootScale: 1
   },
   getters: {
-    mainHeight(sate: any) {
-      return `calc(${100 / sate.rootScale}vh - 60px)`;
+    mainHeight(state: any) {
+      return `calc(${100 / state.rootScale}vh - 60px)`;
     }
   },
   mutations: {

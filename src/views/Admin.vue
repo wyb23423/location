@@ -2,39 +2,17 @@
     <div>
         <app-aside :tabs="tabs" ref="aside"></app-aside>
         <div class="main">
-            <div :style="{ height, padding: '5%' }">
-                <el-card class="card">
-                    <div :class="$style.table">
-                        <el-table
-                            :data="tableData"
-                            tooltip-effect="dark"
-                            :border="true"
-                            :header-row-class-name="$style.thead"
-                        >
-                            <el-table-column
-                                v-for="(v, i) of colCfg"
-                                :key="i"
-                                :prop="v.prop"
-                                :label="v.label"
-                                :sortable="!!v.sortable"
-                                :sort-orders="['ascending', 'descending']"
-                                :resizable="true"
-                                :width="v.width"
-                            >
-                            </el-table-column>
-                            <el-table-column label="操作" :resizable="true">
-                                <template slot-scope="scope">
-                                    <el-button
-                                        size="mini"
-                                        type="danger"
-                                        @click="del(scope.row.id)"
-                                    >
-                                        删除
-                                    </el-button>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                    </div>
+            <div :style="{ height: mainHeight, padding: '5%' }">
+                <el-card class="card" ref="table">
+                    <app-table
+                        :max-height="maxHeight"
+                        :tableData="tableData"
+                        :colCfg="colCfg"
+                        :totalCount="totalCount"
+                        :op="[{ type: 'danger', name: 'del', desc: '删除' }]"
+                        @del="del"
+                        @updateData="getData"
+                    ></app-table>
                 </el-card>
             </div>
         </div>
@@ -42,19 +20,20 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import Component from 'vue-class-component';
+import Component, { mixins } from 'vue-class-component';
 import Aside from '../components/Aside.vue';
 import { Getter, State } from 'vuex-class/lib/bindings';
+import Table from '../components/Table.vue';
+import TableMixin from '../mixins/table';
 
 @Component({
     components: {
-        'app-aside': Aside
+        'app-aside': Aside,
+        'app-table': Table
     }
 })
-export default class Admin extends Vue {
-    @Getter('mainHeight') public height?: string;
-    @State('rootScale') public scale?: number;
+export default class Admin extends mixins(TableMixin) {
+    @Getter('mainHeight') public mainHeight?: string;
     @State public baseUrl?: string;
 
     public tabs = [
@@ -67,9 +46,6 @@ export default class Admin extends Vue {
         { title: '权限管理', to: 'admin/chown ', icon: 'el-icon-s-operation' }
     ];
 
-    public tableData: any[] = [];
-    public page: number = 1;
-    public totalCount: number = 0;
     public colCfg: any[] = [
         { prop: 'id', label: 'ID', sortable: true, width: 120 },
         { prop: 'adminName', label: '管理员名称', width: 160 },
@@ -82,18 +58,14 @@ export default class Admin extends Vue {
         { prop: 'job', label: '职位', width: 120 }
     ];
 
-    public created() {
-        this.getData();
+    public del(row: any) {
+        console.log(row);
     }
 
-    public del(index: number, row: any) {
-        console.log(index, row);
-    }
-
-    private getData() {
+    public getData(page: number, pageSize: number) {
         // TODO: 换为请求
         // 模拟数据
-        const res = {
+        const res: any = {
             adminName: '曾钰涵2',
             department: '销售部',
             id: 4,
@@ -104,18 +76,14 @@ export default class Admin extends Vue {
             workNo: '111'
         };
 
-        const data = [];
-        for (let i = 0; i < 15; i++) {
+        this.tableData.length = 0;
+        for (let i = 0; i < pageSize; i++) {
             const tmp = { ...res };
             tmp.id = i;
-            data.push(tmp);
+            tmp.sex = res.sex ? '男' : '女';
+            this.tableData.push(tmp);
         }
 
-        this.tableData = data.map(v => {
-            v.sex = v.sex ? '男' : '女';
-
-            return v;
-        });
         this.totalCount = 40;
 
         // fetch(this.baseUrl + '/api/admin/getall?currentPage=1&pageSize=15', {
@@ -133,9 +101,6 @@ export default class Admin extends Vue {
     width: 100%;
     margin-top: 25px;
     font-size: 16px;
-    overflow-y: auto;
-    padding: 5px 0;
-    height: 85%;
 }
 
 .thead {
@@ -144,7 +109,7 @@ export default class Admin extends Vue {
     color: #000;
 
     & th {
-        background: #ccc !important;
+        background: #eee !important;
     }
 }
 </style>
