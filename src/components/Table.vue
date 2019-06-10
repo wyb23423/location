@@ -5,6 +5,7 @@
             :border="true"
             :header-row-class-name="$style.thead"
             :max-height="maxHeight"
+            style="margin-bottom: 10px"
         >
             <el-table-column
                 v-for="(v, i) of colCfg"
@@ -34,23 +35,33 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-pagination
-            :current-page="page"
-            :page-size="pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="totalCount"
-            :class="$style.page"
-            @size-change="updateData('pageSize', $event)"
-            @current-change="updateData('page', $event)"
-        >
-        </el-pagination>
+        <div>
+            <el-button
+                size="mini"
+                icon="el-icon-printer"
+                :class="$style.out"
+                @click="emit('toExcel')"
+            >
+                导出
+            </el-button>
+            <el-pagination
+                :current-page="page"
+                :page-size="pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="totalCount"
+                @size-change="updateData('pageSize', $event)"
+                @current-change="updateData('page', $event)"
+                style="text-align: right"
+            >
+            </el-pagination>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { Prop } from 'vue-property-decorator';
+import { Prop, Emit } from 'vue-property-decorator';
 
 interface Operation {
     type: string;
@@ -76,7 +87,7 @@ export default class Table extends Vue {
         this.$emit(name, row);
     }
 
-    public updateData(type: string, data: number) {
+    public updateData(type: 'page' | 'pageSize', data: number) {
         this[type] = data;
 
         if (this.timer) {
@@ -102,8 +113,8 @@ export default class Table extends Vue {
         background: #eee !important;
     }
 }
-.page {
-    text-align: right;
-    margin-top: 20px;
+.out {
+    float: left;
+    margin-top: 10px;
 }
 </style>

@@ -9,9 +9,9 @@ function base64(s: string) {
 }
 
 function format(table: string) {
-    return `<html><head><meta charset="UTF-8"></head><body><table  border="1">${table}</table></body></html>`;
+    return `<html><head><meta charset="UTF-8"></head><body><table border="1">${table}</table></body></html>`;
 }
 
-export default function table2Excel(table: HTMLTableElement) {
-    window.open(uri + base64(format(table.innerHTML)), 'block');
+export default function table2Excel(table: string) {
+    window.open(uri + base64(format(table)), 'block');
 }

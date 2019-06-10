@@ -1,50 +1,33 @@
 <template>
-    <div>
-        <app-aside :tabs="tabs" ref="aside"></app-aside>
-        <div class="main">
-            <div :style="{ height: mainHeight, padding: '5%' }">
-                <el-card class="card" ref="table">
-                    <app-table
-                        :max-height="maxHeight"
-                        :tableData="tableData"
-                        :colCfg="colCfg"
-                        :totalCount="totalCount"
-                        :op="[{ type: 'danger', name: 'del', desc: '删除' }]"
-                        @del="del"
-                        @updateData="getData"
-                    ></app-table>
-                </el-card>
-            </div>
-        </div>
-    </div>
+    <el-card class="card" ref="table">
+        <app-table
+            :max-height="maxHeight"
+            :tableData="tableData"
+            :colCfg="colCfg"
+            :totalCount="totalCount"
+            :op="[{ type: 'danger', name: 'del', desc: '删除' }]"
+            @del="del"
+            @updateData="getData"
+            :class="$style.table"
+            @toExcel="toExcel"
+        ></app-table>
+    </el-card>
 </template>
 
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
-import Aside from '../components/Aside.vue';
+import Aside from '../../components/Aside.vue';
 import { Getter, State } from 'vuex-class/lib/bindings';
-import Table from '../components/Table.vue';
-import TableMixin from '../mixins/table';
+import Table from '../../components/Table.vue';
+import TableMixin from '../../mixins/table';
 
 @Component({
     components: {
-        'app-aside': Aside,
         'app-table': Table
     }
 })
-export default class Admin extends mixins(TableMixin) {
-    @Getter('mainHeight') public mainHeight?: string;
+export default class AdminList extends mixins(TableMixin) {
     @State public baseUrl?: string;
-
-    public tabs = [
-        { title: '管理员', to: 'admin', icon: 'el-icon-user' },
-        {
-            title: '增加人员',
-            to: 'admin/add',
-            icon: 'el-icon-circle-plus-outline'
-        },
-        { title: '权限管理', to: 'admin/chown ', icon: 'el-icon-s-operation' }
-    ];
 
     public colCfg: any[] = [
         { prop: 'id', label: 'ID', sortable: true, width: 120 },
@@ -62,7 +45,7 @@ export default class Admin extends mixins(TableMixin) {
         console.log(row);
     }
 
-    public getData(page: number, pageSize: number) {
+    public async _getData(page: number, pageSize: number) {
         // TODO: 换为请求
         // 模拟数据
         const res: any = {
@@ -76,15 +59,15 @@ export default class Admin extends mixins(TableMixin) {
             workNo: '111'
         };
 
-        this.tableData.length = 0;
+        const data = [];
         for (let i = 0; i < pageSize; i++) {
             const tmp = { ...res };
             tmp.id = i;
             tmp.sex = res.sex ? '男' : '女';
-            this.tableData.push(tmp);
+            data.push(tmp);
         }
 
-        this.totalCount = 40;
+        return { count: 40, data };
 
         // fetch(this.baseUrl + '/api/admin/getall?currentPage=1&pageSize=15', {
         //     method: 'GET',
@@ -99,7 +82,6 @@ export default class Admin extends mixins(TableMixin) {
 <style lang="postcss" module>
 .table {
     width: 100%;
-    margin-top: 25px;
     font-size: 16px;
 }
 
