@@ -41,8 +41,9 @@ export default class TableMixin extends Vue {
 
     @Watch('$store.state.rootScale')
     private async getMaxHeight() {
-        const dom: HTMLElement = (<any>this.$refs.table).$el;
-        if (dom) {
+        const component: any = this.$refs.table;
+        if (component) {
+            const dom: HTMLElement = component.$el;
             await loopAwait(() => !!dom.offsetHeight);
             this.maxHeight = dom.offsetHeight * 0.85;
         }

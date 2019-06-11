@@ -25,6 +25,7 @@
     "no-invalid-template-strings": true,
     "no-for-in-array": true,
     "no-eval": true,
+    "no-namespace": false,
     "label-postion": true,
     "forin": true,
     "curly": true,

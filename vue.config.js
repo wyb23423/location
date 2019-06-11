@@ -12,7 +12,7 @@ module.exports = {
             app.get('/api/getPieInfo', async (req, res) => {
                 const data = await fs.readFile('./src/assets/data/data.json');
                 res.send(data);
-            })
+            });
         }
     }
 }

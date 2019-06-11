@@ -69,13 +69,6 @@ export default class AdminList extends mixins(TableMixin) {
         }
 
         return { count: 40, data };
-
-        // fetch(this.baseUrl + '/api/admin/getall?currentPage=1&pageSize=15', {
-        //     method: 'GET',
-        //     mode: 'cors'
-        // })
-        //     .then(res => res.text())
-        //     .then(console.log);
     }
 }
 </script>

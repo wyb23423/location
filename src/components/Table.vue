@@ -23,15 +23,17 @@
                 v-if="op && op.length"
             >
                 <template slot-scope="scope">
-                    <el-button
-                        v-for="v of op"
-                        :key="v.name"
-                        size="mini"
-                        :type="v.type"
-                        @click="emit(v.name, scope.row)"
-                    >
-                        {{ v.desc }}
-                    </el-button>
+                    <div class="flex-center">
+                        <el-button
+                            v-for="(v, i) of op"
+                            :key="i"
+                            size="mini"
+                            :type="v.type | parse(scope.$index)"
+                            @click="emit(v.name, scope.row, scope.$index)"
+                        >
+                            {{ v.desc | parse(scope.$index) }}
+                        </el-button>
+                    </div>
                 </template>
             </el-table-column>
         </el-table>
@@ -48,8 +50,14 @@
             <el-pagination
                 :current-page="page"
                 :page-size="pageSize"
-                layout="total, sizes, prev, pager, next, jumper"
+                :layout="
+                    isSmall
+                        ? 'prev, pager, next'
+                        : 'total, sizes, prev, pager, next, jumper'
+                "
                 :total="totalCount"
+                :small="!!isSmall"
+                :hide-on-single-page="!!isSmall"
                 @size-change="updateData('pageSize', $event)"
                 @current-change="updateData('page', $event)"
                 style="text-align: right"
@@ -64,29 +72,35 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Emit } from 'vue-property-decorator';
 
-interface Operation {
-    type: string;
-    name: string;
-    desc: string;
+type OperationItem = string | { [i: string]: string };
+
+export interface TableRowOperation {
+    type: OperationItem;
+    name: OperationItem;
+    desc: OperationItem;
 }
 
-@Component
+@Component({
+    filters: { parse: parseOpItem }
+})
 export default class Table extends Vue {
     @Prop() public maxHeight!: number; // 最大高度
     @Prop() public tableData!: any[]; // 表格数据
     @Prop() public totalCount!: number; // 数据总条数
     @Prop() public colCfg!: any[]; // 列配置
 
-    @Prop() public op!: Operation[]; // 操作
+    @Prop() public op!: TableRowOperation[]; // 操作
     @Prop() public noPrint!: boolean;
+    @Prop() public isSmall!: boolean;
 
     public pageSize: number = 10;
     public page: number = 1;
 
     private timer?: any;
 
-    public emit(name: string, row: any) {
-        this.$emit(name, row);
+    public emit(name: string, row: any, index: number) {
+        name = parseOpItem(name, index);
+        this.$emit(name, row, index);
     }
 
     public updateData(type: 'page' | 'pageSize', data: number) {
@@ -102,6 +116,15 @@ export default class Table extends Vue {
             200
         );
     }
+}
+
+// 处理表格操作按钮
+function parseOpItem(item: OperationItem, index: number) {
+    if (typeof item === 'string') {
+        return item;
+    }
+
+    return item[index] || item.default || '404';
 }
 </script>
 
