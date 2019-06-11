@@ -77,7 +77,7 @@ import { ElForm } from 'element-ui/types/form';
 
 @Component
 export default class AdminAdd extends Vue {
-    @State public baseUrl?: string;
+    @State public baseUrl!: string;
 
     public form = {};
     public rules = {};

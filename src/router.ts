@@ -5,11 +5,14 @@ import Main from './views/Main.vue';
 import Login from './views/Login.vue';
 import Index from './views/index/Index.vue';
 
+// 管理员设置
 import Admin from './views/admin/Admin.vue';
 import AdminList from './views/admin/AdminList.vue';
 import AdminAdd from './views/admin/AdminAdd.vue';
 
+// 系统设置
 import System from './views/system/System.vue';
+import Fence from './views/system/Fence.vue';
 
 Vue.use(Router);
 
@@ -31,7 +34,7 @@ export default new Router({
         {
           path: 'system', component: System,
           children: [
-            // { path: 'list', name: 'admin-list', component: AdminList, alias: '' },
+            { path: 'fence', name: 'fence', component: Fence, alias: '' },
             // { path: 'add', name: 'admin-add', component: AdminAdd }
           ]
         }

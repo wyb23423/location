@@ -12,12 +12,12 @@ import Vue from 'vue';
     }
 })
 export default class System extends Vue {
-    @Getter('mainHeight') public mainHeight?: string;
+    @Getter('mainHeight') public mainHeight!: string;
 
     public tabs = [
         { title: '电子围栏', to: '/system/fence', icon: 'el-icon-crop' },
-        { title: '路线规划', to: '/system/route', icon: 'el-icon-rank' },
-        { title: '基站配置', to: '/system/base ', icon: 'el-icon-setting' },
+        // { title: '路线规划', to: '/system/route', icon: 'el-icon-rank' },
+        { title: '基站配置', to: '/system/base', icon: 'el-icon-setting' },
         {
             title: '摄像头',
             to: 'camera',

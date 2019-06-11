@@ -51,6 +51,7 @@ import Component from 'vue-class-component';
 import { Prop, Watch } from 'vue-property-decorator';
 import { SX_WIDTH } from '../App.vue';
 import { Getter } from 'vuex-class/lib/bindings';
+import Router from 'vue-router';
 
 interface TabItem {
     title: string;
@@ -64,9 +65,9 @@ export default class Aside extends Vue {
     public defaultActive: string = '';
     public isCollapse: boolean = true;
 
-    @Getter('mainHeight') public height?: string;
+    @Getter('mainHeight') public height!: string;
 
-    @Prop() public tabs?: TabItem[];
+    @Prop() public tabs!: TabItem[];
 
     public created() {
         this.modifyActiveIndex();

@@ -59,8 +59,8 @@ interface LoginInfo {
 
 @Component
 export default class Login extends Vue {
-    @State public baseUrl?: string;
-    @State('rootScale') public scale?: number;
+    @State public baseUrl!: string;
+    @State('rootScale') public scale!: number;
 
     public form: LoginInfo = { password: '', username: '' };
     public rules = {

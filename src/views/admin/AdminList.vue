@@ -18,7 +18,7 @@
 
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
-import { Getter, State } from 'vuex-class/lib/bindings';
+import { State } from 'vuex-class/lib/bindings';
 import Table from '../../components/Table.vue';
 import TableMixin from '../../mixins/table';
 
@@ -28,7 +28,7 @@ import TableMixin from '../../mixins/table';
     }
 })
 export default class AdminList extends mixins(TableMixin) {
-    @State public baseUrl?: string;
+    @State public baseUrl!: string;
 
     public colCfg: any[] = [
         { prop: 'id', label: 'ID', sortable: true, width: 120 },

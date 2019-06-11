@@ -19,7 +19,7 @@ interface RecordItem {
 
 @Component
 export default class Main extends Vue {
-    @State public baseUrl?: string;
+    @State public baseUrl!: string;
 
     public activeNames: string[] = ['1', '2'];
     public cards: CardInfo[] = [

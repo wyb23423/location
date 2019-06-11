@@ -60,6 +60,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Watch } from 'vue-property-decorator';
+import Router from 'vue-router';
 
 @Component
 export default class Header extends Vue {
@@ -72,7 +73,7 @@ export default class Header extends Vue {
         ['设备管理', '/equipment'],
         ['人员管理', '/person'],
         ['实时监控', '/monitor'],
-        ['电子围栏', '/fence'],
+        // ['电子围栏', '/fence'],
         ['报警信息', '/alarm']
     ];
 

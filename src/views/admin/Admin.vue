@@ -12,7 +12,7 @@ import Vue from 'vue';
     }
 })
 export default class Admin extends Vue {
-    @Getter('mainHeight') public mainHeight?: string;
+    @Getter('mainHeight') public mainHeight!: string;
 
     public tabs = [
         { title: '管理员', to: '/admin/list', icon: 'el-icon-user' },

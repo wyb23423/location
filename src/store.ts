@@ -1,11 +1,12 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { BASE_URL } from './config';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    baseUrl: 'http://192.168.1.189',
+    baseUrl: BASE_URL,
     rootScale: 1
   },
   getters: {

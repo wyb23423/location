@@ -41,6 +41,7 @@
                 icon="el-icon-printer"
                 :class="$style.out"
                 @click="emit('toExcel')"
+                v-if="!noPrint"
             >
                 导出
             </el-button>
@@ -71,12 +72,13 @@ interface Operation {
 
 @Component
 export default class Table extends Vue {
-    @Prop() public maxHeight?: number; // 最大高度
-    @Prop() public tableData?: any[]; // 表格数据
-    @Prop() public totalCount?: number; // 数据总条数
-    @Prop() public colCfg?: any[]; // 列配置
+    @Prop() public maxHeight!: number; // 最大高度
+    @Prop() public tableData!: any[]; // 表格数据
+    @Prop() public totalCount!: number; // 数据总条数
+    @Prop() public colCfg!: any[]; // 列配置
 
-    @Prop() public op?: Operation[]; // 操作
+    @Prop() public op!: Operation[]; // 操作
+    @Prop() public noPrint!: boolean;
 
     public pageSize: number = 10;
     public page: number = 1;
