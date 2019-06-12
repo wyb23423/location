@@ -75,7 +75,7 @@ export default class Fence extends mixins(TableMixin) {
     public display(row: any, index: number) {
         console.log(row, index);
 
-        const op = this.op[1];
+        const op: any = this.op[1];
         op.type[index] = op.type[index] ? undefined : 'success';
         op.desc[index] = op.desc[index] ? undefined : '隐藏';
 

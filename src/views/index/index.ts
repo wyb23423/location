@@ -79,7 +79,7 @@ export default class Main extends Vue {
     }
 
     private getOption(name: string, chart: echarts.ECharts, option: any) {
-        fetch('/api/getPieInfo')
+        fetch('/data/json/data.json')
             .then((res: Response) => res.json())
             .then((res: any) => {
                 this.forOption(name, res.data, option, chart);

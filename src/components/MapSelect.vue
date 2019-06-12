@@ -3,6 +3,7 @@
         v-model="value"
         placeholder="请选择地图"
         filterable
+        default-first-option
         @change="selectmap"
     >
         <el-option
