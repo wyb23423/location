@@ -39,10 +39,12 @@
 import Component, { mixins } from 'vue-class-component';
 import MapSelect from '../../components/MapSelect.vue';
 import Vue from 'vue';
-import { MapData, LocationMap } from '../../assets/utils/map';
+import { createMap } from '../../assets/map';
 import { loopAwait } from '../../assets/utils/util';
 import TableMixin from '../../mixins/table';
 import Table, { TableRowOperation } from '../../components/Table.vue';
+import { FengMapMgr } from '../../assets/map/fengmap';
+import { ZoneData, MapData } from '../../assets/map/map';
 
 @Component({
     components: {
@@ -51,12 +53,12 @@ import Table, { TableRowOperation } from '../../components/Table.vue';
     }
 })
 export default class Fence extends mixins(TableMixin) {
-    public map?: LocationMap;
+    public map?: FengMapMgr;
 
     public maxHeight: number = 255;
     public colCfg: any[] = [
-        { prop: 'name', label: '区域', sortable: true, width: 120 },
-        { prop: 'isOpen', label: '状态', width: 80 }
+        { prop: 'name', label: '区域', sortable: true, width: 100 },
+        { prop: 'status', label: '状态', width: 80 }
     ];
     public op: TableRowOperation[] = [
         { type: 'danger', name: 'del', desc: '删除' },
@@ -69,14 +71,24 @@ export default class Fence extends mixins(TableMixin) {
 
     public activeNames: string[] = ['info', 'add'];
 
-    public del(row: any) {
+    public del(row: ZoneData) {
         console.log(row);
     }
-    public display(row: any, index: number) {
-        console.log(row, index);
-
+    public display(row: ZoneData, index: number) {
         const op: any = this.op[1];
-        op.type[index] = op.type[index] ? undefined : 'success';
+        if (op.type[index]) {
+            op.type[index] = undefined;
+
+            if (this.map) {
+                this.map.removeZone(row.name);
+            }
+        } else {
+            op.type[index] = 'success';
+
+            if (this.map) {
+                this.map.zoneOpen(row);
+            }
+        }
         op.desc[index] = op.desc[index] ? undefined : '隐藏';
 
         this.$set(this.op, 1, op);
@@ -87,7 +99,7 @@ export default class Fence extends mixins(TableMixin) {
             const dom = <HTMLElement>this.$refs.map;
             await loopAwait(() => !!dom.offsetWidth && !!dom.offsetHeight);
 
-            this.map = new LocationMap(data, dom);
+            this.map = createMap(data, dom);
         }
     }
 
@@ -98,7 +110,7 @@ export default class Fence extends mixins(TableMixin) {
             count: 40,
             data: [
                 {
-                    isOpen: '开启',
+                    status: '开启',
                     id: 26,
                     name: '全部区域',
                     position: [
@@ -110,7 +122,7 @@ export default class Fence extends mixins(TableMixin) {
                     ]
                 },
                 {
-                    isOpen: '关闭',
+                    status: '关闭',
                     id: 25,
                     name: 'C',
                     position: [
@@ -147,7 +159,7 @@ export default class Fence extends mixins(TableMixin) {
     position: absolute;
     top: 0;
     right: 0;
-    width: 25%;
+    width: 340px;
 
     & div[role='button'] {
         background: #f2f2f2;

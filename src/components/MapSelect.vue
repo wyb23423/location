@@ -17,14 +17,12 @@
 </template>
 
 <script lang="ts">
-/// <reference path="../../types/fengmap.d.ts">
-
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import Router from 'vue-router';
 import { State } from 'vuex-class/lib/bindings';
 import { Emit } from 'vue-property-decorator';
-import { MapData } from '../assets/utils/map';
+import { MapData } from '../assets/map/map';
 
 @Component
 export default class MapSelect extends Vue {
@@ -57,7 +55,12 @@ export default class MapSelect extends Vue {
             id: 1,
             name: '办公室',
             filepath: '\\image\\huijinguangchang.fmap',
-            margin: [[0, 0], [0, 2800], [3000, 2800], [3000, 0]]
+            margin: [
+                [11582810.7716, 3575751.7814],
+                [11582810.7716, 3575775.267],
+                [11582841.6422, 3575775.267],
+                [11582841.6422, 3575751.7814]
+            ]
         };
 
         this.options.push(data);

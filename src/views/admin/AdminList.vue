@@ -34,12 +34,11 @@ export default class AdminList extends mixins(TableMixin) {
         { prop: 'id', label: 'ID', sortable: true, width: 120 },
         { prop: 'adminName', label: '管理员名称', width: 160 },
         { prop: 'sex', label: '性别', width: 120 },
-        { prop: 'department', label: '部门', width: 120 },
-        { prop: 'job', label: '职位', width: 120 },
+        { prop: 'department', label: '部门', width: 160 },
+        { prop: 'job', label: '职位', width: 160 },
         { prop: 'level', label: '等级', sortable: true, width: 120 },
-        { prop: 'phone', label: '电话号码', width: 200 },
-        { prop: 'workNo', label: '工号', width: 120 },
-        { prop: 'job', label: '职位', width: 120 }
+        { prop: 'phone', label: '电话号码', width: 220 },
+        { prop: 'workNo', label: '工号', width: 120 }
     ];
 
     public del(row: any) {

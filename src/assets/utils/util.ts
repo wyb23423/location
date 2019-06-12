@@ -22,3 +22,35 @@ export function loopAwait(
 
     return new Promise(loop);
 }
+
+/**
+ * 获取一定范围内的随机数
+ */
+export function randomNum(min: number, max: number, isInt: boolean = true) {
+    if (Number.isNaN(min) || Number.isNaN(max)) {
+        console.error('min及max必须是数字');
+
+        return 0;
+    }
+
+    if (min > max) {
+        [max, min] = [min, max];
+    }
+
+    let num = min + Math.random() * (max - min);
+    if (!isInt) {
+        num = Math.round(num);
+    }
+
+    return num;
+}
+
+/**
+ * 获取随机颜色
+ */
+export function randomColor(hasAlpha: boolean = false) {
+    const color = new Array(3).fill(0).map(v => randomNum(0, 255));
+    color.push(hasAlpha ? Math.random() : 1);
+
+    return `rgba(${color.join(',')})`;
+}
