@@ -35,9 +35,7 @@ interface FMPolygonMarkerOptions {
     color?: string;
 }
 
-interface FMTextMarkerOptions {
-    x: number;
-    y: number;
+interface FMTextMarkerOptions extends Vector2 {
     name: string;
     fontsize: number;
     fillcolor: string;
@@ -45,12 +43,33 @@ interface FMTextMarkerOptions {
     alpha?: number;
 }
 
+interface FMImageMarkerOptions extends Vector2 {
+    size: number;
+    height: number;
+    url: string;
+}
+
+interface FMMapClickEvent {
+    type: string;
+    target: fengmap.FMNode;
+    eventInfo: {
+        coord: Vector3;
+        domEvent: MouseEvent;
+    };
+    nodeType: number;
+}
+
+
 declare namespace fengmap {
     interface FMMap {
         readonly groupIDs: number[];
+        focusGroupID: number;
+        layerLocalHeight: number;
 
         openMapById(id: string): void;
         getFMGroup(gid: number): FMGroup;
+
+        on(type: string, callback: (e: FMMapClickEvent) => void): void;
     }
     interface FMMapConstructor {
         readonly prototype: ObjectConstructor;
@@ -70,7 +89,15 @@ declare namespace fengmap {
         constructor(options: FMTextMarkerOptions);
     }
 
+    class FMImageMarker {
+        public custom?: any;
+
+        constructor(options: FMImageMarkerOptions);
+    }
+
     interface FMGroup {
+        groupHeight: number;
+
         getOrCreateLayer<T>(layerAlias: string): FMMakerLayer<T>;
     }
 
@@ -78,6 +105,17 @@ declare namespace fengmap {
         addMarker(maker: T): void;
         removeMarker(maker: T): void;
         removeAll(): void;
+    }
+
+    interface FMNode extends Vector3 {
+        FID: string;
+        groupID: number;
+        height: number;
+        typeID: number;
+        mapCoord: Vector3;
+        show: boolean;
+        minlevel: number;
+        maxlevel: number;
     }
 
     enum FMDirection {
@@ -94,6 +132,21 @@ declare namespace fengmap {
     enum FMViewMode {
         MODE_2D = 'top',
         MODE_3D = '3d'
+    }
+
+    enum FMNodeType {
+        ALL = 0xffff,
+        EXTENT = 4,
+        EXTERANL_MODEL = 35,
+        FACILITY = 11,
+        IMAGE_MARKER = 31,
+        LABEL = 12,
+        LINE = 21,
+        LOCATION_MARKER = 33,
+        MODEL = 5,
+        NONE = 0,
+        POLYGON_MARKER = 36,
+        TEXT_MARKER = 32
     }
 }
 declare module 'fengmap' {

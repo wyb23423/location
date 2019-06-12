@@ -61,7 +61,7 @@ export class CoordTransformer {
     }
 }
 
-export function coodXy(
+export function parsePosition(
     v: Vector23,
     locOrigion: Vector2,
     locRange: Vector2,

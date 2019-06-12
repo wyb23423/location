@@ -8,9 +8,9 @@ export interface MapData {
 }
 
 export interface ZoneData {
-    status: string;
+    status?: string;
     enable: 0 | 1;
-    id: number;
+    id?: number;
     name: string;
     position: Vector2[] | string;
 }
@@ -22,23 +22,25 @@ export class MapMgr<T> {
     public locOrigion: Vector2 = { x: 0, y: 0 };
     public locRange: Vector2 = { x: 3073, y: 2326 };
 
-    protected makers: Array<fengmap.FMPolygonMarker | fengmap.FMTextMarker> = [];
-    protected polygonLayer?: fengmap.FMMakerLayer<fengmap.FMPolygonMarker>;
-    protected textLayer?: fengmap.FMMakerLayer<fengmap.FMTextMarker>;
-
     public zoneOpen(data: ZoneData): void {
         //
     }
-
-    public removeZone(name: string): void {
+    public remove(name: string): void {
         //
     }
 
-    protected createPolygonMaker(coords: Vector2[], name: string): void {
+    // tslint:disable-next-line: ban-types
+    public on(type: string, callback: Function) {
         //
     }
+    public addImage(opt: any, url: string, name: string | number): Vector3 {
+        return { x: 1, y: 1, z: 0 };
+    }
 
-    protected addTextMarker(position: Vector2, name: string): void {
+    public createPolygonMaker(coords: Vector2[], name: string, isMapCoor: boolean): void {
+        //
+    }
+    public addTextMarker(position: Vector2, name: string, isMapCoor: boolean): void {
         //
     }
 }

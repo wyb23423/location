@@ -3,12 +3,17 @@
  */
 /// <reference path="../../types/fengmap.d.ts" />
 
-import { MAP_THEME_URL, APP_KEY, APP_NAME } from '@/config';
+import { MAP_THEME_URL, APP_KEY, APP_NAME, BASE_URL } from '@/config';
 import { randomNum, randomColor } from '../utils/util';
-import { coodXy } from './coordtransformer';
+import { parsePosition } from './coordtransformer';
 import { MapMgr, ZoneData } from './map';
 
 export class FengMapMgr extends MapMgr<fengmap.FMMap> {
+    protected makers: Array<fengmap.FMPolygonMarker | fengmap.FMTextMarker | fengmap.FMImageMarker> = [];
+    protected polygonLayer?: fengmap.FMMakerLayer<fengmap.FMPolygonMarker>;
+    protected textLayer?: fengmap.FMMakerLayer<fengmap.FMTextMarker>;
+    protected imgLayer?: fengmap.FMMakerLayer<fengmap.FMImageMarker>;
+
     constructor(name: string, dom: HTMLElement) {
         super();
 
@@ -47,29 +52,66 @@ export class FengMapMgr extends MapMgr<fengmap.FMMap> {
         this.createPolygonMaker(zones, data.name);
         this.addTextMarker(zones[0], data.name);
     }
-
     /**
      * 隐藏区域
      */
-    public removeZone(name: string) {
+    public remove(name: string | number) {
+        let layer: fengmap.FMMakerLayer<any> | null = null;
+
         for (let i = this.makers.length - 1; i >= 0; i--) {
             const v = this.makers[i];
             if (v instanceof fengmap.FMPolygonMarker) {
-                if (v.custom.name === name && this.polygonLayer) {
-                    this.polygonLayer.removeMarker(v);
-                    this.makers.splice(i, 1);
+                if (v.custom && v.custom.name === name && this.polygonLayer) {
+                    layer = this.polygonLayer;
                 }
             } else if (v instanceof fengmap.FMTextMarker) {
                 if (v.name === name && this.textLayer) {
-                    this.textLayer.removeMarker(v);
-                    this.makers.splice(i, 1);
+                    layer = this.textLayer;
                 }
+            } else if (v instanceof fengmap.FMImageMarker) {
+                if (v.custom && v.custom.name === name && this.imgLayer) {
+                    layer = this.imgLayer;
+                }
+            }
+
+            if (layer) {
+                layer.removeMarker(this.makers.splice(i, 1)[0]);
+                layer = null;
             }
         }
     }
 
-    protected createPolygonMaker(coords: Vector2[], name: string) {
-        const coordslist = coords.map(v => coodXy(v, this.locOrigion, this.locRange, this.margin!));
+    public on(type: string, callback: any) {
+        this.map.on(type, callback);
+    }
+
+    public addImage(opt: FMImageMarkerOptions, name: string | number) {
+        const group = this.map.getFMGroup(this.map.focusGroupID);
+
+        this.imgLayer = group.getOrCreateLayer('imageMarker');
+
+        const im = new fengmap.FMImageMarker(opt);
+        im.custom = { name };
+
+        this.imgLayer.addMarker(im);
+        this.makers.push(im);
+
+        return {
+            x: opt.x,
+            y: opt.y,
+            z: group.groupHeight + this.map.layerLocalHeight
+        };
+    }
+
+    public createPolygonMaker(coords: Vector2[], name: string, isMapCoor: boolean = false) {
+        if (!this.margin) {
+            return console.error('地图范围为空');
+        }
+
+        let coordslist = coords;
+        if (!isMapCoor) {
+            coordslist = coords.map(v => parsePosition(v, this.locOrigion, this.locRange, this.margin!));
+        }
 
         const group = this.map.getFMGroup(this.map.groupIDs[0]);
         // 返回当前层中第一个polygonMarker,如果没有，则自动创建
@@ -90,8 +132,16 @@ export class FengMapMgr extends MapMgr<fengmap.FMMap> {
         this.makers.push(polygonMarker);
     }
 
-    protected addTextMarker(coord: Vector2, name: string) {
-        const newlist = coodXy(coord, this.locOrigion, this.locRange, this.margin!);
+    public addTextMarker(coord: Vector2, name: string, isMapCoor: boolean = false) {
+        if (!this.margin) {
+            return console.error('地图范围为空');
+        }
+
+        let newlist = coord;
+        if (!isMapCoor) {
+            newlist = parsePosition(coord, this.locOrigion, this.locRange, this.margin!);
+        }
+
         const group = this.map.getFMGroup(this.map.groupIDs[0]);
 
         // 返回当前层中第一个textMarkerLayer,如果没有，则自动创建
