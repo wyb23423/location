@@ -4,12 +4,11 @@ import MapSelect from '../../components/MapSelect.vue';
 import { createMap } from '../../assets/map';
 import { loopAwait } from '../../assets/utils/util';
 import TableMixin from '../../mixins/table';
-
 import Table from '../../components/Table.vue';
-
 import { FengMapMgr } from '../../assets/map/fengmap';
 import { ZoneData, MapData } from '../../assets/map/map';
-import { Message, MessageBox } from 'element-ui';
+import * as http from '../../assets/utils/http';
+
 
 @Component({
     components: {
@@ -50,18 +49,37 @@ export default class Fence extends mixins(TableMixin) {
 
     private pointIndex: number = -1; // 坐标点索引
 
+    // ==========================生命周期
+    public destroyed() {
+        if (this.mgr) {
+            this.mgr.dispose();
+            this.mgr = undefined;
+        }
+    }
+    // ==========================
+
     /**
      * 删除区域
      */
-    public del(row: ZoneData) {
-        console.log(row);
+    public async del(row: ZoneData, index: number) {
+        try {
+            await this.$confirm(`确认删除区域${row.name}?`, '确认删除');
+            await http.post('/api/zone/deleteZone', { id: row.id });
+
+            this.$message.success('删除成功');
+
+            this.tableData.splice(index, 1);
+            this.display(row, index, true);
+        } catch (e) {
+            //
+        }
     }
     /**
      * 切换区域显示
      */
-    public display(row: ZoneData, index: number) {
+    public display(row: ZoneData, index: number, isDel?: boolean) {
         const op: any = this.op[1];
-        if (op.type[index]) {
+        if (op.type[index] || isDel) {
             op.type[index] = undefined;
 
             if (this.mgr) {
@@ -74,7 +92,7 @@ export default class Fence extends mixins(TableMixin) {
                 this.mgr.zoneOpen(row);
             }
         }
-        op.desc[index] = op.desc[index] ? undefined : '隐藏';
+        op.desc[index] = op.desc[index] || isDel ? undefined : '隐藏';
 
         this.$set(this.op, 1, op);
     }
@@ -103,11 +121,11 @@ export default class Fence extends mixins(TableMixin) {
     }
     public onSubmit() {
         if (!this.form.name.length) {
-            return Message.warning('区域名称必填');
+            return this.$message.warning('区域名称必填');
         }
 
         if (this.form.position.length < 4) {
-            return Message.warning('区域坐标最少设置3个');
+            return this.$message.warning('区域坐标最少设置3个');
         }
 
         const position: Vector2[] = [...this.form.position];
@@ -120,62 +138,54 @@ export default class Fence extends mixins(TableMixin) {
         };
         this.mgr!.createPolygonMaker(position, data.name, true);
 
-        MessageBox.confirm('请确定当前区域范围', '提示', { type: 'info' })
-            .then(() => {
-                position.forEach((v, i) => {
-                    this.mgr!.remove(i);
+        setTimeout(() => {
+            this.$confirm('请确定当前区域范围', '提示', { type: 'info' })
+                .then(() => {
+                    position.forEach((v, i) => {
+                        this.mgr!.remove(i);
+                    });
+
+                    this.form = {
+                        name: '',
+                        mode: 0,
+                        position: [null],
+                        open: false
+                    };
+                    data.position = JSON.stringify(position);
+
+                    console.log(data);
+                })
+                .catch(console.log)
+                .finally(() => {
+                    this.mgr!.remove(data.name);
                 });
-
-                this.form = {
-                    name: '',
-                    mode: 0,
-                    position: [null],
-                    open: false
-                };
-                data.position = JSON.stringify(position);
-
-                console.log(data);
-            })
-            .catch(console.log)
-            .finally(() => {
-                this.mgr!.remove(data.name);
-            });
+        }, 1000);
     }
 
     /**
      * 获取表格数据
      */
     public async _getData(page: number, pageSize: number) {
-        // TODO: 换为请求
-        // 模拟数据
-        return {
-            count: 40,
-            data: [
-                {
-                    status: '开启',
-                    id: 26,
-                    name: '全部区域',
-                    position: [
-                        { x: -0.9095089685816896, y: 1849.9453632454365 },
-                        { x: -38.21209882974026, y: 104.85372044282641 },
-                        { x: 2413.5853957760114, y: 78.69602985429896 },
-                        { x: 2396.6296731272414, y: 1763.998665644061 },
-                        { x: 2227.0724466395422, y: 1861.155802069091 }
-                    ]
-                },
-                {
-                    status: '关闭',
-                    id: 25,
-                    name: 'C',
-                    position: [
-                        { x: 710.5247554581757, y: 1809.3815817503148 },
-                        { x: 693.6882925245968, y: 792.5563051437117 },
-                        { x: 1437.8599577445877, y: 766.5790170557325 },
-                        { x: 1471.5328837810696, y: 1842.7809521424817 }
-                    ]
-                }
-            ]
-        };
+        let data: any[] = [];
+        let count: number = 0;
+        try {
+            const res = await http.get('/api/zone/getall', {
+                pageSize,
+                currentPage: page
+            });
+            data = res.pagedData.datas.map((v: ZoneData) => {
+                v.status = v.enable ? '开启' : '关闭';
+                v.position = JSON.parse(<string>v.position);
+
+                return v;
+            });
+
+            count = res.pagedData.totalCount;
+        } catch (e) {
+            //
+        }
+
+        return { count, data };
     }
 
     private bindClickEvent() {

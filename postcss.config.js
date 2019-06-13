@@ -4,7 +4,7 @@ module.exports = {
     'rucksack-css': {},
     'postcss-import': {},
     'postcss-assets': {
-      // loadPaths: ['assets/images/'],
+      // loadPaths: ['assets/'],
       baseUrl: 'http://192.168.1.189'
     },
     'postcss-pxtorem': {

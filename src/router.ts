@@ -13,6 +13,7 @@ import AdminAdd from './views/admin/AdminAdd.vue';
 // 系统设置
 import System from './views/system/System.vue';
 import Fence from './views/system/Fence.vue';
+import Base from './views/system/base/Base.vue';
 
 Vue.use(Router);
 
@@ -35,7 +36,7 @@ export default new Router({
           path: 'system', component: System,
           children: [
             { path: 'fence', name: 'fence', component: Fence, alias: '' },
-            // { path: 'add', name: 'admin-add', component: AdminAdd }
+            { path: 'base', name: 'base', component: Base }
           ]
         }
       ]

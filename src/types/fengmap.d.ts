@@ -70,6 +70,7 @@ declare namespace fengmap {
         getFMGroup(gid: number): FMGroup;
 
         on(type: string, callback: (e: FMMapClickEvent) => void): void;
+        dispose(): void;
     }
     interface FMMapConstructor {
         readonly prototype: ObjectConstructor;

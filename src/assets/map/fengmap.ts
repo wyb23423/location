@@ -9,10 +9,10 @@ import { parsePosition } from './coordtransformer';
 import { MapMgr, ZoneData } from './map';
 
 export class FengMapMgr extends MapMgr<fengmap.FMMap> {
-    protected makers: Array<fengmap.FMPolygonMarker | fengmap.FMTextMarker | fengmap.FMImageMarker> = [];
-    protected polygonLayer?: fengmap.FMMakerLayer<fengmap.FMPolygonMarker>;
-    protected textLayer?: fengmap.FMMakerLayer<fengmap.FMTextMarker>;
-    protected imgLayer?: fengmap.FMMakerLayer<fengmap.FMImageMarker>;
+    private makers: Array<fengmap.FMPolygonMarker | fengmap.FMTextMarker | fengmap.FMImageMarker> = [];
+    private polygonLayer?: fengmap.FMMakerLayer<fengmap.FMPolygonMarker>;
+    private textLayer?: fengmap.FMMakerLayer<fengmap.FMTextMarker>;
+    private imgLayer?: fengmap.FMMakerLayer<fengmap.FMImageMarker>;
 
     constructor(name: string, dom: HTMLElement) {
         super();
@@ -160,5 +160,10 @@ export class FengMapMgr extends MapMgr<fengmap.FMMap> {
         // 文本标注层添加文本Marker
         this.textLayer.addMarker(tm);
         this.makers.push(tm);
+    }
+
+    public dispose() {
+        this.map.dispose();
+        Reflect.set(this, 'map', null);
     }
 }

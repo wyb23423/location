@@ -9,7 +9,6 @@
                 :op="[{ type: 'danger', name: 'del', desc: '删除' }]"
                 @del="del"
                 @updateData="getData"
-                :class="$style.table"
                 @toExcel="toExcel"
             ></app-table>
         </el-card>
@@ -54,7 +53,7 @@ export default class AdminList extends mixins(TableMixin) {
                 pageSize,
                 currentPage: page
             });
-            data = res.pagedData.datas.map(v => {
+            data = res.pagedData.datas.map((v: any) => {
                 v.sex = v.sex ? '男' : '女';
 
                 return v;
@@ -70,19 +69,3 @@ export default class AdminList extends mixins(TableMixin) {
 }
 </script>
 
-<style lang="postcss" module>
-.table {
-    width: 100%;
-    font-size: 16px;
-}
-
-.thead {
-    font-weight: bold;
-    font-size: 18px;
-    color: #000;
-
-    & th {
-        background: #eee !important;
-    }
-}
-</style>

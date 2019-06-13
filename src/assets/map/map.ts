@@ -43,4 +43,8 @@ export class MapMgr<T> {
     public addTextMarker(position: Vector2, name: string, isMapCoor: boolean): void {
         //
     }
+
+    public dispose() {
+        //
+    }
 }

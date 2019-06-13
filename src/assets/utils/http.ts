@@ -55,7 +55,6 @@ export async function post(
     }
 
     try {
-        console.log(req.url);
         const res = await fetch(req.url, {
             headers: req.headers,
             body: req.params,
@@ -86,7 +85,7 @@ async function parseRes(res: Response) {
             return Promise.reject(data);
         }
     } else {
-        console.error(`${res.status}: 请求失败`);
+        console.error(`${res.status}: ${res.statusText}`);
 
         return Promise.reject(res);
     }
@@ -118,15 +117,43 @@ function parseArgs(
         }
 
         url = Object.entries(params).reduce((a, [k, v], i) => a + `${i ? '&' : '?'}${k}=${v}`, url);
+    } else {
+        const contentType = getHead(headers, 'Content-Type');
+        if (!contentType) {
+            params = json2FormData(params);
+        } else if (contentType.includes('application/json')) {
+            if (isThisType(params, 'object')) {
+                params = JSON.stringify(params);
+            }
+        }
     }
 
-    if (isThisType(params, 'object')) {
-        params = JSON.stringify(params);
-    }
 
     return { url, params, headers };
 }
 
 function isSuccess(status: number) {
     return status >= 200 && status < 300;
+}
+
+
+function getHead(headers: any, name: string) {
+    if (headers instanceof Headers) {
+        return headers.get(name);
+    }
+
+    return headers[name];
+}
+
+function json2FormData(parmas: any) {
+    if (parmas instanceof FormData) {
+        return parmas;
+    }
+
+    const data = new FormData();
+    for (const [k, v] of Object.entries(parmas)) {
+        data.append(k, <Blob | string>v);
+    }
+
+    return data;
 }

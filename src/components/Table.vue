@@ -21,6 +21,7 @@
                 label="操作"
                 :resizable="true"
                 v-if="op && op.length"
+                :min-width="opWidth"
             >
                 <template slot-scope="scope">
                     <div class="flex-center">
@@ -92,6 +93,7 @@ export default class Table extends Vue {
     @Prop() public op!: TableRowOperation[]; // 操作
     @Prop() public noPrint!: boolean;
     @Prop() public isSmall!: boolean;
+    @Prop() public opWidth?: boolean;
 
     public pageSize: number = 10;
     public page: number = 1;
