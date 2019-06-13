@@ -4,19 +4,30 @@ import { BASE_URL } from './config';
 
 Vue.use(Vuex);
 
+interface State {
+  baseUrl: string;
+  rootScale: number;
+  isLogin: boolean;
+}
+
+
 export default new Vuex.Store({
   state: {
     baseUrl: BASE_URL,
-    rootScale: 1
+    rootScale: 1,
+    isLogin: false
   },
   getters: {
-    mainHeight(state: any) {
+    mainHeight(state: State) {
       return `calc(${100 / state.rootScale}vh - 60px)`;
     }
   },
   mutations: {
-    setRootScale(state: any, scale: number) {
+    setRootScale(state: State, scale: number) {
       state.rootScale = scale;
+    },
+    login(state: State) {
+      state.isLogin = true;
     }
   },
   actions: {

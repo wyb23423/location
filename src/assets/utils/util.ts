@@ -54,3 +54,12 @@ export function randomColor(hasAlpha: boolean = false) {
 
     return `rgba(${color.join(',')})`;
 }
+
+/**
+ * 判断一个变量是否是某种类型
+ */
+export function isThisType(obj: any, type: string) {
+    type = type.replace(/^\w/, (w: string) => w.toLocaleUpperCase());
+
+    return Object.prototype.toString.call(obj) === `[object ${type}]`;
+}

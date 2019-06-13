@@ -21,6 +21,7 @@ import Component, { mixins } from 'vue-class-component';
 import { State } from 'vuex-class/lib/bindings';
 import Table from '../../components/Table.vue';
 import TableMixin from '../../mixins/table';
+import * as http from '../../assets/utils/http';
 
 @Component({
     components: {
@@ -46,28 +47,25 @@ export default class AdminList extends mixins(TableMixin) {
     }
 
     public async _getData(page: number, pageSize: number) {
-        // TODO: 换为请求
-        // 模拟数据
-        const res: any = {
-            adminName: '曾钰涵2',
-            department: '销售部',
-            id: 4,
-            job: '销售经理',
-            level: 'T1',
-            phone: '13458685625',
-            sex: 1,
-            workNo: '111'
-        };
+        let data: any[] = [];
+        let count: number = 0;
+        try {
+            const res = await http.get('/api/admin/getall', {
+                pageSize,
+                currentPage: page
+            });
+            data = res.pagedData.datas.map(v => {
+                v.sex = v.sex ? '男' : '女';
 
-        const data = [];
-        for (let i = 0; i < pageSize; i++) {
-            const tmp = { ...res };
-            tmp.id = i;
-            tmp.sex = res.sex ? '男' : '女';
-            data.push(tmp);
+                return v;
+            });
+
+            count = res.pagedData.totalCount;
+        } catch (e) {
+            //
         }
 
-        return { count: 40, data };
+        return { count, data };
     }
 }
 </script>

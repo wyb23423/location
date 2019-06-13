@@ -78,17 +78,17 @@ export default class Login extends Vue {
         const form: any = this.$refs[name];
         form.validate((valid: boolean) => {
             if (valid) {
-                fetch(this.baseUrl + '/api/admin/login', {
+                fetch('/api/admin/login', {
                     body: JSON.stringify(this.form),
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
-                    },
-                    mode: 'cors'
+                    }
                 })
                     .then(res => res.json())
                     .then(res => {
                         if (res.code === 200) {
+                            this.$store.commit('login');
                             this.$router.push('/');
                         } else {
                             Message.error('账号或密码错误, 登陆失败!');
