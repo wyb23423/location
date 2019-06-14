@@ -56,10 +56,10 @@
                 </el-radio-group>
             </el-form-item>
             <el-form-item label="电话号码：" prop="phone">
-                <el-input v-model.number="form.phone"></el-input>
+                <el-input v-model.number="form.phone" type="number"></el-input>
             </el-form-item>
             <el-form-item label="工号：" prop="workNo">
-                <el-input v-model.number="form.workNo"></el-input>
+                <el-input v-model="form.workNo"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="onSubmit">立即创建</el-button>
@@ -101,13 +101,7 @@ export default class AdminAdd extends Vue {
                         trigger: 'change'
                     });
                 }
-                if (k === 'workNo') {
-                    rules.push({
-                        type: 'number',
-                        message: '工号必须为数字',
-                        trigger: 'change'
-                    });
-                }
+
                 (<any>this.rules)[k] = rules;
             }
         });

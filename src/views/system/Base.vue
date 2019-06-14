@@ -83,9 +83,9 @@
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
 import { State } from 'vuex-class/lib/bindings';
-import Table from '../../../components/Table.vue';
-import TableMixin from '../../../mixins/table';
-import * as http from '../../../assets/utils/http';
+import Table from '../../components/Table.vue';
+import TableMixin from '../../mixins/table';
+import * as http from '../../assets/utils/http';
 
 @Component({
     components: {
