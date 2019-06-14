@@ -94,6 +94,7 @@ export default class Aside extends Vue {
     position: absolute;
     top: 60px;
     left: 0;
+    z-index: 9999;
 }
 .icon {
     color: #fff;

@@ -47,7 +47,8 @@ export default class Fence extends mixins(TableMixin) {
     }
     // ====================================
 
-    private pointIndex: number = -1; // 坐标点索引
+    private point?: Vector3; // 坐标点索引
+    private pointIndex: number = -1;
 
     // ==========================生命周期
     public destroyed() {
@@ -110,13 +111,15 @@ export default class Fence extends mixins(TableMixin) {
         }
     }
 
-    public setPosition(index: number) {
-        if (this.form.position[index]) {
+    public setPosition(point: Vector3, i: number) {
+        const index = this.form.position.indexOf(point);
+
+        if (point && index > -1) {
             this.form.position.splice(index, 1);
-            this.mgr!.remove(index);
-            this.pointIndex = -1;
+            this.mgr!.remove(JSON.stringify(point));
+            this.point = undefined;
         } else {
-            this.pointIndex = index;
+            this.pointIndex = i;
         }
     }
     public onSubmit() {
@@ -198,19 +201,17 @@ export default class Fence extends mixins(TableMixin) {
                 // 获取坐标信息
                 const eventInfo = event.eventInfo.coord;
 
-                const p = this.mgr!.addImage(
-                    {
-                        x: eventInfo.x,
-                        y: eventInfo.y,
-                        url: '/images/blueImageMarker.png',
-                        size: 32,
-                        height: 2
-                    },
-                    this.pointIndex
-                );
+                const p = this.mgr!.addImage({
+                    x: eventInfo.x,
+                    y: eventInfo.y,
+                    url: '/images/blueImageMarker.png',
+                    size: 32,
+                    height: 2
+                });
 
                 this.$set(this.form.position, this.pointIndex, p);
 
+                this.point = p;
                 this.pointIndex = -1;
                 this.form.position.push(null);
             }

@@ -33,7 +33,7 @@ export class MapMgr<T> {
     public on(type: string, callback: Function) {
         //
     }
-    public addImage(opt: any, url: string, name: string | number): Vector3 {
+    public addImage(opt: any, url: string, name?: string | number): Vector3 {
         return { x: 1, y: 1, z: 0 };
     }
 

@@ -49,7 +49,7 @@
                         :key="index"
                     >
                         <el-button
-                            @click="setPosition(index)"
+                            @click="setPosition(v, index)"
                             :type="v ? 'warning' : 'success'"
                             size="mini"
                         >
@@ -126,7 +126,7 @@
 .point {
     display: inline-block;
     vertical-align: middle;
-    width: 150px;
+    width: 140px;
     margin-left: 10px;
 }
 </style>

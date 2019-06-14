@@ -52,6 +52,7 @@ export class FengMapMgr extends MapMgr<fengmap.FMMap> {
         this.createPolygonMaker(zones, data.name);
         this.addTextMarker(zones[0], data.name);
     }
+
     /**
      * 隐藏区域
      */
@@ -85,22 +86,23 @@ export class FengMapMgr extends MapMgr<fengmap.FMMap> {
         this.map.on(type, callback);
     }
 
-    public addImage(opt: FMImageMarkerOptions, name: string | number) {
+    public addImage(opt: FMImageMarkerOptions, name?: string | number) {
         const group = this.map.getFMGroup(this.map.focusGroupID);
 
-        this.imgLayer = group.getOrCreateLayer('imageMarker');
-
-        const im = new fengmap.FMImageMarker(opt);
-        im.custom = { name };
-
-        this.imgLayer.addMarker(im);
-        this.makers.push(im);
-
-        return {
+        const p = {
             x: opt.x,
             y: opt.y,
             z: group.groupHeight + this.map.layerLocalHeight
         };
+
+        this.imgLayer = group.getOrCreateLayer('imageMarker');
+        const im = new fengmap.FMImageMarker(opt);
+        im.custom = { name: name || JSON.stringify(p) };
+
+        this.imgLayer.addMarker(im);
+        this.makers.push(im);
+
+        return p;
     }
 
     public createPolygonMaker(coords: Vector2[], name: string, isMapCoor: boolean = false) {
