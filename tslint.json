@@ -28,6 +28,7 @@
     "no-namespace": false,
     "no-reference": false,
     "label-postion": true,
+    "no-unused-expression": false,
     "forin": true,
     "curly": true,
     "prefer-for-of": true,
