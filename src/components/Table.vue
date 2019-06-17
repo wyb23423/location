@@ -14,14 +14,14 @@
                 :label="v.label"
                 :sortable="!!v.sortable"
                 :resizable="true"
-                :width="v.width"
+                :width="v.width * scale"
             >
             </el-table-column>
             <el-table-column
                 label="操作"
                 :resizable="true"
                 v-if="op && op.length"
-                :min-width="opWidth"
+                :min-width="opWidth * scale"
             >
                 <template slot-scope="scope">
                     <div class="flex-center">
@@ -72,6 +72,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Emit } from 'vue-property-decorator';
+import { SX_WIDTH, DEFAULT_WIDTH } from '../config';
 
 type OperationItem = string | { [i: string]: string };
 
@@ -97,8 +98,14 @@ export default class Table extends Vue {
 
     public pageSize: number = 10;
     public page: number = 1;
+    public scale: number = 1;
 
     private timer?: any;
+
+    // public created() {
+    //     this.scaleRoot();
+    //     window.addEventListener('resize', this.scaleRoot.bind(this), false);
+    // }
 
     public emit(name: string, row: any, index: number) {
         name = parseOpItem(name, index);
@@ -117,6 +124,14 @@ export default class Table extends Vue {
             () => this.$emit('updateData', this.page, this.pageSize),
             200
         );
+    }
+
+    private scaleRoot() {
+        if (document.body.clientWidth <= SX_WIDTH) {
+            this.scale = SX_WIDTH / DEFAULT_WIDTH;
+        } else {
+            this.scale = 1;
+        }
     }
 }
 

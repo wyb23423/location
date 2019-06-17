@@ -14,9 +14,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-
-const DEFAULT_WIDTH: number = 1600;
-export const SX_WIDTH: number = 768;
+import { DEFAULT_WIDTH, SX_WIDTH } from './config';
 
 @Component
 export default class App extends Vue {

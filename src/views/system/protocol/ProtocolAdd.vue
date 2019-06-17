@@ -26,7 +26,6 @@
 
 <script lang="ts">
 import Component from 'vue-class-component';
-import { State } from 'vuex-class/lib/bindings';
 import Vue from 'vue';
 import { ElForm } from 'element-ui/types/form';
 import { ElInput } from 'element-ui/types/input';

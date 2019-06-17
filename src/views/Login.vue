@@ -91,10 +91,10 @@ export default class Login extends Vue {
                             this.$store.commit('login');
                             this.$router.push('/');
                         } else {
-                            Message.error('账号或密码错误, 登陆失败!');
+                            this.$message.error('账号或密码错误, 登陆失败!');
                         }
                     })
-                    .catch(e => Message.error(e.message))
+                    .catch(e => this.$message.error(e.message))
                     .finally(() => form && form.resetFields());
             }
         });

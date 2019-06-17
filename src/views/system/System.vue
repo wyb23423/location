@@ -52,7 +52,7 @@ export default class System extends Vue {
                 },
                 {
                     title: '下发协议',
-                    to: '/system/protocol/Submissio',
+                    to: '/system/protocol/submissio',
                     icon: 'el-icon-takeaway-box'
                 }
             ]

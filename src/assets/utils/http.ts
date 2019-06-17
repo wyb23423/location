@@ -4,22 +4,6 @@
 import { isThisType } from './util';
 import { Message } from 'element-ui';
 
-interface RequestParams {
-    url: string;
-    params?: any;
-    body?: any;
-    data?: any;
-    headers?: any;
-}
-
-export interface ResponseData {
-    code: number;
-    message: string;
-    pagedData: any;
-    resultMap: any;
-    success: boolean;
-}
-
 /**
  * 发送get请求
  */

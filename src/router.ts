@@ -14,12 +14,15 @@ const AdminAdd = () => import(/* webpackChunkName: "admin" */ '@/views/admin/Adm
 const [
   System, Fence, Base,
   CameraList, CameraAdd,
-  ProtocolAdd
+  ProtocolAdd, ProtocolList,
+  Submissio
 ] = [
   'System', 'Fence', 'Base',
   'camera/CameraList', 'camera/CameraAdd',
-  'protocol/ProtocolAdd'
+  'protocol/ProtocolAdd', 'protocol/ProtocolList',
+  'protocol/Submissio'
 ].map(name => () => import(/* webpackChunkName: "system" */ `@/views/system/${name}.vue`));
+
 
 Vue.use(Router);
 
@@ -46,6 +49,8 @@ export default new Router({
             { path: 'camera/add', name: 'camera-add', component: CameraAdd },
             { path: 'camera/list', name: 'camera-list', component: CameraList },
             { path: 'protocol/add', name: 'protocol-add', component: ProtocolAdd },
+            { path: 'protocol/list', name: 'protocol-list', component: ProtocolList },
+            { path: 'protocol/submissio', name: 'protocol-submissio', component: Submissio }
           ]
         }
       ]

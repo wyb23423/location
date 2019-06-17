@@ -27,10 +27,13 @@
                     <span slot="title">{{ v.title }}</span>
                 </el-menu-item>
                 <el-submenu :index="i + ''" :key="v.to" v-else>
-                    <template slot="title">
+                    <div
+                        slot="title"
+                        :class="{ [$style.active]: v.to === activeTitle }"
+                    >
                         <i :class="v.icon || 'el-icon-paperclip'"></i>
-                        <span slot="title">{{ v.title }}</span>
-                    </template>
+                        <span>{{ v.title }}</span>
+                    </div>
                     <el-menu-item
                         v-for="item of v.children"
                         :key="item.to"
@@ -49,7 +52,6 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Watch } from 'vue-property-decorator';
-import { SX_WIDTH } from '../App.vue';
 import { Getter } from 'vuex-class/lib/bindings';
 import Router from 'vue-router';
 
@@ -64,6 +66,8 @@ interface TabItem {
 export default class Aside extends Vue {
     public defaultActive: string = '';
     public isCollapse: boolean = true;
+
+    public activeTitle: string = '';
 
     @Getter('mainHeight') public height!: string;
 
@@ -80,10 +84,21 @@ export default class Aside extends Vue {
     @Watch('$route', { deep: true })
     public modifyActiveIndex() {
         this.defaultActive = this.$route.path;
-        const tabs: TabItem[] = this.tabs || [];
-        if (tabs.every(v => v.to !== this.defaultActive)) {
-            this.defaultActive = tabs[0].to;
+        if (this.$route.path.split('/').length < 3) {
+            const tabs: TabItem[] = this.tabs || [];
+            this.defaultActive = this.defaultTo(tabs);
         }
+
+        this.activeTitle = this.defaultActive.split('/')[2];
+    }
+
+    private defaultTo(tabs: TabItem[]) {
+        const tab = tabs[0];
+        if (tab.children && tab.children.length) {
+            return this.defaultTo(tab.children);
+        }
+
+        return tab.to;
     }
 }
 </script>
@@ -107,6 +122,10 @@ export default class Aside extends Vue {
     &:hover {
         background: rgb(46, 49, 58);
     }
+}
+.active,
+.active i {
+    color: #ffd04b !important;
 }
 </style>
 

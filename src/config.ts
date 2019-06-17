@@ -13,3 +13,6 @@ export const APP_KEY: string = '83a75157d56ffe85317ed7ba1e8120ff';
 // 开发者申请应用名称
 export const APP_NAME: string = 'hunjingguanchang';
 
+
+export const DEFAULT_WIDTH: number = 1600; // 屏幕默认宽度
+export const SX_WIDTH: number = 768; // 小屏宽度

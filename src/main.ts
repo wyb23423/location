@@ -9,6 +9,8 @@ import * as http from './assets/utils/http';
 import { Route } from 'vue-router';
 
 Vue.use(ElementUI);
+Vue.prototype.$http = http;
+
 Vue.config.productionTip = false;
 
 router.beforeEach((to: Route, from: Route, next: any) => {
