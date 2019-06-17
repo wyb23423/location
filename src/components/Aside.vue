@@ -92,7 +92,7 @@ export default class Aside extends Vue {
         this.activeTitle = this.defaultActive.split('/')[2];
     }
 
-    private defaultTo(tabs: TabItem[]) {
+    private defaultTo(tabs: TabItem[]): string {
         const tab = tabs[0];
         if (tab.children && tab.children.length) {
             return this.defaultTo(tab.children);
