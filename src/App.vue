@@ -15,6 +15,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { DEFAULT_WIDTH, SX_WIDTH } from './config';
+import { Store } from 'vuex';
 
 @Component
 export default class App extends Vue {

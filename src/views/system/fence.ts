@@ -46,8 +46,6 @@ export default class Fence extends mixins(TableMixin) {
         return `calc(${100 / this.$store.state.rootScale}vh - 560px)`;
     }
     // ====================================
-
-    private point?: Vector3; // 坐标点索引
     private pointIndex: number = -1;
 
     // ==========================生命周期
@@ -117,7 +115,6 @@ export default class Fence extends mixins(TableMixin) {
         if (point && index > -1) {
             this.form.position.splice(index, 1);
             this.mgr!.remove(JSON.stringify(point));
-            this.point = undefined;
         } else {
             this.pointIndex = i;
         }
@@ -211,7 +208,6 @@ export default class Fence extends mixins(TableMixin) {
 
                 this.$set(this.form.position, this.pointIndex, p);
 
-                this.point = p;
                 this.pointIndex = -1;
                 this.form.position.push(null);
             }
