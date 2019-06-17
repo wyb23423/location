@@ -62,6 +62,7 @@
 import Component from 'vue-class-component';
 import Vue from 'vue';
 import { ElForm } from 'element-ui/types/form';
+import * as http from '../../../assets/utils/http';
 
 interface SelOption {
     value?: any;
@@ -118,21 +119,18 @@ export default class Submissio extends Vue {
 
     private getData() {
         // 基站
-        this.$http
-            .get('/api/base/getall', {
-                pageSize: 10000000,
-                currentPage: 1
-            })
+        http.get('/api/base/getall', {
+            pageSize: 10000000,
+            currentPage: 1
+        })
             .then(this.toTree.bind(this))
             .catch(console.error);
-
         // 标签
-        this.$http
-            .get('/api/tag/getall', {
-                pageSize: 10000000,
-                currentPage: 1
-            })
-            .then((res: any) =>
+        http.get('/api/tag/getall', {
+            pageSize: 10000000,
+            currentPage: 1
+        })
+            .then((res: http.ResData) =>
                 res.pagedData.datas.map((v: any) => ({
                     value: v.tagNo,
                     label: `${v.name}: ${v.tagNo}`
@@ -140,14 +138,12 @@ export default class Submissio extends Vue {
             )
             .then((tags: SelOption[]) => (this.tags = tags))
             .catch(console.error);
-
         // 协议
-        this.$http
-            .get('/api/protocol/getall', {
-                pageSize: 10000000,
-                currentPage: 1
-            })
-            .then((res: any) => {
+        http.get('/api/protocol/getall', {
+            pageSize: 10000000,
+            currentPage: 1
+        })
+            .then((res: http.ResData) => {
                 this.protocols = res.pagedData.datas.map((v: any) => ({
                     value: v.content,
                     label: v.name
@@ -156,7 +152,7 @@ export default class Submissio extends Vue {
             .catch(console.error);
     }
 
-    private toTree(base: any) {
+    private toTree(base: http.ResData) {
         this.base.length = 0;
 
         const group: { [key: string]: SelOption[] } = {};

@@ -9,7 +9,9 @@ import * as http from './assets/utils/http';
 import { Route } from 'vue-router';
 
 Vue.use(ElementUI);
-Vue.prototype.$http = http;
+
+// vscode中 类型无法识别, 暂时放弃全局注入
+// Vue.prototype.$http = http;
 
 Vue.config.productionTip = false;
 
