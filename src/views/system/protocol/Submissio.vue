@@ -48,7 +48,7 @@
                     </el-radio>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="onSubmit">
+                    <el-button type="success" @click="onSubmit">
                         立即提交
                     </el-button>
                     <el-button @click="reset">重置</el-button>
