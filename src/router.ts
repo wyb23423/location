@@ -6,16 +6,20 @@ import Login from './views/Login.vue';
 import Index from './views/index/Index.vue';
 
 // 管理员设置
-import Admin from './views/admin/Admin.vue';
-import AdminList from './views/admin/AdminList.vue';
-import AdminAdd from './views/admin/AdminAdd.vue';
+const Admin = () => import(/* webpackChunkName: "admin" */ '@/views/admin/Admin.vue');
+const AdminList = () => import(/* webpackChunkName: "admin" */ '@/views/admin/AdminList.vue');
+const AdminAdd = () => import(/* webpackChunkName: "admin" */ '@/views/admin/AdminAdd.vue');
 
 // 系统设置
-import System from './views/system/System.vue';
-import Fence from './views/system/Fence.vue';
-import Base from './views/system/Base.vue';
-import CameraList from './views/system/camera/CameraList.vue';
-import CameraAdd from './views/system/camera/CameraAdd.vue';
+const [
+  System, Fence, Base,
+  CameraList, CameraAdd,
+  ProtocolAdd
+] = [
+  'System', 'Fence', 'Base',
+  'camera/CameraList', 'camera/CameraAdd',
+  'protocol/ProtocolAdd'
+].map(name => () => import(/* webpackChunkName: "system" */ `@/views/system/${name}.vue`));
 
 Vue.use(Router);
 
@@ -40,7 +44,8 @@ export default new Router({
             { path: 'fence', name: 'fence', component: Fence, alias: '' },
             { path: 'base', name: 'base', component: Base },
             { path: 'camera/add', name: 'camera-add', component: CameraAdd },
-            { path: 'camera/list', name: 'camera-list', component: CameraList }
+            { path: 'camera/list', name: 'camera-list', component: CameraList },
+            { path: 'protocol/add', name: 'protocol-add', component: ProtocolAdd },
           ]
         }
       ]
@@ -49,3 +54,4 @@ export default new Router({
     { path: '*', redirect: '/index' },
   ],
 });
+
