@@ -54,10 +54,5 @@
         </mvc:interceptor>
     </mvc:interceptors>
 
-    <!-- 支持跨域, 调试用 -->
-    <mvc:cors>
-        <mvc:mapping path="/**" />
-    </mvc:cors>
-
     <mvc:default-servlet-handler />    
 </beans>

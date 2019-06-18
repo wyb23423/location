@@ -13,10 +13,10 @@ layui.use('layer', function () { //独立版的layer无需执行这一句
 				type: 1,
 				title: "数据信息!!",
 				offset: type //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
-					,
+				,
 				Boolean: true,
 				id: 'layerDemo' + type //防止重复弹出
-					,
+				,
 				area: ['459px', '400'],
 				content: `
 				<div style="padding: 23px 29px;    width: 459px;">
@@ -35,9 +35,9 @@ layui.use('layer', function () { //独立版的layer无需执行这一句
 				</div>`,
 				btn: '关闭全部框',
 				btnAlign: 'r' //按钮居中
-					,
+				,
 				shade: 0 //不显示遮罩
-					,
+				,
 				yes: function () {
 					layer.closeAll()
 				}
@@ -52,13 +52,13 @@ layui.use('layer', function () { //独立版的layer无需执行这一句
 				type: 1,
 				title: "注意报警弹出信息!!",
 				offset: type //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
-					,
+				,
 				resize: true,
 				moveOut: true,
 				anim: 5,
 				Boolean: true,
 				id: 'layerDemo' + type //防止重复弹出
-					,
+				,
 				area: ['1200px', '750px'],
 				content: `
 						<table class="layui-table">
@@ -122,9 +122,9 @@ layui.use('layer', function () { //独立版的layer无需执行这一句
 				},
 				btn: '关闭全部框',
 				btnAlign: 'r' //按钮居中
-					,
+				,
 				shade: 0 //不显示遮罩
-					,
+				,
 				yes: function () {
 					layer.closeAll()
 				}
@@ -132,10 +132,13 @@ layui.use('layer', function () { //独立版的layer无需执行这一句
 		},
 		people: function (othis) {
 			var type = othis.data('type');
+			var people = tagarrlists.filter(function (v) {
+				return !!ids[v.tagNo];
+			});
 
 			layer.open({
 				type: 1,
-				title: "人员信息",
+				title: `人员信息(共${people.length}人)`,
 				offset: type, //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
 				resize: true,
 				moveOut: true,
@@ -144,38 +147,33 @@ layui.use('layer', function () { //独立版的layer无需执行这一句
 				id: 'layerDemo' + type, //防止重复弹出
 				area: ['1200px', '750px'],
 				content: `
-						<table class="layui-table">
-						  <colgroup>
-						    <col width="20">
-						    <col width="100">
-						    <col>
-						  </colgroup>
-						  <thead>
-						    <tr>
-						      <th>ID</th>
-						      <th>人员名称</th>
-						      <th>编号</th>
-									<th>区域</th>
-									<th>部门</th>
-						      <th>职位</th>
-						    </tr> 
-						  </thead>
-						  <tbody id="tabid">
-						  </tbody>
+					<table class="layui-table">
+						<colgroup>
+							<col width="20">
+							<col width="100">
+							<col>
+						</colgroup>
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>人员名称</th>
+								<th>编号</th>
+								<th>区域</th>
+								<th>部门</th>
+								<th>职位</th>
+							</tr> 
+						</thead>
+						<tbody id="tabid">
+						</tbody>
 					</table>
 					`,
 				success: function () {
-					var people = tagarrlists.filter(function (v) {
-						return !!ids[v.tagNo];
-					});
-					var table = $("#tabid");
-
-					fetch('/api/zone/getall?currentPage=10&pageSize=100', {
-							method: 'GET'
-						})
+					fetch('/api/zone/getall?currentPage=10&pageSize=100')
 						.then(res => res.json())
 						.then(res => {
 							var zoneList = res.pagedData.datas;
+							var table = $("#tabid");
+
 							for (var a = 0; a < people.length; a++) {
 								var person = people[a];
 								var zone = zoneList.find(v => v.id == person.zone);
@@ -192,7 +190,7 @@ layui.use('layer', function () { //独立版的layer无需执行这一句
 								`)
 							}
 						})
-						.catch(e => console.log(e));
+						.catch(console.log);
 				},
 				btn: '关闭全部框',
 				btnAlign: 'r', //按钮居中

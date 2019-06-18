@@ -307,9 +307,10 @@
 	<script src="../../red/js/header.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
 		$(".flieNmae").hide();
+		var fileBox = document.getElementById('preview');
+
 		layui.use(['form', 'upload'], function () {
 			var map = null;
-			var fileBox = document.getElementById('preview');
 
 			layui.upload.render({
 				elem: '#test1', //绑定元素
@@ -351,25 +352,22 @@
 				formData.append('file', map);
 				formData.append('mapName', map.name.split('.')[0] || 'map');
 				fetch('/api/map/upload/mapfile', {
-						method: 'POST',
-						body: formData
-					})
+					method: 'POST',
+					body: formData
+				})
 					.then(res => res.json())
 					.then(res => res.resultMap.mapUrl)
 					.then(url => {
-						var formeInfo = data.field;
 						var timestamp = Date.now();
+						var { x_min, x_max, y_min, y_max } = data.field;
 						postAjax("/api/map/addMap", JSON.stringify({
-							"createTime": timestamp,
-							"createUser": "null",
-							"filepath": url,
-							"name": formeInfo.mapNmae,
-							"updateTime": timestamp,
-							"updateUser": "null",
-							"xMax": formeInfo.x_max,
-							"xMin": formeInfo.x_min,
-							"yMax": formeInfo.y_max,
-							"yMin": formeInfo.y_min
+							createTime: timestamp,
+							createUser: "null",
+							filepath: url,
+							name: data.field.mapNmae,
+							updateTime: timestamp,
+							updateUser: "null",
+							margin: `[[${x_min}, ${y_min}], [${x_min}, ${y_max}], [${x_max}, ${y_max}], [${x_max}, ${y_min}]]`
 						}));
 					})
 					.catch(e => {
