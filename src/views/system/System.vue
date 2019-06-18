@@ -17,7 +17,7 @@ export default class System extends Vue {
     public tabs = [
         { title: '电子围栏', to: '/system/fence', icon: 'el-icon-crop' },
         // { title: '路线规划', to: '/system/route', icon: 'el-icon-rank' },
-        { title: '基站配置', to: '/system/base', icon: 'el-icon-setting' },
+        // { title: '基站配置', to: '/system/base', icon: 'el-icon-setting' },
         {
             title: '摄像头',
             to: 'camera',

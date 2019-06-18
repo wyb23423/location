@@ -1,5 +1,5 @@
 <template>
-    <div style="padding: 5%; height: 100%">
+    <div style="padding: 5%; height: 100%" v-if="!base">
         <el-card class="card" ref="table">
             <app-table
                 :max-height="maxHeight"
@@ -7,7 +7,7 @@
                 :col-cfg="colCfg"
                 :total-count="totalCount"
                 :op="[
-                    { type: 'success', name: 'look', desc: '查看详情' },
+                    { type: 'success', name: 'look', desc: '设备配置' },
                     { type: 'danger', name: 'del', desc: '删除' }
                 ]"
                 :op-width="200"
@@ -18,17 +18,35 @@
             ></app-table>
         </el-card>
     </div>
+
+    <div v-else :class="$style.info">
+        <el-page-header
+            @back="look(null)"
+            style="margin-bottom: 20px"
+        ></el-page-header>
+
+        <el-tabs v-model="activeTab" type="border-card">
+            <el-tab-pane label="设备信息" name="info">
+                <base-info :data="base"></base-info>
+            </el-tab-pane>
+            <el-tab-pane label="基本属性设置" name="primary"> </el-tab-pane>
+            <el-tab-pane label="网络参数设置" name="net"> </el-tab-pane>
+            <el-tab-pane label="位置设置" name="position"> </el-tab-pane>
+        </el-tabs>
+    </div>
 </template>
 
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
 import Table from '../../components/Table.vue';
 import TableMixin from '../../mixins/table';
+import BaseInfo from '../../components/base/BaseInfo.vue';
 import * as http from '../../assets/utils/http';
 
 @Component({
     components: {
-        'app-table': Table
+        'app-table': Table,
+        'base-info': BaseInfo
     }
 })
 export default class Info extends mixins(TableMixin) {
@@ -41,12 +59,15 @@ export default class Info extends mixins(TableMixin) {
         { prop: 'ip', label: '基站IP', width: 210 }
     ];
 
+    public base: any = null;
+    public activeTab: string = 'info';
+
     public del(row: any) {
         console.log(row);
     }
 
     public look(row: any) {
-        console.log(row);
+        this.base = row;
     }
 
     public async _getData(page: number, pageSize: number) {
@@ -67,4 +88,13 @@ export default class Info extends mixins(TableMixin) {
     }
 }
 </script>
+
+
+<style lang="postcss" module>
+.info {
+    height: 100%;
+    padding: 3%;
+    padding-bottom: 0;
+}
+</style>
 
