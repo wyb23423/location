@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import echarts from 'echarts';
-import { State } from 'vuex-class';
+import { State, Getter } from 'vuex-class';
 import { loopAwait } from '@/assets/utils/util';
 
 interface CardInfo {
@@ -20,6 +20,7 @@ interface RecordItem {
 @Component
 export default class Main extends Vue {
     @State public baseUrl!: string;
+    @Getter public mainHeight!: string;
 
     public activeNames: string[] = ['1', '2'];
     public cards: CardInfo[] = [

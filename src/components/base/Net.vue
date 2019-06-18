@@ -23,6 +23,12 @@
         <el-form-item label="服务器端口">
             <el-input v-model="form.serverPort"></el-input>
         </el-form-item>
+        <el-form-item label="传输模式">
+            <el-radio-group v-model="form.mode">
+                <el-radio label="AA">TCP</el-radio>
+                <el-radio label="55">UDP</el-radio>
+            </el-radio-group>
+        </el-form-item>
         <el-form-item>
             <el-button type="success" @click="onSubmit">设置</el-button>
         </el-form-item>

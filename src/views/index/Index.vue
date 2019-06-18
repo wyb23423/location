@@ -1,5 +1,5 @@
 <template>
-    <el-row>
+    <div :style="{ height: mainHeight }" style="overflow-y: auto">
         <el-alert
             title="监控区域1->三号楼 F区域设备损坏报警，请尽快维修检查"
             type="warning"
@@ -57,7 +57,7 @@
                 </el-collapse-item>
             </el-collapse>
         </div>
-    </el-row>
+    </div>
 </template>
 
 <script lang="ts" src="./index.ts"></script>

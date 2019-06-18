@@ -7,7 +7,7 @@
                 :col-cfg="colCfg"
                 :total-count="totalCount"
                 :op="[
-                    { type: 'success', name: 'look', desc: '设备配置' },
+                    { type: 'success', name: 'look', desc: '查看详情' },
                     { type: 'danger', name: 'del', desc: '删除' }
                 ]"
                 :op-width="200"
@@ -29,12 +29,12 @@
             <el-tab-pane label="设备信息" name="info">
                 <base-info :data="base"></base-info>
             </el-tab-pane>
-            <el-tab-pane label="基本属性设置" name="primary">
+            <!-- <el-tab-pane label="基本属性设置" name="primary">
                 <base-primary></base-primary>
             </el-tab-pane>
             <el-tab-pane label="网络参数设置" name="net">
                 <base-net></base-net>
-            </el-tab-pane>
+            </el-tab-pane> -->
             <el-tab-pane label="位置设置" name="position">
                 <base-position :data="base"></base-position>
             </el-tab-pane>
