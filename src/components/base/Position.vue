@@ -78,7 +78,8 @@ export default class Position extends Vue {
                 // TODO 提交数据
                 const data = Object.assign({}, this.form, {
                     updateUser: '....',
-                    updateTime: Date.now()
+                    updateTime: Date.now(),
+                    id: this.data.id
                 });
 
                 console.log(data);
