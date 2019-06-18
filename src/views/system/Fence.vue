@@ -11,9 +11,9 @@
             <el-collapse-item name="info" title="区域信息">
                 <app-table
                     :max-height="255"
-                    :tableData="tableData"
-                    :colCfg="colCfg"
-                    :totalCount="totalCount"
+                    :table-data="tableData"
+                    :col-cfg="colCfg"
+                    :total-count="totalCount"
                     :op="op"
                     :noPrint="true"
                     :isSmall="true"

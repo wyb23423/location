@@ -23,6 +23,14 @@ const [
   'protocol/Submissio'
 ].map(name => () => import(/* webpackChunkName: "system" */ `@/views/system/${name}.vue`));
 
+// 设备管理
+const [
+  BaseIndex, Info
+] = [
+  'BaseIndex', 'Info'
+].map(name => () => import(/* webpackChunkName: "base" */ `@/views/base/${name}.vue`));
+
+
 
 Vue.use(Router);
 
@@ -51,6 +59,12 @@ export default new Router({
             { path: 'protocol/add', name: 'protocol-add', component: ProtocolAdd },
             { path: 'protocol/list', name: 'protocol-list', component: ProtocolList },
             { path: 'protocol/submissio', name: 'protocol-submissio', component: Submissio }
+          ]
+        },
+        {
+          path: 'base', component: BaseIndex,
+          children: [
+            { path: 'info', name: 'base-info', component: Info, alias: '' },
           ]
         }
       ]

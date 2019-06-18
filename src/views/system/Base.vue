@@ -3,9 +3,9 @@
         <el-card class="card" ref="table">
             <app-table
                 :max-height="maxHeight"
-                :tableData="tableData"
-                :colCfg="colCfg"
-                :totalCount="totalCount"
+                :table-data="tableData"
+                :col-cfg="colCfg"
+                :total-count="totalCount"
                 :op="[{ type: 'warning', name: 'setting', desc: '配置基站' }]"
                 :op-width="200"
                 @setting="setting"

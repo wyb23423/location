@@ -70,7 +70,7 @@ export default class Header extends Vue {
         ['首页', '/index'],
         ['管理员设置', '/admin'],
         ['系统设置', '/system'],
-        ['设备管理', '/equipment'],
+        ['设备管理', '/base'],
         ['人员管理', '/person'],
         ['实时监控', '/monitor'],
         // ['电子围栏', '/fence'],

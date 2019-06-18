@@ -3,9 +3,9 @@
         <el-card class="card" ref="table">
             <app-table
                 :max-height="maxHeight"
-                :tableData="tableData"
-                :colCfg="colCfg"
-                :totalCount="totalCount"
+                :table-data="tableData"
+                :col-cfg="colCfg"
+                :total-count="totalCount"
                 :op="[{ type: 'danger', name: 'del', desc: '删除' }]"
                 @del="del"
                 @updateData="getData"

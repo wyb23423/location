@@ -6,9 +6,13 @@
                 :table-data="tableData"
                 :col-cfg="colCfg"
                 :total-count="totalCount"
-                :op="[{ type: 'danger', name: 'del', desc: '删除' }]"
-                :op-width="120"
+                :op="[
+                    { type: 'success', name: 'look', desc: '查看详情' },
+                    { type: 'danger', name: 'del', desc: '删除' }
+                ]"
+                :op-width="200"
                 @del="del"
+                @look="look"
                 @updateData="getData"
                 @toExcel="toExcel"
             ></app-table>
@@ -18,29 +22,30 @@
 
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
-import { State } from 'vuex-class/lib/bindings';
-import Table from '../../../components/Table.vue';
-import TableMixin from '../../../mixins/table';
-import * as http from '../../../assets/utils/http';
+import Table from '../../components/Table.vue';
+import TableMixin from '../../mixins/table';
+import * as http from '../../assets/utils/http';
 
 @Component({
     components: {
         'app-table': Table
     }
 })
-export default class CameraList extends mixins(TableMixin) {
-    @State public baseUrl!: string;
-
+export default class Info extends mixins(TableMixin) {
     public colCfg: any[] = [
-        { prop: 'id', label: '摄像头ID', sortable: true, width: 140 },
-        { prop: 'ip', label: '摄像头IP', width: 260 },
-        { prop: 'port', label: '设备端口号', width: 200 },
-        { prop: 'groupCode', label: '所属组号', sortable: true, width: 200 },
-        { prop: 'username', label: '用户名', width: 220 },
-        { prop: 'windowSplit', label: '窗口分割数', width: 140 }
+        { prop: 'id', label: '基站ID', sortable: true, width: 150 },
+        { prop: 'baseNo', label: '基站编号', width: 175 },
+        { prop: 'name', label: '基站名称', width: 175 },
+        { prop: 'main', label: '主基站', width: 145 },
+        { prop: 'zone', label: '基站区域', width: 170 },
+        { prop: 'ip', label: '基站IP', width: 210 }
     ];
 
     public del(row: any) {
+        console.log(row);
+    }
+
+    public look(row: any) {
         console.log(row);
     }
 
@@ -48,11 +53,10 @@ export default class CameraList extends mixins(TableMixin) {
         let data: any[] = [];
         let count: number = 0;
         try {
-            const res = await http.get('/api/camera/getall', {
+            const res = await http.get('/api/base/getall', {
                 pageSize,
                 currentPage: page
             });
-
             data = res.pagedData.datas;
             count = res.pagedData.totalCount;
         } catch (e) {
