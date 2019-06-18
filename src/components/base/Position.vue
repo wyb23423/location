@@ -17,10 +17,16 @@
             </el-select>
         </el-form-item>
         <el-form-item label="坐标X：" prop="coordx" required>
-            <el-input v-model.number="form.coordx"></el-input>
+            <el-input
+                v-model.number="form.coordx"
+                style="max-width: 300px;"
+            ></el-input>
         </el-form-item>
         <el-form-item label="坐标Y：" prop="coordy" required>
-            <el-input v-model.number="form.coordy"></el-input>
+            <el-input
+                v-model.number="form.coordy"
+                style="max-width: 300px;"
+            ></el-input>
         </el-form-item>
         <el-form-item>
             <el-button type="success" @click="onSubmit">设置</el-button>

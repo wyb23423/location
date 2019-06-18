@@ -97,21 +97,3 @@ export default class CameraAdd extends Vue {
 }
 </script>
 
-<style lang="postcss" module>
-.ip {
-    width: auto !important;
-
-    & input {
-        width: 50px;
-        padding: 10px;
-        border-radius: 0.25rem !important;
-    }
-
-    & > div {
-        padding: 0 5px !important;
-        vertical-align: bottom;
-        background: none;
-    }
-}
-</style>
-
