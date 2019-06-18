@@ -1,22 +1,8 @@
 <template>
-    <div style="padding-left: 5%; padding-top: 3%;" @paste="paste($event)">
+    <div style="padding-left: 5%; padding-top: 3%;">
         <el-form ref="form" :model="form" label-width="auto" style="width: 80%">
             <el-form-item label="摄像头IP：" required>
-                <template v-for="i of [0, 1, 2, 3]">
-                    <el-input
-                        :key="i"
-                        maxlength="3"
-                        min="0"
-                        max="255"
-                        step="1"
-                        v-model="form.ip[i]"
-                        @input="next(i)"
-                        :class="$style.ip"
-                        ref="ip"
-                    >
-                        <span slot="append" v-if="i < 3">.</span>
-                    </el-input>
-                </template>
+                <ip-input v-model="form.ip"></ip-input>
             </el-form-item>
             <el-form-item label="设备端口号：" prop="port" required>
                 <el-input v-model.number="form.port" type="number"></el-input>
@@ -54,8 +40,13 @@ import { State } from 'vuex-class/lib/bindings';
 import Vue from 'vue';
 import { ElForm } from 'element-ui/types/form';
 import { ElInput } from 'element-ui/types/input';
+import IpInput from '../../../components/IpInput.vue';
 
-@Component
+@Component({
+    components: {
+        'ip-input': IpInput
+    }
+})
 export default class CameraAdd extends Vue {
     public form: any = {};
 
@@ -63,33 +54,6 @@ export default class CameraAdd extends Vue {
         this.init();
     }
 
-    public next(i: number) {
-        const currValue = this.form.ip[i];
-        const value = this.parseIp(currValue);
-        this.$set(this.form.ip, i, value.substr(0, 3));
-
-        if (value.length >= 3 && i < 3) {
-            (<ElInput[]>this.$refs.ip)[i + 1].focus();
-        }
-
-        if (currValue.length <= 0 && i > 0) {
-            (<ElInput[]>this.$refs.ip)[i - 1].focus();
-        }
-    }
-    public paste(e: ClipboardEvent) {
-        const index: number = (<ElInput[]>this.$refs.ip).findIndex(
-            v => v.$refs.input === e.target
-        );
-        if (index > -1) {
-            for (const v of Array.from(e.clipboardData!.items)) {
-                if (v.type === 'text/plain') {
-                    v.getAsString((str: string) =>
-                        this.pasteHandler(str, index)
-                    );
-                }
-            }
-        }
-    }
     public onSubmit() {
         const isComplete = this.form.ip.every((v: string) => !isNaN(+v));
 
@@ -129,24 +93,6 @@ export default class CameraAdd extends Vue {
             windowSplit: 1,
             password: ''
         };
-    }
-
-    private pasteHandler(str: string, i: number) {
-        const ips = <ElInput[]>this.$refs.ip;
-
-        for (const v of str.split('.')) {
-            if (i > 3) {
-                break;
-            }
-
-            if (v) {
-                this.$set(this.form.ip, i++, this.parseIp(v).substr(0, 3));
-            }
-        }
-    }
-
-    private parseIp(value: string) {
-        return (parseInt(value, 10) || '') + '';
     }
 }
 </script>

@@ -29,9 +29,15 @@
             <el-tab-pane label="设备信息" name="info">
                 <base-info :data="base"></base-info>
             </el-tab-pane>
-            <el-tab-pane label="基本属性设置" name="primary"> </el-tab-pane>
-            <el-tab-pane label="网络参数设置" name="net"> </el-tab-pane>
-            <el-tab-pane label="位置设置" name="position"> </el-tab-pane>
+            <el-tab-pane label="基本属性设置" name="primary">
+                <base-primary></base-primary>
+            </el-tab-pane>
+            <el-tab-pane label="网络参数设置" name="net">
+                <base-net></base-net>
+            </el-tab-pane>
+            <el-tab-pane label="位置设置" name="position">
+                <base-position :data="base"></base-position>
+            </el-tab-pane>
         </el-tabs>
     </div>
 </template>
@@ -41,12 +47,18 @@ import Component, { mixins } from 'vue-class-component';
 import Table from '../../components/Table.vue';
 import TableMixin from '../../mixins/table';
 import BaseInfo from '../../components/base/BaseInfo.vue';
+import Primary from '../../components/base/Primary.vue';
+import Net from '../../components/base/Net.vue';
+import Position from '../../components/base/Position.vue';
 import * as http from '../../assets/utils/http';
 
 @Component({
     components: {
         'app-table': Table,
-        'base-info': BaseInfo
+        'base-info': BaseInfo,
+        'base-primary': Primary,
+        'base-net': Net,
+        'base-position': Position
     }
 })
 export default class Info extends mixins(TableMixin) {
