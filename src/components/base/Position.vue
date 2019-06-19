@@ -63,7 +63,10 @@ export default class Position extends Vue {
             pageSize: 10000
         })
             .then((res: http.ResData) => {
-                this.zones = res.pagedData.datas.map(v => [v.id + '', v.name]);
+                this.zones = res.pagedData.datas.map((v: any) => [
+                    v.id + '',
+                    v.name
+                ]);
                 if (this.zones.every(v => v[0] !== this.form.zone)) {
                     this.form.zone = this.zones[0][0];
                 }

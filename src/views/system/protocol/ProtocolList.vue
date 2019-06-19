@@ -19,15 +19,10 @@
 
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
-import Table from '../../../components/Table.vue';
 import TableMixin from '../../../mixins/table';
 import * as http from '../../../assets/utils/http';
 
-@Component({
-    components: {
-        'app-table': Table
-    }
-})
+@Component
 export default class ProtocolList extends mixins(TableMixin) {
     public colCfg: any[] = [
         { prop: 'id', label: 'ID', sortable: true, width: 220 },
@@ -41,7 +36,7 @@ export default class ProtocolList extends mixins(TableMixin) {
         console.log(row);
     }
 
-    public async _getData(page: number, pageSize: number) {
+    protected async _getData(page: number, pageSize: number) {
         let data: any[] = [];
         let count: number = 0;
         try {

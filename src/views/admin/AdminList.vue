@@ -18,15 +18,10 @@
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
 import { State } from 'vuex-class/lib/bindings';
-import Table from '../../components/Table.vue';
 import TableMixin from '../../mixins/table';
 import * as http from '../../assets/utils/http';
 
-@Component({
-    components: {
-        'app-table': Table
-    }
-})
+@Component
 export default class AdminList extends mixins(TableMixin) {
     @State public baseUrl!: string;
 
@@ -45,7 +40,7 @@ export default class AdminList extends mixins(TableMixin) {
         console.log(row);
     }
 
-    public async _getData(page: number, pageSize: number) {
+    protected async _getData(page: number, pageSize: number) {
         let data: any[] = [];
         let count: number = 0;
         try {

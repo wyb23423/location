@@ -96,7 +96,7 @@ export class FengMapMgr extends MapMgr<fengmap.FMMap> {
         };
 
         this.imgLayer = group.getOrCreateLayer('imageMarker');
-        const im = new fengmap.FMImageMarker(opt);
+        const im = new fengmap.FMImageMarker({ ...opt, z: p.z });
         im.custom = { name: name || JSON.stringify(p) };
 
         this.imgLayer.addMarker(im);

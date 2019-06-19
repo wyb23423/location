@@ -63,3 +63,12 @@ export function isThisType(obj: any, type: string) {
 
     return Object.prototype.toString.call(obj) === `[object ${type}]`;
 }
+
+/**
+ * 创建可以返回递增数的函数
+ */
+export function incrementalFactory() {
+    let num: number = 0;
+
+    return () => num++;
+}

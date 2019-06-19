@@ -1,23 +1,13 @@
 
 import Component, { mixins } from 'vue-class-component';
-import MapSelect from '../../components/MapSelect.vue';
-import { createMap } from '../../assets/map';
-import { loopAwait } from '../../assets/utils/util';
 import TableMixin from '../../mixins/table';
-import Table from '../../components/Table.vue';
-import { FengMapMgr } from '../../assets/map/fengmap';
-import { ZoneData, MapData } from '../../assets/map/map';
+
+import { ZoneData } from '../../assets/map/map';
 import * as http from '../../assets/utils/http';
+import SelectMapMixin from '@/mixins/selectMap';
 
-
-@Component({
-    components: {
-        'map-select': MapSelect,
-        'app-table': Table
-    }
-})
-export default class Fence extends mixins(TableMixin) {
-    public mgr?: FengMapMgr;
+@Component
+export default class Fence extends mixins(TableMixin, SelectMapMixin) {
     public activeNames: string[] = ['info', 'add'];
 
     // ===================================table
@@ -47,15 +37,6 @@ export default class Fence extends mixins(TableMixin) {
     }
     // ====================================
     private pointIndex: number = -1;
-
-    // ==========================生命周期
-    public destroyed() {
-        if (this.mgr) {
-            this.mgr.dispose();
-            this.mgr = undefined;
-        }
-    }
-    // ==========================
 
     /**
      * 删除区域
@@ -94,19 +75,6 @@ export default class Fence extends mixins(TableMixin) {
         op.desc[index] = op.desc[index] || isDel ? undefined : '隐藏';
 
         this.$set(this.op, 1, op);
-    }
-
-    /**
-     * 选择地图显示
-     */
-    public async selectMap(data: MapData) {
-        if (data) {
-            const dom = <HTMLElement>this.$refs.map;
-            await loopAwait(() => !!dom.offsetWidth && !!dom.offsetHeight);
-            this.mgr = createMap(data, dom);
-
-            this.bindClickEvent();
-        }
     }
 
     public setPosition(point: Vector3, i: number) {
@@ -165,7 +133,7 @@ export default class Fence extends mixins(TableMixin) {
     /**
      * 获取表格数据
      */
-    public async _getData(page: number, pageSize: number) {
+    protected async _getData(page: number, pageSize: number) {
         let data: any[] = [];
         let count: number = 0;
         try {
@@ -188,7 +156,7 @@ export default class Fence extends mixins(TableMixin) {
         return { count, data };
     }
 
-    private bindClickEvent() {
+    protected bindClickEvent() {
         this.mgr!.on('mapClickNode', (event: FMMapClickEvent) => {
             if (event.nodeType === fengmap.FMNodeType.NONE) {
                 return;

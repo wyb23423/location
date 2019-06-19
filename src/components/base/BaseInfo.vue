@@ -41,7 +41,7 @@
                     </div>
                     <div>
                         <span :class="$style.title">安装时间：</span>
-                        <span>{{ data.createTime || '保密' }}</span>
+                        <span>{{ data.installTime || '保密' }}</span>
                     </div>
                 </li>
                 <li>

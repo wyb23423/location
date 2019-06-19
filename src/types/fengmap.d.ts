@@ -43,7 +43,7 @@ interface FMTextMarkerOptions extends Vector2 {
     alpha?: number;
 }
 
-interface FMImageMarkerOptions extends Vector2 {
+interface FMImageMarkerOptions extends Vector23 {
     size: number;
     height: number;
     url: string;

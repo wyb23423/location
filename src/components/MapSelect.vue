@@ -19,15 +19,11 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import Router from 'vue-router';
-import { State } from 'vuex-class/lib/bindings';
 import { Emit } from 'vue-property-decorator';
 import { MapData } from '../assets/map/map';
 
 @Component
 export default class MapSelect extends Vue {
-    @State public baseUrl!: string;
-
     public value: number = 0;
     public options: MapData[] = [];
 

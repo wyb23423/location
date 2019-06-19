@@ -44,7 +44,6 @@
 
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
-import Table from '../../components/Table.vue';
 import TableMixin from '../../mixins/table';
 import BaseInfo from '../../components/base/BaseInfo.vue';
 import Primary from '../../components/base/Primary.vue';
@@ -54,7 +53,6 @@ import * as http from '../../assets/utils/http';
 
 @Component({
     components: {
-        'app-table': Table,
         'base-info': BaseInfo,
         'base-primary': Primary,
         'base-net': Net,
@@ -82,7 +80,7 @@ export default class Info extends mixins(TableMixin) {
         this.base = row;
     }
 
-    public async _getData(page: number, pageSize: number) {
+    protected async _getData(page: number, pageSize: number) {
         let data: any[] = [];
         let count: number = 0;
         try {

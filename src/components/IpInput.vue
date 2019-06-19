@@ -3,11 +3,7 @@
         <el-input
             v-for="i of [0, 1, 2, 3]"
             :key="i"
-            maxlength="3"
-            min="0"
-            max="255"
-            step="1"
-            v-model="ip[i]"
+            v-model="value[i]"
             @input="next(i)"
             :class="$style.ip"
             ref="ip"
@@ -27,17 +23,11 @@ import { ElInput } from 'element-ui/types/input';
 export default class IpInput extends Vue {
     @Prop() public value!: string[];
 
-    public ip: string[] = [];
-
-    public created() {
-        this.ip = [...this.value];
-    }
-
     @Emit('input')
     public next(i: number) {
-        const currValue = this.ip[i];
+        const currValue = this.value[i];
         const value = this.parseIp(currValue);
-        this.$set(this.ip, i, value.substr(0, 3));
+        this.$set(this.value, i, value.substr(0, 3));
 
         if (value.length >= 3 && i < 3) {
             (<ElInput[]>this.$refs.ip)[i + 1].focus();
@@ -47,7 +37,7 @@ export default class IpInput extends Vue {
             (<ElInput[]>this.$refs.ip)[i - 1].focus();
         }
 
-        return this.ip;
+        return this.value;
     }
 
     @Emit('input')
@@ -65,7 +55,7 @@ export default class IpInput extends Vue {
             }
         }
 
-        return this.ip;
+        return this.value;
     }
 
     private pasteHandler(str: string, i: number) {
@@ -77,13 +67,20 @@ export default class IpInput extends Vue {
             }
 
             if (v) {
-                this.$set(this.ip, i++, this.parseIp(v).substr(0, 3));
+                this.$set(this.value, i++, this.parseIp(v).substr(0, 3));
             }
         }
     }
 
     private parseIp(value: string) {
-        return (parseInt(value, 10) || '') + '';
+        let num = parseInt(value, 10);
+        if (Number.isFinite(num)) {
+            num = Math.max(0, Math.min(num, 255));
+
+            return num + '';
+        }
+
+        return '';
     }
 }
 </script>
