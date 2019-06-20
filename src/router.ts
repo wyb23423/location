@@ -34,9 +34,9 @@ const [
 
 // 人员管理
 const [
-  PeopleIndex, PeopleList
+  PeopleIndex, PeopleList, PeopleAdd
 ] = [
-  'PeopleIndex', 'PeopleList'
+  'PeopleIndex', 'PeopleList', 'PeopleAdd'
 ].map(name => () => import(/* webpackChunkName: "base" */ `@/views/people/${name}.vue`));
 
 Vue.use(Router);
@@ -79,7 +79,8 @@ export default new Router({
         {
           path: 'people', component: PeopleIndex, redirect: 'people/list/1',
           children: [
-            { path: 'list/:type', name: 'people-list', component: PeopleList, props: true }
+            { path: 'list/:type', name: 'people-list', component: PeopleList, props: true },
+            { path: 'add', name: 'people-add', component: PeopleAdd },
           ]
         }
       ]
