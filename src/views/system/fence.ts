@@ -133,7 +133,7 @@ export default class Fence extends mixins(TableMixin, SelectMapMixin) {
     /**
      * 获取表格数据
      */
-    protected async _getData(page: number, pageSize: number) {
+    protected async fetch(page: number, pageSize: number) {
         let data: any[] = [];
         let count: number = 0;
         try {

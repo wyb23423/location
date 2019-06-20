@@ -26,10 +26,10 @@ const [
 // 设备管理
 const [
   BaseIndex, Info,
-  BaseAdd
+  BaseAdd, Calibration
 ] = [
   'BaseIndex', 'Info',
-  'BaseAdd'
+  'BaseAdd', 'Calibration'
 ].map(name => () => import(/* webpackChunkName: "base" */ `@/views/base/${name}.vue`));
 
 
@@ -68,6 +68,7 @@ export default new Router({
           children: [
             { path: 'info', name: 'base-info', component: Info, alias: '' },
             { path: 'add', name: 'base-add', component: BaseAdd },
+            { path: 'calibration', name: 'calibration', component: Calibration }
           ]
         }
       ]

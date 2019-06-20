@@ -46,7 +46,6 @@ export default class BaseAdd extends mixins(SelectMapMixin, TableMixin) {
             'coordx',
             'coordy',
             'coordz',
-            'timeCorrectionValue',
             'algorithmType',
             'groupBaseSize',
             'minBaseSize',
@@ -173,19 +172,11 @@ export default class BaseAdd extends mixins(SelectMapMixin, TableMixin) {
     }
 
     // 获取表格数据
-    protected _getData(page: number, pageSize: number) {
-        const count = this.bases.length;
-        const data = [];
-
-        for (
-            let i = (page - 1) * pageSize;
-            i < count && i < page * pageSize;
-            i++
-        ) {
-            data.push({ ...this.bases[i] });
-        }
-
-        return Promise.resolve({ count, data });
+    protected fetch(page: number, pageSize: number) {
+        return Promise.resolve({
+            count: this.bases.length,
+            data: this.bases.slice((page - 1) * pageSize, page * pageSize)
+        });
     }
 
     private addOrigin(x: number, y: number) {

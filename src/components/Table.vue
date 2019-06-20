@@ -14,14 +14,15 @@
                 :label="v.label"
                 :sortable="!!v.sortable"
                 :resizable="true"
-                :width="v.width * scale"
+                :width="v.width == null ? undefined : v.width * scale"
             >
             </el-table-column>
             <el-table-column
                 label="操作"
+                fixed="right"
                 :resizable="true"
                 v-if="op && op.length"
-                :min-width="opWidth * scale"
+                :min-width="opWidth == null ? undefined : opWidth * scale"
             >
                 <template slot-scope="scope">
                     <div class="flex-center">

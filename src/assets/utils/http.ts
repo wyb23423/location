@@ -117,7 +117,8 @@ function parseArgs(
             return '请求参数必须为纯对象';
         }
 
-        url = Object.entries(params).reduce((a, [k, v], i) => a + `${i ? '&' : '?'}${k}=${v}`, url);
+        const start = url.includes('?') ? '&' : '?';
+        url = Object.entries(params).reduce((a, [k, v], i) => a + `${i ? '&' : start}${k}=${v}`, url);
     } else {
         const contentType = getHead(headers, 'Content-Type');
         if (!contentType) {

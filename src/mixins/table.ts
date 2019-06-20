@@ -1,9 +1,9 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { loopAwait } from '@/assets/utils/util';
+import { loopAwait } from '../assets/utils/util';
 import { Watch } from 'vue-property-decorator';
-import table2Excel from '@/assets/utils/table2excel';
-import Table from '@/components/Table.vue';
+import table2Excel from '../assets/utils/table2excel';
+import Table from '../components/Table.vue';
 
 interface TableData {
     count: number;
@@ -20,21 +20,16 @@ export default class TableMixin extends Vue {
     public tableData: any[] = [];
     public maxHeight: number = 100;
     public colCfg: any[] = [];
-
     protected pageSize: number = 10;
-
     public created() {
         this.getData(1, 10);
     }
-
     public mounted() {
         this.getMaxHeight();
     }
-
     public async getData(page: number, pageSize: number) {
         this.pageSize = pageSize;
-
-        const res = await this._getData(page, pageSize);
+        const res = await this.fetch(page, pageSize);
         this.totalCount = res.count;
         this.tableData = res.data;
     }
@@ -42,11 +37,9 @@ export default class TableMixin extends Vue {
         const body = await this.bodyStr();
         table2Excel(this.headStr() + body);
     }
-
-    protected async _getData(page: number, pageSize: number): Promise<TableData> {
+    protected async fetch(page: number, pageSize: number): Promise<TableData> {
         return { count: 0, data: [] };
     }
-
     @Watch('$store.state.rootScale')
     private async getMaxHeight() {
         const component: any = this.$refs.table;
@@ -58,18 +51,14 @@ export default class TableMixin extends Vue {
             }
         }
     }
-
     private headStr() {
         const thead = ['<thead><tr>'];
         this.colCfg.forEach(v => thead.push(`<th>${v.label}</th>`));
         thead.push('</tr></thead>');
-
         return thead.join('');
     }
-
     private async bodyStr() {
-        const data = (await this._getData(1, this.totalCount)).data;
-
+        const data = (await this.fetch(1, this.totalCount)).data;
         const tbody = ['<tbody>'];
         data.forEach(v => {
             tbody.push('<tr>');
@@ -77,7 +66,6 @@ export default class TableMixin extends Vue {
             tbody.push('</tr>');
         });
         tbody.push('</tbody>');
-
         return tbody.join('');
     }
 }

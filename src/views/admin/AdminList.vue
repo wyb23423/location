@@ -40,7 +40,7 @@ export default class AdminList extends mixins(TableMixin) {
         console.log(row);
     }
 
-    protected async _getData(page: number, pageSize: number) {
+    protected async fetch(page: number, pageSize: number) {
         let data: any[] = [];
         let count: number = 0;
         try {
