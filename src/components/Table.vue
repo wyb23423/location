@@ -39,11 +39,10 @@
                 </template>
             </el-table-column>
         </el-table>
-        <div>
+        <div class="flex-center" style="justify-content: space-between;">
             <el-button
                 size="mini"
                 icon="el-icon-printer"
-                :class="$style.out"
                 @click="emit('toExcel')"
                 v-if="!noPrint"
             >
@@ -53,16 +52,14 @@
                 :current-page="page"
                 :page-size="pageSize"
                 :layout="
-                    isSmall
-                        ? 'prev, pager, next'
-                        : 'total, sizes, prev, pager, next, jumper'
+                    isSmall ? 'prev, pager, next' : 'sizes, prev, pager, next'
                 "
                 :total="totalCount"
                 :small="!!isSmall"
                 :hide-on-single-page="!!isSmall"
+                :pager-count="5"
                 @size-change="updateData('pageSize', $event)"
                 @current-change="updateData('page', $event)"
-                style="text-align: right"
             >
             </el-pagination>
         </div>
@@ -155,9 +152,5 @@ function parseOpItem(item: OperationItem, index: number) {
     & th {
         background: #eee !important;
     }
-}
-.out {
-    float: left;
-    margin-top: 10px;
 }
 </style>

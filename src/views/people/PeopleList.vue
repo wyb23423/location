@@ -132,7 +132,7 @@ export default class PeopleList extends mixins(TableMixin) {
                 return v;
             });
 
-            count = res.pagedData.totalCount;
+            count = res.pagedData.totalCount + 100;
 
             this.zones = zones;
         } catch (e) {
