@@ -38,7 +38,7 @@ export function randomNum(min: number, max: number, isInt: boolean = true) {
     }
 
     let num = min + Math.random() * (max - min);
-    if (!isInt) {
+    if (isInt) {
         num = Math.round(num);
     }
 

@@ -125,8 +125,10 @@ export default class CalibrationSetting extends mixins(TableMixin) {
 
     public async submit() {
         try {
-            await (<ElForm>this.$refs.tag).validate();
-            await (<ElForm>this.$refs.base).validate();
+            await Promise.all([
+                (<ElForm>this.$refs.tag).validate(),
+                (<ElForm>this.$refs.base).validate()
+            ]);
 
             const main: any = this.tableData.find(v => !!v.main);
             if (main) {

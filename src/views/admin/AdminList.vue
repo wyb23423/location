@@ -17,14 +17,11 @@
 
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
-import { State } from 'vuex-class/lib/bindings';
 import TableMixin from '../../mixins/table';
 import * as http from '../../assets/utils/http';
 
 @Component
 export default class AdminList extends mixins(TableMixin) {
-    @State public baseUrl!: string;
-
     public colCfg: any[] = [
         { prop: 'id', label: 'ID', sortable: true, width: 120 },
         { prop: 'adminName', label: '管理员名称', width: 160 },

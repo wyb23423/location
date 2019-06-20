@@ -32,7 +32,12 @@ const [
   'BaseAdd', 'Calibration'
 ].map(name => () => import(/* webpackChunkName: "base" */ `@/views/base/${name}.vue`));
 
-
+// 人员管理
+const [
+  PeopleIndex, PeopleList
+] = [
+  'PeopleIndex', 'PeopleList'
+].map(name => () => import(/* webpackChunkName: "base" */ `@/views/people/${name}.vue`));
 
 Vue.use(Router);
 
@@ -69,6 +74,12 @@ export default new Router({
             { path: 'info', name: 'base-info', component: Info, alias: '' },
             { path: 'add', name: 'base-add', component: BaseAdd },
             { path: 'calibration', name: 'calibration', component: Calibration }
+          ]
+        },
+        {
+          path: 'people', component: PeopleIndex, redirect: 'people/list/1',
+          children: [
+            { path: 'list/:type', name: 'people-list', component: PeopleList, props: true }
           ]
         }
       ]
