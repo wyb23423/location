@@ -51,9 +51,7 @@
             <el-pagination
                 :current-page="page"
                 :page-size="pageSize"
-                :layout="
-                    isSmall ? 'prev, pager, next' : 'sizes, prev, pager, next'
-                "
+                :layout="`${isSmall ? '' : 'sizes, '}prev, pager, next`"
                 :total="totalCount"
                 :small="!!isSmall"
                 :hide-on-single-page="!!isSmall"
