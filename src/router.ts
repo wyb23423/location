@@ -39,54 +39,60 @@ const [
   'PeopleIndex', 'PeopleList', 'PeopleAdd'
 ].map(name => () => import(/* webpackChunkName: "base" */ `@/views/people/${name}.vue`));
 
+// 报警信息
+const Alarm = () => import(/* webpackChunkName: "alarm" */ '@/views/alarm/Alarm.vue');
+
 Vue.use(Router);
 
+const routes: any[] = [
+  {
+    path: '/', name: 'main', component: Main,
+    children: [
+      { path: 'index', name: 'index', component: Index, alias: '' },
+      {
+        path: 'admin', component: Admin,
+        children: [
+          { path: 'list', name: 'admin-list', component: AdminList, alias: '' },
+          { path: 'add', name: 'admin-add', component: AdminAdd }
+        ]
+      },
+      {
+        path: 'system', component: System,
+        children: [
+          { path: 'fence', name: 'fence', component: Fence, alias: '' },
+          { path: 'base', name: 'base', component: Base },
+          { path: 'camera/add', name: 'camera-add', component: CameraAdd },
+          { path: 'camera/list', name: 'camera-list', component: CameraList },
+          { path: 'protocol/add', name: 'protocol-add', component: ProtocolAdd },
+          { path: 'protocol/list', name: 'protocol-list', component: ProtocolList },
+          { path: 'protocol/submissio', name: 'protocol-submissio', component: Submissio }
+        ]
+      },
+      {
+        path: 'base', component: BaseIndex,
+        children: [
+          { path: 'info', name: 'base-info', component: Info, alias: '' },
+          { path: 'add', name: 'base-add', component: BaseAdd },
+          { path: 'calibration', name: 'calibration', component: Calibration }
+        ]
+      },
+      {
+        path: 'people', component: PeopleIndex, redirect: 'people/list/1',
+        children: [
+          { path: 'list/:type', name: 'people-list', component: PeopleList, props: true },
+          { path: 'add', name: 'people-add', component: PeopleAdd },
+        ]
+      },
+      { path: 'alarm', component: Alarm, name: 'alarm' }
+    ]
+  },
+  { path: '/login', name: 'login', component: Login },
+  { path: '*', redirect: '/index' },
+];
+
 export default new Router({
+  routes,
   mode: 'history',
   base: process.env.BASE_URL,
-  routes: [
-    {
-      path: '/', name: 'main', component: Main,
-      children: [
-        { path: 'index', name: 'index', component: Index, alias: '' },
-        {
-          path: 'admin', component: Admin,
-          children: [
-            { path: 'list', name: 'admin-list', component: AdminList, alias: '' },
-            { path: 'add', name: 'admin-add', component: AdminAdd }
-          ]
-        },
-        {
-          path: 'system', component: System,
-          children: [
-            { path: 'fence', name: 'fence', component: Fence, alias: '' },
-            { path: 'base', name: 'base', component: Base },
-            { path: 'camera/add', name: 'camera-add', component: CameraAdd },
-            { path: 'camera/list', name: 'camera-list', component: CameraList },
-            { path: 'protocol/add', name: 'protocol-add', component: ProtocolAdd },
-            { path: 'protocol/list', name: 'protocol-list', component: ProtocolList },
-            { path: 'protocol/submissio', name: 'protocol-submissio', component: Submissio }
-          ]
-        },
-        {
-          path: 'base', component: BaseIndex,
-          children: [
-            { path: 'info', name: 'base-info', component: Info, alias: '' },
-            { path: 'add', name: 'base-add', component: BaseAdd },
-            { path: 'calibration', name: 'calibration', component: Calibration }
-          ]
-        },
-        {
-          path: 'people', component: PeopleIndex, redirect: 'people/list/1',
-          children: [
-            { path: 'list/:type', name: 'people-list', component: PeopleList, props: true },
-            { path: 'add', name: 'people-add', component: PeopleAdd },
-          ]
-        }
-      ]
-    },
-    { path: '/login', name: 'login', component: Login },
-    { path: '*', redirect: '/index' },
-  ],
 });
 

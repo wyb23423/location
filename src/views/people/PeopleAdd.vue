@@ -15,15 +15,16 @@ import { State } from 'vuex-class/lib/bindings';
 export default class PeopleAdd extends Vue {
     @State public baseUrl!: string;
 
-    public url: string = '';
+    public url: string = ''; // 选择的图片
     public visible: boolean = false;
-    public changeUpload: ((file: any) => void) | null = null;
+    public changeUpload: ((file: any) => void) | null = null; // 选择图片后回调
+
+    // 预览图父div大小
     public previewBox: { width: string; height: string } = {
         width: '1024px',
         height: '1024px'
     };
     public preview: any = null; // 裁剪预览
-    public loading: boolean = false;
 
     public form: any = {
         sex: 1,
@@ -72,14 +73,12 @@ export default class PeopleAdd extends Vue {
     }
 
     public ok() {
-        this.loading = true;
-
         const cropper: any = this.$refs.cropper;
         cropper.getCropData((data: string) => {
             this.form.avatar = data;
             this.$message.success('设置成功');
 
-            this.loading = this.visible = false;
+            this.visible = false;
         });
     }
 

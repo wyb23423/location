@@ -26,8 +26,8 @@ export default new Vuex.Store({
     setRootScale(state: State, scale: number) {
       state.rootScale = scale;
     },
-    login(state: State) {
-      state.isLogin = true;
+    login(state: State, login: boolean = true) {
+      state.isLogin = login;
     }
   },
   actions: {
