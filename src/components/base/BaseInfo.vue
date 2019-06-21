@@ -68,7 +68,7 @@
         </el-col>
         <el-col :offset="1" :span="5" style="text-align: right">
             <el-image
-                :src="baseUrl + '/public/image/80530151701.png'"
+                :src="baseUrl + 'public/image/80530151701.png'"
                 fit="contain"
                 style="width: 100%"
             >

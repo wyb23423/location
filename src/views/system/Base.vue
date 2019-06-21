@@ -34,7 +34,7 @@
                 </el-col>
                 <el-col :span="7">
                     <img
-                        :src="baseUrl + '/public/image/80530151701.png'"
+                        :src="baseUrl + 'public/image/80530151701.png'"
                         alt="基站"
                         style="width: 100%; max-width: 100px"
                     />

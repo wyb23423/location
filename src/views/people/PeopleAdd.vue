@@ -57,7 +57,7 @@ export default class PeopleAdd extends Vue {
         };
 
         this.preview = {
-            url: this.baseUrl + '/public/image/true.png',
+            url: this.baseUrl + 'public/image/true.png',
             div: this.previewBox,
             w: 1024
         };

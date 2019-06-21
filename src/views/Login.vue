@@ -49,8 +49,8 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Message } from 'element-ui';
-import { State } from 'vuex-class';
 import Router from 'vue-router';
+import { State } from 'vuex-class/lib/bindings';
 
 interface LoginInfo {
     password: string;
@@ -59,7 +59,6 @@ interface LoginInfo {
 
 @Component
 export default class Login extends Vue {
-    @State public baseUrl!: string;
     @State('rootScale') public scale!: number;
 
     public form: LoginInfo = { password: '', username: '' };

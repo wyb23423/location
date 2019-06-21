@@ -3,10 +3,6 @@ module.exports = {
     'postcss-cssnext': {},
     'rucksack-css': {},
     'postcss-import': {},
-    'postcss-assets': {
-      // loadPaths: ['assets/'],
-      baseUrl: 'http://192.168.1.189'
-    },
     'postcss-pxtorem': {
       rootValue: 16, //你在html节点设的font-size大小
       unitPrecision: 5, //转rem精确到小数点多少位

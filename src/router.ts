@@ -5,6 +5,9 @@ import Main from './views/Main.vue';
 import Login from './views/Login.vue';
 import Index from './views/index/Index.vue';
 
+Vue.use(Router);
+
+
 // 管理员设置
 const Admin = () => import(/* webpackChunkName: "admin" */ '@/views/admin/Admin.vue');
 const AdminList = () => import(/* webpackChunkName: "admin" */ '@/views/admin/AdminList.vue');
@@ -37,12 +40,10 @@ const [
   PeopleIndex, PeopleList, PeopleAdd
 ] = [
   'PeopleIndex', 'PeopleList', 'PeopleAdd'
-].map(name => () => import(/* webpackChunkName: "base" */ `@/views/people/${name}.vue`));
+].map(name => () => import(/* webpackChunkName: "people" */ `@/views/people/${name}.vue`));
 
 // 报警信息
 const Alarm = () => import(/* webpackChunkName: "alarm" */ '@/views/alarm/Alarm.vue');
-
-Vue.use(Router);
 
 const routes: any[] = [
   {

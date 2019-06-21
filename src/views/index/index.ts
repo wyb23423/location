@@ -163,9 +163,9 @@ export default class Main extends Vue {
 
     private async createBar() {
         const weatherIcons: any = {
-            Sunny: this.baseUrl + '/public/image/qy.png',
-            Cloudy: this.baseUrl + '/public/image/ter.png',
-            Showers: this.baseUrl + '/public/image/dzwl.png'
+            Sunny: this.baseUrl + 'public/image/qy.png',
+            Cloudy: this.baseUrl + 'public/image/ter.png',
+            Showers: this.baseUrl + 'public/image/dzwl.png'
         };
 
         const seriesLabel: any = {
