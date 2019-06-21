@@ -70,7 +70,7 @@ import { Prop, Watch } from 'vue-property-decorator';
 import { Route } from 'vue-router';
 @Component
 export default class PeopleList extends mixins(TableMixin) {
-    @Prop() public type: number;
+    @Prop() public type!: number;
 
     public person: any = null;
 
@@ -126,7 +126,7 @@ export default class PeopleList extends mixins(TableMixin) {
             ]);
 
             data = res.pagedData.datas.map((v: any) => {
-                const zone = zones.pagedData.datas.find(z => +z.id === +v.zone);
+                const zone = zones.pagedData.datas.find((z: any) => +z.id === +v.zone);
                 v.zoneName = zone ? zone.name : '未知区域';
 
                 return v;

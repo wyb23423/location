@@ -1,3 +1,5 @@
+/// <reference path="./types/vue-crropper.d.ts" />
+
 import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
@@ -7,6 +9,9 @@ import 'element-ui/lib/theme-chalk/index.css';
 import './assets/public.css';
 import * as http from './assets/utils/http';
 import { Route } from 'vue-router';
+
+import VueCropper from 'vue-cropper';
+Vue.use(VueCropper);
 
 Vue.use(ElementUI);
 
