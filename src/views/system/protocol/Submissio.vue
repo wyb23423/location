@@ -119,18 +119,20 @@ export default class Submissio extends Vue {
 
     private getData() {
         // 基站
-        http.get('/api/base/getall', {
-            pageSize: 10000000,
-            currentPage: 1
-        })
+        this.$http
+            .get('/api/base/getall', {
+                pageSize: 10000000,
+                currentPage: 1
+            })
             .then(this.toTree.bind(this))
             .catch(console.error);
         // 标签
-        http.get('/api/tag/getall', {
-            pageSize: 10000000,
-            currentPage: 1
-        })
-            .then((res: http.ResData) =>
+        this.$http
+            .get('/api/tag/getall', {
+                pageSize: 10000000,
+                currentPage: 1
+            })
+            .then((res: ResponseData) =>
                 res.pagedData.datas.map((v: any) => ({
                     value: v.tagNo,
                     label: `${v.name}: ${v.tagNo}`
@@ -139,11 +141,12 @@ export default class Submissio extends Vue {
             .then((tags: SelOption[]) => (this.tags = tags))
             .catch(console.error);
         // 协议
-        http.get('/api/protocol/getall', {
-            pageSize: 10000000,
-            currentPage: 1
-        })
-            .then((res: http.ResData) => {
+        this.$http
+            .get('/api/protocol/getall', {
+                pageSize: 10000000,
+                currentPage: 1
+            })
+            .then((res: ResponseData) => {
                 this.protocols = res.pagedData.datas.map((v: any) => ({
                     value: v.content,
                     label: v.name
@@ -152,7 +155,7 @@ export default class Submissio extends Vue {
             .catch(console.error);
     }
 
-    private toTree(base: http.ResData) {
+    private toTree(base: ResponseData) {
         this.base.length = 0;
 
         const group: { [key: string]: SelOption[] } = {};

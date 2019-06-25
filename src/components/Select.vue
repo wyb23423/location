@@ -40,10 +40,11 @@ export default class Select extends Vue {
     public currValue: any = null;
 
     public mounted() {
-        http.get(this.url, {
-            pageSize: 1000000,
-            currentPage: 1
-        })
+        this.$http
+            .get(this.url, {
+                pageSize: 1000000,
+                currentPage: 1
+            })
             .then(res => {
                 this.options = res.pagedData.datas.map((v: any) => ({
                     id: v[this.keys.id],

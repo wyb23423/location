@@ -43,7 +43,7 @@ export default class CameraList extends mixins(TableMixin) {
         let data: any[] = [];
         let count: number = 0;
         try {
-            const res = await http.get('/api/camera/getall', {
+            const res = await this.$http.get('/api/camera/getall', {
                 pageSize,
                 currentPage: page
             });

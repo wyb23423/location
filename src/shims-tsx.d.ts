@@ -10,4 +10,20 @@ declare global {
       [elem: string]: any;
     }
   }
+
+  interface RequestParams {
+    url: string;
+    params?: any;
+    body?: any;
+    data?: any;
+    headers?: any;
+  }
+
+  interface ResponseData {
+    code: number;
+    message: string;
+    pagedData: any;
+    resultMap: any;
+    success: boolean;
+  }
 }

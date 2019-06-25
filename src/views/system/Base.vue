@@ -113,7 +113,7 @@ export default class Base extends mixins(TableMixin) {
         let data: any[] = [];
         let count: number = 0;
         try {
-            const res = await http.get('/api/base/getall', {
+            const res = await this.$http.get('/api/base/getall', {
                 pageSize,
                 currentPage: page
             });

@@ -40,7 +40,7 @@ export default class ProtocolList extends mixins(TableMixin) {
         let data: any[] = [];
         let count: number = 0;
         try {
-            const res = await http.get('/api/protocol/getall', {
+            const res = await this.$http.get('/api/protocol/getall', {
                 pageSize: Number.MAX_VALUE,
                 currentPage: 1
             });

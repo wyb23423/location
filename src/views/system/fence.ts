@@ -44,7 +44,7 @@ export default class Fence extends mixins(TableMixin, SelectMapMixin) {
     public async del(row: ZoneData, index: number) {
         try {
             await this.$confirm(`确认删除区域${row.name}?`, '确认删除');
-            await http.post('/api/zone/deleteZone', { id: row.id });
+            await this.$http.post('/api/zone/deleteZone', { id: row.id });
 
             this.$message.success('删除成功');
 
@@ -137,7 +137,7 @@ export default class Fence extends mixins(TableMixin, SelectMapMixin) {
         let data: any[] = [];
         let count: number = 0;
         try {
-            const res = await http.get('/api/zone/getall', {
+            const res = await this.$http.get('/api/zone/getall', {
                 pageSize,
                 currentPage: page
             });

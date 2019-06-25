@@ -2,7 +2,7 @@
  * 配置文件
  */
 // 服务器地址
-export const BASE_URL = process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://192.168.1.189/';
+export const BASE_URL = process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://192.168.1.193/';
 
 // 主题数据位置
 export const MAP_THEME_URL: string = '/data/theme';

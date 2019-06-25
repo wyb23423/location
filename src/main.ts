@@ -15,8 +15,7 @@ Vue.use(VueCropper);
 
 Vue.use(ElementUI);
 
-// vscode中 类型无法识别, 暂时放弃全局注入
-// Vue.prototype.$http = http;
+Vue.prototype.$http = http;
 
 Vue.config.productionTip = false;
 

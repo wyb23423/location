@@ -55,7 +55,7 @@ export default class Calibration extends mixins(TableMixin) {
         let count: number = 0;
         try {
             if (!this.allBase.length) {
-                const res = await http.get('/api/base/getall', {
+                const res = await this.$http.get('/api/base/getall', {
                     pageSize: 10000000,
                     currentPage: 1
                 });

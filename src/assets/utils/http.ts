@@ -3,32 +3,14 @@
  */
 import { isThisType } from './util';
 import { Message } from 'element-ui';
-
-
-export interface ReqParams {
-    url: string;
-    params?: any;
-    body?: any;
-    data?: any;
-    headers?: any;
-}
-
-export interface ResData {
-    code: number;
-    message: string;
-    pagedData: any;
-    resultMap: any;
-    success: boolean;
-}
-
 /**
  * 发送get请求
  */
 export async function get(
-    url: string | ReqParams,
+    url: string | RequestParams,
     params: any = {},
     headers: any = {}
-): Promise<ResData> {
+): Promise<ResponseData> {
     const req = parseArgs(url, true, params, headers);
     if (typeof req === 'string') {
         return Promise.reject(req);
@@ -44,10 +26,10 @@ export async function get(
 }
 
 export async function post(
-    url: string | ReqParams,
+    url: string | RequestParams,
     params: any = {},
     headers: any = {}
-): Promise<ResData> {
+): Promise<ResponseData> {
     const req = parseArgs(url, false, params, headers);
     if (typeof req === 'string') {
         console.error(req);
@@ -72,7 +54,7 @@ export async function post(
 
 async function parseRes(res: Response) {
     if (isSuccess(res.status)) {
-        const data: ResData = await res.json();
+        const data: ResponseData = await res.json();
         const codeSuccess = isSuccess(data.code);
         if (codeSuccess && data.success) {
             return data;
@@ -93,7 +75,7 @@ async function parseRes(res: Response) {
 }
 
 function parseArgs(
-    url: string | ReqParams,
+    url: string | RequestParams,
     isGet: boolean,
     params: any = {},
     headers: any = {}

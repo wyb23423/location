@@ -58,11 +58,12 @@ export default class Position extends Vue {
         this.form.coordy = this.data.coordy;
         this.form.zone = this.data.zone;
 
-        http.get('/api/zone/getall', {
-            currentPage: 1,
-            pageSize: 10000
-        })
-            .then((res: http.ResData) => {
+        this.$http
+            .get('/api/zone/getall', {
+                currentPage: 1,
+                pageSize: 10000
+            })
+            .then((res: ResponseData) => {
                 this.zones = res.pagedData.datas.map((v: any) => [
                     v.id + '',
                     v.name

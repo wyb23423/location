@@ -84,7 +84,7 @@ export default class PeopleList extends mixins(TableMixin) {
         { prop: 'zoneName', label: '区域', width: 220 }
     ];
 
-    private zones?: http.ResData;
+    private zones?: ResponseData;
 
     public del(row: any) {
         console.log(row);
@@ -109,7 +109,7 @@ export default class PeopleList extends mixins(TableMixin) {
 
         try {
             const [res, zones] = await Promise.all([
-                http.get('/api/tag/getall', {
+                this.$http.get('/api/tag/getall', {
                     pageSize,
                     currentPage: page,
                     type: this.type || 1
@@ -117,7 +117,7 @@ export default class PeopleList extends mixins(TableMixin) {
                 Promise.resolve().then(() => {
                     return (
                         this.zones ||
-                        http.get('/api/zone/getall', {
+                        this.$http.get('/api/zone/getall', {
                             pageSize: 1000000,
                             currentPage: 1
                         })
@@ -126,7 +126,9 @@ export default class PeopleList extends mixins(TableMixin) {
             ]);
 
             data = res.pagedData.datas.map((v: any) => {
-                const zone = zones.pagedData.datas.find((z: any) => +z.id === +v.zone);
+                const zone = zones.pagedData.datas.find(
+                    (z: any) => +z.id === +v.zone
+                );
                 v.zoneName = zone ? zone.name : '未知区域';
 
                 return v;
