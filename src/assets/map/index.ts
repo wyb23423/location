@@ -2,7 +2,24 @@
  * 地图相关
  */
 import { FengMapMgr } from './fengmap';
-import { MapData } from './map';
+
+// ===================================类型
+export interface MapData {
+    id: number;
+    name: string;
+    filepath: string;
+    margin: Array<[number, number]>;
+}
+
+export interface ZoneData {
+    status?: string;
+    enable: 0 | 1;
+    id?: number;
+    name: string;
+    position: Vector2[] | string;
+}
+// ============================================
+
 
 /**
  * 创建地图

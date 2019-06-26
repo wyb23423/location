@@ -2,18 +2,17 @@
 import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
 
-import { ZoneData } from '../../assets/map/map';
-import * as http from '../../assets/utils/http';
-import SelectMapMixin from '@/mixins/selectMap';
+import MapMixin from '@/mixins/map';
+import { ZoneData } from '@/assets/map';
 
 @Component
-export default class Fence extends mixins(TableMixin, SelectMapMixin) {
+export default class Fence extends mixins(TableMixin, MapMixin) {
     public activeNames: string[] = ['info', 'add'];
 
     // ===================================table
     public colCfg: any[] = [
-        { prop: 'name', label: '区域', sortable: true, width: 100 },
-        { prop: 'status', label: '状态', width: 80 }
+        { prop: 'name', label: '区域', sortable: true, width: 80 },
+        { prop: 'status', label: '状态', width: 70 }
     ];
     public op: any[] = [
         { type: 'danger', name: 'del', desc: '删除' },
@@ -33,7 +32,7 @@ export default class Fence extends mixins(TableMixin, SelectMapMixin) {
         open: false
     };
     public get formHeight() {
-        return `calc(${100 / this.$store.state.rootScale}vh - 560px)`;
+        return `calc(${100 / this.$store.state.rootScale}vh - 600px)`;
     }
     // ====================================
     private pointIndex: number = -1;
@@ -156,7 +155,7 @@ export default class Fence extends mixins(TableMixin, SelectMapMixin) {
         return { count, data };
     }
 
-    protected bindClickEvent() {
+    protected bindEvents() {
         this.mgr!.on('mapClickNode', (event: FMMapClickEvent) => {
             if (event.nodeType === fengmap.FMNodeType.NONE) {
                 return;

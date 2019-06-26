@@ -1,14 +1,37 @@
 import Vue from 'vue';
 
-type HTTPMethod = (url: string | RequestParams, params?: any, headers?: any) => Promise<ResponseData>;
-
 declare module 'vue/types/vue' {
     interface Vue {
         $http: HTTP;
+        $worker: VueWorker;
     }
 }
 
-export interface HTTP {
+type HTTPMethod = (url: string | RequestParams, params?: any, headers?: any) => Promise<ResponseData>;
+
+interface HTTP {
     get: HTTPMethod;
     post: HTTPMethod;
+}
+
+interface VueWorker {
+    run<T>(fn: (...args: any[]) => T, args?: any[]): Promise<T>;
+    create(actions?: Action[]): WorkerObj;
+}
+
+interface Action {
+    message: string;
+    func(...args: []): any;
+}
+
+interface WorkerObj {
+    postMessage(message: string, args?: any[]): Promise<any>;
+    postAll(args?: Array<string | Args>): Promise<any[]>;
+    register(actions: Action | Action[]): void;
+    unregister(message: string | string[]): void;
+}
+
+interface Args {
+    message: string;
+    args: any[];
 }

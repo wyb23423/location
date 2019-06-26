@@ -20,7 +20,6 @@
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../../mixins/table';
-import * as http from '../../../assets/utils/http';
 
 @Component
 export default class ProtocolList extends mixins(TableMixin) {

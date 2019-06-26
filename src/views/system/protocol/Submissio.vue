@@ -62,7 +62,6 @@
 import Component from 'vue-class-component';
 import Vue from 'vue';
 import { ElForm } from 'element-ui/types/form';
-import * as http from '../../../assets/utils/http';
 
 interface SelOption {
     value?: any;

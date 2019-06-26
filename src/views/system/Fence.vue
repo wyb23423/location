@@ -15,6 +15,7 @@
                     :col-cfg="colCfg"
                     :total-count="totalCount"
                     :op="op"
+                    :op-width="150"
                     :noPrint="true"
                     :isSmall="true"
                     @updateData="getData"
@@ -80,7 +81,8 @@
     </div>
 </template>
 
-<script lang="ts" src="./fence.ts"></script>
+<script lang="ts" src="./fence.ts">
+</script>
 
 <style lang="postcss" module>
 .box {

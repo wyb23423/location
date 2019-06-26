@@ -4,13 +4,12 @@
 /// <reference path="../../types/fengmap.d.ts" />
 
 import Component, { mixins } from 'vue-class-component';
-import SelectMapMixin from '../../mixins/selectMap';
+import MapMixin from '../../mixins/map';
 import Select from '../../components/Select.vue';
 import IpInput from '../../components/IpInput.vue';
 import { ElForm } from 'element-ui/types/form';
 import TableMixin from '../../mixins/table';
 import { incrementalFactory } from '../../assets/utils/util';
-import { MapData } from '../../assets/map/map';
 
 const ICON_NAME = 'origin';
 
@@ -20,7 +19,7 @@ const ICON_NAME = 'origin';
         'ip-input': IpInput
     }
 })
-export default class BaseAdd extends mixins(SelectMapMixin, TableMixin) {
+export default class BaseAdd extends mixins(MapMixin, TableMixin) {
     public progress: number = 0;
 
     public coord: Vector3 | null = null;
@@ -146,7 +145,7 @@ export default class BaseAdd extends mixins(SelectMapMixin, TableMixin) {
     }
 
     // 绑定地图点击事件
-    protected bindClickEvent() {
+    protected bindEvents() {
         this.mgr!.on('mapClickNode', (event: FMMapClickEvent) => {
             if (event.nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
                 return;

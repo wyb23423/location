@@ -38,7 +38,6 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
-import * as http from '../../assets/utils/http';
 import { ElForm } from 'element-ui/types/form';
 
 @Component

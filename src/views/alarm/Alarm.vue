@@ -30,7 +30,6 @@ import Component, { mixins } from 'vue-class-component';
 import Aside from '../../components/Aside.vue';
 import { Getter } from 'vuex-class/lib/bindings';
 import TableMixin from '../../mixins/table';
-import * as http from '../../assets/utils/http';
 
 @Component({
     components: {

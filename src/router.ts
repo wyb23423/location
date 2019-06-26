@@ -36,11 +36,12 @@ const [
 ].map(name => () => import(/* webpackChunkName: "base" */ `@/views/base/${name}.vue`));
 
 // 人员管理
-const [
-  PeopleIndex, PeopleList, PeopleAdd
-] = [
-  'PeopleIndex', 'PeopleList', 'PeopleAdd'
-].map(name => () => import(/* webpackChunkName: "people" */ `@/views/people/${name}.vue`));
+const [PeopleIndex, PeopleList, PeopleAdd] = ['PeopleIndex', 'PeopleList', 'PeopleAdd']
+  .map(name => () => import(/* webpackChunkName: "people" */ `@/views/people/${name}.vue`));
+
+// 地图
+const [MapIndex, Monitor] = ['MapIndex', 'Monitor']
+  .map(name => () => import(/* webpackChunkName: "map" */ `@/views/map/${name}.vue`));
 
 // 报警信息
 const Alarm = () => import(/* webpackChunkName: "alarm" */ '@/views/alarm/Alarm.vue');
@@ -82,6 +83,12 @@ const routes: any[] = [
         children: [
           { path: 'list/:type', name: 'people-list', component: PeopleList, props: true },
           { path: 'add', name: 'people-add', component: PeopleAdd },
+        ]
+      },
+      {
+        path: 'monitor', component: MapIndex,
+        children: [
+          { path: '', name: 'monitor', component: Monitor }
         ]
       },
       { path: 'alarm', component: Alarm, name: 'alarm' }

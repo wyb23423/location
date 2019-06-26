@@ -84,7 +84,6 @@
 import Component, { mixins } from 'vue-class-component';
 import { State } from 'vuex-class/lib/bindings';
 import TableMixin from '../../mixins/table';
-import * as http from '../../assets/utils/http';
 
 @Component
 export default class Base extends mixins(TableMixin) {

@@ -20,7 +20,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Emit } from 'vue-property-decorator';
-import { MapData } from '../assets/map/map';
+import { MapData } from '@/assets/map';
 
 @Component
 export default class MapSelect extends Vue {

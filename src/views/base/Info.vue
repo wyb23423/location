@@ -49,7 +49,6 @@ import BaseInfo from '../../components/base/BaseInfo.vue';
 import Primary from '../../components/base/Primary.vue';
 import Net from '../../components/base/Net.vue';
 import Position from '../../components/base/Position.vue';
-import * as http from '../../assets/utils/http';
 
 @Component({
     components: {

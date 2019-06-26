@@ -19,8 +19,6 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Emit, Prop } from 'vue-property-decorator';
-import { MapData } from '../assets/map/map';
-import * as http from '../assets/utils/http';
 
 interface Option<T> {
     id: T;

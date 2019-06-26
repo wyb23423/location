@@ -3,3 +3,9 @@ declare module 'vue-cropper' {
 
     export = VueCropper;
 }
+
+declare module 'vue-worker' {
+    const VueWorker: any;
+
+    export = VueWorker;
+}

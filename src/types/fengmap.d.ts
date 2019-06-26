@@ -35,18 +35,26 @@ interface FMPolygonMarkerOptions {
     color?: string;
 }
 
-interface FMTextMarkerOptions extends Vector2 {
+interface FMTextMarkerOptions extends Vector23 {
     name: string;
     fontsize: number;
     fillcolor: string;
     strokecolor: string;
+    height?: number;
     alpha?: number;
+    type?: number;
+
+    // tslint:disable-next-line:ban-types
+    callback?: Function;
 }
 
 interface FMImageMarkerOptions extends Vector23 {
     size: number;
     height: number;
     url: string;
+
+    // tslint:disable-next-line:ban-types
+    callback?: Function;
 }
 
 interface FMMapClickEvent {
@@ -65,6 +73,15 @@ declare namespace fengmap {
         readonly groupIDs: number[];
         focusGroupID: number;
         layerLocalHeight: number;
+
+        gestureEnableController: {
+            enableMapHover: boolean;
+            enableMapIncline: boolean;
+            enableMapPan: boolean;
+            enableMapPinch: boolean;
+            enableMapRotate: boolean;
+            enableMapSingleTap: boolean;
+        };
 
         openMapById(id: string): void;
         getFMGroup(gid: number): FMGroup;
@@ -88,12 +105,16 @@ declare namespace fengmap {
         public name: string;
 
         constructor(options: FMTextMarkerOptions);
+
+        public alwaysShow(): void;
     }
 
     class FMImageMarker {
         public custom?: any;
 
         constructor(options: FMImageMarkerOptions);
+
+        public alwaysShow(): void;
     }
 
     interface FMGroup {

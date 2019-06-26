@@ -7,6 +7,9 @@ export const BASE_URL = process.env.NODE_ENV === 'production' ? process.env.BASE
 // 主题数据位置
 export const MAP_THEME_URL: string = '/data/theme';
 
+// 地图数据位置
+export const MAP_DATA_URL: string = '/data/huijinguangchang/';
+
 // 开发者申请应用下web服务的key
 export const APP_KEY: string = '83a75157d56ffe85317ed7ba1e8120ff';
 

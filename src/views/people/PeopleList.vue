@@ -65,7 +65,6 @@
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
-import * as http from '../../assets/utils/http';
 import { Prop, Watch } from 'vue-property-decorator';
 import { Route } from 'vue-router';
 @Component
