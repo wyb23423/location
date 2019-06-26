@@ -25,6 +25,9 @@ module.exports = {
                     }
                     proxyRes.headers['set-cookie'] = [newCookie];
                 }
+            },
+            '/image': {
+                target: 'http://192.168.1.193'
             }
         }
     }

@@ -20,12 +20,11 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Emit } from 'vue-property-decorator';
-import { MapData } from '@/assets/map';
 
 @Component
 export default class MapSelect extends Vue {
     public value: number = 0;
-    public options: MapData[] = [];
+    public options: IMap[] = [];
 
     public mounted() {
         this._getMapData();
@@ -47,8 +46,9 @@ export default class MapSelect extends Vue {
     private _getMapData() {
         // 模拟数据
         // TODO
-        const data: MapData = {
+        const data: IMap = {
             id: 1,
+            groupCode: '001',
             name: '办公室',
             filepath: '\\image\\huijinguangchang.fmap',
             margin: [

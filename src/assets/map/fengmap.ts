@@ -6,7 +6,6 @@
 import { MAP_THEME_URL, APP_KEY, APP_NAME, MAP_DATA_URL } from '@/config';
 import { randomNum, randomColor } from '../utils/util';
 import { parsePosition } from './coordtransformer';
-import { ZoneData } from './index';
 
 export class FengMapMgr {
     public map!: fengmap.FMMap;
@@ -47,7 +46,7 @@ export class FengMapMgr {
     /**
      * 显示区域
      */
-    public zoneOpen(data: ZoneData) {
+    public zoneOpen(data: IZone) {
         if (!this.margin) {
             return console.error('地图范围为空');
         }

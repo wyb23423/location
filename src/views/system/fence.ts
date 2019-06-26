@@ -3,7 +3,6 @@ import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
 
 import MapMixin from '@/mixins/map';
-import { ZoneData } from '@/assets/map';
 
 @Component
 export default class Fence extends mixins(TableMixin, MapMixin) {
@@ -40,7 +39,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
     /**
      * 删除区域
      */
-    public async del(row: ZoneData, index: number) {
+    public async del(row: IZone, index: number) {
         try {
             await this.$confirm(`确认删除区域${row.name}?`, '确认删除');
             await this.$http.post('/api/zone/deleteZone', { id: row.id });
@@ -56,7 +55,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
     /**
      * 切换区域显示
      */
-    public display(row: ZoneData, index: number, isDel?: boolean) {
+    public display(row: IZone, index: number, isDel?: boolean) {
         const op: any = this.op[1];
         if (op.type[index] || isDel) {
             op.type[index] = undefined;
@@ -95,10 +94,11 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
             return this.$message.warning('区域坐标最少设置3个');
         }
 
-        const position: Vector2[] = [...this.form.position];
+        const position = <TPosition>[...this.form.position];
         position.pop();
 
-        const data: ZoneData = {
+        const data: IZone = {
+            id: 0,
             position,
             name: this.form.name,
             enable: this.form.open ? 1 : 0
@@ -118,7 +118,9 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
                         position: [null],
                         open: false
                     };
+
                     data.position = JSON.stringify(position);
+                    Reflect.deleteProperty(data, 'id');
 
                     console.log(data);
                 })
@@ -140,7 +142,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
                 pageSize,
                 currentPage: page
             });
-            data = res.pagedData.datas.map((v: ZoneData) => {
+            data = res.pagedData.datas.map((v: IZone) => {
                 v.status = v.enable ? '开启' : '关闭';
                 v.position = JSON.parse(<string>v.position);
 
