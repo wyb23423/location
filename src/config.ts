@@ -2,7 +2,7 @@
  * 配置文件
  */
 // 服务器地址
-export const BASE_URL = process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://192.168.1.193/';
+export const BASE_URL = process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://192.168.1.189/';
 
 // 主题数据位置
 export const MAP_THEME_URL: string = '/data/theme';
@@ -19,3 +19,5 @@ export const APP_NAME: string = 'hunjingguanchang';
 
 export const DEFAULT_WIDTH: number = 1600; // 屏幕默认宽度
 export const SX_WIDTH: number = 768; // 小屏宽度
+
+export const LOSS_TIME: number = 10000; // 用于判断信号是否丢失

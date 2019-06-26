@@ -28,6 +28,7 @@ import Component, { mixins } from 'vue-class-component';
 import { State } from 'vuex-class/lib/bindings';
 import TableMixin from '../../mixins/table';
 import CalibrationSetting from '../../components/base/CalibrationSetting.vue';
+import { arr2obj } from '../../assets/utils/util';
 
 @Component({
     components: {
@@ -74,10 +75,7 @@ export default class Calibration extends mixins(TableMixin) {
     }
 
     private toTree() {
-        const group: { [key: string]: any[] } = {};
-        this.allBase.forEach((v: any) => {
-            (group[v.groupCode] || (group[v.groupCode] = [])).push(v);
-        });
+        const group: { [key: string]: any[] } = arr2obj(this.allBase, 'groupCode');
 
         return Object.entries(group)
             .sort((a, b) => +a[0] - +b[0])

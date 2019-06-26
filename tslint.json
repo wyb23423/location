@@ -27,7 +27,6 @@
     "no-eval": true,
     "no-namespace": false,
     "no-reference": false,
-    "label-postion": true,
     "no-unused-expression": false,
     "forin": true,
     "curly": true,

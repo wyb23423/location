@@ -67,12 +67,21 @@ interface FMMapClickEvent {
     nodeType: number;
 }
 
+interface MoveOptions extends Vector2 {
+    time?: number;
+
+    // tslint:disable-next-line:ban-types
+    callback?: Function;
+    update?: (v: Vector2) => void;
+}
+
 
 declare namespace fengmap {
     interface FMMap {
         readonly groupIDs: number[];
         focusGroupID: number;
         layerLocalHeight: number;
+        mapScene: any;
 
         gestureEnableController: {
             enableMapHover: boolean;
@@ -85,6 +94,8 @@ declare namespace fengmap {
 
         openMapById(id: string): void;
         getFMGroup(gid: number): FMGroup;
+        coordMapToScreen(x: number, y: number): Vector2;
+
 
         on(type: string, callback: (e: FMMapClickEvent) => void): void;
         dispose(): void;
@@ -95,37 +106,36 @@ declare namespace fengmap {
     }
     const FMMap: FMMapConstructor;
 
-    class FMPolygonMarker {
+    class FMMarker<T> {
         public custom?: any;
 
-        constructor(options: FMPolygonMarkerOptions);
+        constructor(options: T);
+
+        public alwaysShow(): void;
+        public moveTo(opt: MoveOptions): void;
     }
 
-    class FMTextMarker {
+    class FMPolygonMarker extends FMMarker<FMPolygonMarkerOptions> {
+
+    }
+
+    class FMTextMarker extends FMMarker<FMTextMarkerOptions> {
         public name: string;
-
-        constructor(options: FMTextMarkerOptions);
-
-        public alwaysShow(): void;
     }
 
-    class FMImageMarker {
-        public custom?: any;
+    class FMImageMarker extends FMMarker<FMImageMarkerOptions> {
 
-        constructor(options: FMImageMarkerOptions);
-
-        public alwaysShow(): void;
     }
 
     interface FMGroup {
         groupHeight: number;
 
-        getOrCreateLayer<T>(layerAlias: string): FMMakerLayer<T>;
+        getOrCreateLayer<T>(layerAlias: string): FMMarkerLayer<T>;
     }
 
-    interface FMMakerLayer<T> {
-        addMarker(maker: T): void;
-        removeMarker(maker: T): void;
+    interface FMMarkerLayer<T> {
+        addMarker(marker: T): void;
+        removeMarker(marker: T): void;
         removeAll(): void;
     }
 

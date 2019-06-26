@@ -1,9 +1,11 @@
 
+const PROXY_TARGET = 'http://192.168.1.189';
+
 module.exports = {
     devServer: {
         proxy: {
             '/api': {
-                target: 'http://192.168.1.193',
+                target: PROXY_TARGET,
                 ws: true,
                 changeOrigin: true,
                 onProxyRes(proxyRes) {
@@ -27,7 +29,7 @@ module.exports = {
                 }
             },
             '/image': {
-                target: 'http://192.168.1.193'
+                target: PROXY_TARGET
             }
         }
     }

@@ -43,7 +43,7 @@ export default class Main extends Vue {
         this.createPie().then(chart => this.chart1 = chart);
         this.createBar().then(chart => this.chart2 = chart);
     }
-    public destroyed() {
+    public beforeDestroy() {
         if (this.chart1) {
             this.chart1.dispose();
         }

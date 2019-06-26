@@ -103,7 +103,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
             name: this.form.name,
             enable: this.form.open ? 1 : 0
         };
-        this.mgr!.createPolygonMaker(position, data.name, true);
+        this.mgr!.createPolygonMarker(position, data.name, true);
 
         setTimeout(() => {
             this.$confirm('请确定当前区域范围', '提示', { type: 'info' })

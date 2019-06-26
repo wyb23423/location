@@ -72,3 +72,21 @@ export function incrementalFactory() {
 
     return () => num++;
 }
+
+/**
+ * 将对象数据根据给定的key分组
+ * @param isArr 对象的值是否是数组
+ */
+export function arr2obj(arr: IJson[], key: string, isArr: boolean = true) {
+    const group: IJson = {};
+    arr.forEach((v: any) => {
+        const k: string = v[key];
+        if (isArr) {
+            (group[k] || (group[k] = [])).push(v);
+        } else {
+            group[k] = v;
+        }
+    });
+
+    return group;
+}

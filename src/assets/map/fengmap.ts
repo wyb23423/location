@@ -8,16 +8,18 @@ import { randomNum, randomColor } from '../utils/util';
 import { parsePosition } from './coordtransformer';
 
 export class FengMapMgr {
+    public readonly has3D: boolean = true;
+
     public map!: fengmap.FMMap;
 
-    public margin?: [Vector2, Vector2, Vector2, Vector2];
+    public margin?: TPosition;
     public locOrigion: Vector2 = { x: 0, y: 0 };
     public locRange: Vector2 = { x: 3073, y: 2326 };
 
-    private makers: Array<fengmap.FMPolygonMarker | fengmap.FMTextMarker | fengmap.FMImageMarker> = [];
-    private polygonLayer?: fengmap.FMMakerLayer<fengmap.FMPolygonMarker>;
-    private textLayer?: fengmap.FMMakerLayer<fengmap.FMTextMarker>;
-    private imgLayer?: fengmap.FMMakerLayer<fengmap.FMImageMarker>;
+    private markers: Array<fengmap.FMMarker<any>> = [];
+    private polygonLayer?: fengmap.FMMarkerLayer<fengmap.FMPolygonMarker>;
+    private textLayer?: fengmap.FMMarkerLayer<fengmap.FMTextMarker>;
+    private imgLayer?: fengmap.FMMarkerLayer<fengmap.FMImageMarker>;
 
     constructor(name: string, dom: HTMLElement) {
         this.map = new fengmap.FMMap({
@@ -52,37 +54,22 @@ export class FengMapMgr {
         }
 
         const zones = <Vector2[]>data.position;
-        this.createPolygonMaker(zones, data.name);
+        this.createPolygonMarker(zones, data.name);
         this.addTextMarker(zones[0], data.name);
     }
 
     /**
-     * 隐藏区域
+     * 移除marker
      */
-    public remove(name: string | number) {
-        let layer: fengmap.FMMakerLayer<any> | null = null;
+    public remove(name?: string | number) {
+        this.eachmarkers(
+            (layer: fengmap.FMMarkerLayer<any>, i: number) => {
+                layer.removeMarker(this.markers.splice(i, 1)[0]);
 
-        for (let i = this.makers.length - 1; i >= 0; i--) {
-            const v = this.makers[i];
-            if (v instanceof fengmap.FMPolygonMarker) {
-                if (v.custom && v.custom.name === name && this.polygonLayer) {
-                    layer = this.polygonLayer;
-                }
-            } else if (v instanceof fengmap.FMTextMarker) {
-                if (v.name === name && this.textLayer) {
-                    layer = this.textLayer;
-                }
-            } else if (v instanceof fengmap.FMImageMarker) {
-                if (v.custom && v.custom.name === name && this.imgLayer) {
-                    layer = this.imgLayer;
-                }
-            }
-
-            if (layer) {
-                layer.removeMarker(this.makers.splice(i, 1)[0]);
-                layer = null;
-            }
-        }
+                return i - 1;
+            },
+            name
+        );
     }
 
     public on(type: string, callback: any) {
@@ -90,7 +77,7 @@ export class FengMapMgr {
     }
 
     public addImage(
-        opt: FMImageMarkerOptions,
+        opt: any,
         name?: string | number,
         gid: number = this.map.focusGroupID,
         isMapCoor: boolean = true
@@ -121,12 +108,12 @@ export class FengMapMgr {
         im.custom = { name: name || JSON.stringify(p) };
 
         this.imgLayer.addMarker(im);
-        this.makers.push(im);
+        this.markers.push(im);
 
         return p;
     }
 
-    public createPolygonMaker(coords: Vector2[], name: string, isMapCoor: boolean = false) {
+    public createPolygonMarker(coords: Vector2[], name: string, isMapCoor: boolean = false) {
         if (!this.margin) {
             return console.error('地图范围为空');
         }
@@ -152,14 +139,14 @@ export class FengMapMgr {
 
         this.polygonLayer.addMarker(polygonMarker);
 
-        this.makers.push(polygonMarker);
+        this.markers.push(polygonMarker);
     }
 
     public addTextMarker(
-        coord: Vector2 | FMTextMarkerOptions,
+        coord: Vector2 | any,
         name: string,
         isMapCoor: boolean = false
-    ): Promise<fengmap.FMTextMarker> {
+    ): Promise<any> {
         if (!this.margin) {
             return Promise.reject('地图范围为空');
         }
@@ -193,12 +180,76 @@ export class FengMapMgr {
 
             // 文本标注层添加文本Marker
             this.textLayer!.addMarker(tm);
-            this.makers.push(tm);
+            this.markers.push(tm);
         });
     }
 
     public dispose() {
-        this.map.dispose();
+        this.remove();
+        // this.map.dispose();
         Reflect.set(this, 'map', null);
+    }
+
+    // 移动marker
+    public moveTo(
+        name: string | number,
+        coord: Vector23,
+
+        time?: number,
+        update?: (v: Vector2) => void,
+        // tslint:disable-next-line: ban-types
+        callback?: Function,
+        isMapCoor: boolean = false,
+    ) {
+        if (!isMapCoor) {
+            coord = parsePosition(coord, this.locOrigion, this.locRange, this.margin!);
+        }
+
+        this.eachmarkers((layer, i) => {
+            this.markers[i].moveTo({
+                time,
+                x: coord.x,
+                y: coord.y,
+
+                callback,
+                update: (v: Vector2) => {
+                    if (update && this.map) {
+                        update(this.map.coordMapToScreen(v.x, v.y));
+                    }
+                }
+            });
+        }, name);
+    }
+
+    private eachmarkers(
+        func: (layer: fengmap.FMMarkerLayer<any>, i: number) => number | void,
+        name?: string | number
+    ) {
+        let layer: fengmap.FMMarkerLayer<any> | null = null;
+
+        for (let i = 0; i < this.markers.length; i++) {
+            const v = this.markers[i];
+            if (v instanceof fengmap.FMPolygonMarker) {
+                if ((name == null || v.custom && v.custom.name === name) && this.polygonLayer) {
+                    layer = this.polygonLayer;
+                }
+            } else if (v instanceof fengmap.FMTextMarker) {
+                if ((name == null || v.name === name) && this.textLayer) {
+                    layer = this.textLayer;
+                }
+            } else if (v instanceof fengmap.FMImageMarker) {
+                if ((name == null || v.custom && v.custom.name === name) && this.imgLayer) {
+                    layer = this.imgLayer;
+                }
+            }
+
+            if (layer) {
+                const index: number | void = func.call(this, layer, i);
+
+                if (index != null) {
+                    i = index;
+                }
+            }
+        }
     }
 }

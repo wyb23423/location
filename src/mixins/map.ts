@@ -13,7 +13,7 @@ import MapSelect from '@/components/MapSelect.vue';
 export default class MapMixin extends Vue {
     public mgr?: FengMapMgr;
 
-    public destroyed() {
+    public beforeDestroy() {
         this.dispose();
     }
 
@@ -23,7 +23,6 @@ export default class MapMixin extends Vue {
             if (dom) {
                 try {
                     await loopAwait(() => !!dom.offsetWidth && !!dom.offsetHeight);
-
                     this.dispose();
 
                     this.mgr = createMap(data, dom);
