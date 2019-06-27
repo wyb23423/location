@@ -90,3 +90,10 @@ export function arr2obj(arr: IJson[], key: string, isArr: boolean = true) {
 
     return group;
 }
+
+/**
+ * 空函数
+ */
+export function none(a?: any, b?: any, c?: any, d?: any) {
+    //
+}

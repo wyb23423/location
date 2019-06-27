@@ -172,7 +172,7 @@ export default class Monitor extends mixins(MapMixin) {
             if (timer) {
                 clearTimeout(timer);
 
-                this.mgr.moveTo(tag.sTagNo, coord, undefined, (v: Vector2) => {
+                this.mgr.moveTo(tag.sTagNo, coord, 1, (v: Vector2) => {
                     // console.log(v);
                 });
             } else {

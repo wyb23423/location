@@ -4,7 +4,7 @@
 /// <reference path="../../types/fengmap.d.ts" />
 
 import { MAP_THEME_URL, APP_KEY, APP_NAME, MAP_DATA_URL } from '@/config';
-import { randomNum, randomColor } from '../utils/util';
+import { randomNum, randomColor, none } from '../utils/util';
 import { parsePosition } from './coordtransformer';
 
 export class FengMapMgr {
@@ -186,7 +186,7 @@ export class FengMapMgr {
 
     public dispose() {
         this.remove();
-        // this.map.dispose(); // 释放后动画会报错, 应该是fengmap的bug
+        this.map.dispose();
         Reflect.set(this, 'map', null);
     }
 
@@ -195,7 +195,7 @@ export class FengMapMgr {
         name: string | number,
         coord: Vector23,
 
-        time?: number,
+        time: number = 1,
         update?: (v: Vector2) => void,
         // tslint:disable-next-line: ban-types
         callback?: Function,
@@ -211,7 +211,7 @@ export class FengMapMgr {
                 x: coord.x,
                 y: coord.y,
 
-                callback,
+                callback: callback || none,
                 update: (v: Vector2) => {
                     if (update && this.map) {
                         update(this.map.coordMapToScreen(v.x, v.y));
