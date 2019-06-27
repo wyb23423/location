@@ -1,5 +1,5 @@
 <template>
-    <div :class="$style.box">
+    <div :class="$style.box" @click="hiddenCover">
         <div :class="$style['tool-bar']">
             <map-select
                 style="margin-left: 50px"
@@ -18,6 +18,19 @@
                 {{ v.name }}
             </el-button>
         </div>
+
+        <transition name="el-zoom-in-bottom">
+            <Census
+                v-if="tools[3].active"
+                @close="tools[3].active = false"
+                :tags="tagAll"
+                :zones="zoneAll"
+            ></Census>
+        </transition>
+        <transition name="el-fade-in-linear">
+            <Zone :zones="zoneAll" v-if="tools[2].active"></Zone>
+            <Group :group="group" v-if="tools[4].active"></Group>
+        </transition>
     </div>
 </template>
 

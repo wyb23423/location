@@ -51,9 +51,9 @@ export class FengMapMgr {
             return console.error('地图范围为空');
         }
 
-        const zones = <Vector2[]>data.position;
-        this.createPolygonMarker(zones, data.name);
-        this.addTextMarker(zones[0], data.name);
+        const zones: Vector2[] = typeof data.position === 'string' ? JSON.parse(data.position) : data.position;
+        const height = this.createPolygonMarker(zones, data.name);
+        this.addTextMarker({ ...zones[0], height }, data.name);
     }
 
     /**
@@ -128,7 +128,9 @@ export class FengMapMgr {
 
     public createPolygonMarker(coords: Vector2[], name: string, isMapCoor: boolean = false) {
         if (!this.margin) {
-            return console.error('地图范围为空');
+            console.error('地图范围为空');
+
+            return 0;
         }
 
         let coordslist = coords;
@@ -140,11 +142,13 @@ export class FengMapMgr {
         // 返回当前层中第一个polygonMarker,如果没有，则自动创建
         this.polygonLayer = group.getOrCreateLayer<fengmap.FMPolygonMarker>('polygonMarker');
 
+        const height = randomNum(3, 6);
+
         const polygonMarker = new fengmap.FMPolygonMarker({
             color: randomColor(),
             alpha: 0.5,
             lineWidth: 1,
-            height: randomNum(3, 6),
+            height,
             // 设置多边形坐标点
             points: coordslist
         });
@@ -153,6 +157,8 @@ export class FengMapMgr {
         this.polygonLayer.addMarker(polygonMarker);
 
         this.markers.push(polygonMarker);
+
+        return height;
     }
 
     public addTextMarker(
@@ -199,6 +205,8 @@ export class FengMapMgr {
                 name: 'text: ' + name,
                 opt: coord
             };
+
+            tm.height = coord.height || 0; // 有bug, 无效
 
             // 文本标注层添加文本Marker
             this.textLayer!.addMarker(tm);
@@ -253,7 +261,11 @@ export class FengMapMgr {
             this.textLayer.textMarkers.forEach(v => {
                 textOpts.push({
                     name: v.name,
-                    coord: v.custom.opt || {}
+                    coord: Object.assign({}, (v.custom || {}).opt || {}, {
+                        x: v._x,
+                        y: v._y,
+                        height: v.height
+                    })
                 });
             });
 
@@ -269,10 +281,17 @@ export class FengMapMgr {
 
         // ===============================处理切换时文字显示bug
         setTimeout(() => {
-            textOpts.forEach(v => this.addTextMarker(v.coord, v.name));
+            textOpts.forEach(v => this.addTextMarker(v.coord, v.name, true));
             textOpts.length = 0;
         }, 200);
         // ===============================
+    }
+
+    public show(name?: string | number, isShow?: boolean) {
+        this.eachmarkers((layer: any, i: number) => {
+            const marker = this.markers[i];
+            marker.show = isShow == null ? !marker.show : isShow;
+        }, name);
     }
 
     private eachmarkers(

@@ -2,9 +2,20 @@ import Component, { mixins } from 'vue-class-component';
 import MapMixin from '@/mixins/map';
 import { arr2obj } from '@/assets/utils/util';
 import { BASE_URL, LOSS_TIME } from '@/config';
+import TableMixin from '@/mixins/table';
 
-@Component
-export default class Monitor extends mixins(MapMixin) {
+import Zone from '@/components/monitor/Zone.vue';
+import Group from '@/components/monitor/Group.vue';
+import Census from '@/components/monitor/Census.vue';
+
+@Component({
+    components: {
+        Zone,
+        Group,
+        Census
+    }
+})
+export default class Monitor extends mixins(MapMixin, TableMixin) {
     public info: ITag | null = null; // 显示信息的标签
     public infoPosition: Vector2 = { x: 0, y: 0 }; // 信息位置
     public group: { [x: string]: IBaseStation[] } = {}; // 基站分组
@@ -18,9 +29,10 @@ export default class Monitor extends mixins(MapMixin) {
         { name: '分组列表', active: false, display: true }
     ];
 
+    public zoneAll: IZone[] = [];
+
     private baseAll: IBaseStation[] = [];
     private tagAll: { [x: string]: ITag } = {};
-    private zoneAll: IZone[] = [];
     private ws: WebSocket[] = [];
     private renderTags: { [x: string]: number } = {}; // 已经在地图上的标签,{tagNo: timer}
 
@@ -74,6 +86,12 @@ export default class Monitor extends mixins(MapMixin) {
         toolItem.active = !toolItem.active;
     }
 
+    public hiddenCover() {
+        for (let i = 2; i < this.tools.length; i++) {
+            this.tools[i].active = false;
+        }
+    }
+
     // ==================================
 
     protected bindEvents() {
@@ -119,7 +137,6 @@ export default class Monitor extends mixins(MapMixin) {
                     // fengmap文字有bug
                     this.mgr.addTextMarker(
                         {
-                            z: 50,
                             height: 2,
                             fillcolor: '#009688',
                             fontsize: 15,

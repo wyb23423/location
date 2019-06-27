@@ -46,8 +46,13 @@ export default class TableMixin extends Vue {
         if (component) {
             const dom: HTMLElement = component.$el || component;
             if (dom) {
-                await loopAwait(() => !!dom.offsetHeight);
-                this.maxHeight = dom.offsetHeight * 0.85;
+                try {
+                    await loopAwait(() => !!dom.offsetHeight);
+                    this.maxHeight = dom.offsetHeight * 0.85;
+                } catch (e) {
+                    console.log(e);
+                }
+
             }
         }
     }

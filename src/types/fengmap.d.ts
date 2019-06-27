@@ -113,6 +113,7 @@ declare namespace fengmap {
         public _x: number;
         public _y: number;
         // tslint:enable:variable-name
+        public show: boolean;
 
         constructor(options: T);
 
@@ -126,6 +127,7 @@ declare namespace fengmap {
 
     class FMTextMarker extends FMMarker<FMTextMarkerOptions> {
         public name: string;
+        public height: number;
     }
 
     class FMImageMarker extends FMMarker<FMImageMarkerOptions> {
