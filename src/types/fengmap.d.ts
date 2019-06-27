@@ -82,6 +82,7 @@ declare namespace fengmap {
         focusGroupID: number;
         layerLocalHeight: number;
         mapScene: any;
+        viewMode: string;
 
         gestureEnableController: {
             enableMapHover: boolean;
@@ -108,6 +109,10 @@ declare namespace fengmap {
 
     class FMMarker<T> {
         public custom?: any;
+        // tslint:disable:variable-name
+        public _x: number;
+        public _y: number;
+        // tslint:enable:variable-name
 
         constructor(options: T);
 
@@ -134,6 +139,8 @@ declare namespace fengmap {
     }
 
     interface FMMarkerLayer<T> {
+        textMarkers: FMTextMarker[];
+
         addMarker(marker: T): void;
         removeMarker(marker: T): void;
         removeAll(): void;

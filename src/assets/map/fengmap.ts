@@ -33,8 +33,6 @@ export class FengMapMgr {
             defaultThemeName: name,
             // 默认比例尺级别设置为20级
             defaultMapScaleLevel: 22,
-            // 开启2维，3维切换的动画显示
-            viewModeAnimateMode: false,
             defaultViewMode: fengmap.FMViewMode.MODE_2D,
             // 开发者申请应用下web服务的key
             key: APP_KEY,
@@ -62,14 +60,29 @@ export class FengMapMgr {
      * 移除marker
      */
     public remove(name?: string | number) {
-        this.eachmarkers(
-            (layer: fengmap.FMMarkerLayer<any>, i: number) => {
-                layer.removeMarker(this.markers.splice(i, 1)[0]);
+        if (name == null) {
+            if (this.textLayer) {
+                this.textLayer.removeAll();
+            }
+            if (this.imgLayer) {
+                this.imgLayer.removeAll();
+            }
+            if (this.polygonLayer) {
+                this.polygonLayer.removeAll();
+            }
 
-                return i - 1;
-            },
-            name
-        );
+            this.markers.length = 0;
+        } else {
+            this.eachmarkers(
+                (layer: fengmap.FMMarkerLayer<any>, i: number) => {
+                    layer.removeMarker(this.markers.splice(i, 1)[0]);
+
+                    return i - 1;
+                },
+                name
+            );
+        }
+
     }
 
     public on(type: string, callback: any) {
@@ -151,6 +164,10 @@ export class FengMapMgr {
             return Promise.reject('地图范围为空');
         }
 
+        if (!this.map) {
+            return Promise.reject('获取地图失败');
+        }
+
         let newlist = {
             x: coord.x,
             y: coord.y
@@ -160,7 +177,7 @@ export class FengMapMgr {
             newlist = parsePosition(coord, this.locOrigion, this.locRange, this.margin!);
         }
 
-        const group = this.map.getFMGroup(this.map.groupIDs[0]);
+        const group = this.map.getFMGroup(this.map.focusGroupID);
 
         // 返回当前层中第一个textMarkerLayer,如果没有，则自动创建
         this.textLayer = group.getOrCreateLayer('textMarker');
@@ -178,6 +195,11 @@ export class FengMapMgr {
                 callback: () => resolve(tm)
             });
 
+            tm.custom = {
+                name: 'text: ' + name,
+                opt: coord
+            };
+
             // 文本标注层添加文本Marker
             this.textLayer!.addMarker(tm);
             this.markers.push(tm);
@@ -188,6 +210,8 @@ export class FengMapMgr {
         this.remove();
         this.map.dispose();
         Reflect.set(this, 'map', null);
+
+        this.polygonLayer = this.imgLayer = this.textLayer = undefined;
     }
 
     // 移动marker
@@ -221,26 +245,60 @@ export class FengMapMgr {
         }, name);
     }
 
+    // 2D与3D切换
+    public switchViewMode() {
+        // ===============================处理切换时文字显示bug
+        const textOpts: any[] = [];
+        if (this.textLayer) {
+            this.textLayer.textMarkers.forEach(v => {
+                textOpts.push({
+                    name: v.name,
+                    coord: v.custom.opt || {}
+                });
+            });
+
+            this.textLayer.removeAll();
+        }
+        // ===============================
+
+        if (this.map.viewMode === fengmap.FMViewMode.MODE_2D) {
+            this.map.viewMode = fengmap.FMViewMode.MODE_3D;
+        } else {
+            this.map.viewMode = fengmap.FMViewMode.MODE_2D;
+        }
+
+        // ===============================处理切换时文字显示bug
+        setTimeout(() => {
+            textOpts.forEach(v => this.addTextMarker(v.coord, v.name));
+            textOpts.length = 0;
+        }, 200);
+        // ===============================
+    }
+
     private eachmarkers(
         func: (layer: fengmap.FMMarkerLayer<any>, i: number) => number | void,
         name?: string | number
     ) {
-        let layer: fengmap.FMMarkerLayer<any> | null = null;
+        let layer: fengmap.FMMarkerLayer<any> | undefined;
 
         for (let i = 0; i < this.markers.length; i++) {
             const v = this.markers[i];
-            if (v instanceof fengmap.FMPolygonMarker) {
-                if ((name == null || v.custom && v.custom.name === name) && this.polygonLayer) {
+
+            if (name == null || v.custom && v.custom.name === name) {
+                if (v instanceof fengmap.FMPolygonMarker) {
                     layer = this.polygonLayer;
-                }
-            } else if (v instanceof fengmap.FMTextMarker) {
-                if ((name == null || v.name === name) && this.textLayer) {
-                    layer = this.textLayer;
-                }
-            } else if (v instanceof fengmap.FMImageMarker) {
-                if ((name == null || v.custom && v.custom.name === name) && this.imgLayer) {
+                } else if (v instanceof fengmap.FMImageMarker) {
                     layer = this.imgLayer;
                 }
+            }
+
+            if (v instanceof fengmap.FMTextMarker
+                && (
+                    name == null
+                    || v.custom && v.custom.name === 'text: ' + name
+                )
+            ) {
+                layer = this.textLayer;
             }
 
             if (layer) {
@@ -250,7 +308,7 @@ export class FengMapMgr {
                     i = index;
                 }
 
-                layer = null;
+                layer = undefined;
             }
         }
     }

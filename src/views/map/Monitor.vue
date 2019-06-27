@@ -7,6 +7,17 @@
             ></map-select>
         </div>
         <div ref="map" style="height: 100%; overflow: hidden"></div>
+        <div :class="$style.tools">
+            <el-button
+                v-for="(v, i) of tools"
+                :key="i"
+                :type="v.active ? 'primary' : ''"
+                :class="$style['tool-item']"
+                @click.stop="swithDisplay(i)"
+            >
+                {{ v.name }}
+            </el-button>
+        </div>
     </div>
 </template>
 
@@ -29,5 +40,20 @@
     background: #fcf8e3;
     display: flex;
     align-items: center;
+}
+.tools {
+    position: absolute;
+    left: 50px;
+    bottom: 50px;
+    width: 150px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    overflow: hidden;
+}
+.tool-item {
+    width: 100%;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    display: block;
 }
 </style>

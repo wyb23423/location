@@ -9,6 +9,15 @@ export default class Monitor extends mixins(MapMixin) {
     public infoPosition: Vector2 = { x: 0, y: 0 }; // 信息位置
     public group: { [x: string]: IBaseStation[] } = {}; // 基站分组
 
+    // 右下工具栏列表
+    public tools: ToolItem[] = [
+        { name: '2D', active: true, display: true },
+        { name: '3D', active: false, display: false },
+        { name: '区域列表', active: false, display: true },
+        { name: '统计', active: false, display: true },
+        { name: '分组列表', active: false, display: true }
+    ];
+
     private baseAll: IBaseStation[] = [];
     private tagAll: { [x: string]: ITag } = {};
     private zoneAll: IZone[] = [];
@@ -32,8 +41,6 @@ export default class Monitor extends mixins(MapMixin) {
                 this.zoneAll = res[1];
                 this.tagAll = arr2obj(res[0], 'tagNo', false);
             });
-
-        (<any>window).map = this;
     }
 
     public beforeDestroy() {
@@ -47,8 +54,32 @@ export default class Monitor extends mixins(MapMixin) {
         Object.values(this.renderTags).forEach(clearTimeout);
     }
 
+
+    // ==================================dom事件
+    public swithDisplay(i: number) {
+        const toolItem = this.tools[i];
+        if (i < 2) {
+            if (toolItem.active) {
+                return;
+            }
+
+            const otherMode = this.tools[i ? 0 : 1];
+            otherMode.active = !otherMode.active;
+
+            if (this.mgr) {
+                this.mgr.switchViewMode();
+            }
+        }
+
+        toolItem.active = !toolItem.active;
+    }
+
+    // ==================================
+
     protected bindEvents() {
         this.mgr!.on('loadComplete', () => {
+            this.tools[1].display = this.mgr!.has3D;
+
             this.tagAnchor().then(data => {
                 this.baseAll = data;
                 this.group = arr2obj(data, 'groupCode');
@@ -60,11 +91,15 @@ export default class Monitor extends mixins(MapMixin) {
     // 获取并显示基站
     private async tagAnchor() {
         try {
-            const res = await this.$http.get('/api/base/getall', {
-                currentPage: 1,
-                pageSize: 10000
-            });
-            const data = res.pagedData.datas;
+            let data: IBaseStation[] = [...this.baseAll];
+            if (!data.length) {
+                const res = await this.$http.get('/api/base/getall', {
+                    currentPage: 1,
+                    pageSize: 10000
+                });
+                data = res.pagedData.datas;
+            }
+
 
             if (this.mgr) {
                 for (const v of data) {
@@ -72,9 +107,7 @@ export default class Monitor extends mixins(MapMixin) {
                         1,
                         {
                             x: v.coordx,
-                            y: v.coordy
-                        },
-                        {
+                            y: v.coordy,
                             name: v.baseNo,
                             groupid: v.groupCode,
                             photo: '/images/anchor.png',
@@ -83,6 +116,7 @@ export default class Monitor extends mixins(MapMixin) {
                         2
                     );
 
+                    // fengmap文字有bug
                     this.mgr.addTextMarker(
                         {
                             z: 50,
@@ -105,7 +139,7 @@ export default class Monitor extends mixins(MapMixin) {
         }
     }
 
-    private addIcon(gid: number, coord: Vector2, info: any, type: number = 1) {
+    private addIcon(gid: number, info: any, type: number = 1) {
         if (this.mgr) {
             const map = this.mgr.map;
             if (Reflect.has(map, 'gestureEnableController')) {
@@ -114,8 +148,8 @@ export default class Monitor extends mixins(MapMixin) {
 
             return this.mgr.addImage(
                 {
-                    x: coord.x,
-                    y: coord.y,
+                    x: info.x,
+                    y: info.y,
                     height: 0.5,
                     url: info.photo,
                     size: info.size || 48,
@@ -179,6 +213,7 @@ export default class Monitor extends mixins(MapMixin) {
                 const info = {
                     ...this.tagAll[tag.sTagNo],
                     name: tag.sTagNo,
+                    ...coord,
                     callback(im: any) {
                         if (im.alwaysShow) {
                             im.alwaysShow();
@@ -186,7 +221,7 @@ export default class Monitor extends mixins(MapMixin) {
                     }
                 };
 
-                this.addIcon(this.mgr.map.groupIDs[0], coord, info);
+                this.addIcon(this.mgr.map.groupIDs[0], info);
             }
 
             this.renderTags[tag.sTagNo] = setTimeout(() => {
@@ -201,7 +236,7 @@ export default class Monitor extends mixins(MapMixin) {
     }
 }
 
-
+// ===========================================
 interface ITagInfo {
     sGroupNo: string;
     iBbattery: number;
@@ -209,4 +244,10 @@ interface ITagInfo {
     iHeartRate: number;
     position: string[];
     sTagNo: string;
+}
+
+interface ToolItem {
+    name: string; // 显示文字
+    active: boolean; // 是否激活
+    display: boolean; // 是否显示
 }

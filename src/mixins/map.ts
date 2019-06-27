@@ -11,7 +11,7 @@ import MapSelect from '@/components/MapSelect.vue';
     }
 })
 export default class MapMixin extends Vue {
-    public mgr?: FengMapMgr;
+    public mgr?: FengMapMgr | null = null;
 
     public beforeDestroy() {
         this.dispose();
