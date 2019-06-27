@@ -56,10 +56,10 @@ export default class Group extends mixins(TableMixin) {
 
 <style lang="postcss" module>
 .box {
-    width: 400px;
+    width: 40%;
     height: auto;
     position: absolute;
-    left: 220px;
+    left: 200px;
     bottom: 50px;
 }
 </style>

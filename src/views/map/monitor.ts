@@ -25,14 +25,14 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         { name: '2D', active: true, display: true },
         { name: '3D', active: false, display: false },
         { name: '区域列表', active: false, display: true },
-        { name: '统计', active: false, display: true },
-        { name: '分组列表', active: false, display: true }
+        { name: '分组列表', active: false, display: true },
+        { name: '统计', active: false, display: true }
     ];
 
-    public zoneAll: IZone[] = [];
+    public zoneAll: IZone[] = []; // 区域列表
 
-    private baseAll: IBaseStation[] = [];
-    private tagAll: { [x: string]: ITag } = {};
+    private baseAll: IBaseStation[] = []; // 基站列表
+    private tagAll: { [x: string]: ITag } = {}; // 标签
     private ws: WebSocket[] = [];
     private renderTags: { [x: string]: number } = {}; // 已经在地图上的标签,{tagNo: timer}
 
@@ -68,6 +68,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
 
 
     // ==================================dom事件
+    // 切换弹窗的显示
     public swithDisplay(i: number) {
         const toolItem = this.tools[i];
         if (i < 2) {
@@ -84,8 +85,16 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         }
 
         toolItem.active = !toolItem.active;
+        if (i === 2 || i === 3) {
+            const other = this.tools[i === 2 ? 3 : 2];
+            if (toolItem.active) {
+                other.active = false;
+            }
+        }
+
     }
 
+    // 隐藏所有弹窗
     public hiddenCover() {
         for (let i = 2; i < this.tools.length; i++) {
             this.tools[i].active = false;
@@ -103,6 +112,14 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                 this.group = arr2obj(data, 'groupCode');
                 this.initWebSoket();
             });
+        });
+
+        this.mgr!.on('mapClickNode', (event: FMMapClickEvent) => {
+            if (event.nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
+                console.log(event);
+            } else {
+                //
+            }
         });
     }
 

@@ -21,15 +21,16 @@
 
         <transition name="el-zoom-in-bottom">
             <Census
-                v-if="tools[3].active"
-                @close="tools[3].active = false"
+                v-if="tools[4].active"
+                @close="tools[4].active = false"
                 :tags="tagAll"
                 :zones="zoneAll"
             ></Census>
         </transition>
+
         <transition name="el-fade-in-linear">
+            <Group :group="group" v-if="tools[3].active"></Group>
             <Zone :zones="zoneAll" v-if="tools[2].active"></Zone>
-            <Group :group="group" v-if="tools[4].active"></Group>
         </transition>
     </div>
 </template>
@@ -58,9 +59,9 @@
     position: absolute;
     left: 50px;
     bottom: 50px;
-    width: 150px;
+    width: 140px;
     border-radius: 10px;
-    border: 1px solid #ccc;
+    /* border: 1px solid #ccc; */
     overflow: hidden;
 }
 .tool-item {

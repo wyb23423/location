@@ -10,7 +10,7 @@
                     @click="$emit('close')"
                 ></el-button>
             </div>
-            <el-form style="margin: 0 auto 44px; width: 50%">
+            <el-form style="margin: 0 auto 44px;">
                 <el-form-item label="选择区域">
                     <el-select v-model="value" filterable @change="census">
                         <el-option

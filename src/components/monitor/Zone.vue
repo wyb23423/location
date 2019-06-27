@@ -70,10 +70,10 @@ export default class Zone extends mixins(TableMixin) {
 
 <style lang="postcss" module>
 .box {
-    width: 500px;
+    width: 60%;
     height: auto;
     position: absolute;
-    left: 220px;
+    left: 200px;
     bottom: 50px;
 }
 </style>
