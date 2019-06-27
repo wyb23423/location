@@ -1,5 +1,5 @@
 
-const PROXY_TARGET = 'http://192.168.1.189';
+const PROXY_TARGET = 'http://192.168.1.171';
 
 module.exports = {
     devServer: {

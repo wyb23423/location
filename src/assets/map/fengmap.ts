@@ -186,7 +186,7 @@ export class FengMapMgr {
 
     public dispose() {
         this.remove();
-        // this.map.dispose();
+        // this.map.dispose(); // 释放后动画会报错, 应该是fengmap的bug
         Reflect.set(this, 'map', null);
     }
 
@@ -249,6 +249,8 @@ export class FengMapMgr {
                 if (index != null) {
                     i = index;
                 }
+
+                layer = null;
             }
         }
     }
