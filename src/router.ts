@@ -40,7 +40,7 @@ const [PeopleIndex, PeopleList, PeopleAdd] = ['PeopleIndex', 'PeopleList', 'Peop
   .map(name => () => import(/* webpackChunkName: "people" */ `@/views/people/${name}.vue`));
 
 // 地图
-const [MapIndex, Monitor] = ['MapIndex', 'Monitor']
+const [MapIndex, Monitor, MapAdd] = ['MapIndex', 'Monitor', 'MapAdd']
   .map(name => () => import(/* webpackChunkName: "map" */ `@/views/map/${name}.vue`));
 
 // 报警信息
@@ -88,7 +88,8 @@ const routes: any[] = [
       {
         path: 'monitor', component: MapIndex,
         children: [
-          { path: '', name: 'monitor', component: Monitor }
+          { path: '', name: 'monitor', component: Monitor },
+          { path: 'add', name: 'map-add', component: MapAdd }
         ]
       },
       { path: 'alarm', component: Alarm, name: 'alarm' }

@@ -66,6 +66,3 @@ export default class MapSelect extends Vue {
     }
 }
 </script>
-
-<style lang="postcss" module>
-</style>
