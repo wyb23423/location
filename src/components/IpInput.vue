@@ -66,7 +66,7 @@ export default class IpInput extends Vue {
         const ips = <ElInput[]>this.$refs.ip;
 
         for (const v of str.split('.')) {
-            if (i > 3) {
+            if (i > this.length - 1) {
                 break;
             }
 
