@@ -12,7 +12,8 @@
             </div>
             <el-form style="margin: 0 auto 44px;">
                 <el-form-item label="选择区域">
-                    <el-select v-model="value" filterable @change="census">
+                    <el-select v-model="value" filterable>
+                        <el-option label="当前地图" :value="-1"></el-option>
                         <el-option
                             v-for="item in zones"
                             :key="item.id"
@@ -43,20 +44,36 @@ import { Prop } from 'vue-property-decorator';
 export default class Census extends Vue {
     @Prop() public tags!: { [x: string]: ITag };
     @Prop() public zones!: IZone[];
+    @Prop() public renderTags!: { [x: string]: number };
 
-    public value: string = '';
-    public info: any = null;
+    public value: number = -1;
 
-    public census(id: number) {
-        const zone = this.zones.find(v => v.id === id);
+    public get info() {
+        if (this.tags && this.zones && this.renderTags) {
+            const tagsArr = Object.keys(this.renderTags);
+            if (this.value === -1) {
+                return {
+                    name: '当前地图',
+                    count: tagsArr.length
+                };
+            } else {
+                const zone = this.zones.find(v => v.id === this.value);
 
-        if (zone) {
-            const list = Object.values(this.tags).filter(v => +v.zone === id);
-            this.info = {
-                name: zone.name + (zone.name.endsWith('区域') ? '' : '区域'),
-                count: list.length
-            };
+                if (zone) {
+                    const list = tagsArr.filter(
+                        k => +this.tags[k].zone === this.value
+                    );
+                    return {
+                        name:
+                            zone.name +
+                            (zone.name.endsWith('区域') ? '' : '区域'),
+                        count: list.length
+                    };
+                }
+            }
         }
+
+        return null;
     }
 }
 </script>

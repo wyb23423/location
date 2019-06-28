@@ -67,6 +67,7 @@
     "no-construct": true,
     "no-duplicate-super": true,
     "no-angle-bracket-type-assertion": false,
-    "ban-comma-operator": true
+    "ban-comma-operator": true,
+    "align": false
   }
 }

@@ -3,7 +3,7 @@
         <h3 style="color: #009688;">
             地图添加
         </h3>
-        <map-form></map-form>
+        <map-form @submit="onSubmit"></map-form>
     </div>
 </template>
 
@@ -18,6 +18,9 @@ import MapEdit from '@/components/MapEdit.vue';
     }
 })
 export default class MapAdd extends Vue {
-    //
+    public onSubmit(data: any) {
+        console.log(data);
+    }
 }
 </script>
+ 

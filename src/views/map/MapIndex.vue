@@ -18,7 +18,7 @@ export default class MapIndex extends Vue {
         { title: '实时监控', to: '/monitor', icon: 'el-icon-view' },
         {
             title: '地图编辑',
-            to: '/monitor/list',
+            to: '/monitor/edit',
             icon: 'el-icon-edit'
         },
         {

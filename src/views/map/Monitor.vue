@@ -25,6 +25,7 @@
                 @close="tools[4].active = false"
                 :tags="tagAll"
                 :zones="zoneAll"
+                :renderTags="renderTags"
             ></Census>
         </transition>
 
