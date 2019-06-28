@@ -15,13 +15,23 @@
             </el-radio-group>
         </el-form-item>
         <el-form-item label="距离参数">
-            <el-input v-model="form.distance"></el-input>
+            <el-input v-model="form.distance">
+                <template slot="append">
+                    cm
+                </template>
+            </el-input>
         </el-form-item>
         <el-form-item label="时间参数">
             <el-input v-model="form.time"></el-input>
         </el-form-item>
         <el-form-item label="功率等级">
-            <el-input v-model="form.power"></el-input>
+            <el-input-number
+                v-model="form.power"
+                :step-strictly="true"
+                :step="1"
+                :min="1"
+                :max="5"
+            ></el-input-number>
         </el-form-item>
         <el-form-item label="基站信道">
             <el-radio-group v-model="form.channel">
@@ -48,7 +58,28 @@ import { Prop } from 'vue-property-decorator';
 
 @Component
 export default class Primary extends Vue {
-    public form: any = {};
+    @Prop() public data!: IBaseStation;
+
+    public form: any = {
+        power: 1,
+        main: 0,
+        channel: 2,
+        frequency: 1
+    };
+
+    public created() {
+        this.$http
+            .post({
+                url: '/api/protocol/sendProtocol',
+                body: {
+                    ip: this.data.ip,
+                    port: 50000,
+                    protocol: '2345201801230D0A'
+                }
+            })
+            .then(console.log)
+            .catch(console.log);
+    }
 
     public onSubmit() {
         //

@@ -9,10 +9,10 @@
             <ip-input v-model="form.baseIp"></ip-input>
         </el-form-item>
         <el-form-item label="基站MASK">
-            <el-input v-model="form.mask"></el-input>
+            <ip-input v-model="form.mask"></ip-input>
         </el-form-item>
         <el-form-item label="基站MAC">
-            <el-input v-model="form.mac"></el-input>
+            <ip-input v-model="form.mac" :length="6"></ip-input>
         </el-form-item>
         <el-form-item label="基站端口">
             <el-input v-model="form.basePort"></el-input>
@@ -49,7 +49,9 @@ import IpInput from '../../components/IpInput.vue';
 export default class Net extends Vue {
     public form: any = {
         baseIp: [],
-        serverIp: []
+        serverIp: [],
+        mask: [],
+        mac: []
     };
 
     public onSubmit() {

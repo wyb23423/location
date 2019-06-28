@@ -1,14 +1,14 @@
 <template>
     <div @paste="paste($event)">
         <el-input
-            v-for="i of [0, 1, 2, 3]"
+            v-for="(v, i) of new Array(length).fill(1)"
             :key="i"
             v-model="value[i]"
             @input="next(i)"
             :class="$style.ip"
             ref="ip"
         >
-            <span slot="append" v-if="i < 3">.</span>
+            <span slot="append" v-if="i < length - 1">.</span>
         </el-input>
     </div>
 </template>
@@ -21,15 +21,19 @@ import { ElInput } from 'element-ui/types/input';
 
 @Component
 export default class IpInput extends Vue {
-    @Prop() public value!: string[];
+    @Prop({ default: () => [] }) public value!: string[];
+
+    @Prop({ default: () => 0 }) public min!: number;
+    @Prop({ default: () => 255 }) public max!: number;
+    @Prop({ default: () => 4 }) public length!: number;
 
     @Emit('input')
     public next(i: number) {
         const currValue = this.value[i];
         const value = this.parseIp(currValue);
-        this.$set(this.value, i, value.substr(0, 3));
+        this.$set(this.value, i, value);
 
-        if (value.length >= 3 && i < 3) {
+        if (value.length >= (this.max + '').length && i < this.length - 1) {
             (<ElInput[]>this.$refs.ip)[i + 1].focus();
         }
 
@@ -75,7 +79,7 @@ export default class IpInput extends Vue {
     private parseIp(value: string) {
         let num = parseInt(value, 10);
         if (Number.isFinite(num)) {
-            num = Math.max(0, Math.min(num, 255));
+            num = Math.max(this.min, Math.min(num, this.max));
 
             return num + '';
         }

@@ -1,6 +1,6 @@
 <template>
-    <el-form label-width="auto" :model="form" ref="form" :rules="rules">
-        <el-form-item label="地图名称" prop="name">
+    <el-form label-width="auto" :model="form" ref="form">
+        <el-form-item label="地图名称" prop="name" required>
             <el-input
                 v-model="form.name"
                 style="width: 50%"
@@ -12,6 +12,7 @@
             :key="k"
             :label="k"
             :prop="k"
+            required
         >
             <el-input-number :step="100" v-model="form[k]"></el-input-number>
         </el-form-item>
@@ -62,18 +63,10 @@ export default class MapEdit extends Vue {
         map: null,
         name: ''
     };
-    public rules: IJson = {};
 
     public changeUpload: ((file: any) => void) | null = null; // 选择图片后回调
 
     public created() {
-        this.rules.name = { required: true };
-        this.rules.minX = this.rules.minY = this.rules.maxX = this.rules.maxY = {
-            required: true,
-            min: 0,
-            type: 'number'
-        };
-
         this.changeUpload = (file: any) => {
             if (
                 file.raw.type !== 'image/png' &&

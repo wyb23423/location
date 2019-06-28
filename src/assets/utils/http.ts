@@ -13,6 +13,8 @@ export async function get(
 ): Promise<ResponseData> {
     const req = parseArgs(url, true, params, headers);
     if (typeof req === 'string') {
+        console.error(req);
+
         return Promise.reject(req);
     }
 

@@ -30,7 +30,7 @@
                 <base-info :data="base"></base-info>
             </el-tab-pane>
             <el-tab-pane label="基本属性设置" name="primary">
-                <base-primary></base-primary>
+                <base-primary :data="base"></base-primary>
             </el-tab-pane>
             <el-tab-pane label="网络参数设置" name="net">
                 <base-net></base-net>

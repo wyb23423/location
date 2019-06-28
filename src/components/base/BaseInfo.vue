@@ -68,7 +68,7 @@
         </el-col>
         <el-col :offset="1" :span="5" style="text-align: right">
             <el-image
-                :src="baseUrl + 'public/image/80530151701.png'"
+                src="/images/80530151701.png"
                 fit="contain"
                 style="width: 100%"
             >
@@ -88,8 +88,6 @@ import { State } from 'vuex-class/lib/bindings';
 
 @Component
 export default class BaseInfo extends Vue {
-    @State public baseUrl!: string;
-
     @Prop() public data!: any;
 }
 </script>

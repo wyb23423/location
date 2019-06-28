@@ -65,7 +65,7 @@ export default class Position extends Vue {
             .then((res: ResponseData) => {
                 this.zones = res.pagedData.datas.map((v: any) => [
                     v.id + '',
-                    v.name
+                    v.name + (v.name.endsWith('区域') ? '' : '区域')
                 ]);
                 if (this.zones.every(v => v[0] !== this.form.zone)) {
                     this.form.zone = this.zones[0][0];
