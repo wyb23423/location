@@ -19,7 +19,7 @@ declare interface IAdmin extends DataBase {
     level: string;
     phone: string;
     workNo: string; // 工号
-    role: string;
+    role: string; // 权限
 }
 
 declare interface IBaseStation extends DataBase {

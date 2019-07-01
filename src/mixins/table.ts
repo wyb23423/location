@@ -21,14 +21,18 @@ export default class TableMixin extends Vue {
     public maxHeight: number = 100;
     public colCfg: any[] = [];
     protected pageSize: number = 10;
+    protected page: number = 1;
+
     public created() {
         this.getData(1, 10);
     }
     public mounted() {
         this.getMaxHeight();
     }
+
     public async getData(page: number, pageSize: number) {
         this.pageSize = pageSize;
+        this.page = page;
         const res = await this.fetch(page, pageSize);
         this.totalCount = res.count;
         this.tableData = res.data;
@@ -37,9 +41,11 @@ export default class TableMixin extends Vue {
         const body = await this.bodyStr();
         table2Excel(this.headStr() + body);
     }
+
     protected async fetch(page: number, pageSize: number): Promise<TableData> {
         return { count: 0, data: [] };
     }
+
     @Watch('$store.state.rootScale')
     private async getMaxHeight() {
         const component: any = this.$refs.table;

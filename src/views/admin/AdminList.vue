@@ -32,8 +32,20 @@ export default class AdminList extends mixins(TableMixin) {
         { prop: 'workNo', label: '工号', width: 120 }
     ];
 
-    public del(row: any) {
-        console.log(row);
+    public del(row: IAdmin) {
+        this.$confirm(`删除${row.adminName}?`)
+            .then(() =>
+                this.$http.post('/api/admin/deleteAdmin', { id: row.id })
+            )
+            .then(() => {
+                this.$message.success('删除成功');
+                const page =
+                    this.tableData.length > 1
+                        ? this.page
+                        : Math.max(1, this.page - 1);
+                this.getData(page, this.pageSize);
+            })
+            .catch(console.log);
     }
 
     protected async fetch(page: number, pageSize: number) {

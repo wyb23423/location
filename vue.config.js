@@ -1,5 +1,5 @@
 
-const PROXY_TARGET = 'http://192.168.1.193';
+const PROXY_TARGET = 'http://localhost/';
 
 module.exports = {
     devServer: {

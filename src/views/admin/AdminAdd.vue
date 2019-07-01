@@ -108,13 +108,22 @@ export default class AdminAdd extends Vue {
         const form = <ElForm>this.$refs.form;
         form.validate((valid: boolean) => {
             if (valid) {
-                // TODO 提交数据
                 const now = Date.now();
                 const data = Object.assign({}, this.form, {
                     createTime: now,
                     updateTime: now,
                     role: 'string' // 权限
                 });
+
+                this.$http
+                    .post('/api/admin/addAdmin', data, {
+                        'Content-Type': 'application/json'
+                    })
+                    .then(() => {
+                        this.$message.success('添加成功');
+                        this.init();
+                    })
+                    .catch(console.log);
             }
         });
     }

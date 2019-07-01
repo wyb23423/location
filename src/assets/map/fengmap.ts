@@ -206,7 +206,7 @@ export class FengMapMgr {
                 opt: coord
             };
 
-            tm.height = coord.height || 0; // 有bug, 无效
+            tm.height = coord.height || 0;
 
             // 文本标注层添加文本Marker
             this.textLayer!.addMarker(tm);
@@ -215,7 +215,7 @@ export class FengMapMgr {
     }
 
     public dispose() {
-        this.remove();
+        // this.remove();
         this.map.dispose();
         Reflect.set(this, 'map', null);
 
@@ -255,22 +255,22 @@ export class FengMapMgr {
 
     // 2D与3D切换
     public switchViewMode() {
-        // ===============================处理切换时文字显示bug
-        const textOpts: any[] = [];
-        if (this.textLayer) {
-            this.textLayer.textMarkers.forEach(v => {
-                textOpts.push({
-                    name: v.name,
-                    coord: Object.assign({}, (v.custom || {}).opt || {}, {
-                        x: v._x,
-                        y: v._y,
-                        height: v.height
-                    })
-                });
-            });
+        // ===============================处理切换时文字显示bug(已修复)
+        // const textOpts: any[] = [];
+        // if (this.textLayer) {
+        //     this.textLayer.textMarkers.forEach(v => {
+        //         textOpts.push({
+        //             name: v.name,
+        //             coord: Object.assign({}, (v.custom || {}).opt || {}, {
+        //                 x: v._x,
+        //                 y: v._y,
+        //                 height: v.height
+        //             })
+        //         });
+        //     });
 
-            this.textLayer.removeAll();
-        }
+        //     this.textLayer.removeAll();
+        // }
         // ===============================
 
         if (this.map.viewMode === fengmap.FMViewMode.MODE_2D) {
@@ -279,11 +279,11 @@ export class FengMapMgr {
             this.map.viewMode = fengmap.FMViewMode.MODE_2D;
         }
 
-        // ===============================处理切换时文字显示bug
-        setTimeout(() => {
-            textOpts.forEach(v => this.addTextMarker(v.coord, v.name, true));
-            textOpts.length = 0;
-        }, 200);
+        // ===============================处理切换时文字显示bug(已修复)
+        // setTimeout(() => {
+        //     textOpts.forEach(v => this.addTextMarker(v.coord, v.name, true));
+        //     textOpts.length = 0;
+        // }, 200);
         // ===============================
     }
 
