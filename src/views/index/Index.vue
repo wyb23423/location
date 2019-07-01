@@ -14,7 +14,7 @@
                     :to="v.to"
                     :class="$style['card-item']"
                 >
-                    <img :src="`${baseUrl}public/image/${v.icon}.png`" />
+                    <img :src="`/images/${v.icon}.png`" />
                     <div :class="$style.line_v"></div>
                     <div :class="$style.info">
                         <div>{{ v.title }}</div>
@@ -60,7 +60,8 @@
     </div>
 </template>
 
-<script lang="ts" src="./index.ts"></script>
+<script lang="ts" src="./index.ts">
+</script>
 
 <style lang="postcss" module>
 .cards {
