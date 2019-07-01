@@ -56,8 +56,16 @@ export default class Alarm extends mixins(TableMixin) {
         { prop: 'alarmMsg', label: '报警信息', width: 240 }
     ];
 
-    public del(row: any) {
-        console.log(row);
+    public del(row: IAlarm) {
+        this.$confirm(`删除报警信息${row.id}?`)
+            .then(() =>
+                this.$http.post('/api/alarm/deleteAlarm', { id: row.id })
+            )
+            .then(() => {
+                this.$message.success('删除成功');
+                this.refresh();
+            })
+            .catch(console.log);
     }
 
     protected async fetch(page: number, pageSize: number) {

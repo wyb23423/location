@@ -3,7 +3,7 @@
         <h3 style="color: #009688;">
             地图添加
         </h3>
-        <map-form @submit="onSubmit"></map-form>
+        <map-form @submit="onSubmit" ref="form"></map-form>
     </div>
 </template>
 
@@ -19,7 +19,41 @@ import MapEdit from '@/components/MapEdit.vue';
 })
 export default class MapAdd extends Vue {
     public onSubmit(data: any) {
-        console.log(data);
+        this.$http
+            .post('/api/map/upload/mapfile', {
+                file: data.map,
+                mapName: data.map.name.split('.')[0] || 'map'
+            })
+            .then((res: ResponseData) => {
+                const timestamp = Date.now();
+                const { minX, maxX, minY, maxY } = data;
+
+                return this.$http.post({
+                    url: '/api/map/addMap',
+                    body: {
+                        createTime: timestamp,
+                        createUser: 'null',
+                        filepath: res.resultMap.mapUrl,
+                        name: data.name,
+                        updateTime: timestamp,
+                        updateUser: 'null',
+                        margin: JSON.stringify([
+                            [minX, minY],
+                            [minX, maxY],
+                            [maxX, maxY],
+                            [maxX, minY]
+                        ])
+                    },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+            })
+            .then(() => {
+                this.$message.success('添加成功');
+                (<MapEdit>this.$refs.form).reset();
+            })
+            .catch(console.log);
     }
 }
 </script>

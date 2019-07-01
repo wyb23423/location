@@ -4,8 +4,7 @@
         <el-form-item label="头像：">
             <div @click="visible = true">
                 <el-tooltip effect="dark" content="修改头像" placement="bottom-end">
-                    <el-image :class="$style.avatar" :src="form.avatar || baseUrl + 'public/image/true.png'"
-                        fit="contain"></el-image>
+                    <el-image :class="$style.avatar" :src="form.avatar || '/images/true.png'" fit="contain"></el-image>
                 </el-tooltip>
             </div>
         </el-form-item>

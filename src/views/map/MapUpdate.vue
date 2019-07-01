@@ -47,8 +47,48 @@ export default class MapAdd extends Vue {
     }
 
     public onSubmit(data: IJson) {
-        console.log(data);
-        console.log(this.map);
+        this.$confirm('确认修改?')
+            .then(
+                (): any => {
+                    if (data.map) {
+                        return this.$http.post('/api/map/upload/mapfile', {
+                            file: data.map,
+                            mapName: data.map.name.split('.')[0] || 'map'
+                        });
+                    }
+
+                    return { resultMap: { mapUrl: data.filename || data.url } };
+                }
+            )
+            .then((res: { resultMap: { mapUrl: string } }) => {
+                const timestamp = Date.now();
+                const { minX, maxX, minY, maxY } = data;
+
+                return this.$http.post({
+                    url: '/api/map/addMap',
+                    body: {
+                        ...this.map,
+                        filepath: res.resultMap.mapUrl,
+                        name: data.name,
+                        updateTime: timestamp,
+                        updateUser: 'null',
+                        margin: JSON.stringify([
+                            [minX, minY],
+                            [minX, maxY],
+                            [maxX, maxY],
+                            [maxX, minY]
+                        ])
+                    },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+            })
+            .then(() => {
+                this.$message.success('修改成功');
+                (<MapEdit>this.$refs.form).reset();
+            })
+            .catch(console.log);
     }
 }
 </script>

@@ -5,7 +5,6 @@ import Component from 'vue-class-component';
 import Vue from 'vue';
 import { ElForm } from 'element-ui/types/form';
 import Select from '../../components/Select.vue';
-import { State } from 'vuex-class/lib/bindings';
 
 @Component({
     components: {
@@ -13,8 +12,6 @@ import { State } from 'vuex-class/lib/bindings';
     }
 })
 export default class PeopleAdd extends Vue {
-    @State public baseUrl!: string;
-
     public url: string = ''; // 选择的图片
     public visible: boolean = false;
     public changeUpload: ((file: any) => void) | null = null; // 选择图片后回调
@@ -57,7 +54,7 @@ export default class PeopleAdd extends Vue {
         };
 
         this.preview = {
-            url: this.baseUrl + 'public/image/true.png',
+            url: '/images/true.png',
             div: this.previewBox,
             w: 1024
         };
