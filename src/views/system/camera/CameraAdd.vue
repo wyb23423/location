@@ -75,7 +75,15 @@ export default class CameraAdd extends Vue {
                 data.createTime = data.updateTime = Date.now();
                 data.createUser = data.updateUser = 'string';
 
-                console.log(data);
+                this.$http
+                    .post('/api/camera/addCamera', data, {
+                        'Content-Type': 'application/json'
+                    })
+                    .then(() => {
+                        this.$message.success('添加成功');
+                        this.reset();
+                    })
+                    .catch(console.log);
             }
         });
     }

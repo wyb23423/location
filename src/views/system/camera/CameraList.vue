@@ -35,7 +35,15 @@ export default class CameraList extends mixins(TableMixin) {
     ];
 
     public del(row: any) {
-        console.log(row);
+        this.$confirm(`删除摄像头${row.id}?`)
+            .then(() =>
+                this.$http.post('/api/camera/deleteCamera', { id: row.id })
+            )
+            .then(() => {
+                this.$message.success('删除成功');
+                this.refresh();
+            })
+            .catch(console.log);
     }
 
     protected async fetch(page: number, pageSize: number) {
