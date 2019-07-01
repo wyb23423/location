@@ -46,7 +46,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { Prop, Watch } from 'vue-property-decorator';
+import { Prop, Watch, Emit } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
 
 @Component
@@ -110,16 +110,17 @@ export default class MapEdit extends Vue {
                 const data = { ...this.form };
                 this.$emit('update:data', data);
                 this.$emit('submit', data);
-
-                this.reset();
             })
             .catch(console.log);
     }
 
+    @Emit('update:data')
     public reset() {
         (<ElForm>this.$refs.form).resetFields();
         this.form.map = null;
         this.form.url = this.form.filename = '';
+
+        return {};
     }
 
     @Watch('data')

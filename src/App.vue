@@ -1,11 +1,11 @@
 <template>
     <div
         ref="root"
-        style="transform-origin: 0 0"
         :style="{
             width: width + 'px',
             transform: `scale(${scale})`
         }"
+        :class="$style.root"
     >
         <router-view />
     </div>
@@ -63,3 +63,9 @@ export default class App extends Vue {
 }
 </script>
 
+<style lang="postcss" module>
+.root {
+    transition: all 0.5s ease-out;
+    transform-origin: 0 0;
+}
+</style>

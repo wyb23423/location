@@ -3,6 +3,7 @@ import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
 
 import MapMixin from '@/mixins/map';
+import { ElForm } from 'element-ui/types/form';
 
 @Component
 export default class Fence extends mixins(TableMixin, MapMixin) {
@@ -46,7 +47,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
 
             this.$message.success('删除成功');
 
-            this.tableData.splice(index, 1);
+            this.refresh();
             this.display(row, index, true);
         } catch (e) {
             //
@@ -97,32 +98,32 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         const position = <TPosition>[...this.form.position];
         position.pop();
 
+        const now = Date.now();
         const data: IZone = {
             id: 0,
             position,
             name: this.form.name,
-            enable: this.form.open ? 1 : 0
+            enable: this.form.open ? 1 : 0,
+            createTime: now,
+            updateime: now
         };
         this.mgr!.createPolygonMarker(position, data.name, true);
 
         setTimeout(() => {
             this.$confirm('请确定当前区域范围', '提示', { type: 'info' })
                 .then(() => {
-                    position.forEach((v, i) => {
-                        this.mgr!.remove(i);
-                    });
-
-                    this.form = {
-                        name: '',
-                        mode: 0,
-                        position: [null],
-                        open: false
-                    };
+                    position.forEach(<any>this.setPosition, this);
 
                     data.position = JSON.stringify(position);
                     Reflect.deleteProperty(data, 'id');
 
-                    console.log(data);
+                    return this.$http.post('/api/zone/addZone', data, { 'Content-Type': 'application/json' });
+                })
+                .then(() => {
+                    this.$message.success('添加成功');
+                    this.refresh(this.page);
+
+                    (<ElForm>this.$refs.form).resetFields();
                 })
                 .catch(console.log)
                 .finally(() => {
