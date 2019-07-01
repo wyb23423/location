@@ -47,6 +47,12 @@
             <mvc:exclude-mapping path="/v2/**"/>
             <mvc:exclude-mapping path="/favicon.ico"/>            
             <mvc:exclude-mapping path="/"/>
+            <mvc:exclude-mapping path="/css/**"/>
+            <mvc:exclude-mapping path="/data/**"/>
+            <mvc:exclude-mapping path="/fonts/**"/>
+            <mvc:exclude-mapping path="/images/**"/>
+            <mvc:exclude-mapping path="/js/**"/>
+            <mvc:exclude-mapping path="/lib/**"/>
             <bean class="com.pos.inhouse.web.interceptor.AuthInterceptor"></bean>
         </mvc:interceptor>
     </mvc:interceptors>
