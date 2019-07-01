@@ -42,13 +42,19 @@ export default class ProtocolAdd extends Vue {
         const form = <ElForm>this.$refs.form;
         form.validate((valid: boolean) => {
             if (valid) {
-                const now = Date.now();
-
                 const data = { ...this.form };
                 data.createTime = data.updateTime = Date.now();
                 data.createUser = data.updateUser = 'string';
 
-                console.log(data);
+                this.$http
+                    .post('/api/protocol/addProtocol', data, {
+                        'Content-Type': 'application/json'
+                    })
+                    .then(() => {
+                        this.$message.success('添加成功');
+                        this.reset();
+                    })
+                    .catch(console.log);
             }
         });
     }

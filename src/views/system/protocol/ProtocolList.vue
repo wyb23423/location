@@ -32,7 +32,15 @@ export default class ProtocolList extends mixins(TableMixin) {
     ];
 
     public del(row: any) {
-        console.log(row);
+        this.$confirm(`删除协议${row.id}?`)
+            .then(() =>
+                this.$http.post('/api/protocol/deleteProtocol', { id: row.id })
+            )
+            .then(() => {
+                this.$message.success('删除成功');
+                this.refresh();
+            })
+            .catch(console.log);
     }
 
     protected async fetch(page: number, pageSize: number) {
