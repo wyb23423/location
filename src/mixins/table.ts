@@ -47,12 +47,14 @@ export default class TableMixin extends Vue {
     }
 
     // 刷新列表
-    protected refresh() {
-        const page =
-            this.tableData.length > 1
+    protected refresh(page?: number) {
+        if (page == null) {
+            page = this.tableData.length > 1
                 ? this.page
-                : Math.max(1, this.page - 1);
-        this.getData(page, this.pageSize);
+                : this.page - 1;
+        }
+
+        this.getData(Math.max(1, page), this.pageSize);
     }
 
     @Watch('$store.state.rootScale')
