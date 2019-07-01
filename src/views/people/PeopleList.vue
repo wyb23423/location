@@ -85,8 +85,14 @@ export default class PeopleList extends mixins(TableMixin) {
 
     private zones?: ResponseData;
 
-    public del(row: any) {
-        console.log(row);
+    public del(row: ITag) {
+        this.$confirm(`删除标签${row.name}?`)
+            .then(() => this.$http.post('/api/tag/deleteTag', { id: row.id }))
+            .then(() => {
+                this.$message.success('删除成功');
+                this.refresh();
+            })
+            .catch(console.log);
     }
 
     public setting(row: any) {
@@ -99,7 +105,18 @@ export default class PeopleList extends mixins(TableMixin) {
         }
 
         this.person.updateTime = Date.now();
-        console.log(this.person);
+
+        this.$confirm('确认修改?')
+            .then(() =>
+                this.$http.post('/api/tag/updateTag', this.person, {
+                    'Content-Type': 'application/json'
+                })
+            )
+            .then(() => {
+                this.$message.success('修改成功');
+                this.refresh();
+            })
+            .catch(console.log);
     }
 
     protected async fetch(page: number, pageSize: number) {
@@ -133,7 +150,7 @@ export default class PeopleList extends mixins(TableMixin) {
                 return v;
             });
 
-            count = res.pagedData.totalCount + 100;
+            count = res.pagedData.totalCount;
 
             this.zones = zones;
         } catch (e) {

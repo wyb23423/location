@@ -86,20 +86,41 @@ export default class PeopleAdd extends Vue {
         const form = <ElForm>this.$refs.form;
         form.validate((valid: boolean) => {
             if (valid) {
-                // TODO 提交数据
-                const now = Date.now();
-                const data = Object.assign(
-                    {
-                        createTime: now,
-                        updateTime: now,
-                        updateUser: 'string',
-                        createUser: 'string',
-                        locked: true
-                    },
-                    this.form
-                );
+                new Promise<any>(resolve => {
+                    if (this.form.avatar) {
+                        resolve(
+                            this.$http.post('/api/tag/upload/tagPhoto', {
+                                tagPhoto: this.form.avatar
+                            })
+                        );
+                    } else {
+                        resolve({ resultMap: { photoUrl: '' } });
+                    }
+                })
+                    .then((res: ResponseData) => {
+                        const now = Date.now();
+                        const data = Object.assign(
+                            {
+                                createTime: now,
+                                updateTime: now,
+                                updateUser: 'string',
+                                createUser: 'string',
+                                locked: true,
+                                photo: res.resultMap.photoUrl
+                            },
+                            this.form
+                        );
+                        data.avatar = '';
 
-                console.log(data);
+                        return this.$http.post('/api/tag/addTag', data, {
+                            'Content-Type': 'application/json'
+                        });
+                    })
+                    .then(() => {
+                        this.$message.success('添加成功');
+                        this.reset();
+                    })
+                    .catch(console.log);
             }
         });
     }
