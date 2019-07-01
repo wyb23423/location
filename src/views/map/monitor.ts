@@ -205,7 +205,6 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         const time = Date.now();
 
         let ip: string = location.host;
-        console.log(process.env.NODE_ENV);
         if (process.env.NODE_ENV !== 'production') {
             const res = BASE_URL.match(/^http:\/\/([\w\d\.]+)\/$/);
             if (res) {
