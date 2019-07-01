@@ -46,6 +46,15 @@ export default class TableMixin extends Vue {
         return { count: 0, data: [] };
     }
 
+    // 刷新列表
+    protected refresh() {
+        const page =
+            this.tableData.length > 1
+                ? this.page
+                : Math.max(1, this.page - 1);
+        this.getData(page, this.pageSize);
+    }
+
     @Watch('$store.state.rootScale')
     private async getMaxHeight() {
         const component: any = this.$refs.table;
