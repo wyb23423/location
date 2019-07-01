@@ -11,8 +11,8 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
 
     // ===================================table
     public colCfg: any[] = [
-        { prop: 'name', label: '区域', sortable: true, width: 80 },
-        { prop: 'status', label: '状态', width: 70 }
+        { prop: 'name', label: '区域', sortable: true, width: 90 },
+        { prop: 'status', label: '状态', width: 60 }
     ];
     public op: any[] = [
         { type: 'danger', name: 'del', desc: '删除' },

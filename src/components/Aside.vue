@@ -19,7 +19,7 @@
             :unique-opened="true"
             :collapse="isCollapse"
             @click="collapse"
-            style="text-align: center"
+            style="text-align: center; border-right: none"
         >
             <template v-for="(v, i) of tabs">
                 <el-menu-item :key="v.to" :index="v.to" v-if="!v.children">
@@ -115,7 +115,6 @@ export default class Aside extends Vue {
     color: #fff;
     cursor: pointer;
     text-align: center;
-    border-right: solid 1px #e6e6e6;
     padding: 10px 0;
     background: #393d49;
 
