@@ -137,7 +137,7 @@ export default class CalibrationSetting extends mixins(TableMixin) {
                     y: main.coordy,
                     z: main.coordz
                 };
-                this.tableData.forEach(v => {
+                const arr = this.tableData.map(v => {
                     const timeCorrectionValue: number = v.main
                         ? major(mainVec, this.form, this.form[main.baseNo])
                         : subordinate(
@@ -154,8 +154,12 @@ export default class CalibrationSetting extends mixins(TableMixin) {
 
                     v.timeCorrectionValue = timeCorrectionValue + '';
 
-                    console.log(v);
+                    return this.$http.post('/api/base/updateBase', v);
                 });
+
+                Promise.all(arr)
+                    .then(() => this.$message.success('修改成功'))
+                    .catch(console.log);
 
                 this.reset();
             }

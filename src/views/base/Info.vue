@@ -33,7 +33,7 @@
                 <base-primary :data="base"></base-primary>
             </el-tab-pane>
             <el-tab-pane label="网络参数设置" name="net">
-                <base-net></base-net>
+                <base-net :data="base"></base-net>
             </el-tab-pane>
             <el-tab-pane label="位置设置" name="position">
                 <base-position :data="base"></base-position>
@@ -68,14 +68,20 @@ export default class Info extends mixins(TableMixin) {
         { prop: 'ip', label: '基站IP', width: 210 }
     ];
 
-    public base: any = null;
+    public base: IBaseStation | null = null;
     public activeTab: string = 'info';
 
-    public del(row: any) {
-        console.log(row);
+    public del(row: IBaseStation) {
+        this.$confirm(`删除基站${row.name}?`)
+            .then(() => this.$http.post('/api/base/deleteBase', { id: row.id }))
+            .then(() => {
+                this.$message.success('删除成功');
+                this.refresh();
+            })
+            .catch(console.log);
     }
 
-    public look(row: any) {
+    public look(row: IBaseStation) {
         this.base = row;
     }
 

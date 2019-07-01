@@ -14,13 +14,13 @@
         <el-form-item label="基站MAC" required>
             <ip-input v-model="form.mac" :length="6"></ip-input>
         </el-form-item>
-        <el-form-item label="基站端口" required>
+        <el-form-item label="基站端口" required prop="basePort">
             <el-input v-model="form.basePort"></el-input>
         </el-form-item>
         <el-form-item label="服务器IP" required>
             <ip-input v-model="form.serverIp"></ip-input>
         </el-form-item>
-        <el-form-item label="服务器端口" required>
+        <el-form-item label="服务器端口" required prop="serverPort">
             <el-input v-model="form.serverPort"></el-input>
         </el-form-item>
         <el-form-item label="传输模式">
@@ -40,6 +40,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
 import IpInput from '../../components/IpInput.vue';
+import { ElForm } from 'element-ui/types/form';
 
 @Component({
     components: {
@@ -47,6 +48,8 @@ import IpInput from '../../components/IpInput.vue';
     }
 })
 export default class Net extends Vue {
+    @Prop() public data!: IBaseStation;
+
     public form: any = {
         baseIp: [],
         serverIp: [],
@@ -56,7 +59,39 @@ export default class Net extends Vue {
     };
 
     public onSubmit() {
-        //
+        if (this.isValid !== true) {
+            return;
+        }
+
+        const form = <ElForm>this.$refs.form;
+        form.validate()
+            .then(() => this.$confirm('确认设置?'))
+            .then(() =>
+                this.$http.post('/api/protocol/sendProtocol', {
+                    ip: this.data.ip,
+                    port: 50000,
+                    protocol: '42' + this.parse(this.form)
+                })
+            )
+            .then(() => this.$message.success('设置成功'))
+            .catch(console.log);
+    }
+
+    private get isValid() {
+        if (this.form.baseIp.length !== 4) {
+            return this.$message.error('基站IP格式错误');
+        }
+        if (this.form.mask.length !== 4) {
+            return this.$message.error('基站mask格式错误');
+        }
+        if (this.form.mac.length !== 6) {
+            return this.$message.error('基站mac格式错误');
+        }
+        if (this.form.serverIp.length !== 4) {
+            return this.$message.error('服务器IP格式错误');
+        }
+
+        return true;
     }
 
     // 解析基站网络设置

@@ -115,8 +115,8 @@ export default class BaseAdd extends mixins(MapMixin, TableMixin) {
             .then(() => {
                 const orign = this.coord || { x: 0, y: 0, z: 0 };
 
-                this.bases.forEach(v => {
-                    const data = {
+                const arr = this.bases.map(v => {
+                    const data: IBaseStation = {
                         ...v,
                         ip: v.ip.join('.'),
                         alarm: 0,
@@ -126,20 +126,28 @@ export default class BaseAdd extends mixins(MapMixin, TableMixin) {
                         createTime: null,
                         createUser: null,
                         description: null,
-                        install_time: null,
+                        installTime: null,
                         location: null,
                         loseRate: '0',
                         owner: null,
-                        update_time: null,
-                        update_user: 'string',
-                        upload_type: '1',
+                        updateTime: null,
+                        updateUser: 'string',
+                        uploadType: '1',
                         groupCode: v.groupCode + ''
                     };
 
                     delete data.flag;
 
-                    console.log(data);
+                    return this.$http.post('/api/base/addBase', data, {
+                        'Content-Type': 'application/json'
+                    });
                 });
+
+                return Promise.all(arr);
+            })
+            .then(() => {
+                this.$message.success('添加成功');
+                location.href = location.href;
             })
             .catch(console.log);
     }

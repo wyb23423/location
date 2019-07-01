@@ -107,9 +107,15 @@ export default class Primary extends Vue {
         const form = <ElForm>this.$refs.form;
 
         form.validate()
-            .then(() => {
-                console.log(this.parse(this.form));
-            })
+            .then(() => this.$confirm('确认设置?'))
+            .then(() =>
+                this.$http.post('/api/protocol/sendProtocol', {
+                    ip: this.data.ip,
+                    port: 50000,
+                    protocol: '41' + this.parse(this.form)
+                })
+            )
+            .then(() => this.$message.success('设置成功'))
             .catch(console.log);
     }
 

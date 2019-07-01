@@ -85,7 +85,14 @@ export default class Position extends Vue {
                     id: this.data.id
                 });
 
-                console.log(data);
+                this.$confirm('确认修改')
+                    .then(() =>
+                        this.$http.post('/api/base/updateBase', data, {
+                            'Content-Type': 'application/json'
+                        })
+                    )
+                    .then(() => this.$message.success('修改成功'))
+                    .catch(console.log);
             }
         });
     }
