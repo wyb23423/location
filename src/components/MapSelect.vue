@@ -61,8 +61,10 @@ export default class MapSelect extends Vue {
 
         this.options.push(data);
 
-        this.value = this.options[0].id;
-        this.$emit('selectmap', { ...this.options[0] });
+        if (this.options.length) {
+            this.value = this.options[0].id;
+            this.$emit('selectmap', { ...this.options[0] });
+        }
     }
 }
 </script>

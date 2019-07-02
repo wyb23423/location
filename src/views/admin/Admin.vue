@@ -20,8 +20,8 @@ export default class Admin extends Vue {
             title: '增加人员',
             to: '/admin/add',
             icon: 'el-icon-circle-plus-outline'
-        },
-        { title: '权限管理', to: '/admin/chown ', icon: 'el-icon-s-operation' }
+        }
+        // { title: '权限管理', to: '/admin/chown ', icon: 'el-icon-s-operation' }
     ];
 }
 </script>

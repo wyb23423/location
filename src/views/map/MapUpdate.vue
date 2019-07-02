@@ -3,9 +3,14 @@
         <h3 style="color: #009688;">
             地图编辑
         </h3>
-        <el-form>
+        <el-form inline>
             <el-form-item label="选择地图">
                 <map-select @selectmap="selectMap"></map-select>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="danger" icon="el-icon-delete" @click="del">
+                    删除
+                </el-button>
             </el-form-item>
         </el-form>
         <div
@@ -35,6 +40,7 @@ export default class MapAdd extends Vue {
         const margin = <number[][]>data.margin;
 
         this.map = {
+            id: data.id,
             name: data.name,
             minX: margin[0][0],
             maxX: margin[2][0],
@@ -46,20 +52,38 @@ export default class MapAdd extends Vue {
         };
     }
 
-    public onSubmit(data: IJson) {
-        this.$confirm('确认修改?')
-            .then(
-                (): any => {
-                    if (data.map) {
-                        return this.$http.post('/api/map/upload/mapfile', {
-                            file: data.map,
-                            mapName: data.map.name.split('.')[0] || 'map'
-                        });
-                    }
+    public del() {
+        if (this.map.id != null) {
+            this.$confirm(`删除地图: ${this.map.name}?`)
+                .then(() =>
+                    this.$http.post('/api/map/deleteMap', { id: this.map.id })
+                )
+                .then(() => {
+                    this.$message.success('删除成功');
+                    location.href = location.href;
+                })
+                .catch(console.log);
+        } else {
+            this.$message.error('未选择地图!');
+        }
+    }
 
-                    return { resultMap: { mapUrl: data.filename || data.url } };
+    public onSubmit(data: IJson) {
+        if (this.map.id == null) {
+            return this.$message.error('未选择地图!');
+        }
+
+        this.$confirm('确认修改?')
+            .then((): any => {
+                if (data.map) {
+                    return this.$http.post('/api/map/upload/mapfile', {
+                        file: data.map,
+                        mapName: data.map.name.split('.')[0] || 'map'
+                    });
                 }
-            )
+
+                return { resultMap: { mapUrl: data.filename || data.url } };
+            })
             .then((res: { resultMap: { mapUrl: string } }) => {
                 const timestamp = Date.now();
                 const { minX, maxX, minY, maxY } = data;

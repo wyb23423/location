@@ -1,7 +1,6 @@
 <template>
     <div :class="$style.aside" :style="{ height }">
         <el-tooltip
-            class="item"
             effect="dark"
             :content="isCollapse ? '展开' : '收起'"
             placement="right"

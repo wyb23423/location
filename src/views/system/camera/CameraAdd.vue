@@ -9,8 +9,10 @@
             </el-form-item>
             <el-form-item label="用户名：" prop="username" required>
                 <el-input v-model="form.username"></el-input>
+                <el-input class="hidden"></el-input>
             </el-form-item>
             <el-form-item label="密码：" prop="password" required>
+                <el-input class="hidden" type="password"></el-input>
                 <el-input v-model="form.password" type="password"></el-input>
             </el-form-item>
             <el-form-item label="窗口分割数: " prop="windowSplit" required>

@@ -427,10 +427,20 @@ template {
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
-    appearance: none; 
     margin: 0; 
 }
 /* 火狐 */
 input{
     -moz-appearance:textfield;
+}
+
+.hidden {
+    position: fixed;
+    width: 2px;
+    height: 2px;
+    opacity: 0;
+    pointer-events: none;
+    z-index: -99999;
+    left: -99999px;
+    top: -99999px;
 }

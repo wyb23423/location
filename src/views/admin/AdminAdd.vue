@@ -2,9 +2,9 @@
     <div style="padding-left: 5%; padding-top: 3%;">
         <h3 style="color: #009688;">
             管理员基础信息
-            <span style="font-size: 12px;">
+            <!-- <span style="font-size: 12px;">
                 (注意: 增加管理员后需要在管理员权限管理更改新增管理员的权限)
-            </span>
+            </span> -->
         </h3>
         <el-form
             ref="form"
@@ -18,8 +18,10 @@
             </el-form-item>
             <el-form-item label="用户姓名：" prop="userName">
                 <el-input v-model="form.userName"></el-input>
+                <el-input class="hidden"></el-input>
             </el-form-item>
             <el-form-item label="登录密码：" prop="password">
+                <el-input class="hidden" type="password"></el-input>
                 <el-input v-model="form.password" type="password"></el-input>
             </el-form-item>
             <el-form-item label="性别：" prop="sex">
