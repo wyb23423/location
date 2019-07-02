@@ -20,7 +20,7 @@ const ICON_NAME = 'origin';
     }
 })
 export default class BaseAdd extends mixins(MapMixin, TableMixin) {
-    public progress: number = 0;
+    public progress: number = 1;
 
     public coord: Vector3 | null = null;
     public bases: any[] = [];
@@ -58,7 +58,7 @@ export default class BaseAdd extends mixins(MapMixin, TableMixin) {
     public async next() {
         if (this.progress === 0 && !this.coord) {
             try {
-                await this.$confirm('未选择原点, 是否使用默认的(0, 0, 0)?');
+                await this.$confirm('未选择原点, 是否使用默认的地图原点?');
             } catch (e) {
                 return;
             }
@@ -189,15 +189,17 @@ export default class BaseAdd extends mixins(MapMixin, TableMixin) {
     private addOrigin(x: number, y: number) {
         if (this.mgr) {
             this.mgr.remove(ICON_NAME);
-            this.coord = this.mgr.addImage(
-                {
-                    x,
-                    y,
-                    url: '/images/query_function_location.png',
-                    size: 32,
-                    height: 2
-                },
-                ICON_NAME
+            this.coord = this.mgr.getCoordinate(
+                this.mgr.addImage(
+                    {
+                        x,
+                        y,
+                        url: '/images/query_function_location.png',
+                        size: 32,
+                        height: 2
+                    },
+                    ICON_NAME
+                )
             );
         }
     }
@@ -212,6 +214,8 @@ export default class BaseAdd extends mixins(MapMixin, TableMixin) {
     left: 0;
     height: 60px;
     width: 100%;
+    padding-left: 20%;
+    padding-right: 20%;
 }
 .sel {
     position: absolute;

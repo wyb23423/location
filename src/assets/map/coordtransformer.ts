@@ -1,5 +1,5 @@
 /**
- * 将实际坐标转化为地图坐标
+ * 将实际坐标与地图坐标相互转化
  */
 /// <reference path="../../types/fengmap.d.ts" />
 
@@ -12,18 +12,18 @@ export class CoordTransformer {
         return Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
     }
 
+    public mapRange: Vector2 = { x: 0, y: 0 }; // 映射地图大小
+    public mapOrigion: Vector2 = { x: 0, y: 0 }; // 地图包围盒左下角坐标(映射)
+
     private mapAxisX: Vector2 = { x: 0, y: 0 }; // x轴单位向量
     private mapAxisY: Vector2 = { x: 0, y: 0 }; // y轴单位向量
-
-    private mapRange: Vector2 = { x: 0, y: 0 }; // 地图显示大小
-    private mapOrigion: Vector2 = { x: 0, y: 0 }; // 地图包围盒左下角坐标(显示)
 
     constructor(
         private locOrigion: Vector2,
         private locRange: Vector2,
         mapParas: [Vector2, Vector2, Vector2, Vector2]
     ) {
-        if (mapParas.length !== 4) {
+        if (mapParas.length < 4) {
             console.error('地图顶点数量需要为4');
         } else {
             this.mapOrigion = mapParas[0];
@@ -74,9 +74,32 @@ export function parsePosition(
     locRange: Vector2,
     mapParas: [Vector2, Vector2, Vector2, Vector2]
 ): Vector3 {
-    const trasformer = new CoordTransformer(locOrigion, locRange, mapParas);
+    const transformer = new CoordTransformer(locOrigion, locRange, mapParas);
 
-    const mapCoord = trasformer.transform(v);
+    const mapCoord = transformer.transform(v);
+    mapCoord.z = v.z == null ? 1 : v.z;
+
+    return <Vector3>mapCoord;
+}
+
+/**
+ * 将地图坐标转化为实际坐标
+ */
+export function getCoordinate(
+    v: Vector23,
+    locOrigion: Vector2,
+    locRange: Vector2,
+    mapParas: [Vector2, Vector2, Vector2, Vector2]
+) {
+    const tmp = new CoordTransformer(locOrigion, locRange, mapParas);
+    const transformer = new CoordTransformer(tmp.mapOrigion, tmp.mapRange, [
+        { x: 0, y: 0 },
+        { x: 0, y: locRange.y },
+        { x: locRange.x, y: locRange.y },
+        { x: locRange.x, y: 0 }
+    ]);
+
+    const mapCoord = transformer.transform(v);
     mapCoord.z = v.z == null ? 1 : v.z;
 
     return <Vector3>mapCoord;

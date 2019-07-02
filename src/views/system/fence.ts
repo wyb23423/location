@@ -113,8 +113,12 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
             this.$confirm('请确定当前区域范围', '提示', { type: 'info' })
                 .then(() => {
                     position.forEach(<any>this.setPosition, this);
-
-                    data.position = JSON.stringify(position);
+                    if (this.mgr) {
+                        data.position = JSON.stringify(position.map(this.mgr.getCoordinate, this.mgr));
+                    } else {
+                        this.$message.error('地图不存在, 提交失败!');
+                        return Promise.reject('地图不存在');
+                    }
                     Reflect.deleteProperty(data, 'id');
 
                     return this.$http.post('/api/zone/addZone', data, { 'Content-Type': 'application/json' });
@@ -127,7 +131,9 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
                 })
                 .catch(console.log)
                 .finally(() => {
-                    this.mgr!.remove(data.name);
+                    if (this.mgr) {
+                        this.mgr.remove(data.name);
+                    }
                 });
         }, 1000);
     }

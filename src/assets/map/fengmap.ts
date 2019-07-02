@@ -5,7 +5,7 @@
 
 import { MAP_THEME_URL, APP_KEY, APP_NAME, MAP_DATA_URL } from '@/config';
 import { randomNum, randomColor, none } from '../utils/util';
-import { parsePosition } from './coordtransformer';
+import { parsePosition, getCoordinate } from './coordtransformer';
 
 export class FengMapMgr {
     public readonly has3D: boolean = true;
@@ -292,6 +292,17 @@ export class FengMapMgr {
             const marker = this.markers[i];
             marker.show = isShow == null ? !marker.show : isShow;
         }, name);
+    }
+
+    // 将地图坐标转为定位坐标
+    public getCoordinate(v: Vector2) {
+        if (!this.margin) {
+            console.error('地图范围为空');
+
+            return { x: 0, y: 0, z: 0 };
+        }
+
+        return getCoordinate(v, this.locOrigion, this.locRange, this.margin!);
     }
 
     private eachmarkers(
