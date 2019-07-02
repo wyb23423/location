@@ -97,3 +97,34 @@ export function arr2obj(arr: IJson[], key: string, isArr: boolean = true) {
 export function none(a?: any, b?: any, c?: any, d?: any) {
     //
 }
+
+/**
+ * 计算文本宽度
+ */
+export const getTextWidth = (() => {
+    const w = new Map();
+
+    return (
+        text: string,
+        ctx: CanvasRenderingContext2D,
+        font: string = ''
+    ) => {
+        const key = text + font;
+        if(w.has(key)) {
+            return w.get(key);
+        }
+
+        if(font && ctx.font !== font) {
+            ctx.font = font;
+        }
+
+        const width: number = ctx.measureText(text).width;
+        if(w.size >= 500) {
+            w.clear();
+        }
+
+        w.set(key, width);
+
+        return width;
+    };
+})();

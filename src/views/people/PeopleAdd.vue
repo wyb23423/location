@@ -83,18 +83,17 @@ export default class PeopleAdd extends Vue {
         const form = <ElForm>this.$refs.form;
         form.validate((valid: boolean) => {
             if (valid) {
-                new Promise<any>(resolve => {
-                    if (this.form.avatar) {
-                        resolve(
-                            this.$http.post('/api/tag/upload/tagPhoto', {
-                                tagPhoto: this.form.avatar
-                            })
-                        );
-                    } else {
-                        resolve({ resultMap: { photoUrl: '' } });
-                    }
-                })
-                    .then((res: ResponseData) => {
+                const tagPhoto = this.getcanvas(
+                    this.form.avatar,
+                    this.form.name
+                ).then(c =>
+                    this.$http.post('/api/tag/upload/tagPhoto', {
+                        tagPhoto: c.toDataURL('image/png', 1.0)
+                    })
+                );
+
+                Promise.all([tagPhoto, this.getcanvas(this.form.avatar)])
+                    .then(([res, c]) => {
                         const now = Date.now();
                         const data = Object.assign(
                             {
@@ -107,7 +106,7 @@ export default class PeopleAdd extends Vue {
                             },
                             this.form
                         );
-                        data.avatar = '';
+                        data.avatar = c.toDataURL('image/png', 1.0);
 
                         return this.$http.post('/api/tag/addTag', data, {
                             'Content-Type': 'application/json'
@@ -125,6 +124,42 @@ export default class PeopleAdd extends Vue {
     public reset() {
         (<ElForm>this.$refs.form).resetFields();
         this.form.avatar = '';
+    }
+
+    private getcanvas(
+        url: string = '/images/P.png',
+        text?: string,
+        canvas: HTMLCanvasElement = document.createElement('canvas')
+    ): Promise<HTMLCanvasElement> {
+        const img = new Image();
+        img.src = url;
+
+        return new Promise((resolve, reject) => {
+            img.onload = () => {
+                canvas.width = 100;
+                canvas.height = text ? 100 : 70;
+                const ctx = <CanvasRenderingContext2D>canvas.getContext('2d');
+
+                if (text) {
+                    if (ctx.font !== '20px Arial') {
+                        ctx.font = '20px Arial';
+                    }
+                    if (ctx.strokeStyle !== 'blue') {
+                        ctx.strokeStyle = 'blue';
+                    }
+                    if (ctx.textAlign !== 'center') {
+                        ctx.textAlign = 'center';
+                    }
+
+                    ctx.fillText(text, 50, 80);
+                }
+
+                ctx.drawImage(img, 25, 10, 50, 50);
+                resolve(canvas);
+            };
+
+            img.onerror = reject;
+        });
     }
 }
 </script>
