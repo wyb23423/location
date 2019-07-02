@@ -46,6 +46,8 @@ export default class MapAdd extends Vue {
             maxX: margin[2][0],
             minY: margin[0][1],
             maxY: margin[2][1],
+            width: margin[4][0],
+            height: margin[4][1],
             [data.filepath.endsWith('.fmap')
                 ? 'filename'
                 : 'url']: data.filepath
@@ -100,7 +102,8 @@ export default class MapAdd extends Vue {
                             [minX, minY],
                             [minX, maxY],
                             [maxX, maxY],
-                            [maxX, minY]
+                            [maxX, minY],
+                            [data.width, data.height]
                         ])
                     },
                     headers: {

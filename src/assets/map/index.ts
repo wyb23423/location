@@ -13,6 +13,10 @@ export function createMap(data: IMap, dom: HTMLElement) {
     if (Array.isArray(res)) {
         const map = new FengMapMgr(res[1], dom);
         map.margin = <TPosition>(<number[][]>data.margin).map(v => ({ x: v[0], y: v[1] }));
+        map.locRange = {
+            x: <number>data.margin[4][0],
+            y: <number>data.margin[4][1]
+        };
 
         // isFengMap(res[2])
         //     ? this.createFengMap(res[1], dom)

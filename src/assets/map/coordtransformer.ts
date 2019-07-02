@@ -1,5 +1,5 @@
 /**
- * 将真实坐标转化为地图坐标
+ * 将实际坐标转化为地图坐标
  */
 /// <reference path="../../types/fengmap.d.ts" />
 
@@ -12,11 +12,11 @@ export class CoordTransformer {
         return Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
     }
 
-    private mapAxisX!: Vector2;
-    private mapAxisY!: Vector2;
+    private mapAxisX: Vector2 = { x: 0, y: 0 }; // x轴单位向量
+    private mapAxisY: Vector2 = { x: 0, y: 0 }; // y轴单位向量
 
-    private mapRange!: Vector2;
-    private mapOrigion!: Vector2;
+    private mapRange: Vector2 = { x: 0, y: 0 }; // 地图显示大小
+    private mapOrigion: Vector2 = { x: 0, y: 0 }; // 地图包围盒左下角坐标(显示)
 
     constructor(
         private locOrigion: Vector2,
@@ -44,14 +44,14 @@ export class CoordTransformer {
     }
 
     public transform(loc: Vector2): Vector23 {
-        const offstRatio = {
+        const offsetRatio = {
             x: (loc.x - this.locOrigion.x) / this.locRange.x,
             y: (loc.y - this.locOrigion.y) / this.locRange.y
         };
 
         const mapOffset = {
-            x: offstRatio.x * this.mapRange.x,
-            y: offstRatio.y * this.mapRange.y
+            x: offsetRatio.x * this.mapRange.x,
+            y: offsetRatio.y * this.mapRange.y
         };
 
         return {
@@ -61,6 +61,13 @@ export class CoordTransformer {
     }
 }
 
+/**
+ * 将实际坐标转化为地图坐标
+ * @param v 需要转换的实际坐标
+ * @param locOrigion 原点(实际坐标)
+ * @param locRange 地图显示大小
+ * @param mapParas 地图包围盒实际坐标
+ */
 export function parsePosition(
     v: Vector23,
     locOrigion: Vector2,

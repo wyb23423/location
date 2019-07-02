@@ -58,7 +58,7 @@ declare interface ICamera extends DataBase {
 
 declare interface IMap extends DataBase {
     name: string;
-    margin: string | number[][]; // 地图边界值[左下, 左上, 右上, 右下]
+    margin: string | number[][]; // 地图边界值[左下, 左上, 右上, 右下, [监控区域宽, 监控区域高]]
     groupCode: string;
     filepath: string; // 地图文件。背景图或.fmap
 }

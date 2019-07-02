@@ -14,7 +14,32 @@
             :prop="k"
             required
         >
-            <el-input-number :step="100" v-model="form[k]"></el-input-number>
+            <el-input-number
+                :step="100"
+                v-model="form[k]"
+                placeholder="显示时坐标"
+            ></el-input-number>
+        </el-form-item>
+        <el-form-item label="地图大小" required>
+            <el-form-item required :class="$style.inline" prop="width">
+                <el-input-number
+                    :step="100"
+                    v-model="form.width"
+                    placeholder="宽(实际)"
+                ></el-input-number>
+            </el-form-item>
+            <el-form-item
+                required
+                :class="$style.inline"
+                style="margin-left: 20px"
+                prop="height"
+            >
+                <el-input-number
+                    :step="100"
+                    v-model="form.height"
+                    placeholder="高(实际)"
+                ></el-input-number>
+            </el-form-item>
         </el-form-item>
         <el-form-item required label="地图">
             <el-upload
@@ -54,10 +79,6 @@ export default class MapEdit extends Vue {
     @Prop({ default: () => ({}) }) public data!: IJson;
 
     public form: IJson = {
-        minX: 0,
-        minY: 0,
-        maxX: 0,
-        maxY: 0,
         url: '',
         filename: '',
         map: null,
@@ -134,5 +155,10 @@ export default class MapEdit extends Vue {
 .img {
     max-width: 60%;
     max-height: 400px;
+}
+
+.inline {
+    display: inline-block;
+    vertical-align: middle;
 }
 </style>

@@ -41,7 +41,8 @@ export default class MapAdd extends Vue {
                             [minX, minY],
                             [minX, maxY],
                             [maxX, maxY],
-                            [maxX, minY]
+                            [maxX, minY],
+                            [data.width, data.height]
                         ])
                     },
                     headers: {
