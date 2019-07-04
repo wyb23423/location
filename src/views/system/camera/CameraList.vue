@@ -58,7 +58,7 @@ export default class CameraList extends mixins(TableMixin) {
             data = res.pagedData.datas;
             count = res.pagedData.totalCount;
         } catch (e) {
-            //
+            console.log(e);
         }
 
         return { count, data };

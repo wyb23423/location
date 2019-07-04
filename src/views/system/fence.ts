@@ -50,7 +50,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
             this.refresh();
             this.display(row, index, true);
         } catch (e) {
-            //
+            console.log(e);
         }
     }
     /**
@@ -158,7 +158,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
 
             count = res.pagedData.totalCount;
         } catch (e) {
-            //
+            console.log(e);
         }
 
         return { count, data };

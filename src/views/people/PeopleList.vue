@@ -154,7 +154,7 @@ export default class PeopleList extends mixins(TableMixin) {
 
             this.zones = zones;
         } catch (e) {
-            //
+            console.log(e);
         }
 
         return { count, data };

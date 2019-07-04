@@ -68,7 +68,7 @@ export default class Calibration extends mixins(TableMixin) {
             count = bases.length;
             data = bases.slice((page - 1) * pageSize, page * pageSize);
         } catch (e) {
-            //
+            console.log(e);
         }
 
         return { count, data };

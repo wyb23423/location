@@ -164,7 +164,7 @@ export default class CalibrationSetting extends mixins(TableMixin) {
                 this.reset();
             }
         } catch (e) {
-            //
+            console.log(e);
         }
     }
 

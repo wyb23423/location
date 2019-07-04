@@ -60,7 +60,7 @@ export default class AdminList extends mixins(TableMixin) {
 
             count = res.pagedData.totalCount;
         } catch (e) {
-            //
+            console.log(e);
         }
 
         return { count, data };

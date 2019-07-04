@@ -55,7 +55,7 @@ export default class ProtocolList extends mixins(TableMixin) {
             data = res.pagedData.datas;
             count = res.pagedData.totalCount || data.length;
         } catch (e) {
-            //
+            console.log(e);
         }
 
         return { count, data };
