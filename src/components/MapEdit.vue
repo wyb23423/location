@@ -17,7 +17,7 @@
             <el-input-number
                 :step="100"
                 v-model="form[k]"
-                placeholder="显示时坐标"
+                placeholder="地图坐标"
             ></el-input-number>
         </el-form-item>
         <el-form-item label="地图大小" required>

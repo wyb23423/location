@@ -110,16 +110,16 @@ export const getTextWidth = (() => {
         font: string = ''
     ) => {
         const key = text + font;
-        if(w.has(key)) {
+        if (w.has(key)) {
             return w.get(key);
         }
 
-        if(font && ctx.font !== font) {
+        if (font && ctx.font !== font) {
             ctx.font = font;
         }
 
         const width: number = ctx.measureText(text).width;
-        if(w.size >= 500) {
+        if (w.size >= 500) {
             w.clear();
         }
 
@@ -128,3 +128,28 @@ export const getTextWidth = (() => {
         return width;
     };
 })();
+
+// 获取点击点
+export function getPosition(e: MouseEvent | TouchEvent) {
+    if (e instanceof MouseEvent) {
+        return {
+            x: e.clientX,
+            y: e.clientY
+        };
+    } else if (e instanceof TouchEvent) {
+        if (!e.touches.length) {
+            return {
+                x: 0,
+                y: 0
+            };
+        }
+        return {
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY
+        };
+    }
+
+    console.error('事件对象错误: 事件对象必须是MouseEvent或TouchEvent');
+
+    return { x: 0, y: 0 };
+}

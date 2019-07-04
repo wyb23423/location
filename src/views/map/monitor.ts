@@ -7,6 +7,7 @@ import TableMixin from '@/mixins/table';
 import Zone from '@/components/monitor/Zone.vue';
 import Group from '@/components/monitor/Group.vue';
 import Census from '@/components/monitor/Census.vue';
+import { FengMapMgr } from '@/assets/map/fengmap';
 
 @Component({
     components: {
@@ -176,8 +177,8 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
     private addIcon(gid: number, info: any, type: number = 1) {
         if (this.mgr) {
             const map = this.mgr.map;
-            if (Reflect.has(map, 'gestureEnableController')) {
-                map.gestureEnableController.enableMapHover = true;
+            if (this.mgr instanceof FengMapMgr) {
+                (<any>map).gestureEnableController.enableMapHover = true;
             }
 
             return this.mgr.addImage(
@@ -255,7 +256,8 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                     }
                 };
 
-                this.addIcon(this.mgr.map.groupIDs[0], info);
+                const ids = (<any>this.mgr.map).groupIDs;
+                this.addIcon(ids ? ids[0] : 0, info);
             }
 
             this.renderTags[tag.sTagNo] = setTimeout(() => {

@@ -114,7 +114,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
                 .then(() => {
                     position.forEach(<any>this.setPosition, this);
                     if (this.mgr) {
-                        data.position = JSON.stringify(position.map(this.mgr.getCoordinate, this.mgr));
+                        data.position = JSON.stringify(position.map(v => this.mgr!.getCoordinate(v)));
                     } else {
                         this.$message.error('地图不存在, 提交失败!');
                         return Promise.reject('地图不存在');

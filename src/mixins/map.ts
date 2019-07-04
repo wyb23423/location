@@ -4,6 +4,7 @@ import { loopAwait } from '@/assets/utils/util';
 import { createMap } from '@/assets/map';
 import { FengMapMgr } from '@/assets/map/fengmap';
 import MapSelect from '@/components/MapSelect.vue';
+import { PIXIMgr } from '@/assets/map/pixi';
 
 @Component({
     components: {
@@ -11,7 +12,7 @@ import MapSelect from '@/components/MapSelect.vue';
     }
 })
 export default class MapMixin extends Vue {
-    public mgr?: FengMapMgr | null = null;
+    public mgr?: FengMapMgr | PIXIMgr;
 
     public beforeDestroy() {
         this.dispose();

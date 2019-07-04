@@ -14,12 +14,22 @@ export class FengMapMgr {
 
     public margin?: TPosition;
     public locOrigion: Vector2 = { x: 0, y: 0 };
-    public locRange: Vector2 = { x: 3073, y: 2326 };
 
     private markers: Array<fengmap.FMMarker<any>> = [];
     private polygonLayer?: fengmap.FMMarkerLayer<fengmap.FMPolygonMarker>;
     private textLayer?: fengmap.FMMarkerLayer<fengmap.FMTextMarker>;
     private imgLayer?: fengmap.FMMarkerLayer<fengmap.FMImageMarker>;
+
+    // tslint:disable-next-line:variable-name
+    private _locRange?: Vector2;
+
+    public set locRange(data: Vector2) {
+        if (!this._locRange) {
+            this._locRange = data;
+        } else {
+            console.error('地图范围只能设置一次');
+        }
+    }
 
     constructor(name: string, dom: HTMLElement) {
         this.map = new fengmap.FMMap({
@@ -104,7 +114,13 @@ export class FengMapMgr {
         };
 
         if (!isMapCoor) {
-            p = parsePosition(p, this.locOrigion, this.locRange, this.margin!);
+            if (this._locRange && this.margin) {
+                p = parsePosition(p, this.locOrigion, this._locRange, this.margin);
+            } else {
+                console.error('地图范围错误');
+
+                return p;
+            }
         }
 
         this.imgLayer = group.getOrCreateLayer('imageMarker');
@@ -135,7 +151,11 @@ export class FengMapMgr {
 
         let coordslist = coords;
         if (!isMapCoor) {
-            coordslist = coords.map(v => parsePosition(v, this.locOrigion, this.locRange, this.margin!));
+            if (this._locRange && this.margin) {
+                coordslist = coords.map(v => parsePosition(v, this.locOrigion, this._locRange!, this.margin!));
+            } else {
+                return console.error('地图范围错误');
+            }
         }
 
         const group = this.map.getFMGroup(this.map.groupIDs[0]);
@@ -180,7 +200,11 @@ export class FengMapMgr {
         };
 
         if (!isMapCoor) {
-            newlist = parsePosition(coord, this.locOrigion, this.locRange, this.margin!);
+            if (this._locRange && this.margin) {
+                newlist = parsePosition(coord, this.locOrigion, this._locRange, this.margin);
+            } else {
+                return Promise.reject('地图范围错误');
+            }
         }
 
         const group = this.map.getFMGroup(this.map.focusGroupID);
@@ -226,7 +250,6 @@ export class FengMapMgr {
     public moveTo(
         name: string | number,
         coord: Vector23,
-
         time: number = 1,
         update?: (v: Vector2) => void,
         // tslint:disable-next-line: ban-types
@@ -234,7 +257,11 @@ export class FengMapMgr {
         isMapCoor: boolean = false,
     ) {
         if (!isMapCoor) {
-            coord = parsePosition(coord, this.locOrigion, this.locRange, this.margin!);
+            if (this._locRange && this.margin) {
+                coord = parsePosition(coord, this.locOrigion, this._locRange, this.margin);
+            } else {
+                return console.error('地图范围错误');
+            }
         }
 
         this.eachmarkers((layer, i) => {
@@ -255,36 +282,11 @@ export class FengMapMgr {
 
     // 2D与3D切换
     public switchViewMode() {
-        // ===============================处理切换时文字显示bug(已修复)
-        // const textOpts: any[] = [];
-        // if (this.textLayer) {
-        //     this.textLayer.textMarkers.forEach(v => {
-        //         textOpts.push({
-        //             name: v.name,
-        //             coord: Object.assign({}, (v.custom || {}).opt || {}, {
-        //                 x: v._x,
-        //                 y: v._y,
-        //                 height: v.height
-        //             })
-        //         });
-        //     });
-
-        //     this.textLayer.removeAll();
-        // }
-        // ===============================
-
         if (this.map.viewMode === fengmap.FMViewMode.MODE_2D) {
             this.map.viewMode = fengmap.FMViewMode.MODE_3D;
         } else {
             this.map.viewMode = fengmap.FMViewMode.MODE_2D;
         }
-
-        // ===============================处理切换时文字显示bug(已修复)
-        // setTimeout(() => {
-        //     textOpts.forEach(v => this.addTextMarker(v.coord, v.name, true));
-        //     textOpts.length = 0;
-        // }, 200);
-        // ===============================
     }
 
     public show(name?: string | number, isShow?: boolean) {
@@ -295,14 +297,14 @@ export class FengMapMgr {
     }
 
     // 将地图坐标转为定位坐标
-    public getCoordinate(v: Vector2) {
+    public getCoordinate(v: Vector2, is2map?: boolean) {
         if (!this.margin) {
             console.error('地图范围为空');
 
             return { x: 0, y: 0, z: 0 };
         }
 
-        return getCoordinate(v, this.locOrigion, this.locRange, this.margin!);
+        return getCoordinate(v, this.locOrigion, this._locRange!, this.margin!);
     }
 
     private eachmarkers(

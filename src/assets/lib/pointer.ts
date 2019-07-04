@@ -114,8 +114,9 @@ export class Pointer {
 
         // Find the pointer’s x and y position (for mouse).
         // Subtract the element's top and left offset from the browser window
-        this._x = (event.pageX - element.offsetLeft);
-        this._y = (event.pageY - element.offsetTop);
+        const bound = element.getBoundingClientRect();
+        this._x = (event.pageX - bound.left);
+        this._y = (event.pageY - bound.top);
 
         // Prevent the event's default behavior
         event.preventDefault();
@@ -126,8 +127,9 @@ export class Pointer {
         const element = <HTMLElement>event.target;
 
         // Find the touch point's x and y position
-        this._x = (event.targetTouches[0].pageX - element.offsetLeft);
-        this._y = (event.targetTouches[0].pageY - element.offsetTop);
+        const bound = element.getBoundingClientRect();
+        this._x = (event.targetTouches[0].pageX - bound.left);
+        this._y = (event.targetTouches[0].pageY - bound.top);
         event.preventDefault();
     }
 
@@ -244,8 +246,8 @@ export class Pointer {
             xAnchorOffset = sprite.width * sprite.anchor.x;
             yAnchorOffset = sprite.height * sprite.anchor.y;
         } else {
-            xAnchorOffset = 0;
-            yAnchorOffset = 0;
+            xAnchorOffset = sprite.pivot.x;
+            yAnchorOffset = sprite.pivot.y;
         }
 
         // Is the sprite rectangular?
@@ -254,9 +256,9 @@ export class Pointer {
             // Get the position of the sprite's edges using global
             // coordinates
             const left = sprite.gx - xAnchorOffset;
-            const right = sprite.gx + sprite.width - xAnchorOffset;
+            const right = left + sprite.width;
             const top = sprite.gy - yAnchorOffset;
-            const bottom = sprite.gy + sprite.height - yAnchorOffset;
+            const bottom = top + sprite.height;
 
             // Find out if the pointer is intersecting the rectangle.
             // `hit` will become `true` if the pointer is inside the

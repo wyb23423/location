@@ -526,7 +526,7 @@ export class Tink {
     };
   }
 
-  private makePointer(element = this.element, scale = this.scale) {
+  public makePointer(element = this.element, scale = this.scale) {
 
     // The pointer object will be returned by this function
     const pointer = new Pointer(element, scale);
