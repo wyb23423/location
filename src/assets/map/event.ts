@@ -4,7 +4,6 @@
 
 import { getPosition } from '../utils/util';
 import * as PIXI from 'pixi.js';
-import { Tink } from '../lib/tink';
 
 export class MapEvent {
     // 计算两点间距离

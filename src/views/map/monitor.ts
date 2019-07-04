@@ -242,7 +242,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                 clearTimeout(timer);
 
                 this.mgr.moveTo(tag.sTagNo, coord, 1, (v: Vector2) => {
-                    // console.log(v);
+                    console.log(v);
                 });
             } else {
                 const info = {

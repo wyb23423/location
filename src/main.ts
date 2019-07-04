@@ -12,6 +12,10 @@ import { Route } from 'vue-router';
 import VueWorker from 'vue-worker';
 import VueCropper from 'vue-cropper';
 
+import * as PIXI from 'pixi.js';
+(<any>window).PIXI = PIXI; // add code
+(<any>window).PIXI.default = PIXI;
+
 Vue.use(VueCropper)
   .use(ElementUI)
   .use(VueWorker);

@@ -1,10 +1,10 @@
 /**
  * pixi
  */
-
 import * as PIXI from 'pixi.js';
 import { MapEvent } from './event';
 import { randomNum } from '../utils/util';
+import 'pixi-action';
 
 export class PIXIMgr extends MapEvent {
     public readonly has3D: boolean = false;
@@ -115,6 +115,9 @@ export class PIXIMgr extends MapEvent {
             }
 
             img.name = (name || JSON.stringify(p)) + '';
+            img.interactive = true;
+            img.buttonMode = true;
+
             this.els.push(img);
             this.stage.addChild(img);
 
@@ -224,11 +227,29 @@ export class PIXIMgr extends MapEvent {
         callback?: Function, // 移动完成时回调
         isMapCoor: boolean = false,
     ) {
-        //
+        if (!isMapCoor) {
+            coord = this.getCoordinate(coord, true);
+        }
+
+        const action = new PIXI.action.MoveTo(coord.x, coord.y, time);
+        this.els.forEach(v => {
+            if (v.name === name) {
+                const animation = PIXI.actionManager.runAction(v, action);
+                animation.on('update', (s: PIXI.Sprite) => {
+                    if (update) {
+                        update(s.getGlobalPosition());
+                    }
+                });
+                if (callback) {
+                    animation.on('end', callback);
+                }
+            }
+        });
     }
 
     public switchViewMode() {
         // 没有3D模式
+        console.log('此实现方式没有3D模式');
     }
 
     /**
@@ -275,6 +296,7 @@ export class PIXIMgr extends MapEvent {
 
         if (this.map && this.stage) {
             this.map.render(this.stage);
+            PIXI.actionManager.update();
         }
     }
 

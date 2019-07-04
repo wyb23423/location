@@ -1,34 +1,15 @@
-# app
+# 莱恩微定位
 
-## Project setup
-```
-npm install
-```
+### 注意事项
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
++ 修改pixi-action的Animation.prototype.update方法:
 
-### Compiles and minifies for production
-```
-npm run build
-```
+```js
+// 其他代码
 
-### Run your tests
-```
-npm run test
-```
+// do some update
+this._ended = this.action.update(this.sprite, delta, deltaMS);
+this.emit('update', this.sprite); // 添加
 
-### Lints and fixes files
+// 其他代码
 ```
-npm run lint
-```
-
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
