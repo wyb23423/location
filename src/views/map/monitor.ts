@@ -188,7 +188,11 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                     height: 0.5,
                     url: info.photo,
                     size: info.size || 48,
-                    callback: (im: fengmap.FMImageMarker) => {
+                    callback: (im: any) => {
+                        if (!im.custom) {
+                            im.custom = {};
+                        }
+
                         Object.assign(im.custom, { type, info });
 
                         if (info.callback) {
@@ -232,6 +236,10 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         }
 
         if (tag.position.every(v => +v >= 0)) {
+            const position = JSON.parse(localStorage.getItem(tag.sTagNo) || JSON.stringify([]));
+            position.push([...tag.position, Date.now()]);
+            localStorage.setItem(tag.sTagNo, JSON.stringify(position));
+
             const timer = this.renderTags[tag.sTagNo];
             const coord: Vector2 = {
                 x: +tag.position[0],
@@ -242,7 +250,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                 clearTimeout(timer);
 
                 this.mgr.moveTo(tag.sTagNo, coord, 1, (v: Vector2) => {
-                    console.log(v);
+                    // console.log(v);
                 });
             } else {
                 const info = {

@@ -5,6 +5,7 @@
         default-first-option
         @change="change"
         :multiple="!!multiple"
+        :disabled="!!disabled"
         collapse-tags
     >
         <el-option
@@ -23,7 +24,7 @@ import Component from 'vue-class-component';
 import { Emit, Prop } from 'vue-property-decorator';
 
 interface Option<T> {
-    id: T;
+    id?: T;
     name: string;
 }
 
@@ -36,6 +37,7 @@ export default class Select extends Vue {
     })
     public keys!: Option<string>;
     @Prop() public multiple?: boolean;
+    @Prop() public disabled?: boolean;
 
     public options: Array<Option<any>> = [];
     public currValue: any = null;
@@ -48,8 +50,9 @@ export default class Select extends Vue {
             })
             .then(res => {
                 this.options = res.pagedData.datas.map((v: any) => ({
-                    id: v[this.keys.id],
-                    name: v[this.keys.name]
+                    id: v[this.keys.id || 'id'],
+                    name: v[this.keys.name],
+                    data: v
                 }));
 
                 if (this.multiple) {
@@ -60,15 +63,18 @@ export default class Select extends Vue {
                             ? this.options[0].id
                             : this.value;
                 }
-
-                this.change(this.currValue);
             })
             .catch(console.error);
     }
 
     @Emit('input')
-    public change(id: any) {
-        this.$emit('change', id);
+    public change(id: string | number | Array<string | number>) {
+        if (!Array.isArray(id)) {
+            id = [id];
+        }
+        this.$emit('change', id.map(v => this.options.find(o => o.id === v)));
+
+        return id;
     }
 }
 </script>

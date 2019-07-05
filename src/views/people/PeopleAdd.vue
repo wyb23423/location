@@ -92,8 +92,14 @@ export default class PeopleAdd extends Vue {
                     })
                 );
 
-                Promise.all([tagPhoto, this.getcanvas(this.form.avatar)])
-                    .then(([res, c]) => {
+                const avatar = this.getcanvas(this.form.avatar).then(c =>
+                    this.$http.post('/api/tag/upload/avatar', {
+                        avatar: c.toDataURL('image/png', 1.0)
+                    })
+                );
+
+                Promise.all([tagPhoto, avatar])
+                    .then(([res1, res2]) => {
                         const now = Date.now();
                         const data = Object.assign(
                             {
@@ -102,11 +108,11 @@ export default class PeopleAdd extends Vue {
                                 updateUser: 'string',
                                 createUser: 'string',
                                 locked: true,
-                                photo: res.resultMap.photoUrl
+                                photo: res1.resultMap.photoUrl
                             },
                             this.form
                         );
-                        data.avatar = c.toDataURL('image/png', 1.0);
+                        data.avatar = res2.resultMap.avatarUrl;
 
                         return this.$http.post('/api/tag/addTag', data, {
                             'Content-Type': 'application/json'
@@ -132,7 +138,7 @@ export default class PeopleAdd extends Vue {
         canvas: HTMLCanvasElement = document.createElement('canvas')
     ): Promise<HTMLCanvasElement> {
         const img = new Image();
-        img.src = url;
+        img.src = url || '/images/P.png';
 
         return new Promise((resolve, reject) => {
             img.onload = () => {

@@ -275,15 +275,17 @@ export class PIXIMgr extends MapEvent {
         if (!this._locRange) {
             console.error('地图范围为空');
         } else {
+            const height = (<any>this.stage)._height;
+
             const scaleX = (<any>this.stage)._width / this._locRange.x;
-            const scaleY = (<any>this.stage)._height / this._locRange.y;
+            const scaleY = height / this._locRange.y;
 
             if (is2map) {
                 v.x *= scaleX;
-                v.y *= scaleY;
+                v.y = height - v.y * scaleY;
             } else {
                 v.x /= scaleX;
-                v.y /= scaleY;
+                v.y = (height - v.y) / scaleY;
             }
         }
 
@@ -337,7 +339,7 @@ export class PIXIMgr extends MapEvent {
             if (!src.length) {
                 resolve(textures);
             } else {
-                const loader = PIXI.Loader.shared;
+                const loader = new PIXI.Loader();
                 loader
                     .add(src)
                     .load(() => {

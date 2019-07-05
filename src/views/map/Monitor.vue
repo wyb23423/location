@@ -14,6 +14,7 @@
                 :type="v.active ? 'primary' : ''"
                 :class="$style['tool-item']"
                 @click.stop="swithDisplay(i)"
+                v-show="v.display"
             >
                 {{ v.name }}
             </el-button>
