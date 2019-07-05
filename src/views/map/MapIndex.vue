@@ -17,6 +17,11 @@ export default class MapIndex extends Vue {
     public tabs = [
         { title: '实时监控', to: '/monitor', icon: 'el-icon-view' },
         {
+            title: '历史轨迹',
+            to: '/monitor/history',
+            icon: 'el-icon-film'
+        },
+        {
             title: '地图编辑',
             to: '/monitor/edit',
             icon: 'el-icon-edit'

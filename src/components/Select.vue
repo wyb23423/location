@@ -4,6 +4,8 @@
         filterable
         default-first-option
         @change="change"
+        :multiple="!!multiple"
+        collapse-tags
     >
         <el-option
             v-for="item of options"
@@ -33,11 +35,12 @@ export default class Select extends Vue {
         default: () => ({ id: 'id', name: 'name' })
     })
     public keys!: Option<string>;
+    @Prop() public multiple?: boolean;
 
     public options: Array<Option<any>> = [];
     public currValue: any = null;
 
-    public mounted() {
+    public created() {
         this.$http
             .get(this.url, {
                 pageSize: 1000000,
@@ -48,10 +51,15 @@ export default class Select extends Vue {
                     id: v[this.keys.id],
                     name: v[this.keys.name]
                 }));
-                this.currValue =
-                    this.value == null || this.value === ''
-                        ? this.options[0].id
-                        : this.value;
+
+                if (this.multiple) {
+                    this.currValue = [];
+                } else {
+                    this.currValue =
+                        this.value == null || this.value === ''
+                            ? this.options[0].id
+                            : this.value;
+                }
 
                 this.change(this.currValue);
             })
@@ -60,7 +68,7 @@ export default class Select extends Vue {
 
     @Emit('input')
     public change(id: any) {
-        //
+        this.$emit('change', id);
     }
 }
 </script>

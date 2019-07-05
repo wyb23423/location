@@ -119,6 +119,7 @@ declare namespace fengmap {
 
         public alwaysShow(): void;
         public moveTo(opt: MoveOptions): void;
+        public stopMoveTo(): void;
     }
 
     class FMPolygonMarker extends FMMarker<FMPolygonMarkerOptions> {

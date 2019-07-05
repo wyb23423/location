@@ -47,7 +47,7 @@ interface Animation extends PIXI.utils.EventEmitter {
     isEnded(): boolean;
     update(delta: number, deltaMS: number): void;
 }
-type AnimationConstructor = new(sprite: PIXI.Sprite, action: Action) => Animation;
+type AnimationConstructor = new (sprite: PIXI.Sprite, action: Action) => Animation;
 declare const Animation: AnimationConstructor;
 
 interface Action {
