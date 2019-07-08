@@ -50,7 +50,7 @@ export default class MapSelect extends Vue {
             id: 1,
             groupCode: '001',
             name: '办公室',
-            filepath: '/images/5ad8909aeff13.png', // '\\image\\huijinguangchang.fmap',
+            filepath: '\\image\\huijinguangchang.fmap', // '/images/5ad8909aeff13.png',
             margin: [
                 [11582810.7716, 3575751.7814],
                 [11582810.7716, 3575775.267],
