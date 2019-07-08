@@ -29,6 +29,24 @@ export default class App extends Vue {
         window.addEventListener('resize', this.scaleRoot.bind(this), false);
     }
 
+    public created() {
+        setInterval(() => {
+            this.$http
+                .get('/api/alarm/getall', {
+                    pageSize: 99999999,
+                    currentPage: 1
+                })
+                .then(res => {
+                    res.pagedData.datas.forEach((v: IAlarm) => {
+                        this.$notify.warning(
+                            `标签${v.tagNo}异常。\n${v.alarmMsg}`
+                        );
+                    });
+                })
+                .catch(console.log);
+        }, 1000);
+    }
+
     private scaleRoot() {
         if (!this.timer) {
             this.timer = setTimeout(() => {

@@ -62,7 +62,10 @@ async function parseRes(res: Response) {
             return data;
         } else {
             if (!codeSuccess) {
-                Message.error(data.message);
+                Message.error({
+                    message: data.message,
+                    showClose: true
+                });
             } else {
                 console.error(data.message);
             }
