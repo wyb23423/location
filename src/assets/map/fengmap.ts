@@ -20,6 +20,8 @@ export class FengMapMgr {
     private textLayer?: fengmap.FMMarkerLayer<fengmap.FMTextMarker>;
     private imgLayer?: fengmap.FMMarkerLayer<fengmap.FMImageMarker>;
 
+    private lines: fengmap.FMLineMarker[] = [];
+
     // tslint:disable-next-line:variable-name
     private _locRange?: Vector2;
 
@@ -139,7 +141,7 @@ export class FengMapMgr {
             }
         });
         im.custom = { name: name || JSON.stringify(p) };
-        // im.avoid = !!opt.avoid;
+        im.avoid = !!opt.avoid;
 
         this.imgLayer.addMarker(im);
         this.markers.push(im);
@@ -284,6 +286,7 @@ export class FengMapMgr {
         }, name);
     }
 
+    // 停止移动动画
     public stopMoveTo(name?: string | number) {
         this.eachmarkers(
             (layer: fengmap.FMMarkerLayer<any>, i: number) => {
@@ -318,6 +321,53 @@ export class FengMapMgr {
         }
 
         return getCoordinate(v, this.locOrigion, this._locRange!, this.margin!);
+    }
+
+    // 添加线
+    public addLine(
+        points: Vector3[],
+        lineStyle: LineStyle,
+        name: string | number,
+        isMapCoor: boolean = false
+    ) {
+        if (!isMapCoor) {
+            if (this._locRange && this.margin) {
+                points = points.map(v => parsePosition(v, this.locOrigion, this._locRange!, this.margin!));
+            } else {
+                return console.error('地图范围错误');
+            }
+        }
+
+        const seg = new fengmap.FMSegment();
+        seg.groupId = this.map.focusGroupID;
+        seg.points = points;
+
+        const line = new fengmap.FMLineMarker();
+        line.addSegment(seg);
+        line.custom = { name };
+
+        lineStyle.color = lineStyle.color || randomColor();
+        lineStyle.godColor = lineStyle.godColor || randomColor();
+        lineStyle.godEdgeColor = lineStyle.godEdgeColor || randomColor();
+        this.map.drawLineMark(line, lineStyle);
+
+        this.lines.push(line);
+    }
+
+    // 清除线
+    public removeLine(name?: string | number) {
+        if (name == null) {
+            this.map.clearLineMark();
+            this.lines.length = 0;
+        } else {
+            for (let i = this.lines.length - 1; i >= 0; i--) {
+                const v = this.lines[i];
+                if (v.custom && v.custom.name === name) {
+                    this.map.removeLineMarker(v);
+                    this.lines.splice(i, 1);
+                }
+            }
+        }
     }
 
     private eachmarkers(

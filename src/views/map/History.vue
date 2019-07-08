@@ -139,8 +139,29 @@ export default class History extends mixins(MapMixin) {
     }
 
     // 切换路径显示状态
-    public switchVisible() {
-        //
+    public switchVisible(visible: boolean) {
+        if (this.path && this.mgr) {
+            if (visible) {
+                for (const v of this.path) {
+                    const points: Vector3[] = v[1].map((p: string[]) => ({
+                        x: +p[0],
+                        y: +p[1],
+                        z: +p[2]
+                    }));
+
+                    this.mgr.addLine(
+                        points,
+                        {
+                            lineType: fengmap.FMLineType.FULL,
+                            lineWidth: 2
+                        },
+                        v[0]
+                    );
+                }
+            } else {
+                this.mgr.removeLine();
+            }
+        }
     }
 }
 </script>

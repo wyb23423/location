@@ -20,6 +20,9 @@ export class PIXIMgr extends MapEvent {
     private timer: number | null = null;
     private els: any[] = []; // 已添加到舞台上的元素
 
+    // tslint:disable-next-line: ban-types
+    private loaded?: Function;
+
     public set locRange(data: Vector2) {
         if (!this._locRange) {
             this._locRange = data;
@@ -71,7 +74,7 @@ export class PIXIMgr extends MapEvent {
 
     public on(type: string, callback: any) {
         if (type === 'loadComplete') {
-            callback();
+            this.loaded = callback;
         } else {
             const mapping: { [x: string]: string } = {
                 mapClickNode: 'pointertap'
@@ -117,6 +120,7 @@ export class PIXIMgr extends MapEvent {
             img.name = (name || JSON.stringify(p)) + '';
             img.interactive = true;
             img.buttonMode = true;
+            img.zIndex = Math.ceil(opt.height || 0);
 
             this.els.push(img);
             this.stage.addChild(img);
@@ -306,6 +310,44 @@ export class PIXIMgr extends MapEvent {
         return <Vector3>v;
     }
 
+    // 添加线
+    public addLine(
+        points: Vector3[],
+        lineStyle: LineStyle,
+        name: string | number,
+        isMapCoor: boolean = false
+    ) {
+        if (!isMapCoor) {
+            points = points.map(v => this.getCoordinate(v, true));
+        }
+
+        const painter = new PIXI.Graphics();
+        painter.lineStyle(lineStyle.lineWidth, randomNum(0, 0xffffff), lineStyle.alpha);
+
+        if (points.length) {
+            const start = <Vector3>points.shift();
+            painter.moveTo(start.x, start.y);
+
+            points.forEach(v => painter.lineTo(v.x, v.y));
+        }
+        painter.name = 'line_' + name;
+
+        this.els.push(painter);
+        this.stage.addChild(painter);
+        this.stage.sortChildren();
+    }
+
+    // 清除线
+    public removeLine(name?: string | number) {
+        for (let i = this.els.length - 1; i >= 0; i--) {
+            const line = this.els[i];
+            if (name == null && line.name.startsWith('line_') || 'line_' + name === line.name) {
+                this.stage.removeChild(this.els[i]);
+                this.els.splice(i, 1);
+            }
+        }
+    }
+
     private loop() {
         this.timer = requestAnimationFrame(this.loop.bind(this));
 
@@ -327,6 +369,10 @@ export class PIXIMgr extends MapEvent {
             bgSprite.width = width;
             bgSprite.height = height;
             this.stage.addChild(bgSprite);
+
+            if (this.loaded) {
+                this.loaded();
+            }
         }));
     }
 

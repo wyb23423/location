@@ -75,6 +75,21 @@ interface MoveOptions extends Vector2 {
     update?: (v: Vector2) => void;
 }
 
+interface LineStyle {
+    lineType: string;
+    lineWidth: number;
+    color?: string;
+    smooth?: boolean;
+    godColor?: string;
+    godEdgeColor?: string;
+    noAnimate?: boolean;
+    alpha?: number;
+    dash?: {
+        size: number;
+        gap: number;
+    };
+}
+
 
 declare namespace fengmap {
     interface FMMap {
@@ -96,7 +111,9 @@ declare namespace fengmap {
         openMapById(id: string): void;
         getFMGroup(gid: number): FMGroup;
         coordMapToScreen(x: number, y: number): Vector2;
-
+        drawLineMark(line: FMLineMarker, style: LineStyle): void;
+        clearLineMark(): void;
+        removeLineMarker(line: FMLineMarker): void;
 
         on(type: string, callback: (e: FMMapClickEvent) => void): void;
         dispose(): void;
@@ -133,6 +150,18 @@ declare namespace fengmap {
 
     class FMImageMarker extends FMMarker<FMImageMarkerOptions> {
         public avoid: boolean;
+    }
+
+    class FMSegment {
+        public allLength: number;
+        public groupId: number;
+        public points: Vector3[];
+    }
+
+    class FMLineMarker {
+        public custom?: any;
+
+        public addSegment(seg: FMSegment): void;
     }
 
     interface FMGroup {
@@ -188,6 +217,17 @@ declare namespace fengmap {
         NONE = 0,
         POLYGON_MARKER = 36,
         TEXT_MARKER = 32
+    }
+
+    enum FMLineType {
+        CENTER = 'center',
+        DASH = 'dash',
+        DOT_DASH = 'dotDash',
+        DOTTED = 'dotted',
+        DOUBLE_DOT_DASH = 'doubleDotDash',
+        FMARROW = 'fmarrow',
+        FULL = 'full',
+        TRI_DOT_DASH = 'triDotDash'
     }
 }
 declare module 'fengmap' {
