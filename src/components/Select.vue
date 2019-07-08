@@ -67,14 +67,13 @@ export default class Select extends Vue {
             .catch(console.error);
     }
 
-    @Emit('input')
     public change(id: string | number | Array<string | number>) {
+        this.$emit('input', id);
+
         if (!Array.isArray(id)) {
             id = [id];
         }
         this.$emit('change', id.map(v => this.options.find(o => o.id === v)));
-
-        return id;
     }
 }
 </script>

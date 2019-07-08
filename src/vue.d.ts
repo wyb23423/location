@@ -21,7 +21,7 @@ interface VueWorker {
 
 interface Action {
     message: string;
-    func(...args: []): any;
+    func(...args: any[]): any;
 }
 
 interface WorkerObj {

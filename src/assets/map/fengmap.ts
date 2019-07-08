@@ -71,6 +71,9 @@ export class FengMapMgr {
      */
     public remove(name?: string | number) {
         if (name == null) {
+            this.markers.forEach(v => v.stopMoveTo());
+            this.markers.length = 0;
+
             if (this.textLayer) {
                 this.textLayer.removeAll();
             }
@@ -81,11 +84,12 @@ export class FengMapMgr {
                 this.polygonLayer.removeAll();
             }
 
-            this.markers.length = 0;
         } else {
             this.eachmarkers(
                 (layer: fengmap.FMMarkerLayer<any>, i: number) => {
-                    layer.removeMarker(this.markers.splice(i, 1)[0]);
+                    const marker = this.markers.splice(i, 1)[0];
+                    marker.stopMoveTo();
+                    layer.removeMarker(marker);
 
                     return i - 1;
                 },
@@ -135,6 +139,7 @@ export class FengMapMgr {
             }
         });
         im.custom = { name: name || JSON.stringify(p) };
+        // im.avoid = !!opt.avoid;
 
         this.imgLayer.addMarker(im);
         this.markers.push(im);
@@ -269,7 +274,6 @@ export class FengMapMgr {
                 time,
                 x: coord.x,
                 y: coord.y,
-
                 callback: callback || none,
                 update: (v: Vector2) => {
                     if (update && this.map) {
@@ -278,6 +282,15 @@ export class FengMapMgr {
                 }
             });
         }, name);
+    }
+
+    public stopMoveTo(name?: string | number) {
+        this.eachmarkers(
+            (layer: fengmap.FMMarkerLayer<any>, i: number) => {
+                this.markers[i].stopMoveTo();
+            },
+            name
+        );
     }
 
     // 2D与3D切换

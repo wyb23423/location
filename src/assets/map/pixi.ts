@@ -243,6 +243,19 @@ export class PIXIMgr extends MapEvent {
                 if (callback) {
                     animation.on('end', callback);
                 }
+
+                v.animation = v.animation || {};
+
+                v.animation.moveTo = animation;
+            }
+        });
+    }
+
+    public stopMoveTo(name?: string | number) {
+        this.els.forEach(v => {
+            if ((name == null || name === v.name) && v.animation.moveTo) {
+                PIXI.actionManager.cancelAction(v.animation.moveTo);
+                v.animation = null;
             }
         });
     }

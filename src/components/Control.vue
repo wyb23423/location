@@ -9,7 +9,7 @@
                 <app-select
                     url="/api/tag/getall"
                     v-model="tagNos"
-                    :keys="{ name: 'name' }"
+                    :keys="{ id: 'tagNo', name: 'name' }"
                     :multiple="true"
                     :disabled="isStart"
                     @change="change"
@@ -54,15 +54,16 @@
                     style="font-size: 24px"
                 ></el-button>
                 <div class="flex-center" :class="$style.progress">
-                    <span>{{ date | formatTime(progress) }}</span>
+                    <span>{{ timeRange | formatTime(progress) }}</span>
                     <el-slider
                         v-model="progress"
                         :disabled="!canPlay"
                         :format-tooltip="format"
                         @input="$emit('progress')"
+                        @change="$emit('play', $event, timeRange)"
                         style="flex-grow: 1; padding: 0 15px"
                     ></el-slider>
-                    <span>{{ date | formatTime(100) }}</span>
+                    <span>{{ timeRange | formatTime(100) }}</span>
                 </div>
             </div>
         </div>
@@ -96,13 +97,17 @@ export default class Control extends Vue {
         return !!(this.tagNos.length && this.date && this.date.length >= 2);
     }
 
+    public get timeRange() {
+        if (this.date && this.date.length >= 2) {
+            return this.date[1].getTime() - this.date[0].getTime();
+        }
+
+        return 0;
+    }
+
     public created() {
         this.format = (value: number) => {
-            if (!this.date || this.date.length < 2) {
-                return value + '';
-            }
-
-            return formatTime(this.date, value);
+            return formatTime(this.timeRange, value);
         };
     }
 
@@ -135,17 +140,11 @@ export default class Control extends Vue {
     public play() {
         if (this.isStart) {
             // 暂停
-            this.isStart = false;
+            this._end(this.progress);
             this.$emit('pause');
         } else {
             if (this.path) {
-                if (this.timer) {
-                    // 继续播放
-                    this.isStart = true;
-                } else {
-                    // 从0开始播放
-                    this._play();
-                }
+                this._play();
             } else {
                 // 重新获取历史记录
                 const startTime = this.date[0].getTime();
@@ -174,7 +173,7 @@ export default class Control extends Vue {
                     //         body: {
                     //             startTime,
                     //             endTime,
-                    //             tagNos: this.tags
+                    //             tagNos: this.tagNos
                     //         },
                     //         headers: {
                     //             'Content-Type': 'application/json'
@@ -193,8 +192,7 @@ export default class Control extends Vue {
         const onPlay = () => {
             const now = Date.now();
             if (this.isStart) {
-                const range = this.date[1].getTime() - this.date[0].getTime();
-                this.progress += ((now - time) / range) * 100;
+                this.progress += ((now - time) / this.timeRange) * 100;
             }
 
             if (this.progress >= 100) {
@@ -208,11 +206,11 @@ export default class Control extends Vue {
 
         this.isStart = true;
         onPlay();
-        this.$emit('play', this.path);
+        this.$emit('play', this.progress, this.timeRange, this.path);
     }
 
-    private _end() {
-        this.progress = 0;
+    private _end(progress: number = 0) {
+        this.progress = progress;
         this.isStart = false;
         if (this.timer) {
             cancelAnimationFrame(this.timer);
@@ -223,11 +221,10 @@ export default class Control extends Vue {
     }
 }
 
-function formatTime(date: Date[], progress: number) {
-    if (!date || date.length < 2) {
+function formatTime(range: number, progress: number) {
+    if (!range) {
         return '00:00';
     }
-    const range = date[1].getTime() - date[0].getTime();
     let time = (range * progress) / 100;
 
     const DAY_MS: number = 86400000;

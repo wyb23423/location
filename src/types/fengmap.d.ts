@@ -114,7 +114,6 @@ declare namespace fengmap {
         public _y: number;
         // tslint:enable:variable-name
         public show: boolean;
-
         constructor(options: T);
 
         public alwaysShow(): void;
@@ -129,15 +128,15 @@ declare namespace fengmap {
     class FMTextMarker extends FMMarker<FMTextMarkerOptions> {
         public name: string;
         public height: number;
+        public avoid: boolean;
     }
 
     class FMImageMarker extends FMMarker<FMImageMarkerOptions> {
-
+        public avoid: boolean;
     }
 
     interface FMGroup {
         groupHeight: number;
-
         getOrCreateLayer<T>(layerAlias: string): FMMarkerLayer<T>;
     }
 
