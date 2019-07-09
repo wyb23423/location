@@ -154,40 +154,44 @@ export default class Control extends Vue {
                 }
 
                 if (this.tags) {
-                    this.path = this.tags
-                        .map(({ data: v }) => [
-                            v.tagNo,
-                            JSON.parse(
-                                localStorage.getItem(v.tagNo) ||
-                                    JSON.stringify('')
-                            ),
-                            v.photo
-                        ])
-                        .filter(v => !!v[1]);
+                    // this.path = this.tags
+                    //     .map(({ data: v }) => [
+                    //         v.tagNo,
+                    //         JSON.parse(
+                    //             localStorage.getItem(v.tagNo) ||
+                    //                 JSON.stringify([])
+                    //         ),
+                    //         v.photo
+                    //     ])
+                    //     .filter(v => !!v[1]);
 
-                    this._play();
+                    // this._play();
 
-                    // this.$http
-                    //     .post({
-                    //         url: '/api/tag/queryTagHistory',
-                    //         body: {
-                    //             startTime,
-                    //             endTime,
-                    //             tagNos: this.tagNos
-                    //         },
-                    //         headers: {
-                    //             'Content-Type': 'application/json'
-                    //         }
-                    //     })
-                    //     .then(console.log)
-                    //     .then(() => (this.isStart = true))
-                    //     .catch(console.log);
+                    this.$http
+                        .post({
+                            url: '/api/tag/queryTagHistory',
+                            body: {
+                                startTime,
+                                endTime,
+                                tagNos: this.tagNos
+                            },
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(console.log)
+                        .catch(console.log);
                 }
             }
         }
     }
 
     private _play() {
+        if (this.timer) {
+            cancelAnimationFrame(this.timer);
+            this.timer = undefined;
+        }
+
         let time = Date.now();
         const onPlay = () => {
             const now = Date.now();

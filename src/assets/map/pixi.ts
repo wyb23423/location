@@ -80,16 +80,19 @@ export class PIXIMgr extends MapEvent {
                 mapClickNode: 'pointertap'
             };
 
-            this.stage.on(mapping[type] || type, (e: any) => {
-                e.nodeType = fengmap.FMNodeType.ALL;
+            this.stage.on(mapping[type] || type, (e: PIXI.interaction.InteractionEvent) => {
+                (<any>e).nodeType = fengmap.FMNodeType.ALL;
 
                 const target = e.target;
-                if (target instanceof PIXI.Sprite) {
-                    e.nodeType = fengmap.FMNodeType.IMAGE_MARKER;
+                if (
+                    target instanceof PIXI.Sprite
+                    || (<any>target).custom && (<any>target).custom.nodeType === 'sprite'
+                ) {
+                    (<any>e).nodeType = fengmap.FMNodeType.IMAGE_MARKER;
                 } else if (target instanceof PIXI.Text) {
-                    e.nodeType = fengmap.FMNodeType.TEXT_MARKER;
+                    (<any>e).nodeType = fengmap.FMNodeType.TEXT_MARKER;
                 }
-                e.eventInfo = { coord: this.stage.toLocal(e.data.global) };
+                (<any>e).eventInfo = { coord: this.stage.toLocal(e.data.global) };
 
                 callback(e);
             });
@@ -110,12 +113,13 @@ export class PIXIMgr extends MapEvent {
 
         this.load(opt.url).then(([texture]) => {
             const img = new PIXI.Sprite(texture);
-            img.position.set(p.x, p.y);
-            img.anchor.set(0.5, 0.5);
 
             if (opt.size != null) {
                 img.width = img.height = opt.size;
             }
+
+            img.anchor.set(0.5);
+            img.position.set(p.x, p.y);
 
             img.name = (name || JSON.stringify(p)) + '';
             img.interactive = true;
@@ -239,7 +243,7 @@ export class PIXIMgr extends MapEvent {
         this.els.forEach(v => {
             if (v.name === name) {
                 const animation = PIXI.actionManager.runAction(v, action);
-                animation.on('update', (s: PIXI.Sprite) => {
+                animation.on('update', (s: PIXI.Container) => {
                     if (update) {
                         update(s.getGlobalPosition());
                     }
@@ -249,7 +253,6 @@ export class PIXIMgr extends MapEvent {
                 }
 
                 v.animation = v.animation || {};
-
                 v.animation.moveTo = animation;
             }
         });
@@ -257,7 +260,7 @@ export class PIXIMgr extends MapEvent {
 
     public stopMoveTo(name?: string | number) {
         this.els.forEach(v => {
-            if ((name == null || name === v.name) && v.animation.moveTo) {
+            if ((name == null || name === v.name) && v.animation && v.animation.moveTo) {
                 PIXI.actionManager.cancelAction(v.animation.moveTo);
                 v.animation = null;
             }
@@ -346,6 +349,42 @@ export class PIXIMgr extends MapEvent {
                 this.els.splice(i, 1);
             }
         }
+    }
+
+    // 添加弹窗
+    // 返回关闭函数
+    public addPopInfo(img: any) {
+        const triangle = new PIXI.Graphics();
+        triangle.beginFill(0xffffff, 1); // 填充色
+        triangle.lineStyle(2, 0xcccccc, 1); // 边框
+        triangle.drawPolygon([
+            0, 0,
+            10, -10,
+            100, -10,
+            100, -70,
+            -100, -70,
+            -100, -10,
+            -10, -10
+        ]);
+
+        triangle.position.y = -45;
+        img.addChild(triangle);
+
+        let text: PIXI.Text;
+        if (img.custom && img.custom.info) {
+            const info = img.custom.info;
+            text = new PIXI.Text(`名字: ${info.tagName}\n\n编号: ${info.tagNo}`, { fontSize: 12 });
+            text.anchor.y = 0.5;
+            text.position.set(-70, -80);
+            img.addChild(text);
+        }
+
+        return () => {
+            img.removeChild(triangle);
+            if (text) {
+                img.removeChild(text);
+            }
+        };
     }
 
     private loop() {

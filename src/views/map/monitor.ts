@@ -17,10 +17,7 @@ import { FengMapMgr } from '@/assets/map/fengmap';
     }
 })
 export default class Monitor extends mixins(MapMixin, TableMixin) {
-    public info: ITag | null = null; // 显示信息的标签
-    public infoPosition: Vector2 = { x: 0, y: 0 }; // 信息位置
     public group: { [x: string]: IBaseStation[] } = {}; // 基站分组
-
     // 右下工具栏列表
     public tools: ToolItem[] = [
         { name: '2D', active: true, display: true },
@@ -29,13 +26,14 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         { name: '分组列表', active: false, display: true },
         { name: '统计', active: false, display: true }
     ];
-
     public zoneAll: IZone[] = []; // 区域列表
 
     private baseAll: IBaseStation[] = []; // 基站列表
     private tagAll: { [x: string]: ITag } = {}; // 标签
     private ws: WebSocket[] = [];
     private renderTags: { [x: string]: number } = {}; // 已经在地图上的标签,{tagNo: timer}
+
+    private closePop?: () => void | true;
 
     public created() {
         Promise.all(['tag', 'zone'].map(async v => {
@@ -116,10 +114,17 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         });
 
         this.mgr!.on('mapClickNode', (event: FMMapClickEvent) => {
-            if (event.nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
-                console.log(event);
-            } else {
-                //
+            if (this.mgr) {
+                if (this.closePop && this.closePop()) {
+                    this.closePop = undefined;
+                }
+
+                if (
+                    event.nodeType === fengmap.FMNodeType.IMAGE_MARKER
+                    && event.target.custom && event.target.custom.info.tagNo
+                ) {
+                    this.closePop = this.mgr.addPopInfo(event.target);
+                }
             }
         });
     }
@@ -236,9 +241,9 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         }
 
         if (tag.position.every(v => +v >= 0)) {
-            const position = JSON.parse(localStorage.getItem(tag.sTagNo) || JSON.stringify([]));
-            position.push([...tag.position, Date.now()]);
-            localStorage.setItem(tag.sTagNo, JSON.stringify(position));
+            // const position = JSON.parse(localStorage.getItem(tag.sTagNo) || JSON.stringify([]));
+            // position.push([...tag.position, Date.now()]);
+            // localStorage.setItem(tag.sTagNo, JSON.stringify(position));
 
             const timer = this.renderTags[tag.sTagNo];
             const coord: Vector2 = {
@@ -256,6 +261,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                 const info = {
                     ...this.tagAll[tag.sTagNo],
                     name: tag.sTagNo,
+                    tagName: this.tagAll[tag.sTagNo].name,
                     ...coord,
                     callback(im: any) {
                         if (im.alwaysShow) {

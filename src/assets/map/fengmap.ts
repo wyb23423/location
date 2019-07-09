@@ -34,6 +34,8 @@ export class FengMapMgr {
     }
 
     constructor(name: string, dom: HTMLElement) {
+        dom.innerHTML = '';
+
         this.map = new fengmap.FMMap({
             // 渲染dom
             container: dom,
@@ -51,7 +53,6 @@ export class FengMapMgr {
             // 开发者申请应用名称
             appName: APP_NAME,
         });
-
         this.map.openMapById(name);
     }
 
@@ -102,7 +103,14 @@ export class FengMapMgr {
     }
 
     public on(type: string, callback: any) {
-        this.map.on(type, callback);
+        this.map.on(type, (e: FMMapClickEvent) => {
+            if (e.eventInfo && this.map && e.eventInfo.coord) {
+                const { x, y } = e.eventInfo.coord;
+                e.data = { global: this.map.coordMapToScreen(x, y) };
+            }
+
+            callback(e);
+        });
     }
 
     public addImage(
@@ -368,6 +376,39 @@ export class FengMapMgr {
                 }
             }
         }
+    }
+
+    // 添加弹窗
+    public addPopInfo(marker: any) {
+        let pop: fengmap.FMPopInfoWindow;
+        if (marker.custom && marker.custom.info) {
+            const info = marker.custom.info;
+            pop = new fengmap.FMPopInfoWindow(
+                this.map,
+                {
+                    width: 180,
+                    height: 70,
+                    content: `<div>
+                                <div>名字: ${info.tagName}</div>
+                                <div>编号: ${info.tagNo}</div>
+                            </div>`
+                },
+                marker
+            );
+        }
+
+        const createTime = Date.now();
+        return () => {
+            if (pop && Date.now() - createTime >= 200) {
+                try {
+                    pop.close();
+                } catch (e) {
+                    //
+                }
+
+                return true;
+            }
+        };
     }
 
     private eachmarkers(

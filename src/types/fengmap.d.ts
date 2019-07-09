@@ -59,12 +59,15 @@ interface FMImageMarkerOptions extends Vector23 {
 
 interface FMMapClickEvent {
     type: string;
-    target: fengmap.FMNode;
+    target: fengmap.FMMarker<any>;
     eventInfo: {
         coord: Vector3;
         domEvent: MouseEvent;
     };
     nodeType: number;
+    data?: {
+        global: Vector2
+    };
 }
 
 interface MoveOptions extends Vector2 {
@@ -73,6 +76,19 @@ interface MoveOptions extends Vector2 {
     // tslint:disable-next-line:ban-types
     callback?: Function;
     update?: (v: Vector2) => void;
+}
+
+
+interface PopInfoMapCoord extends Vector2 {
+    grounpID: number;
+    height?: number;
+}
+interface PopInfoOptions {
+    mapCoord?: PopInfoMapCoord;
+    width: number;
+    height: number;
+    content: string;
+    closeCallBack?: () => void;
 }
 
 interface LineStyle {
@@ -89,7 +105,6 @@ interface LineStyle {
         gap: number;
     };
 }
-
 
 declare namespace fengmap {
     interface FMMap {
@@ -110,7 +125,7 @@ declare namespace fengmap {
 
         openMapById(id: string): void;
         getFMGroup(gid: number): FMGroup;
-        coordMapToScreen(x: number, y: number): Vector2;
+        coordMapToScreen(x: number, y: number, z?: number): Vector2;
         drawLineMark(line: FMLineMarker, style: LineStyle): void;
         clearLineMark(): void;
         removeLineMarker(line: FMLineMarker): void;
@@ -162,6 +177,11 @@ declare namespace fengmap {
         public custom?: any;
 
         public addSegment(seg: FMSegment): void;
+    }
+
+    class FMPopInfoWindow {
+        constructor(map: FMMap, ctrlOpts: PopInfoOptions, marker?: FMImageMarker);
+        public close(): void;
     }
 
     interface FMGroup {
