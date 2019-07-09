@@ -149,8 +149,8 @@ declare namespace fengmap {
         constructor(options: T);
 
         public alwaysShow(): void;
-        public moveTo(opt: MoveOptions): void;
         public stopMoveTo(): void;
+        public moveTo(opt: MoveOptions): void;
     }
 
     class FMPolygonMarker extends FMMarker<FMPolygonMarkerOptions> {
@@ -160,7 +160,7 @@ declare namespace fengmap {
     class FMTextMarker extends FMMarker<FMTextMarkerOptions> {
         public name: string;
         public height: number;
-        public avoid: boolean;
+        public avoid(value: boolean): void;
     }
 
     class FMImageMarker extends FMMarker<FMImageMarkerOptions> {

@@ -74,7 +74,11 @@ export class FengMapMgr {
      */
     public remove(name?: string | number) {
         if (name == null) {
-            this.markers.forEach(v => v.stopMoveTo());
+            this.markers.forEach(v => {
+                if (v.stopMoveTo) {
+                    v.stopMoveTo();
+                }
+            });
             this.markers.length = 0;
 
             if (this.textLayer) {
@@ -91,7 +95,9 @@ export class FengMapMgr {
             this.eachmarkers(
                 (layer: fengmap.FMMarkerLayer<any>, i: number) => {
                     const marker = this.markers.splice(i, 1)[0];
-                    marker.stopMoveTo();
+                    if (marker.stopMoveTo) {
+                        marker.stopMoveTo();
+                    }
                     layer.removeMarker(marker);
 
                     return i - 1;
@@ -298,7 +304,9 @@ export class FengMapMgr {
     public stopMoveTo(name?: string | number) {
         this.eachmarkers(
             (layer: fengmap.FMMarkerLayer<any>, i: number) => {
-                this.markers[i].stopMoveTo();
+                if (this.markers[i].stopMoveTo) {
+                    this.markers[i].stopMoveTo();
+                }
             },
             name
         );
