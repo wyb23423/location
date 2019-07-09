@@ -164,7 +164,7 @@ declare namespace fengmap {
     }
 
     class FMImageMarker extends FMMarker<FMImageMarkerOptions> {
-        public avoid: boolean;
+        public avoid(value: boolean): void;
     }
 
     class FMSegment {

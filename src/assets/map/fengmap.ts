@@ -149,7 +149,7 @@ export class FengMapMgr {
             }
         });
         im.custom = { name: name || JSON.stringify(p) };
-        im.avoid = !!opt.avoid;
+        im.avoid(!!opt.avoid);
 
         this.imgLayer.addMarker(im);
         this.markers.push(im);
