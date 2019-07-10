@@ -68,7 +68,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Emit } from 'vue-property-decorator';
-import { SX_WIDTH, DEFAULT_WIDTH } from '../config';
+import { SX_WIDTH, DEFAULT_WIDTH } from '../constant';
 
 type OperationItem = string | { [i: string]: string };
 

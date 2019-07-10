@@ -3,7 +3,7 @@
  */
 /// <reference path="../../types/fengmap.d.ts" />
 
-import { MAP_THEME_URL, APP_KEY, APP_NAME, MAP_DATA_URL } from '@/config';
+import { MAP_THEME_URL, APP_KEY, APP_NAME, MAP_DATA_URL } from '@/constant';
 import { randomNum, randomColor, none } from '../utils/util';
 import { parsePosition, getCoordinate } from './coordtransformer';
 

@@ -1,7 +1,7 @@
 import Component, { mixins } from 'vue-class-component';
 import MapMixin from '@/mixins/map';
 import { arr2obj } from '@/assets/utils/util';
-import { BASE_URL, LOSS_TIME } from '@/config';
+import { BASE_URL, LOSS_TIME } from '@/constant';
 import TableMixin from '@/mixins/table';
 
 import Zone from '@/components/monitor/Zone.vue';

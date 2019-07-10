@@ -80,8 +80,16 @@
     padding: 10px;
     cursor: pointer;
 
-    @media (width <= 768px) {
+    @media (width <= 1075px) {
         width: 30%;
+    }
+
+    @media (width <= 575px) {
+        width: 45%;
+    }
+
+    @media (width <= 420px) {
+        width: 100%;
     }
 }
 .line_v {

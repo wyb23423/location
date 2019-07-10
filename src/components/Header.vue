@@ -70,7 +70,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Watch } from 'vue-property-decorator';
 import Router from 'vue-router';
-import { SX_WIDTH } from '../config';
+import { SX_WIDTH } from '../constant';
 
 @Component
 export default class Header extends Vue {
