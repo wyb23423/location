@@ -24,6 +24,7 @@ export class FengMapMgr {
 
     // tslint:disable-next-line:variable-name
     private _locRange?: Vector2;
+    private isLoaded: boolean = false;
 
     public set locRange(data: Vector2) {
         if (!this._locRange) {
@@ -54,6 +55,8 @@ export class FengMapMgr {
             appName: APP_NAME,
         });
         this.map.openMapById(name);
+
+        this.map.on('loadComplete', () => this.isLoaded = true);
     }
 
     /**
@@ -260,11 +263,18 @@ export class FengMapMgr {
     }
 
     public dispose() {
-        // this.remove();
-        this.map.dispose();
-        Reflect.set(this, 'map', null);
+        const fn = () => {
+            this.map.dispose();
+            Reflect.set(this, 'map', null);
 
-        this.polygonLayer = this.imgLayer = this.textLayer = undefined;
+            this.polygonLayer = this.imgLayer = this.textLayer = undefined;
+        };
+
+        if (this.isLoaded) {
+            fn();
+        } else {
+            this.map.on('loadComplete', fn);
+        }
     }
 
     // 移动marker

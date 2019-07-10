@@ -58,7 +58,8 @@
         </el-form-item>
     </el-form>
 
-    <el-dialog :visible.sync="visible" :modal-append-to-body="false" width="70%" top="5vh" title="裁剪头像">
+    <el-dialog :visible.sync="visible" :modal-append-to-body="false" width="70%" top="5vh" title="裁剪头像"
+        :class="$style.model">
         <div class="el-divider el-divider--horizontal" :class="$style.divider"></div>
         <div :class="$style.btn">
             <span style="margin-right: 20px;">本地上传</span>

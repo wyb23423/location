@@ -32,7 +32,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         open: false
     };
     public get formHeight() {
-        return `calc(${100 / this.$store.state.rootScale}vh - 600px)`;
+        return `calc(${100 / this.$store.state.rootScale}vh - 500px)`;
     }
     // ====================================
     private pointIndex: number = -1;

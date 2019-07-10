@@ -1,12 +1,5 @@
 <template>
-    <div
-        ref="root"
-        :style="{
-            width: width + 'px',
-            transform: `scale(${scale})`
-        }"
-        :class="$style.root"
-    >
+    <div ref="root">
         <router-view />
     </div>
 </template>
@@ -25,26 +18,8 @@ export default class App extends Vue {
     private timer: any = null;
 
     public mounted() {
-        this.scaleRoot();
-        window.addEventListener('resize', this.scaleRoot.bind(this), false);
-    }
-
-    public created() {
-        setInterval(() => {
-            this.$http
-                .get('/api/alarm/getall', {
-                    pageSize: 99999999,
-                    currentPage: 1
-                })
-                .then(res => {
-                    res.pagedData.datas.forEach((v: IAlarm) => {
-                        this.$notify.warning(
-                            `标签${v.tagNo}异常。\n${v.alarmMsg}`
-                        );
-                    });
-                })
-                .catch(console.log);
-        }, 1000);
+        // this.scaleRoot();
+        // window.addEventListener('resize', this.scaleRoot.bind(this), false);
     }
 
     private scaleRoot() {

@@ -20,5 +20,43 @@ import { Prop } from 'vue-property-decorator';
         'app-nav': Header
     }
 })
-export default class Main extends Vue {}
+export default class Main extends Vue {
+    public created() {
+        const fn = () => {
+            this.$http
+                .get('/api/alarm/getall', {
+                    pageSize: 99999999,
+                    currentPage: 1
+                })
+                .then(res => {
+                    res.pagedData.datas.forEach((v: IAlarm) => {
+                        this.$notify.warning(
+                            `标签${v.tagNo}异常。\n${v.alarmMsg}`
+                        );
+                    });
+
+                    setTimeout(fn, 1000);
+                })
+                .catch(console.log);
+        };
+
+        fn();
+    }
+}
 </script>
+
+<style lang="postcss" module>
+.main {
+    padding: 0;
+    position: relative;
+}
+.mark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    background-color: #e2e2e2;
+}
+</style>
+

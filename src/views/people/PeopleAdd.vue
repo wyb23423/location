@@ -211,6 +211,13 @@ export default class PeopleAdd extends Vue {
     border: 1px solid #ccc;
     margin: 10px;
 }
+.model > div {
+    min-width: 720px;
+
+    @media (width <= 768px) {
+        min-width: auto;
+    }
+}
 </style>
 
 

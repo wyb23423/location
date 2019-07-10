@@ -20,8 +20,7 @@ export class PIXIMgr extends MapEvent {
     private timer: number | null = null;
     private els: any[] = []; // 已添加到舞台上的元素
 
-    // tslint:disable-next-line: ban-types
-    private loaded?: Function;
+    private loaded: Array<() => void> = []; // 加载完成后的执行函数
 
     public set locRange(data: Vector2) {
         if (!this._locRange) {
@@ -74,7 +73,7 @@ export class PIXIMgr extends MapEvent {
 
     public on(type: string, callback: any) {
         if (type === 'loadComplete') {
-            this.loaded = callback;
+            this.loaded.push(callback);
         } else {
             const mapping: { [x: string]: string } = {
                 mapClickNode: 'pointertap'
@@ -223,6 +222,7 @@ export class PIXIMgr extends MapEvent {
         Reflect.set(this, 'stage', null);
 
         this._locRange = undefined;
+        this.loaded.length = 0;
     }
 
     // 移动
@@ -409,9 +409,7 @@ export class PIXIMgr extends MapEvent {
             bgSprite.height = height;
             this.stage.addChild(bgSprite);
 
-            if (this.loaded) {
-                this.loaded();
-            }
+            this.loaded.forEach(fn => fn());
         }));
     }
 
