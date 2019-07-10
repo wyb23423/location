@@ -4,7 +4,7 @@
             <div
                 class="flex-center"
                 :class="$style.item"
-                style="margin-right: 20px"
+                style="margin-right: 20px;"
             >
                 <app-select
                     url="/api/tag/getall"
@@ -271,7 +271,7 @@ function formatTime(range: number, progress: number) {
     display: flex;
     justify-content: space-between;
 
-    @media screen and (width <= 768px) {
+    @media screen and (width <= 1260px) {
         flex-wrap: wrap;
     }
 }
