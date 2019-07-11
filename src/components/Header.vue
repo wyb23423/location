@@ -20,7 +20,7 @@
                 <el-menu-item v-for="v of tabs" :key="v[1]" :index="v[1]">
                     {{ v[0] }}
                 </el-menu-item>
-                <el-submenu v-if="!!more.length" index="-1">
+                <el-submenu v-if="!!more.length" index="-2">
                     <template slot="title">
                         更多
                     </template>

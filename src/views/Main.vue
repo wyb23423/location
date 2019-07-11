@@ -21,6 +21,8 @@ import { Prop } from 'vue-property-decorator';
     }
 })
 export default class Main extends Vue {
+    private timer?: number;
+
     public created() {
         const fn = () => {
             this.$http
@@ -35,12 +37,18 @@ export default class Main extends Vue {
                         );
                     });
 
-                    setTimeout(fn, 1000);
+                    this.timer = setTimeout(fn, 1000);
                 })
                 .catch(console.log);
         };
 
         fn();
+    }
+
+    public destroyed() {
+        if (this.timer) {
+            clearTimeout(this.timer);
+        }
     }
 }
 </script>

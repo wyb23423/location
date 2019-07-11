@@ -1,10 +1,19 @@
 <template>
     <div :class="$style.box" @click="hiddenCover">
-        <div :class="$style['tool-bar']">
-            <map-select
-                style="margin-left: 50px"
-                @selectmap="selectMap"
-            ></map-select>
+        <div :class="$style['tool-bar']" class="flex-center">
+            <map-select @selectmap="selectMap"></map-select>
+            <el-input
+                placeholder="请输入标签号"
+                type="search"
+                v-model="findTarget"
+                style="width: 200px"
+            >
+                <el-button
+                    slot="append"
+                    icon="el-icon-search"
+                    @click="find"
+                ></el-button>
+            </el-input>
         </div>
         <div ref="map" style="height: 100%; overflow: hidden"></div>
         <div :class="$style.tools">
@@ -50,12 +59,11 @@
     position: absolute;
     top: 0;
     left: 0;
-
     width: 100%;
     height: 60px;
+    padding: 0 5%;
     background: #fcf8e3;
-    display: flex;
-    align-items: center;
+    justify-content: space-between;
 }
 .tools {
     position: absolute;

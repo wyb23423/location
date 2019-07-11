@@ -1,8 +1,9 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import echarts from 'echarts';
-import { State, Getter } from 'vuex-class';
+import { Getter } from 'vuex-class';
 import { loopAwait } from '@/assets/utils/util';
+import { Upload } from 'element-ui';
 
 interface CardInfo {
     icon: string;
@@ -19,17 +20,16 @@ interface RecordItem {
 
 @Component
 export default class Main extends Vue {
-    @State public baseUrl!: string;
     @Getter public mainHeight!: string;
 
     public activeNames: string[] = ['1', '2'];
     public cards: CardInfo[] = [
-        { icon: 'qy', title: '监控区域', num: 3, to: '' },
-        { icon: 'adminbg', title: '管理人员', num: 3, to: '' },
-        { icon: 'ter', title: '监控人员', num: 3, to: '' },
-        { icon: 'bj', title: '报警次数', num: 3, to: '' },
-        { icon: 'bj', title: '暂停功能', num: 3, to: '' },
-        { icon: 'bj', title: '暂停功能', num: 3, to: '' }
+        { icon: 'qy', title: '监控区域', num: 3, to: '/system/fence' },
+        { icon: 'adminbg', title: '管理人员', num: 3, to: '/admin/list' },
+        { icon: 'ter', title: '监控人员', num: 3, to: '/people/list/1' },
+        { icon: 'bj', title: '报警次数', num: 3, to: '/alarm' },
+        // { icon: 'bj', title: '暂停功能', num: 3, to: '' },
+        // { icon: 'bj', title: '暂停功能', num: 3, to: '' }
     ];
     public records: RecordItem[] = [];
 
@@ -163,9 +163,9 @@ export default class Main extends Vue {
 
     private async createBar() {
         const weatherIcons: any = {
-            Sunny: this.baseUrl + 'public/image/qy.png',
-            Cloudy: this.baseUrl + 'public/image/ter.png',
-            Showers: this.baseUrl + 'public/image/dzwl.png'
+            Sunny: '/images/qy.png',
+            Cloudy: '/images/ter.png',
+            Showers: '/images/dzwl.png'
         };
 
         const seriesLabel: any = {

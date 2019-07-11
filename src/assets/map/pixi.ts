@@ -387,6 +387,11 @@ export class PIXIMgr extends MapEvent {
         };
     }
 
+    // 查找第一个标记为name的Sprite
+    public findSprite(name: string | number) {
+        return this.els.find(v => v instanceof PIXI.Sprite && v.name === name);
+    }
+
     private loop() {
         this.timer = requestAnimationFrame(this.loop.bind(this));
 

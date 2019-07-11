@@ -1,11 +1,11 @@
 <template>
     <div :style="{ height: mainHeight }" style="overflow-y: auto">
-        <el-alert
+        <!-- <el-alert
             title="监控区域1->三号楼 F区域设备损坏报警，请尽快维修检查"
             type="warning"
             show-icon
         >
-        </el-alert>
+        </el-alert> -->
         <div style="padding: 30px;">
             <div :class="$style.cards">
                 <router-link
@@ -72,7 +72,8 @@
 .card-item {
     background: #fff;
     height: 120px;
-    width: 15%;
+    width: 23%;
+    max-width: 350px;
     margin-bottom: 20px;
     display: flex;
     justify-content: space-around;
@@ -80,12 +81,8 @@
     padding: 10px;
     cursor: pointer;
 
-    @media (width <= 1075px) {
-        width: 30%;
-    }
-
-    @media (width <= 575px) {
-        width: 45%;
+    @media (width <= 768px) {
+        width: 47%;
     }
 
     @media (width <= 420px) {

@@ -416,8 +416,8 @@ export class FengMapMgr {
         }
 
         const createTime = Date.now();
-        return () => {
-            if (pop && Date.now() - createTime >= 200) {
+        return (immediately?: boolean) => {
+            if (pop && (immediately || Date.now() - createTime >= 200)) {
                 try {
                     pop.close();
                 } catch (e) {
@@ -427,6 +427,15 @@ export class FengMapMgr {
                 return true;
             }
         };
+    }
+
+    // 查找第一个标记为name的ImageMarker
+    public findSprite(name: string | number) {
+        return this.markers.find(v => {
+            return v instanceof fengmap.FMImageMarker
+                && v.custom
+                && v.custom.name === name;
+        });
     }
 
     private eachmarkers(
