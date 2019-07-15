@@ -107,8 +107,6 @@ export default class Login extends Vue {
         return nameLength >= 5 && passLength >= 6 && passLength <= 12;
     }
 }
-
-console.log(new Login().submit);
 </script>
 
 <style lang="postcss" module>

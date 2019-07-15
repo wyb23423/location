@@ -11,15 +11,15 @@ import * as http from './assets/utils/http';
 import { Route } from 'vue-router';
 import VueWorker from 'vue-worker';
 import VueCropper from 'vue-cropper';
-
 import * as PIXI from 'pixi.js';
+import { initConfig } from './constant';
+
 (<any>window).PIXI = PIXI; // add code
 (<any>window).PIXI.default = PIXI;
 
 Vue.use(VueCropper)
   .use(ElementUI)
   .use(VueWorker);
-
 Vue.prototype.$http = http;
 
 Vue.config.productionTip = false;
@@ -46,9 +46,13 @@ router.beforeEach((to: Route, from: Route, next: any) => {
   }
 });
 
+initConfig()
+  .then(() => {
+    new Vue({
+      router,
+      store,
+      render: (h) => h(App),
+    }).$mount('#app');
+  });
 
-new Vue({
-  router,
-  store,
-  render: (h) => h(App),
-}).$mount('#app');
+
