@@ -5,15 +5,12 @@
 
 import { MAP_THEME_URL, APP_KEY, APP_NAME, MAP_DATA_URL } from '@/constant';
 import { randomNum, randomColor, none } from '../utils/util';
-import { parsePosition, getCoordinate } from './coordtransformer';
+import { CoordTransformer } from './coordtransformer';
 
-export class FengMapMgr {
+export class FengMapMgr extends CoordTransformer {
     public readonly has3D: boolean = true;
 
     public map!: fengmap.FMMap;
-
-    public margin?: TPosition;
-    public locOrigion: Vector2 = { x: 0, y: 0 };
 
     private markers: Array<fengmap.FMMarker<any>> = [];
     private polygonLayer?: fengmap.FMMarkerLayer<fengmap.FMPolygonMarker>;
@@ -21,20 +18,11 @@ export class FengMapMgr {
     private imgLayer?: fengmap.FMMarkerLayer<fengmap.FMImageMarker>;
 
     private lines: fengmap.FMLineMarker[] = [];
-
-    // tslint:disable-next-line:variable-name
-    private _locRange?: Vector2;
     private isLoaded: boolean = false;
 
-    public set locRange(data: Vector2) {
-        if (!this._locRange) {
-            this._locRange = data;
-        } else {
-            console.error('地图范围只能设置一次');
-        }
-    }
-
     constructor(name: string, dom: HTMLElement) {
+        super();
+
         dom.innerHTML = '';
 
         this.map = new fengmap.FMMap({
@@ -93,7 +81,6 @@ export class FengMapMgr {
             if (this.polygonLayer) {
                 this.polygonLayer.removeAll();
             }
-
         } else {
             this.eachmarkers(
                 (layer: fengmap.FMMarkerLayer<any>, i: number) => {
@@ -138,10 +125,9 @@ export class FengMapMgr {
 
         if (!isMapCoor) {
             if (this._locRange && this.margin) {
-                p = parsePosition(p, this.locOrigion, this._locRange, this.margin);
+                p = this.transform(p);
             } else {
                 console.error('地图范围错误');
-
                 return p;
             }
         }
@@ -176,7 +162,7 @@ export class FengMapMgr {
         let coordslist = coords;
         if (!isMapCoor) {
             if (this._locRange && this.margin) {
-                coordslist = coords.map(v => parsePosition(v, this.locOrigion, this._locRange!, this.margin!));
+                coordslist = coords.map(this.transform.bind(this));
             } else {
                 return console.error('地图范围错误');
             }
@@ -225,7 +211,7 @@ export class FengMapMgr {
 
         if (!isMapCoor) {
             if (this._locRange && this.margin) {
-                newlist = parsePosition(coord, this.locOrigion, this._locRange, this.margin);
+                newlist = this.transform(newlist);
             } else {
                 return Promise.reject('地图范围错误');
             }
@@ -289,7 +275,7 @@ export class FengMapMgr {
     ) {
         if (!isMapCoor) {
             if (this._locRange && this.margin) {
-                coord = parsePosition(coord, this.locOrigion, this._locRange, this.margin);
+                coord = this.transform(coord);
             } else {
                 return console.error('地图范围错误');
             }
@@ -338,17 +324,6 @@ export class FengMapMgr {
         }, name);
     }
 
-    // 将地图坐标转为定位坐标
-    public getCoordinate(v: Vector2, is2map?: boolean) {
-        if (!this.margin) {
-            console.error('地图范围为空');
-
-            return { x: 0, y: 0, z: 0 };
-        }
-
-        return getCoordinate(v, this.locOrigion, this._locRange!, this.margin!);
-    }
-
     // 添加线
     public addLine(
         points: Vector3[],
@@ -358,7 +333,7 @@ export class FengMapMgr {
     ) {
         if (!isMapCoor) {
             if (this._locRange && this.margin) {
-                points = points.map(v => parsePosition(v, this.locOrigion, this._locRange!, this.margin!));
+                points = points.map(this.transform.bind(this));
             } else {
                 return console.error('地图范围错误');
             }

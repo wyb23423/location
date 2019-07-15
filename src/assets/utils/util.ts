@@ -153,3 +153,27 @@ export function getPosition(e: MouseEvent | TouchEvent) {
 
     return { x: 0, y: 0 };
 }
+
+/**
+ * 为方法添加try-catch块
+ * @param errorHandler 出错时的处理函数
+ */
+// export function TryCatch(errorHandler?: (e?: Error) => any) {
+//     return (
+//         prototype: IJson,
+//         name: string | symbol,
+//         descriptor: TypedPropertyDescriptor<(...args: any[]) => any>
+//     ) => {
+//         const func = descriptor.value;
+//         // tslint:disable-next-line: space-before-function-paren
+//         descriptor.value = function (this: any, ...args: any[]) {
+//             try {
+//                 return func ? func.apply(this, args) : null;
+//             } catch (e) {
+//                 return errorHandler ? errorHandler.call(this, e) : null;
+//             }
+//         };
+
+//         return descriptor;
+//     };
+// }
