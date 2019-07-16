@@ -31,8 +31,12 @@
             "get": "all"
         },
         "base": {
-            "put": "super",
-            "delete": "super",
+            "put": [
+                "super"
+            ],
+            "delete": [
+                "super"
+            ],
             "post": "super",
             "get": "super"
         },
@@ -46,7 +50,10 @@
             "put": "all",
             "delete": "all",
             "post": "all",
-            "get": "all"
+            "get": [
+                "super",
+                "normal"
+            ]
         },
         "alarm": {
             "put": "all",

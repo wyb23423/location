@@ -7,7 +7,6 @@ import Index from './views/index/Index.vue';
 import NotFound from './views/NotFound.vue';
 
 import { RouteList } from './assets/utils/role';
-import store from './store';
 
 Vue.use(Router);
 
@@ -24,7 +23,6 @@ const router = new Router({
 export function initRouter(role?: string) {
   role = role || localStorage.getItem('admin_role') || 'normal';
   const routes = new RouteList(<string>role).routes;
-  store.commit('flashRoutes', routes);
 
   router.addRoutes([
     {

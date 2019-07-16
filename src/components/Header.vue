@@ -102,7 +102,6 @@ export default class Header extends Vue {
     }
 
     private setNavItems() {
-        const routes = this.$store.state.routes;
         const navItems = [
             ['首页', '/index'],
             ['管理员设置', '/admin'],

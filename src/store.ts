@@ -8,15 +8,13 @@ Vue.use(Vuex);
 interface State {
   baseUrl: string;
   rootScale: number;
-  routes: string[];
 }
 
 
 export default new Vuex.Store({
   state: {
     baseUrl: BASE_URL,
-    rootScale: 1,
-    routes: []
+    rootScale: 1
   },
   getters: {
     mainHeight(state: State) {
@@ -27,9 +25,6 @@ export default new Vuex.Store({
     setRootScale(state: State, scale: number) {
       state.rootScale = scale;
     },
-    flashRoutes(state: State, routes: RouteConfig[]) {
-      state.routes = routes.map(v => v.path);
-    }
   },
   actions: {
 
