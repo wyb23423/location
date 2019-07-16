@@ -2,7 +2,7 @@
 
 import Vue from 'vue';
 import App from './App.vue';
-import router from './router';
+import router, { initRouter } from './router';
 import store from './store';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
@@ -29,13 +29,14 @@ Vue.config.productionTip = false;
  * 未登录时跳转到登录界面
  */
 router.beforeEach((to: Route, from: Route, next: any) => {
-  if (!store.state.isLogin && to.path !== '/login') {
+  const isLogin = sessionStorage.getItem('login');
+  if (!(isLogin && +isLogin) && to.path !== '/login') {
     http.get('/api/admin/getall', {
       pageSize: 1,
       currentPage: 1
     })
       .then(() => {
-        store.commit('login');
+        sessionStorage.setItem('login', '1');
         next();
       })
       .catch(e => {

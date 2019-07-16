@@ -1,13 +1,14 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { BASE_URL } from './constant';
+import { RouteConfig } from 'vue-router/types/router';
 
 Vue.use(Vuex);
 
 interface State {
   baseUrl: string;
   rootScale: number;
-  isLogin: boolean;
+  routes: string[];
 }
 
 
@@ -15,7 +16,7 @@ export default new Vuex.Store({
   state: {
     baseUrl: BASE_URL,
     rootScale: 1,
-    isLogin: false
+    routes: []
   },
   getters: {
     mainHeight(state: State) {
@@ -26,8 +27,8 @@ export default new Vuex.Store({
     setRootScale(state: State, scale: number) {
       state.rootScale = scale;
     },
-    login(state: State, login: boolean = true) {
-      state.isLogin = login;
+    flashRoutes(state: State, routes: RouteConfig[]) {
+      state.routes = routes.map(v => v.path);
     }
   },
   actions: {

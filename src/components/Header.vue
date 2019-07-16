@@ -16,6 +16,7 @@
                 active-text-color="#ffd04b"
                 :default-active="activeIndex"
                 :router="true"
+                v-if="!!tabs.length"
             >
                 <el-menu-item v-for="v of tabs" :key="v[1]" :index="v[1]">
                     {{ v[0] }}
@@ -89,8 +90,8 @@ export default class Header extends Vue {
         this.$http
             .post('/api/admin/logout')
             .then(() => {
-                this.$store.commit('login', false);
-                this.$router.push('/login');
+                sessionStorage.removeItem('login');
+                location.href = '/login';
             })
             .catch(console.log);
     }
@@ -101,6 +102,7 @@ export default class Header extends Vue {
     }
 
     private setNavItems() {
+        const routes = this.$store.state.routes;
         const navItems = [
             ['首页', '/index'],
             ['管理员设置', '/admin'],
@@ -110,7 +112,7 @@ export default class Header extends Vue {
             ['实时监控', '/monitor'],
             // ['电子围栏', '/fence'],
             ['报警信息', '/alarm']
-        ];
+        ].filter(v => this.$router.resolve(v[1]).resolved.name !== '404');
 
         const rootWidth = document.body.offsetWidth;
         if (rootWidth <= 870 && rootWidth > SX_WIDTH) {

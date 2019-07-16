@@ -28,6 +28,7 @@ export function initConfig() {
         .then(res => {
             APP_KEY = res.APP_KEY;
             APP_NAME = res.APP_NAME;
+            sessionStorage.setItem('config', JSON.stringify(res));
         })
         .catch(console.error);
 }

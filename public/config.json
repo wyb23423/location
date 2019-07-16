@@ -1,4 +1,58 @@
 {
     "APP_KEY": "83a75157d56ffe85317ed7ba1e8120ff",
-    "APP_NAME": "hunjingguanchang"
+    "APP_NAME": "hunjingguanchang",
+    "roles": {
+        "super": "管理员",
+        "normal": "普通用户"
+    },
+    "system": {
+        "admin": {
+            "put": "super",
+            "delete": "super",
+            "post": "super",
+            "get": "all"
+        },
+        "fence": {
+            "put": "all",
+            "delete": "all",
+            "post": "all",
+            "get": "all"
+        },
+        "camera": {
+            "put": "all",
+            "delete": "all",
+            "post": "all",
+            "get": "all"
+        },
+        "protocol": {
+            "put": "all",
+            "delete": "all",
+            "post": "all",
+            "get": "all"
+        },
+        "base": {
+            "put": "super",
+            "delete": "super",
+            "post": "super",
+            "get": "super"
+        },
+        "people": {
+            "put": "super",
+            "delete": "super",
+            "post": "super",
+            "get": "all"
+        },
+        "map": {
+            "put": "all",
+            "delete": "all",
+            "post": "all",
+            "get": "all"
+        },
+        "alarm": {
+            "put": "all",
+            "delete": "all",
+            "post": "all",
+            "get": "all"
+        }
+    }
 }

@@ -20,7 +20,7 @@
             @click="collapse"
             style="text-align: center; border-right: none"
         >
-            <template v-for="(v, i) of tabs">
+            <template v-for="(v, i) of currTabs">
                 <el-menu-item :key="v.to" :index="v.to" v-if="!v.children">
                     <i :class="v.icon || 'el-icon-paperclip'"></i>
                     <span slot="title">{{ v.title }}</span>
@@ -65,14 +65,17 @@ interface TabItem {
 export default class Aside extends Vue {
     public defaultActive: string = '';
     public isCollapse: boolean = true;
-
     public activeTitle: string = '';
 
     @Getter('mainHeight') public height!: string;
-
     @Prop() public tabs!: TabItem[];
 
+    public currTabs: TabItem[] = [];
+
     public created() {
+        this.currTabs = this.tabs.filter(
+            v => this.$router.resolve(v.to).resolved.name !== '404'
+        );
         this.modifyActiveIndex();
     }
 
@@ -84,7 +87,7 @@ export default class Aside extends Vue {
     public modifyActiveIndex() {
         this.defaultActive = this.$route.path;
         if (this.$route.path.split('/').length < 3) {
-            const tabs: TabItem[] = this.tabs || [];
+            const tabs: TabItem[] = this.currTabs || [];
             this.defaultActive = this.defaultTo(tabs);
         }
 

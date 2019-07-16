@@ -122,13 +122,16 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
 
     protected bindEvents() {
         this.mgr!.on('loadComplete', () => {
-            this.tools[1].display = this.mgr!.has3D;
+            if (this.mgr) {
+                this.tools[1].display = this.mgr.has3D;
 
-            this.tagAnchor().then(data => {
-                this.baseAll = data;
-                this.group = arr2obj(data, 'groupCode');
-                this.initWebSoket();
-            });
+                this.tagAnchor().then(data => {
+                    this.baseAll = data;
+                    this.group = arr2obj(data, 'groupCode');
+                    this.initWebSoket();
+                });
+            }
+
         });
 
         this.mgr!.on('mapClickNode', (event: FMMapClickEvent) => {

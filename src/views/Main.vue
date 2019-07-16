@@ -39,7 +39,10 @@ export default class Main extends Vue {
 
                     this.timer = setTimeout(fn, 1000);
                 })
-                .catch(console.log);
+                .catch(e => {
+                    sessionStorage.removeItem('login');
+                    this.$router.push('/login');
+                });
         };
 
         fn();

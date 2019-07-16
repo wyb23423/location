@@ -51,6 +51,7 @@ import Component from 'vue-class-component';
 import { Message } from 'element-ui';
 import Router from 'vue-router';
 import { State } from 'vuex-class/lib/bindings';
+import { initRouter } from '@/router';
 
 interface LoginInfo {
     password: string;
@@ -85,17 +86,28 @@ export default class Login extends Vue {
                     }
                 })
                     .then(res => res.json())
-                    .then(res => {
+                    .then((res: ResponseData) => {
                         if (res.code === 200) {
-                            this.$store.commit('login');
-                            this.$router.push('/');
+                            sessionStorage.setItem('login', '1');
+
+                            const admin = res.pagedData
+                                ? res.pagedData.datas[0]
+                                : null;
+                            return admin ? admin.role : 'normal';
                         } else {
-                            this.$message.error('账号或密码错误, 登陆失败!');
+                            return Promise.reject({
+                                message: '账号或密码错误, 登陆失败!'
+                            });
                         }
                     })
-                    .catch(e => this.$message.error(e.message));
+                    .then((role: string) => {
+                        sessionStorage.setItem('admin_role', role);
+                        initRouter(role);
 
-                form && form.resetFields();
+                        this.$router.push('/');
+                    })
+                    .catch((e: any) => this.$message.error(e.message))
+                    .finally(() => form && form.resetFields());
             }
         });
     }

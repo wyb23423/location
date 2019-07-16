@@ -9,6 +9,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { DEFAULT_WIDTH, SX_WIDTH } from './constant';
 import { Store } from 'vuex';
+import { initRouter } from './router';
 
 @Component
 export default class App extends Vue {
@@ -18,6 +19,10 @@ export default class App extends Vue {
     private timer: any = null;
 
     public mounted() {
+        const isLogin = sessionStorage.getItem('login');
+        if (isLogin && +isLogin) {
+            initRouter();
+        }
         // this.scaleRoot();
         // window.addEventListener('resize', this.scaleRoot.bind(this), false);
     }
