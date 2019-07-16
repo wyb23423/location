@@ -272,9 +272,24 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
 
             if (timer) {
                 clearTimeout(timer);
-
                 this.mgr.show(tag.sTagNo, true);
-                this.mgr.moveTo(tag.sTagNo, coord, 1);
+
+                const reg = new RegExp(`编号:\\s*${tag.sTagNo}`);
+                this.mgr.moveTo(tag.sTagNo, coord, 1, (v: Vector2) => {
+                    const pop = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('fm-control-popmarker');
+                    if (pop) {
+                        for (const el of pop) {
+                            if (reg.test(el.innerHTML)) {
+                                Object.assign(el.style, {
+                                    transition: 'all 120ms ease-out',
+                                    left: v.x + 'px',
+                                    top: v.y - 40 + 'px',
+                                    transform: 'translate(-50%, -100%)'
+                                });
+                            }
+                        }
+                    }
+                });
             } else {
                 // 第一次收到信号
                 const info = {

@@ -154,19 +154,6 @@ export default class Control extends Vue {
                 }
 
                 if (this.tags) {
-                    // this.path = this.tags
-                    //     .map(({ data: v }) => [
-                    //         v.tagNo,
-                    //         JSON.parse(
-                    //             localStorage.getItem(v.tagNo) ||
-                    //                 JSON.stringify([])
-                    //         ),
-                    //         v.photo
-                    //     ])
-                    //     .filter(v => !!v[1]);
-
-                    // this._play();
-
                     this.$http
                         .post({
                             url: '/api/tag/queryTagHistory',
@@ -179,7 +166,7 @@ export default class Control extends Vue {
                                 'Content-Type': 'application/json'
                             }
                         })
-                        .then(console.log)
+                        .then(res => console.log(res.pagedData.datas))
                         .catch(console.log);
                 }
             }

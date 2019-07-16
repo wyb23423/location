@@ -289,7 +289,7 @@ export class FengMapMgr extends CoordTransformer {
                 callback: callback || none,
                 update: (v: Vector2) => {
                     if (update && this.map) {
-                        update(this.map.coordMapToScreen(v.x, v.y));
+                        update(this.map.coordMapToScreen(v.x, v.y, 0, true));
                     }
                 }
             });
