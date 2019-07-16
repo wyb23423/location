@@ -7,7 +7,7 @@
     },
     "system": {
         "admin": {
-            "put": "all",
+            "put": "super",
             "delete": "super",
             "post": "super",
             "get": "all"
@@ -19,15 +19,15 @@
             "get": "all"
         },
         "camera": {
-            "put": "all",
-            "delete": "all",
-            "post": "all",
+            "put": "super",
+            "delete": "super",
+            "post": "super",
             "get": "all"
         },
         "protocol": {
             "put": "super",
-            "delete": "all",
-            "post": "all",
+            "delete": "super",
+            "post": "super",
             "get": "all"
         },
         "base": {
@@ -47,18 +47,18 @@
             "get": "all"
         },
         "map": {
-            "put": "all",
-            "delete": "all",
-            "post": "all",
+            "put": "super",
+            "delete": "super",
+            "post": "super",
             "get": [
                 "super",
                 "normal"
             ]
         },
         "alarm": {
-            "put": "all",
-            "delete": "all",
-            "post": "all",
+            "put": "super",
+            "delete": "super",
+            "post": "super",
             "get": "all"
         }
     }
