@@ -6,10 +6,7 @@
                 :table-data="tableData"
                 :col-cfg="colCfg"
                 :total-count="totalCount"
-                :op="[
-                    { type: 'success', name: 'look', desc: '查看详情' },
-                    { type: 'danger', name: 'del', desc: '删除' }
-                ]"
+                :op="op"
                 :op-width="200"
                 @del="del"
                 @look="look"
@@ -29,13 +26,25 @@
             <el-tab-pane label="设备信息" name="info">
                 <base-info :data="base"></base-info>
             </el-tab-pane>
-            <el-tab-pane label="基本属性设置" name="primary">
+            <el-tab-pane
+                label="基本属性设置"
+                name="primary"
+                v-if="!!permission.post"
+            >
                 <base-primary :data="base"></base-primary>
             </el-tab-pane>
-            <el-tab-pane label="网络参数设置" name="net">
+            <el-tab-pane
+                label="网络参数设置"
+                name="net"
+                v-if="!!permission.post"
+            >
                 <base-net :data="base"></base-net>
             </el-tab-pane>
-            <el-tab-pane label="位置设置" name="position">
+            <el-tab-pane
+                label="位置设置"
+                name="position"
+                v-if="!!permission.post"
+            >
                 <base-position :data="base"></base-position>
             </el-tab-pane>
         </el-tabs>
@@ -70,6 +79,15 @@ export default class Info extends mixins(TableMixin) {
 
     public base: IBaseStation | null = null;
     public activeTab: string = 'info';
+
+    public get op() {
+        const op = [{ type: 'success', name: 'look', desc: '查看详情' }];
+        if (this.permission.delete) {
+            op.push({ type: 'danger', name: 'del', desc: '删除' });
+        }
+
+        return op;
+    }
 
     public del(row: IBaseStation) {
         this.$confirm(`删除基站${row.name}?`)

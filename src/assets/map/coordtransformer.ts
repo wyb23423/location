@@ -93,7 +93,7 @@ export class CoordTransformer {
             mapAxisY: this.mapAxisY,
             mapRange: this.mapRange,
             locRange: <Vector2>this._locRange,
-            locOrigion: this.locRange
+            locOrigion: this.locOrigion
         });
     }
 

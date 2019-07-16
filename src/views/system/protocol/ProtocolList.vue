@@ -6,7 +6,7 @@
                 :table-data="tableData"
                 :col-cfg="colCfg"
                 :total-count="totalCount"
-                :op="[{ type: 'danger', name: 'del', desc: '删除' }]"
+                :op="op"
                 :op-width="200"
                 :isSmall="true"
                 @del="del"

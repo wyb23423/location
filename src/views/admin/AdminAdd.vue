@@ -1,11 +1,6 @@
 <template>
     <div style="padding-left: 5%; padding-top: 3%;">
-        <h3 style="color: #009688;">
-            管理员基础信息
-            <!-- <span style="font-size: 12px;">
-                (注意: 增加管理员后需要在管理员权限管理更改新增管理员的权限)
-            </span> -->
-        </h3>
+        <h3 style="color: #009688;">管理员基础信息</h3>
         <el-form
             ref="form"
             :model="form"
@@ -35,20 +30,10 @@
                 prop="department"
                 :inline-message="true"
             >
-                <el-select v-model="form.department" placeholder="选择部门">
-                    <el-option value="技术部"></el-option>
-                    <el-option value="研发部"></el-option>
-                    <el-option value="销售部"></el-option>
-                </el-select>
+                <el-input v-model="form.department"></el-input>
             </el-form-item>
             <el-form-item label="职位" prop="job" :inline-message="true">
-                <el-select v-model="form.job" placeholder="选择职位">
-                    <el-option value="技术主管"></el-option>
-                    <el-option value="项目经理" :disabled="true"></el-option>
-                    <el-option value="产品经理"></el-option>
-                    <el-option value="技术员"></el-option>
-                    <el-option value="测试"></el-option>
-                </el-select>
+                <el-input v-model="form.job"></el-input>
             </el-form-item>
             <el-form-item label="职位等级" prop="level">
                 <el-radio-group v-model="form.level">
@@ -62,6 +47,21 @@
             </el-form-item>
             <el-form-item label="工号：" prop="workNo">
                 <el-input v-model="form.workNo"></el-input>
+            </el-form-item>
+            <el-form-item
+                label="权限"
+                prop="role"
+                :inline-message="true"
+                v-if="!!roles.length"
+            >
+                <el-select v-model="form.role">
+                    <el-option
+                        v-for="v of roles"
+                        :key="v[0]"
+                        :value="v[0]"
+                        :label="v[1]"
+                    ></el-option>
+                </el-select>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="onSubmit">立即创建</el-button>
@@ -78,14 +78,33 @@ import { ElForm } from 'element-ui/types/form';
 
 @Component
 export default class AdminAdd extends Vue {
-    public form = {};
+    public form = {
+        adminName: '',
+        userName: '',
+        password: '',
+        sex: 1,
+        department: '',
+        job: '',
+        level: 'T1',
+        phone: '',
+        workNo: '',
+        role: 'supser'
+    };
     public rules = {};
+    public roles: string[][] = [];
 
     public created() {
-        this.init();
+        let config: any = sessionStorage.getItem('config');
+        if (config) {
+            config = JSON.parse(config).roles;
+            if (config) {
+                this.roles = Object.entries(config);
+            }
+        }
+        this.form.role = this.roles[0] ? this.roles[0][0] : 'super';
 
         Object.keys(this.form).forEach(k => {
-            if (k !== 'sex' && k !== 'level') {
+            if (k !== 'sex' && k !== 'level' && k !== 'role') {
                 const rules: any[] = [
                     {
                         required: true,
@@ -113,18 +132,14 @@ export default class AdminAdd extends Vue {
                 const now = Date.now();
                 const data = Object.assign({}, this.form, {
                     createTime: now,
-                    updateTime: now,
-                    role: 'string' // 权限
+                    updateTime: now
                 });
 
                 this.$http
                     .post('/api/admin/addAdmin', data, {
                         'Content-Type': 'application/json'
                     })
-                    .then(() => {
-                        this.$message.success('添加成功');
-                        this.init();
-                    })
+                    .then(() => this.$message.success('添加成功'))
                     .catch(console.log);
             }
         });
@@ -132,21 +147,6 @@ export default class AdminAdd extends Vue {
 
     public reset() {
         (<ElForm>this.$refs.form).resetFields();
-        this.init();
-    }
-
-    private init() {
-        this.form = {
-            adminName: '',
-            userName: '',
-            password: '',
-            sex: 1,
-            department: '',
-            job: '',
-            level: 'T1',
-            phone: '',
-            workNo: ''
-        };
     }
 }
 </script>

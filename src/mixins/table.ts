@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { loopAwait } from '../assets/utils/util';
-import { Watch } from 'vue-property-decorator';
+import { Watch, Prop } from 'vue-property-decorator';
 import table2Excel from '../assets/utils/table2excel';
 import Table from '../components/Table.vue';
 
@@ -16,12 +16,20 @@ interface TableData {
     }
 })
 export default class TableMixin extends Vue {
+    @Prop() public permission!: Permission;
+
     public totalCount: number = 0;
     public tableData: any[] = [];
     public maxHeight: number = 100;
     public colCfg: any[] = [];
     protected pageSize: number = 10;
     protected page: number = 1;
+
+    public get op() {
+        return this.permission.delete
+            ? [{ type: 'danger', name: 'del', desc: '删除' }]
+            : [];
+    }
 
     public created() {
         this.getData(1, 10);

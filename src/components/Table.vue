@@ -14,7 +14,7 @@
                 :label="v.label"
                 :sortable="!!v.sortable"
                 :resizable="true"
-                :width="v.width == null ? undefined : v.width * scale"
+                :min-width="v.width == null ? undefined : v.width * scale"
             >
             </el-table-column>
             <el-table-column

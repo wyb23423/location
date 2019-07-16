@@ -7,15 +7,15 @@
     },
     "system": {
         "admin": {
-            "put": "super",
+            "put": "all",
             "delete": "super",
             "post": "super",
             "get": "all"
         },
         "fence": {
-            "put": "all",
-            "delete": "all",
-            "post": "all",
+            "put": "super",
+            "delete": "super",
+            "post": "super",
             "get": "all"
         },
         "camera": {
@@ -38,7 +38,7 @@
                 "super"
             ],
             "post": "super",
-            "get": "super"
+            "get": "all"
         },
         "people": {
             "put": "super",

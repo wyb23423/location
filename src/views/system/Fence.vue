@@ -8,13 +8,17 @@
         </div>
         <div ref="map" style="height: 100%; overflow: hidden"></div>
         <el-collapse v-model="activeNames" :class="$style.op">
-            <el-collapse-item name="info" title="区域信息">
+            <el-collapse-item
+                name="info"
+                title="区域信息"
+                v-if="!!permission.get"
+            >
                 <app-table
                     :max-height="255"
                     :table-data="tableData"
                     :col-cfg="colCfg"
                     :total-count="totalCount"
-                    :op="op"
+                    :op="operation"
                     :op-width="150"
                     :noPrint="true"
                     :isSmall="true"
@@ -24,7 +28,11 @@
                     :class="$style.table"
                 ></app-table>
             </el-collapse-item>
-            <el-collapse-item title="添加区域" name="add">
+            <el-collapse-item
+                title="添加区域"
+                name="add"
+                v-if="!!permission.put"
+            >
                 <el-form
                     :model="form"
                     ref="form"

@@ -75,7 +75,9 @@ export class RouteList {
     }
     // 区域
     public fence() {
-        if (this.hasPermission('fence', 'get')) {
+        const getPermission = this.hasPermission('fence', 'get');
+        const putPermission = this.hasPermission('fence', 'put');
+        if (putPermission || getPermission) {
             return [{
                 path: 'fence',
                 name: 'fence',
@@ -84,7 +86,8 @@ export class RouteList {
                     permission: {
                         delete: this.hasPermission('fence', 'delete'),
                         post: this.hasPermission('fence', 'post'),
-                        put: this.hasPermission('fence', 'put')
+                        put: putPermission,
+                        get: getPermission
                     }
                 }
             }];
@@ -257,14 +260,16 @@ export class RouteList {
             });
         }
 
-        if (this.hasPermission('map', 'post') || this.hasPermission('map', 'delete')) {
+        const postPermission = this.hasPermission('map', 'post');
+        const deletePermission = this.hasPermission('map', 'delete');
+        if (postPermission || deletePermission) {
             routes.push({
                 path: 'edit', name: 'map-edit',
                 component: () => import(/* webpackChunkName: "map" */ '@/views/map/MapUpdate.vue'),
                 props: {
                     permission: {
-                        delete: this.hasPermission('admin', 'delete'),
-                        post: this.hasPermission('admin', 'post')
+                        delete: deletePermission,
+                        post: postPermission
                     }
                 }
             });

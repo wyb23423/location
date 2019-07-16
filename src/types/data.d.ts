@@ -130,3 +130,10 @@ declare interface ResponseData {
     resultMap: IJson;
     success: boolean;
 }
+
+declare interface Permission {
+    delete?: boolean;
+    post?: boolean;
+    put?: boolean;
+    get?: boolean;
+}

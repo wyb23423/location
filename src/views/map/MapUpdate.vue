@@ -8,7 +8,12 @@
                 <map-select @selectmap="selectMap"></map-select>
             </el-form-item>
             <el-form-item>
-                <el-button type="danger" icon="el-icon-delete" @click="del">
+                <el-button
+                    type="danger"
+                    icon="el-icon-delete"
+                    @click="del"
+                    v-if="!!permission.delete"
+                >
                     删除
                 </el-button>
             </el-form-item>
@@ -17,7 +22,11 @@
             class="el-divider el-divider--horizontal"
             style="width: 95%;background-color: #e00;"
         ></div>
-        <map-form @submit="onSubmit" :data.sync="map"></map-form>
+        <map-form
+            @submit="onSubmit"
+            :data.sync="map"
+            v-if="!!permission.post"
+        ></map-form>
     </div>
 </template>
 
@@ -26,6 +35,7 @@ import Component from 'vue-class-component';
 import Vue from 'vue';
 import MapEdit from '@/components/MapEdit.vue';
 import MapSelect from '@/components/MapSelect.vue';
+import { Prop } from 'vue-property-decorator';
 
 @Component({
     components: {
@@ -34,6 +44,8 @@ import MapSelect from '@/components/MapSelect.vue';
     }
 })
 export default class MapAdd extends Vue {
+    @Prop() public permission!: Permission;
+
     public map: IJson = {};
 
     public selectMap(data: IMap) {

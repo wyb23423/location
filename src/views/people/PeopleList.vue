@@ -6,10 +6,7 @@
                 :table-data="tableData"
                 :col-cfg="colCfg"
                 :total-count="totalCount"
-                :op="[
-                    { type: 'danger', name: 'del', desc: '删除' },
-                    { type: 'primary', name: 'setting', desc: '配置' }
-                ]"
+                :op="op"
                 :op-width="200"
                 @del="del"
                 @setting="setting"
@@ -67,9 +64,11 @@ import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
 import { Prop, Watch } from 'vue-property-decorator';
 import { Route } from 'vue-router';
+
 @Component
 export default class PeopleList extends mixins(TableMixin) {
     @Prop() public type!: number;
+    @Prop() public permission!: Permission;
 
     public person: any = null;
 
@@ -84,6 +83,18 @@ export default class PeopleList extends mixins(TableMixin) {
     ];
 
     private zones?: ResponseData;
+
+    public get op() {
+        const op = [];
+        if (this.permission.delete) {
+            op.push({ type: 'danger', name: 'del', desc: '删除' });
+        }
+        if (this.permission.post) {
+            op.push({ type: 'primary', name: 'setting', desc: '配置' });
+        }
+
+        return op;
+    }
 
     public del(row: ITag) {
         this.$confirm(`删除标签${row.name}?`)

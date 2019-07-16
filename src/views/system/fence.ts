@@ -14,8 +14,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         { prop: 'name', label: '区域', sortable: true, width: 90 },
         { prop: 'status', label: '状态', width: 60 }
     ];
-    public op: any[] = [
-        { type: 'danger', name: 'del', desc: '删除' },
+    public operation: any[] = [
         {
             type: { default: 'primary' },
             name: 'display',
@@ -37,6 +36,12 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
     // ====================================
     private pointIndex: number = -1;
 
+    public created() {
+        if (this.permission.delete) {
+            this.op.push({ type: 'danger', name: 'del', desc: '删除' });
+        }
+    }
+
     /**
      * 删除区域
      */
@@ -57,23 +62,27 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
      * 切换区域显示
      */
     public display(row: IZone, index: number, isDel?: boolean) {
-        const op: any = this.op[1];
-        if (op.type[index] || isDel) {
-            op.type[index] = undefined;
+        const i = this.operation.findIndex(v => v.name === 'display');
+        if (i > -1) {
+            const op = this.operation[i];
+            if (op.type[index] || isDel) {
+                op.type[index] = undefined;
 
-            if (this.mgr) {
-                this.mgr.remove(row.name);
-            }
-        } else {
-            op.type[index] = 'success';
+                if (this.mgr) {
+                    this.mgr.remove(row.name);
+                }
+            } else {
+                op.type[index] = 'success';
 
-            if (this.mgr) {
-                this.mgr.zoneOpen(row);
+                if (this.mgr) {
+                    this.mgr.zoneOpen(row);
+                }
             }
+            op.desc[index] = op.desc[index] || isDel ? undefined : '隐藏';
+
+            this.$set(this.operation, i, op);
         }
-        op.desc[index] = op.desc[index] || isDel ? undefined : '隐藏';
 
-        this.$set(this.op, 1, op);
     }
 
     public setPosition(point: Vector3, i: number) {
