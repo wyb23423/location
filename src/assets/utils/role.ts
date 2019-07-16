@@ -14,29 +14,28 @@ export class RouteList {
             this.systemRoles = JSON.parse(data).system;
 
             ['admin', 'system', 'base', 'people', 'map', 'alarm'].forEach(v => {
-                if (v === 'system' || this.hasPermission(v, 'get')) {
-                    Reflect.get(this, v).call(this);
-                }
+                Reflect.get(this, v).call(this);
             });
         }
     }
 
     // 生成管理员相关路由
     public admin() {
-        const routes: RouteConfig[] = [
-            {
+        const routes: RouteConfig[] = [];
+
+        if (this.hasPermission('admin', 'get')) {
+            routes.push({
                 path: 'list',
                 name: 'admin-list',
                 component: () => import(/* webpackChunkName: "admin" */ '@/views/admin/AdminList.vue'),
-                alias: '',
                 props: {
                     permission: {
                         delete: this.hasPermission('admin', 'delete'),
                         post: this.hasPermission('admin', 'post')
                     }
                 }
-            }
-        ];
+            });
+        }
 
         if (this.hasPermission('admin', 'put')) {
             routes.push({
@@ -46,12 +45,15 @@ export class RouteList {
             });
         }
 
-        this.routes.push({
-            path: 'admin',
-            name: 'admin',
-            component: () => import(/* webpackChunkName: "admin" */ '@/views/admin/Admin.vue'),
-            children: routes
-        });
+        if (routes.length) {
+            routes[0].alias = '';
+            this.routes.push({
+                path: 'admin',
+                name: 'admin',
+                component: () => import(/* webpackChunkName: "admin" */ '@/views/admin/Admin.vue'),
+                children: routes
+            });
+        }
     }
 
     // 生成系统设置相关路由
@@ -62,6 +64,7 @@ export class RouteList {
         }).flat();
 
         if (routes.length) {
+            routes[0].alias = '';
             this.routes.push({
                 path: 'system',
                 name: 'system',
@@ -77,7 +80,6 @@ export class RouteList {
                 path: 'fence',
                 name: 'fence',
                 component: () => import(/* webpackChunkName: "system" */ '@/views/system/Fence.vue'),
-                alias: '',
                 props: {
                     permission: {
                         delete: this.hasPermission('fence', 'delete'),
@@ -155,9 +157,10 @@ export class RouteList {
     // 设备
     public base() {
         const postPermission = this.hasPermission('base', 'post');
+        const routes: RouteConfig[] = [];
 
-        const routes: RouteConfig[] = [
-            {
+        if (this.hasPermission('base', 'get')) {
+            routes.push({
                 path: 'info', alias: '', name: 'base-info',
                 component: () => import(/* webpackChunkName: "base" */ '@/views/base/Info.vue'),
                 props: {
@@ -166,8 +169,8 @@ export class RouteList {
                         post: postPermission
                     }
                 }
-            }
-        ];
+            });
+        }
 
         if (this.hasPermission('base', 'put')) {
             routes.push({
@@ -183,17 +186,22 @@ export class RouteList {
             });
         }
 
-        this.routes.push({
-            path: 'base', name: 'base',
-            component: () => import(/* webpackChunkName: "base" */ '@/views/base/BaseIndex.vue'),
-            children: routes
-        });
+        if (routes.length) {
+            routes[0].alias = '';
+            this.routes.push({
+                path: 'base', name: 'base',
+                component: () => import(/* webpackChunkName: "base" */ '@/views/base/BaseIndex.vue'),
+                children: routes
+            });
+        }
     }
 
     // 人员管理
     public people() {
-        const routes: RouteConfig[] = [
-            {
+        const routes: RouteConfig[] = [];
+        let redirect = '';
+        if (this.hasPermission('people', 'get')) {
+            routes.push({
                 path: 'list/:type',
                 name: 'people-list',
                 component: () => import(/* webpackChunkName: "people" */ '@/views/people/PeopleList.vue'),
@@ -204,35 +212,43 @@ export class RouteList {
                         post: this.hasPermission('admin', 'post')
                     }
                 })
-            }
-        ];
+            });
+            redirect = 'people/list/1';
+        }
 
         if (this.hasPermission('people', 'put')) {
             routes.push({
                 path: 'add', name: 'people-add',
                 component: () => import(/* webpackChunkName: "people" */ '@/views/people/PeopleAdd.vue')
             });
+            redirect = redirect || '/people/add';
         }
 
-        this.routes.push({
-            path: 'people', redirect: 'people/list/1', name: 'people',
-            component: () => import(/* webpackChunkName: "people" */ '@/views/people/PeopleIndex.vue'),
-            children: routes
-        });
+        if (routes.length) {
+            this.routes.push({
+                path: 'people', redirect, name: 'people',
+                component: () => import(/* webpackChunkName: "people" */ '@/views/people/PeopleIndex.vue'),
+                children: routes
+            });
+        }
     }
 
     // 地图、实时监控
     public map() {
-        const routes: RouteConfig[] = [
-            {
-                path: '', name: 'monitor',
-                component: () => import(/* webpackChunkName: "map" */ '@/views/map/Monitor.vue')
-            },
-            {
-                path: 'history', name: 'history',
-                component: () => import(/* webpackChunkName: "map" */ '@/views/map/History.vue')
-            }
-        ];
+        const routes: RouteConfig[] = [];
+
+        if (this.hasPermission('map', 'get')) {
+            routes.push(
+                {
+                    path: '', name: 'monitor',
+                    component: () => import(/* webpackChunkName: "map" */ '@/views/map/Monitor.vue')
+                },
+                {
+                    path: 'history', name: 'history',
+                    component: () => import(/* webpackChunkName: "map" */ '@/views/map/History.vue')
+                }
+            );
+        }
 
         if (this.hasPermission('map', 'put')) {
             routes.push({
@@ -254,18 +270,31 @@ export class RouteList {
             });
         }
 
-        this.routes.push({
-            path: 'monitor', children: routes,
-            component: () => import(/* webpackChunkName: "map" */ '@/views/map/MapIndex.vue')
-        });
+        if (routes.length) {
+            if (routes[0].path) {
+                routes[0].alias = '';
+            }
+
+            this.routes.push({
+                path: 'monitor', children: routes,
+                component: () => import(/* webpackChunkName: "map" */ '@/views/map/MapIndex.vue')
+            });
+        }
     }
 
     // 报警信息
     public alarm() {
-        this.routes.push({
-            path: 'alarm', name: 'alarm',
-            component: () => import(/* webpackChunkName: "alarm" */ '@/views/alarm/Alarm.vue')
-        });
+        if (this.hasPermission('alarm', 'get')) {
+            this.routes.push({
+                path: 'alarm', name: 'alarm',
+                component: () => import(/* webpackChunkName: "alarm" */ '@/views/alarm/Alarm.vue'),
+                props: {
+                    permission: {
+                        delete: this.hasPermission('alarm', 'delete')
+                    }
+                }
+            });
+        }
     }
 
     // 判断是否有权限

@@ -25,7 +25,7 @@
             "get": "all"
         },
         "protocol": {
-            "put": "all",
+            "put": "super",
             "delete": "all",
             "post": "all",
             "get": "all"

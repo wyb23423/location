@@ -73,9 +73,7 @@ export default class Aside extends Vue {
     public currTabs: TabItem[] = [];
 
     public created() {
-        this.currTabs = this.tabs.filter(
-            v => this.$router.resolve(v.to).resolved.name !== '404'
-        );
+        this.currTabs = this.parseTabs(this.tabs);
         this.modifyActiveIndex();
     }
 
@@ -101,6 +99,22 @@ export default class Aside extends Vue {
         }
 
         return tab.to;
+    }
+
+    private parseTabs(tabs: TabItem[]) {
+        const result: TabItem[] = [];
+        for (const v of tabs) {
+            if (v.children) {
+                const children = this.parseTabs(v.children);
+                if (children.length) {
+                    result.push({ ...v, children });
+                }
+            } else if (this.$router.resolve(v.to).resolved.name !== '404') {
+                result.push(v);
+            }
+        }
+
+        return result;
     }
 }
 </script>
