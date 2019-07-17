@@ -134,7 +134,7 @@ export default class Control extends Vue {
     // 切换路径显示状态
     public switchPathVisible(visible: boolean) {
         this.showPath = visible;
-        this.$emit('path', visible);
+        this.$emit('pathVisible', visible);
     }
     // 选择的标签及日期变化时的回调函数
     public change(data: any[] | null, isTag: boolean) {

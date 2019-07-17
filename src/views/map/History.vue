@@ -13,7 +13,7 @@
             @play="play"
             @progress="progress"
             @pause="pause"
-            @path="switchVisible"
+            @pathVisible="switchVisible"
         ></history-control>
     </div>
 </template>
@@ -24,6 +24,7 @@ import MapMixin from '@/mixins/map';
 import { FengMapMgr } from '@/assets/map/fengmap';
 import Control, { HistoryPath, PositionItem } from '@/components/Control.vue';
 import { WorkerObj } from '@/vue';
+import { randomColor } from '@/assets/utils/util';
 
 @Component({
     components: { 'history-control': Control }
@@ -35,6 +36,14 @@ export default class History extends mixins(MapMixin) {
     private index: { [x: string]: number } = {}; // 下一个数据点的索引
     private prevIndex: { [x: string]: number } = {}; // 上一次执行progress时的index
     private worker: WorkerObj = this.$worker.create();
+
+    private get timeRange() {
+        if (!this.date || this.date.length < 2) {
+            return 0;
+        }
+
+        return this.date[1].getTime() - this.date[0].getTime();
+    }
 
     public created() {
         this.worker.register({
@@ -148,8 +157,12 @@ export default class History extends mixins(MapMixin) {
         if (this.path && this.mgr) {
             if (visible) {
                 for (const v of this.path) {
+                    const points = [v.position[0]];
+                    for (let i = 1; i < v.position.length - 1; i += 100) {
+                        points.push(v.position[i]);
+                    }
                     this.mgr.addLine(
-                        v.position,
+                        points,
                         {
                             lineType: fengmap.FMLineType.FULL,
                             lineWidth: 2
@@ -161,14 +174,6 @@ export default class History extends mixins(MapMixin) {
                 this.mgr.removeLine();
             }
         }
-    }
-
-    private get timeRange() {
-        if (!this.date || this.date.length < 2) {
-            return 0;
-        }
-
-        return this.date[1].getTime() - this.date[0].getTime();
     }
 
     private start(x: number, y: number, i: number, pathItem: HistoryPath) {
