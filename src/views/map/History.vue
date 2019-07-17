@@ -14,6 +14,7 @@
             @progress="progress"
             @pause="pause"
             @pathVisible="switchVisible"
+            @loaded="isLoaded = true"
         ></history-control>
     </div>
 </template>
@@ -32,6 +33,7 @@ import { randomColor } from '@/assets/utils/util';
 export default class History extends mixins(MapMixin) {
     public date: Date[] | null = null; // 选择的时间范围
     public path: HistoryPath[] | null = null; // 路径数据
+    public isLoaded: boolean = false;
 
     private index: { [x: string]: number } = {}; // 下一个数据点的索引
     private prevIndex: { [x: string]: number } = {}; // 上一次执行progress时的index
@@ -83,6 +85,8 @@ export default class History extends mixins(MapMixin) {
     }
     // 开始播放
     public play(progress: number) {
+        this.isLoaded = false;
+
         if (this.path && this.mgr && this.date && this.date.length >= 2) {
             this.mgr.remove();
             this.prevIndex = {};
@@ -106,42 +110,52 @@ export default class History extends mixins(MapMixin) {
     }
     // 播放中
     public progress(progress: number) {
-        if (this.mgr && this.path) {
-            for (const v of this.path) {
+        if (!this.path) {
+            return;
+        }
+
+        for (const v of this.path) {
+            Promise.resolve().then(() => {
+                if (!this.mgr) {
+                    return;
+                }
+
                 const i = this.index[v.id] || 0;
                 const target = v.position[i];
                 const prev = v.position[i - 1];
 
-                if (!prev) {
-                    if (!this.date || this.date.length < 2) {
-                        return;
+                if (target) {
+                    if (!prev) {
+                        if (!this.date || this.date.length < 2) {
+                            return;
+                        }
+
+                        const playTime = (this.timeRange * progress) / 100;
+                        const startTime = target.time - this.date[0].getTime();
+
+                        if (playTime < startTime) {
+                            return;
+                        }
+
+                        this.start(target.x, target.y, i, v);
+                    } else if (this.prevIndex[v.id] !== i) {
+                        this.mgr.moveTo(
+                            v.id,
+                            {
+                                x: target.x,
+                                y: target.y
+                            },
+                            (target.time - prev.time) / 1000,
+                            undefined,
+                            () => this.index[v.id]++
+                        );
+
+                        this.prevIndex[v.id] = i;
                     }
-
-                    const playTime = (this.timeRange * progress) / 100;
-                    const startTime = target.time - this.date[0].getTime();
-
-                    if (playTime < startTime) {
-                        return;
-                    }
-
-                    this.start(target.x, target.y, i, v);
-                } else if (target && this.prevIndex[v.id] !== i) {
-                    this.mgr.moveTo(
-                        v.id,
-                        {
-                            x: target.x,
-                            y: target.y
-                        },
-                        (target.time - prev.time) / 1000,
-                        undefined,
-                        () => this.index[v.id]++
-                    );
-
-                    this.prevIndex[v.id] = i;
-                } else if (!target) {
+                } else if (this.isLoaded) {
                     this.mgr.remove(v.id);
                 }
-            }
+            });
         }
     }
 
@@ -158,9 +172,15 @@ export default class History extends mixins(MapMixin) {
             if (visible) {
                 for (const v of this.path) {
                     const points = [v.position[0]];
-                    for (let i = 1; i < v.position.length - 1; i += 100) {
+                    for (
+                        let i = 1;
+                        i < v.position.length - 1;
+                        i += Math.ceil(v.position.length / 300)
+                    ) {
                         points.push(v.position[i]);
                     }
+                    points.push(v.position[v.position.length - 1]);
+
                     this.mgr.addLine(
                         points,
                         {

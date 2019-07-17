@@ -76,6 +76,7 @@ import Component from 'vue-class-component';
 import Select from './Select.vue';
 import { formatTime } from '@/assets/utils/util';
 import { Prop } from 'vue-property-decorator';
+import { WorkerObj } from '@/vue';
 
 export interface PositionItem extends Vector3 {
     time: number;
@@ -190,34 +191,36 @@ export default class Control extends Vue {
     private parsePath(datas: ITagInfo[]) {
         this.isStart = true; // 禁止改变时间及标签
 
-        const path: { [id: string]: PositionItem[] } = {};
-        datas.forEach(v => {
-            const id = v.position[0];
-            const data: PositionItem = {
-                x: +v.position[1],
-                y: +v.position[2],
-                z: +v.position[3] || 0,
-                time: new Date(<string>v.time).getTime()
-            };
-            if (data.x >= 0 && data.y >= 0 && data.z >= 0) {
-                (path[id] || (path[id] = [])).push(data);
-            }
-        });
+        const currPath: HistoryPath[] = [];
+        const loadWorker = this.createWorker();
+        const loop = () => {
+            loadWorker
+                .postMessage('loadPath', [datas.splice(0, 1000), this.tags])
+                .then((fragment: HistoryPath[]) => {
+                    const isFirst = !currPath.length;
+                    if (fragment.length) {
+                        currPath.push(...fragment);
+                        this.$emit('update:path', currPath);
 
-        if (this.tags) {
-            const tmp: HistoryPath[] = [];
-            for (const [id, position] of Object.entries(path)) {
-                const tag = this.tags.find(v => v.id === id);
-                if (tag) {
-                    tmp.push({ id, position, icon: tag.data.photo });
-                }
-            }
+                        if (this.showPath) {
+                            this.$emit('pathVisible', false);
+                            this.$emit('pathVisible', true);
+                        }
 
-            if (tmp.length) {
-                this.$emit('update:path', tmp);
-                this._play();
-            }
-        }
+                        if (isFirst) {
+                            this._play();
+                        }
+
+                        loop();
+                    } else {
+                        this.$emit('loaded');
+                        loadWorker.close();
+                    }
+                })
+                .catch(console.log);
+        };
+
+        loop();
     }
 
     private _play() {
@@ -256,6 +259,58 @@ export default class Control extends Vue {
         }
 
         return this;
+    }
+
+    private createWorker() {
+        let worker: WorkerObj | null = this.$worker.create([
+            {
+                message: 'loadPath',
+                func(
+                    info: ITagInfo[],
+                    tags?: Array<{ id: string; data: ITag; name: string }>
+                ) {
+                    const path: { [id: string]: PositionItem[] } = {};
+                    info.forEach(v => {
+                        const id = v.position[0];
+                        const data: PositionItem = {
+                            x: +v.position[1],
+                            y: +v.position[2],
+                            z: +v.position[3] || 0,
+                            time: new Date(<string>v.time).getTime()
+                        };
+                        if (data.x >= 0 && data.y >= 0 && data.z >= 0) {
+                            (path[id] || (path[id] = [])).push(data);
+                        }
+                    });
+
+                    const tmp: HistoryPath[] = [];
+                    if (tags) {
+                        for (const id in path) {
+                            if (path.hasOwnProperty) {
+                                const position = path[id];
+                                const tag = tags.find(v => v.id === id);
+                                if (tag) {
+                                    tmp.push({
+                                        id,
+                                        position,
+                                        icon: tag.data.photo
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    return tmp;
+                }
+            }
+        ]);
+
+        return {
+            ...worker,
+            close() {
+                worker = null;
+            }
+        };
     }
 }
 </script>
