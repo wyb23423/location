@@ -129,6 +129,7 @@ declare namespace fengmap {
         drawLineMark(line: FMLineMarker, style: LineStyle): void;
         clearLineMark(): void;
         removeLineMarker(line: FMLineMarker): void;
+        updatePopPosition(w: FMPopInfoWindow): void;
 
         on(type: string, callback: (e: FMMapClickEvent) => void): void;
         dispose(): void;

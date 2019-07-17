@@ -9,6 +9,11 @@ import Group from '@/components/monitor/Group.vue';
 import Census from '@/components/monitor/Census.vue';
 import { FengMapMgr } from '@/assets/map/fengmap';
 
+interface Pop {
+    close(immediately?: boolean): void | true;
+    update?(): void;
+}
+
 @Component({
     components: {
         Zone,
@@ -34,7 +39,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
     private ws: WebSocket[] = [];
     private renderTags: { [x: string]: number } = {}; // 已经在地图上的标签, {tagNo: timer}
 
-    private closePops: Map<string, (immediately?: boolean) => void | true> = new Map(); // 关闭标签信息的函数
+    private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
 
     public created() {
         Promise.all(['tag', 'zone'].map(async v => {
@@ -106,11 +111,11 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
             return this.$message.warning('请输入标签号');
         }
 
-        if (this.mgr && !this.closePops.has(this.findTarget)) {
+        if (this.mgr && !this.pops.has(this.findTarget)) {
             const tag = this.mgr.findSprite(this.findTarget);
 
             if (tag) {
-                this.closePops.set(this.findTarget, this.mgr.addPopInfo(tag));
+                this.pops.set(this.findTarget, this.mgr.addPopInfo(tag));
             } else {
                 this.$message.info(`未找到标签号为${this.findTarget}的标签`);
             }
@@ -142,12 +147,15 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                     && event.target.custom && event.target.custom.info.tagNo
                 ) {
                     const tagNo = event.target.custom.info.tagNo;
-                    if (!this.closePops.has(tagNo)) {
-                        this.closePops.set(tagNo, this.mgr.addPopInfo(event.target));
+                    if (!this.pops.has(tagNo)) {
+                        this.pops.set(tagNo, this.mgr.addPopInfo(event.target));
                     }
                 } else {
-                    this.closePops.forEach(fn => fn());
-                    this.closePops.clear();
+                    for (const [k, p] of this.pops.entries()) {
+                        if (p.close()) {
+                            this.pops.delete(k);
+                        }
+                    }
                 }
             }
         });
@@ -275,24 +283,13 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
 
             if (timer) {
                 clearTimeout(timer);
-                this.mgr.show(tag.sTagNo, true);
 
-                // const reg = new RegExp(`编号:\\s*${tag.sTagNo}`);
-                this.mgr.moveTo(tag.sTagNo, coord, 1, (v: Vector2) => {
-                    // const pop =
-                    //     <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('fm-control-popmarker');
-                    // if (pop) {
-                    //     for (const el of pop) {
-                    //         if (reg.test(el.innerHTML)) {
-                    //             Object.assign(el.style, {
-                    //                 transition: 'all 120ms ease-out',
-                    //                 left: v.x + 'px',
-                    //                 top: v.y - 40 + 'px',
-                    //                 transform: 'translate(-50%, -100%)'
-                    //             });
-                    //         }
-                    //     }
-                    // }
+                this.mgr.show(tag.sTagNo, true);
+                this.mgr.moveTo(tag.sTagNo, coord, 1, () => {
+                    const p = this.pops.get(tag.sTagNo);
+                    if (p && p.update) {
+                        p.update();
+                    }
                 });
             } else {
                 // 第一次收到信号

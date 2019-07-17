@@ -381,10 +381,12 @@ export class PIXIMgr extends MapEvent {
             img.addChild(text);
         }
 
-        return () => {
-            img.removeChild(triangle);
-            if (text) {
-                img.removeChild(text);
+        return {
+            close: () => {
+                img.removeChild(triangle);
+                if (text) {
+                    img.removeChild(text);
+                }
             }
         };
     }

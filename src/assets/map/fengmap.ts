@@ -391,15 +391,21 @@ export class FengMapMgr extends CoordTransformer {
         }
 
         const createTime = Date.now();
-        return (immediately?: boolean) => {
-            if (pop && (immediately || Date.now() - createTime >= 200)) {
-                try {
-                    pop.close();
-                } catch (e) {
-                    //
-                }
 
-                return true;
+        return {
+            update: () => {
+                this.map.updatePopPosition(pop);
+            },
+            close: (immediately?: boolean) => {
+                if (pop && (immediately || Date.now() - createTime >= 200)) {
+                    try {
+                        pop.close();
+                    } catch (e) {
+                        //
+                    }
+
+                    return true;
+                }
             }
         };
     }
