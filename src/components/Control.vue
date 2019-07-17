@@ -161,6 +161,8 @@ export default class Control extends Vue {
                 this._play();
             } else if (this.tags) {
                 // 重新获取历史记录
+                this.isStart = true; // 禁止改变时间及标签
+
                 this.$http
                     .post({
                         url: '/api/tag/queryTagHistory',
@@ -181,7 +183,10 @@ export default class Control extends Vue {
                         return Promise.resolve(datas);
                     })
                     .then(this.parsePath.bind(this))
-                    .catch((e: any) => this.$message.error('未查询到历史轨迹'));
+                    .catch((e: any) => {
+                        this.$message.error('未查询到历史轨迹');
+                        this.isStart = false;
+                    });
             } else {
                 this.$message.warning('请选择标签');
             }
@@ -189,25 +194,26 @@ export default class Control extends Vue {
     }
 
     private parsePath(datas: ITagInfo[]) {
-        this.isStart = true; // 禁止改变时间及标签
-
         const currPath: HistoryPath[] = [];
-        const loadWorker = this.createWorker();
+        const loadWorker = this.createWorker(); // 将处理返回数据的计算放到worker中执行
+
+        // 分段处理返回的历史记录
         const loop = () => {
             loadWorker
                 .postMessage('loadPath', [datas.splice(0, 1000), this.tags])
                 .then((fragment: HistoryPath[]) => {
-                    const isFirst = !currPath.length;
                     if (fragment.length) {
                         currPath.push(...fragment);
                         this.$emit('update:path', currPath);
 
+                        // 绘制路径
                         if (this.showPath) {
                             this.$emit('pathVisible', false);
                             this.$emit('pathVisible', true);
                         }
 
-                        if (isFirst) {
+                        // 开始播放
+                        if (currPath.length === fragment.length) {
                             this._play();
                         }
 
