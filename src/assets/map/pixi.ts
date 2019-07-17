@@ -368,6 +368,7 @@ export class PIXIMgr extends MapEvent {
         ]);
 
         triangle.position.y = -45;
+        triangle.alpha = 0.7;
         img.addChild(triangle);
 
         let text: PIXI.Text;
@@ -376,6 +377,7 @@ export class PIXIMgr extends MapEvent {
             text = new PIXI.Text(`名字: ${info.tagName}\n\n编号: ${info.tagNo}`, { fontSize: 12 });
             text.anchor.y = 0.5;
             text.position.set(-70, -80);
+            text.alpha = 0.7;
             img.addChild(text);
         }
 

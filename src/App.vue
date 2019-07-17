@@ -22,10 +22,7 @@ export default class App extends Vue {
         const isLogin = sessionStorage.getItem('login');
         if (isLogin && +isLogin) {
             initRouter();
-            this.$router.push({
-                name: this.$router.currentRoute.name,
-                replace: true
-            });
+            this.$router.replace(this.$router.currentRoute.path);
         }
         // this.scaleRoot();
         // window.addEventListener('resize', this.scaleRoot.bind(this), false);

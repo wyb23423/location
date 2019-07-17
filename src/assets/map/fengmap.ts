@@ -380,7 +380,7 @@ export class FengMapMgr extends CoordTransformer {
                 this.map,
                 {
                     width: 180,
-                    height: 70,
+                    height: 60,
                     content: `<div>
                                 <div>名字: ${info.tagName}</div>
                                 <div>编号: ${info.tagNo}</div>

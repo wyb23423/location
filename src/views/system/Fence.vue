@@ -50,6 +50,7 @@
                         <el-select v-model="form.mode" placeholder="请选择">
                             <el-option label="进入区域" :value="0"></el-option>
                             <el-option label="离开区域" :value="1"></el-option>
+                            <el-option label="切换区域" :value="2"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item

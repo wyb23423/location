@@ -155,6 +155,40 @@ export function getPosition(e: MouseEvent | TouchEvent) {
 }
 
 /**
+ * 讲一个时间段转化为"dd:hh:mm:ss"的形式
+ * @param range 时间范围
+ * @param progress 需转化的时间占range的比例
+ */
+export function formatTime(range: number, progress: number) {
+    if (!range) {
+        return '00:00';
+    }
+    let time = (range * progress) / 100;
+
+    const DAY_MS: number = 86400000;
+    const HOUR_MS: number = 3600000;
+    const MINUTE_MS: number = 60000;
+
+    const day = Math.floor(time / DAY_MS);
+    time = time % DAY_MS;
+
+    const hour = Math.floor(time / HOUR_MS);
+    time = time % HOUR_MS;
+
+    const minute = Math.floor(time / MINUTE_MS);
+    time = time % MINUTE_MS;
+
+    const tip: number[] = [minute, Math.round(time / 1000)];
+    if (day > 0) {
+        tip.unshift(day, hour);
+    } else if (hour > 0) {
+        tip.unshift(hour);
+    }
+
+    return tip.map((v, i) => (i ? v.toString().padStart(2, '0') : v)).join(':');
+}
+
+/**
  * 为方法添加try-catch块
  * @param errorHandler 出错时的处理函数
  */

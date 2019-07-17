@@ -137,3 +137,13 @@ declare interface Permission {
     put?: boolean;
     get?: boolean;
 }
+
+declare interface ITagInfo {
+    sGroupNo: string;
+    iBbattery: number;
+    alarm: string;
+    iHeartRate: number;
+    position: string[];
+    sTagNo: string;
+    time?: string;
+}

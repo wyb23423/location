@@ -8,6 +8,8 @@
         </div>
         <div ref="map" style="height: 100%; overflow: hidden"></div>
         <history-control
+            :date.sync="date"
+            :path.sync="path"
             @play="play"
             @progress="progress"
             @pause="pause"
@@ -20,45 +22,46 @@
 import Component, { mixins } from 'vue-class-component';
 import MapMixin from '@/mixins/map';
 import { FengMapMgr } from '@/assets/map/fengmap';
-import Control from '@/components/Control.vue';
+import Control, { HistoryPath, PositionItem } from '@/components/Control.vue';
 import { WorkerObj } from '@/vue';
 
 @Component({
     components: { 'history-control': Control }
 })
 export default class History extends mixins(MapMixin) {
-    private path: any[][] = []; // 路径数据 [id, [[x, y, z, time], ...], icon]
+    public date: Date[] | null = null; // 选择的时间范围
+    public path: HistoryPath[] | null = null; // 路径数据
+
     private index: { [x: string]: number } = {}; // 下一个数据点的索引
     private prevIndex: { [x: string]: number } = {}; // 上一次执行progress时的index
-
     private worker: WorkerObj = this.$worker.create();
 
     public created() {
         this.worker.register({
             message: 'calcPosition',
-            func: (pointsData: number[][], targetTime: number) => {
-                let i: number = pointsData.findIndex(
-                    (p: number[]) => p[3] - pointsData[0][3] >= targetTime
+            func: (
+                pointsData: PositionItem[],
+                targetTime: number,
+                startTime: number
+            ) => {
+                const i: number = pointsData.findIndex(
+                    p => p.time - startTime >= targetTime
                 );
 
                 let x: number = 0;
                 let y: number = 0;
                 if (i > -1) {
-                    const point1: number[] = pointsData[i];
-                    const point0: number[] = pointsData[i - 1] || [0, 0, 0];
+                    const point1 = pointsData[i];
+                    const point0 = pointsData[i - 1] || { x: 0, y: 0, z: 0 };
 
                     const ratio: number =
-                        point0[3] != null
-                            ? (targetTime - point0[3] + pointsData[0][3]) /
-                              (point1[3] - point0[3])
+                        point0.time != null
+                            ? (targetTime - point0.time + pointsData[0].time) /
+                              (point1.time - point0.time)
                             : 1;
 
-                    x = (point1[0] - point0[0]) * ratio + +point0[0];
-                    y = (point1[1] - point0[1]) * ratio + +point0[1];
-                } else {
-                    i = pointsData.length - 1;
-                    x = +pointsData[i][0];
-                    y = +pointsData[i][1];
+                    x = (point1.x - point0.x) * ratio + point0.x;
+                    y = (point1.y - point0.y) * ratio + point0.y;
                 }
 
                 return { x, y, i };
@@ -69,63 +72,65 @@ export default class History extends mixins(MapMixin) {
     public destroyed() {
         Reflect.set(this, 'worker', null);
     }
-
     // 开始播放
-    public play(progress: number, timeRange: number, path: any[][]) {
-        this.path = path || this.path;
-
-        if (this.path && this.mgr) {
+    public play(progress: number) {
+        if (this.path && this.mgr && this.date && this.date.length >= 2) {
             this.mgr.remove();
             this.prevIndex = {};
 
-            const targetTime: number = (timeRange * progress) / 100;
+            const targetTime: number = (this.timeRange * progress) / 100;
             for (const v of this.path) {
                 this.worker
-                    .postMessage('calcPosition', [v[1], targetTime])
+                    .postMessage('calcPosition', [
+                        v.position,
+                        targetTime,
+                        this.date[0].getTime()
+                    ])
                     .then(({ x, y, i }) => {
-                        if (this.mgr) {
-                            this.mgr.addImage(
-                                {
-                                    x,
-                                    y,
-                                    height: 0.5,
-                                    url: v[2],
-                                    size: 48
-                                },
-                                v[0],
-                                undefined,
-                                false
-                            );
+                        if (i > 0) {
+                            this.start(x, y, i, v);
                         }
-
-                        this.index[v[0]] = i + 1;
                     })
                     .catch(console.error);
             }
         }
     }
-
     // 播放中
-    public progress() {
-        if (this.mgr) {
+    public progress(progress: number) {
+        if (this.mgr && this.path) {
             for (const v of this.path) {
-                const i = this.index[v[0]] || 0;
-                const target = v[1][i];
-                const prev = v[1][i - 1];
+                const i = this.index[v.id] || 0;
+                const target = v.position[i];
+                const prev = v.position[i - 1];
 
-                if (target && prev && this.prevIndex[v[0]] !== i) {
+                if (!prev) {
+                    if (!this.date || this.date.length < 2) {
+                        return;
+                    }
+
+                    const playTime = (this.timeRange * progress) / 100;
+                    const startTime = target.time - this.date[0].getTime();
+
+                    if (playTime < startTime) {
+                        return;
+                    }
+
+                    this.start(target.x, target.y, i, v);
+                } else if (target && this.prevIndex[v.id] !== i) {
                     this.mgr.moveTo(
-                        v[0],
+                        v.id,
                         {
-                            x: +target[0],
-                            y: +target[1]
+                            x: target.x,
+                            y: target.y
                         },
-                        (target[3] - prev[3]) / 1000,
+                        (target.time - prev.time) / 1000,
                         undefined,
-                        () => this.index[v[0]]++
+                        () => this.index[v.id]++
                     );
 
-                    this.prevIndex[v[0]] = i;
+                    this.prevIndex[v.id] = i;
+                } else if (!target) {
+                    this.mgr.remove(v.id);
                 }
             }
         }
@@ -143,24 +148,45 @@ export default class History extends mixins(MapMixin) {
         if (this.path && this.mgr) {
             if (visible) {
                 for (const v of this.path) {
-                    const points: Vector3[] = v[1].map((p: string[]) => ({
-                        x: +p[0],
-                        y: +p[1],
-                        z: +p[2]
-                    }));
-
                     this.mgr.addLine(
-                        points,
+                        v.position,
                         {
                             lineType: fengmap.FMLineType.FULL,
                             lineWidth: 2
                         },
-                        v[0]
+                        v.id
                     );
                 }
             } else {
                 this.mgr.removeLine();
             }
+        }
+    }
+
+    private get timeRange() {
+        if (!this.date || this.date.length < 2) {
+            return 0;
+        }
+
+        return this.date[1].getTime() - this.date[0].getTime();
+    }
+
+    private start(x: number, y: number, i: number, pathItem: HistoryPath) {
+        if (this.mgr) {
+            this.mgr.addImage(
+                {
+                    x,
+                    y,
+                    height: 0.5,
+                    url: pathItem.icon,
+                    size: 48
+                },
+                pathItem.id,
+                undefined,
+                false
+            );
+
+            this.index[pathItem.id] = i + 1;
         }
     }
 }
