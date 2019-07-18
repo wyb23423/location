@@ -1,8 +1,6 @@
 /**
  * 将实际坐标与地图坐标相互转化
  */
-/// <reference path="../../types/fengmap.d.ts" />
-
 interface TransformOptions {
     locOrigion: Vector2;
     mapOrigin: Vector2;
@@ -26,8 +24,7 @@ export class CoordTransformer {
     public mapRange: Vector2 = { x: 0, y: 0 }; // 映射地图大小
 
     // tslint:disable-next-line: variable-name
-    protected _locRange?: Vector2;
-
+    private _locRange?: Vector2;
     private mapAxisX: Vector2 = { x: 0, y: 0 }; // x轴单位向量
     private mapAxisY: Vector2 = { x: 0, y: 0 }; // y轴单位向量
 
@@ -39,6 +36,18 @@ export class CoordTransformer {
         } else {
             console.error('地图范围只能设置一次');
         }
+    }
+
+    public parseCood(data: Vector23 | Vector23[]) {
+        if (this._locRange && this.margin) {
+            if (Array.isArray(data)) {
+                return data.map(this.transform.bind(this));
+            }
+
+            return this.transform(data);
+        }
+
+        console.error('地图范围错误');
     }
 
     /**

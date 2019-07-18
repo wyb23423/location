@@ -2,7 +2,7 @@
  * pixi地图的缩放及移动事件
  */
 
-import { getPosition } from '../utils/util';
+import { getPosition } from '@/assets/utils/util';
 import * as PIXI from 'pixi.js';
 
 export class MapEvent {
@@ -11,7 +11,7 @@ export class MapEvent {
         return Math.sqrt(Math.pow((stop.x - start.x), 2) + Math.pow((stop.y - start.y), 2));
     }
 
-    protected stage: PIXI.Container = new PIXI.Container();
+    protected stage: PIXI.Container = new PIXI.Container(); // 场景舞台
 
     // 用于平移
     private downX: number = 0;
@@ -20,6 +20,8 @@ export class MapEvent {
     private startDistance: number = 0; // 用于缩放
 
     constructor(root: HTMLElement) {
+        this.stage.interactive = true;
+
         // ======================================滚动缩放
         root.addEventListener('mousewheel', <EventListener>this.onMouseWheel, false);
         root.addEventListener('DOMMouseScroll', <EventListener>this.onMouseWheel, false);

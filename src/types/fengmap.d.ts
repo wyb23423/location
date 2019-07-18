@@ -95,6 +95,7 @@ interface LineStyle {
     lineType: string;
     lineWidth: number;
     color?: string;
+    colorNum?: number;
     smooth?: boolean;
     godColor?: string;
     godEdgeColor?: string;
@@ -142,6 +143,7 @@ declare namespace fengmap {
 
     class FMMarker<T> {
         public custom?: any;
+        public groupID: number;
         // tslint:disable:variable-name
         public _x: number;
         public _y: number;

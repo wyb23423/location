@@ -39,7 +39,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
     private ws: WebSocket[] = [];
     private renderTags: { [x: string]: number } = {}; // 已经在地图上的标签, {tagNo: timer}
 
-    private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
+    private pops: Map<string, Pop[]> = new Map(); // 关闭标签信息的函数
 
     public created() {
         Promise.all(['tag', 'zone'].map(async v => {
@@ -112,10 +112,12 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         }
 
         if (this.mgr && !this.pops.has(this.findTarget)) {
-            const tag = this.mgr.findSprite(this.findTarget);
+            const tags = this.mgr.find(this.findTarget);
 
-            if (tag) {
-                this.pops.set(this.findTarget, this.mgr.addPopInfo(tag));
+            if (tags) {
+                const arr = this.pops.get(this.findTarget) || [];
+                arr.push(...tags.map(tag => this.mgr!.addPopInfo(tag)));
+                this.pops.set(this.findTarget, arr);
             } else {
                 this.$message.info(`未找到标签号为${this.findTarget}的标签`);
             }
@@ -137,7 +139,6 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                     this.initWebSoket();
                 });
             }
-
         });
 
         this.mgr!.on('mapClickNode', (event: FMMapClickEvent) => {
@@ -148,11 +149,19 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                 ) {
                     const tagNo = event.target.custom.info.tagNo;
                     if (!this.pops.has(tagNo)) {
-                        this.pops.set(tagNo, this.mgr.addPopInfo(event.target));
+                        const arr = this.pops.get(this.findTarget) || [];
+                        arr.push(this.mgr.addPopInfo(<any>event.target));
+                        this.pops.set(this.findTarget, arr);
                     }
                 } else {
                     for (const [k, p] of this.pops.entries()) {
-                        if (p.close()) {
+                        for (let i = p.length - 1; i >= 0; i--) {
+                            if (p[i].close()) {
+                                p.splice(i, 1);
+                            }
+                        }
+
+                        if (!p.length) {
                             this.pops.delete(k);
                         }
                     }
@@ -287,8 +296,8 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                 this.mgr.show(tag.sTagNo, true);
                 this.mgr.moveTo(tag.sTagNo, coord, 1, () => {
                     const p = this.pops.get(tag.sTagNo);
-                    if (p && p.update) {
-                        p.update();
+                    if (p) {
+                        p.forEach(v => v.update && v.update());
                     }
                 });
             } else {
@@ -297,12 +306,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                     ...this.tagAll[tag.sTagNo],
                     name: tag.sTagNo,
                     tagName: this.tagAll[tag.sTagNo].name,
-                    ...coord,
-                    callback(im: any) {
-                        if (im.alwaysShow) {
-                            im.alwaysShow();
-                        }
-                    }
+                    ...coord
                 };
 
                 const ids = (<any>this.mgr.map).groupIDs;
@@ -313,9 +317,10 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
             this.renderTags[tag.sTagNo] = setTimeout(() => {
                 this.$notify.warning(`标签${tag.sTagNo}异常。\n信号丢失!`);
 
-                // delete this.renderTags[tag.sTagNo];
                 if (this.mgr) {
                     this.mgr.show(tag.sTagNo, false);
+                    (this.pops.get(tag.sTagNo) || []).forEach(v => v.close(true));
+                    this.pops.delete(tag.sTagNo);
                 }
             }, LOSS_TIME);
         }

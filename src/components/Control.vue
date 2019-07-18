@@ -195,7 +195,7 @@ export default class Control extends Vue {
 
     private parsePath(datas: ITagInfo[]) {
         const currPath: HistoryPath[] = [];
-        const loadWorker = this.createWorker(); // 将处理返回数据的计算放到worker中执行
+        let loadWorker: any = this.createWorker(); // 将处理返回数据的计算放到worker中执行
 
         // 分段处理返回的历史记录
         const loop = () => {
@@ -203,7 +203,14 @@ export default class Control extends Vue {
                 .postMessage('loadPath', [datas.splice(0, 1000), this.tags])
                 .then((fragment: HistoryPath[]) => {
                     if (fragment.length) {
-                        currPath.push(...fragment);
+                        for (const v of fragment) {
+                            const f = currPath.find(p => p.id === v.id);
+                            if (f) {
+                                f.position.push(...v.position);
+                            } else {
+                                currPath.push(v);
+                            }
+                        }
                         this.$emit('update:path', currPath);
 
                         // 绘制路径
@@ -216,11 +223,14 @@ export default class Control extends Vue {
                         if (currPath.length === fragment.length) {
                             this._play();
                         }
+                    }
 
+                    if (datas.length) {
                         loop();
                     } else {
                         this.$emit('loaded');
                         loadWorker.close();
+                        loadWorker = null;
                     }
                 })
                 .catch(console.log);
