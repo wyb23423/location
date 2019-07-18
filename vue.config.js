@@ -32,5 +32,10 @@ module.exports = {
                 target: PROXY_TARGET
             }
         }
+    },
+    configureWebpack: {
+        performance: {
+            hints: false
+        }
     }
 }

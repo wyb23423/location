@@ -3,22 +3,22 @@
  * 只声明了项目中需要用的
  */
 
-import * as PIXI from 'pixi.js';
+import { Sprite, utils } from 'pixi.js';
 
 declare module 'pixi.js' {
-    const actionManager: ActionManager;
-    const action: AcyionModule;
+    export const actionManager: ActionManager;
+    export const action: ActionModule;
 }
 
 interface ActionManager {
     actions: { [is: string]: Animation };
 
     update(delta?: number): void;
-    runAction(sprite: PIXI.Sprite, action: Action): Animation;
+    runAction(sprite: Sprite, action: Action): Animation;
     cancelAction(animation: Animation): void;
 }
 
-interface AcyionModule {
+interface ActionModule {
     MoveTo: ActionConstructor<BaseAction>;
     MoveBy: ActionConstructor<BaseAction>;
     ScaleTo: ActionConstructor<BaseAction>;
@@ -43,17 +43,17 @@ interface AcyionModule {
     CallFunc: ActionConstructor<CallFuncAction>;
 }
 
-interface Animation extends PIXI.utils.EventEmitter {
+interface Animation extends utils.EventEmitter {
     isEnded(): boolean;
     update(delta: number, deltaMS: number): void;
 }
-type AnimationConstructor = new (sprite: PIXI.Sprite, action: Action) => Animation;
+type AnimationConstructor = new (sprite: Sprite, action: Action) => Animation;
 declare const Animation: AnimationConstructor;
 
 interface Action {
     time: number;
     reset(): void;
-    update(sprite: PIXI.Sprite, delta: number, deltaMS: number): boolean;
+    update(sprite: Sprite, delta: number, deltaMS: number): boolean;
 }
 
 interface BaseAction extends Action {

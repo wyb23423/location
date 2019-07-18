@@ -3,8 +3,8 @@
         <el-table
             :data="tableData"
             :border="true"
-            :header-row-class-name="$style.thead"
             :max-height="maxHeight"
+            header-row-class-name="table-thead"
             style="margin-bottom: 10px"
         >
             <el-table-column
@@ -141,14 +141,3 @@ function parseOpItem(item: OperationItem, index: number) {
 }
 </script>
 
-<style lang="postcss" module>
-.thead {
-    font-weight: bold;
-    font-size: 18px;
-    color: #000;
-
-    & th {
-        background: #eee !important;
-    }
-}
-</style>
