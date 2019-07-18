@@ -149,9 +149,9 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                 ) {
                     const tagNo = event.target.custom.info.tagNo;
                     if (!this.pops.has(tagNo)) {
-                        const arr = this.pops.get(this.findTarget) || [];
+                        const arr = this.pops.get(tagNo) || [];
                         arr.push(this.mgr.addPopInfo(<any>event.target));
-                        this.pops.set(this.findTarget, arr);
+                        this.pops.set(tagNo, arr);
                     }
                 } else {
                     for (const [k, p] of this.pops.entries()) {
