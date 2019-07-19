@@ -23,13 +23,6 @@ export default class App extends Vue {
         // window.addEventListener('resize', this.scaleRoot.bind(this), false);
     }
 
-    public created() {
-        const isLogin = sessionStorage.getItem('login');
-        if (isLogin && +isLogin) {
-            initRouter();
-        }
-    }
-
     private scaleRoot() {
         if (!this.timer) {
             this.timer = setTimeout(() => {
