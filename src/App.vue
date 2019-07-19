@@ -19,13 +19,15 @@ export default class App extends Vue {
     private timer: any = null;
 
     public mounted() {
+        // this.scaleRoot();
+        // window.addEventListener('resize', this.scaleRoot.bind(this), false);
+    }
+
+    public created() {
         const isLogin = sessionStorage.getItem('login');
         if (isLogin && +isLogin) {
             initRouter();
-            this.$router.replace(this.$router.currentRoute.path);
         }
-        // this.scaleRoot();
-        // window.addEventListener('resize', this.scaleRoot.bind(this), false);
     }
 
     private scaleRoot() {

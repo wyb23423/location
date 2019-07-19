@@ -20,9 +20,8 @@ const router = new Router({
 });
 
 // 根据权限初始化路由
-export function initRouter(role?: string) {
-  role = role || localStorage.getItem('admin_role') || 'normal';
-  const routes = new RouteList(<string>role).routes;
+export function initRouter() {
+  const routes = new RouteList().routes;
 
   router.addRoutes([
     {

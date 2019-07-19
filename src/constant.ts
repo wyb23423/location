@@ -14,6 +14,18 @@ export const DEFAULT_WIDTH: number = 1600; // 屏幕默认宽度
 export const SX_WIDTH: number = 768; // 小屏宽度
 export const LOSS_TIME: number = 10000; // 用于判断信号是否丢失
 
+// 全部权限
+export const ALL_PERMISSION = {
+    admin: { put: true, delete: true, post: true, get: true },
+    fence: { put: true, delete: true, post: true, get: true },
+    camera: { put: true, delete: true, post: true, get: true },
+    protocol: { put: true, delete: true, post: true, get: true },
+    base: { put: true, delete: true, post: true, get: true },
+    people: { put: true, delete: true, post: true, get: true },
+    map: { put: true, delete: true, post: true, get: true },
+    alarm: { put: true, delete: true, post: true, get: true }
+};
+
 // 开发者申请应用下web服务的key
 export let APP_KEY: string = '83a75157d56ffe85317ed7ba1e8120ff';
 // 开发者申请应用名称

@@ -93,16 +93,19 @@ export default class Login extends Vue {
                             const admin = res.pagedData
                                 ? res.pagedData.datas[0]
                                 : null;
-                            return admin ? admin.role : 'normal';
+
+                            return Promise.resolve(
+                                admin ? JSON.stringify(admin) : ''
+                            );
                         } else {
                             return Promise.reject({
                                 message: '账号或密码错误, 登陆失败!'
                             });
                         }
                     })
-                    .then((role: string) => {
-                        sessionStorage.setItem('admin_role', role);
-                        initRouter(role);
+                    .then((user: string) => {
+                        user && sessionStorage.setItem('user', user);
+                        initRouter();
 
                         this.$router.push('/');
                     })

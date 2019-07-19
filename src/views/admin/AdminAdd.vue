@@ -48,20 +48,8 @@
             <el-form-item label="工号：" prop="workNo">
                 <el-input v-model="form.workNo"></el-input>
             </el-form-item>
-            <el-form-item
-                label="权限"
-                prop="role"
-                :inline-message="true"
-                v-if="!!roles.length"
-            >
-                <el-select v-model="form.role">
-                    <el-option
-                        v-for="v of roles"
-                        :key="v[0]"
-                        :value="v[0]"
-                        :label="v[1]"
-                    ></el-option>
-                </el-select>
+            <el-form-item label="系统权限">
+                <permission ref="permission"></permission>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="onSubmit">立即创建</el-button>
@@ -75,8 +63,13 @@
 import Component from 'vue-class-component';
 import Vue from 'vue';
 import { ElForm } from 'element-ui/types/form';
+import Permission from '@/components/Permission.vue';
 
-@Component
+@Component({
+    components: {
+        permission: Permission
+    }
+})
 export default class AdminAdd extends Vue {
     public form = {
         adminName: '',
@@ -87,24 +80,13 @@ export default class AdminAdd extends Vue {
         job: '',
         level: 'T1',
         phone: '',
-        workNo: '',
-        role: 'supser'
+        workNo: ''
     };
     public rules = {};
-    public roles: string[][] = [];
 
     public created() {
-        let config: any = sessionStorage.getItem('config');
-        if (config) {
-            config = JSON.parse(config).roles;
-            if (config) {
-                this.roles = Object.entries(config);
-            }
-        }
-        this.form.role = this.roles[0] ? this.roles[0][0] : 'super';
-
         Object.keys(this.form).forEach(k => {
-            if (k !== 'sex' && k !== 'level' && k !== 'role') {
+            if (k !== 'sex' && k !== 'level') {
                 const rules: any[] = [
                     {
                         required: true,
@@ -132,7 +114,10 @@ export default class AdminAdd extends Vue {
                 const now = Date.now();
                 const data = Object.assign({}, this.form, {
                     createTime: now,
-                    updateTime: now
+                    updateTime: now,
+                    role: JSON.stringify(
+                        (<Permission>this.$refs.permission).parse()
+                    )
                 });
 
                 this.$http
@@ -146,6 +131,9 @@ export default class AdminAdd extends Vue {
     }
 
     public reset() {
+        console.log(
+            JSON.stringify((<Permission>this.$refs.permission).parse())
+        );
         (<ElForm>this.$refs.form).resetFields();
     }
 }

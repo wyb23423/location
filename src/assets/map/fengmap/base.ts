@@ -23,7 +23,7 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
         } else if (this.markers.has(name)) {
             (<T[]>this.markers.get(name)).forEach(v => {
                 const layer = this.findLayerByMarker(v);
-                layer && layer.addMarker(v);
+                layer && layer.removeMarker(v);
             });
             this.markers.delete(name);
         }
@@ -74,12 +74,17 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
 
     protected save(marker: T, name: string | number, layerName: string, gid: number) {
         // 获取layer
-        let layer = this.layers.get(layerName);
+        gid = gid == null
+            ? this.map.focusGroupID == null
+                ? this.map.groupIDs[0]
+                : this.map.focusGroupID
+            : gid;
+
+        let layer = this.layers.get(layerName + gid);
         if (!layer) {
-            gid = gid == null ? this.map.focusGroupID : gid;
-            const group = this.map.getFMGroup(gid == null ? this.map.groupIDs[0] : gid);
+            const group = this.map.getFMGroup(gid);
             layer = group.getOrCreateLayer(layerName);
-            this.layers.set(layerName, layer);
+            this.layers.set(layerName + gid, layer);
         }
 
         // 将layerName绑定到marker上
@@ -95,7 +100,7 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
 
     private findLayerByMarker(marker: T) {
         if (marker.custom && marker.custom.layerName) {
-            const layer = this.layers.get(marker.custom);
+            const layer = this.layers.get(marker.custom.layerName + marker.groupID);
             if (layer) {
                 return layer;
             } else {

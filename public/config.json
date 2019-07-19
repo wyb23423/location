@@ -7,58 +7,54 @@
     },
     "system": {
         "admin": {
-            "put": "super",
-            "delete": "super",
-            "post": "super",
+            "put": "all",
+            "delete": "all",
+            "post": "all",
             "get": "all"
         },
         "fence": {
-            "put": "super",
-            "delete": "super",
-            "post": "super",
+            "put": "all",
+            "delete": "all",
+            "post": "all",
             "get": "all"
         },
         "camera": {
-            "put": "super",
-            "delete": "super",
-            "post": "super",
+            "put": "all",
+            "delete": "all",
+            "post": "all",
             "get": "all"
         },
         "protocol": {
-            "put": "super",
-            "delete": "super",
-            "post": "super",
+            "put": "all",
+            "delete": "all",
+            "post": "all",
             "get": "all"
         },
         "base": {
-            "put": [
-                "super"
-            ],
-            "delete": [
-                "super"
-            ],
-            "post": "super",
+            "put": "all",
+            "delete": "all",
+            "post": "all",
             "get": "all"
         },
         "people": {
-            "put": "super",
-            "delete": "super",
-            "post": "super",
+            "put": "all",
+            "delete": "all",
+            "post": "all",
             "get": "all"
         },
         "map": {
-            "put": "super",
-            "delete": "super",
-            "post": "super",
+            "put": "all",
+            "delete": "all",
+            "post": "all",
             "get": [
                 "super",
                 "normal"
             ]
         },
         "alarm": {
-            "put": "super",
-            "delete": "super",
-            "post": "super",
+            "put": "all",
+            "delete": "all",
+            "post": "all",
             "get": "all"
         }
     }

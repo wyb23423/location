@@ -2,21 +2,21 @@
  * 权限相关
  */
 import { RouteConfig, Route } from 'vue-router/types/router';
+import { ALL_PERMISSION } from '@/constant';
 
 export class RouteList {
     public routes: RouteConfig[] = [];
+    private roles: IJson = ALL_PERMISSION;
 
-    private systemRoles: any = {};
-
-    constructor(private role: string) {
-        const data = sessionStorage.getItem('config');
-        if (data) {
-            this.systemRoles = JSON.parse(data).system;
-
-            ['admin', 'system', 'base', 'people', 'map', 'alarm'].forEach(v => {
-                Reflect.get(this, v).call(this);
-            });
+    constructor() {
+        const user = sessionStorage.getItem('user');
+        if (user) {
+            this.roles = JSON.parse(JSON.parse(user).role);
         }
+
+        ['admin', 'system', 'base', 'people', 'map', 'alarm'].forEach(v => {
+            Reflect.get(this, v).call(this);
+        });
     }
 
     // 生成管理员相关路由
@@ -304,15 +304,7 @@ export class RouteList {
 
     // 判断是否有权限
     private hasPermission(item: string, method: string) {
-        if (!this.systemRoles[item]) {
-            return false;
-        }
-
-        const permission: string | string[] = this.systemRoles[item][method];
-        return permission === 'all'
-            || permission === this.role
-            || Array.isArray(permission)
-            && permission.includes(this.role);
+        return this.roles[item][method];
     }
 }
 
