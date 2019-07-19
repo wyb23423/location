@@ -17,7 +17,7 @@
 
         <template v-if="!!admin">
             <el-dialog
-                title="更改标签信息"
+                title="更改管理员信息"
                 :visible="!!admin"
                 :modal-append-to-body="false"
                 @close="admin = null"

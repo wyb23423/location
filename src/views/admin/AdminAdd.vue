@@ -124,16 +124,16 @@ export default class AdminAdd extends Vue {
                     .post('/api/admin/addAdmin', data, {
                         'Content-Type': 'application/json'
                     })
-                    .then(() => this.$message.success('添加成功'))
+                    .then(() => {
+                        this.$message.success('添加成功');
+                        this.reset();
+                    })
                     .catch(console.log);
             }
         });
     }
 
     public reset() {
-        console.log(
-            JSON.stringify((<Permission>this.$refs.permission).parse())
-        );
         (<ElForm>this.$refs.form).resetFields();
     }
 }

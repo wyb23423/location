@@ -8,7 +8,8 @@ import { ElForm } from 'element-ui/types/form';
 @Component
 export default class Fence extends mixins(TableMixin, MapMixin) {
     public activeNames: string[] = ['info', 'add'];
-
+    public pointIndex: number = -1; // 设置区域顶点时的索引
+    public zone: IZone | null = null; // 设置中的区域
     // ===================================table
     public colCfg: any[] = [
         { prop: 'name', label: '区域', sortable: true, width: 90 },
@@ -28,17 +29,20 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         name: '',
         mode: 0,
         position: [null],
-        open: false
+        open: true
     };
     public get formHeight() {
         return `calc(${100 / this.$store.state.rootScale}vh - 500px)`;
     }
     // ====================================
-    private pointIndex: number = -1;
+    private isFirst: boolean = true; // 是否是第一次点击设置点
 
     public created() {
         if (this.permission.delete) {
-            this.op.push({ type: 'danger', name: 'del', desc: '删除' });
+            this.operation.push({ type: 'danger', name: 'del', desc: '删除' });
+        }
+        if (this.permission.post) {
+            this.operation.push({ type: 'warning', name: 'setting', desc: '设置' });
         }
     }
 
@@ -93,6 +97,10 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
             this.mgr!.remove(JSON.stringify(point));
         } else {
             this.pointIndex = i;
+            if (this.isFirst) {
+                this.$message.info('点击地图设置区域顶点');
+                this.isFirst = false;
+            }
         }
     }
     public onSubmit() {
@@ -147,6 +155,28 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         }, 1000);
     }
 
+    public update() {
+        if (this.zone) {
+            if (!this.zone.name) {
+                return this.$message.error('区域名称不能为空');
+            }
+
+            const data: IZone = {
+                ...this.zone,
+                position: JSON.stringify(this.zone.position),
+                updateTime: Date.now(),
+                enable: this.zone.open ? 1 : 0
+            };
+
+            this.$http.post('/api/zone/updateZone', data, { 'Content-Type': 'application/json' })
+                .then(() => {
+                    this.$message.success('修改区域信息成功');
+                    this.getData(this.page, this.pageSize);
+                })
+                .catch(console.log);
+        }
+    }
+
     /**
      * 获取表格数据
      */
@@ -161,6 +191,8 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
             data = res.pagedData.datas.map((v: IZone) => {
                 v.status = v.enable ? '开启' : '关闭';
                 v.position = JSON.parse(<string>v.position);
+                v.open = !!v.enable;
+                v.mode = v.mode == null ? 0 : v.mode;
 
                 return v;
             });

@@ -25,12 +25,18 @@ export default class Permission extends Vue {
             return this.oneLevels;
         }
 
-        const role = JSON.parse(this.role);
         const chcked: string[] = [];
+        let role: IJson = {};
+        try {
+            role = JSON.parse(this.role);
+        } catch (e) {
+            console.error(e);
+        }
+
         this.oneLevels.forEach(k => {
             const permissions: string[] = [];
             ['put', 'delete', 'post', 'get'].forEach(r => {
-                if (role[k][r]) {
+                if (role[k] && role[k][r]) {
                     permissions.push(`${k}:${r}`);
                 }
             });

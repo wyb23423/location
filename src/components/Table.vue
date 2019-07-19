@@ -30,6 +30,7 @@
                             v-for="(v, i) of op"
                             :key="i"
                             size="mini"
+                            :v-show="!scope.row.hidden"
                             :type="v.type | parse(scope.$index)"
                             @click="emit(v.name, scope.row, scope.$index)"
                         >

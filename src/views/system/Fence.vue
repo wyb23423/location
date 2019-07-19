@@ -19,11 +19,12 @@
                     :col-cfg="colCfg"
                     :total-count="totalCount"
                     :op="operation"
-                    :op-width="150"
+                    :op-width="200"
                     :noPrint="true"
                     :isSmall="true"
                     @updateData="getData"
                     @del="del"
+                    @setting="zone = $event"
                     @display="display"
                     :class="$style.table"
                 ></app-table>
@@ -63,7 +64,7 @@
                             :type="v ? 'warning' : 'success'"
                             size="mini"
                         >
-                            {{ v ? '删除' : '设置' }}
+                            {{ v ? '删除' : pointIndex >= 0 ? '...' : '设置' }}
                         </el-button>
                         <span class="ellipsis" :class="$style.point">
                             {{ v ? JSON.stringify(v) : '' }}
@@ -87,6 +88,44 @@
                 </el-button>
             </el-collapse-item>
         </el-collapse>
+
+        <template v-if="!!zone">
+            <el-dialog
+                title="更改区域信息"
+                :visible="!!zone"
+                :modal-append-to-body="false"
+                @close="zone = null"
+            >
+                <el-form label-width="auto" ref="form">
+                    <el-form-item label="区域名称" required>
+                        <el-input
+                            v-model="zone.name"
+                            style="width: 70%"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="区域模式">
+                        <el-select v-model="zone.mode" placeholder="请选择">
+                            <el-option label="进入区域" :value="0"></el-option>
+                            <el-option label="离开区域" :value="1"></el-option>
+                            <el-option label="切换区域" :value="2"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="启动">
+                        <el-switch
+                            v-model="zone.open"
+                            active-text="true"
+                            inactive-text="false"
+                        >
+                        </el-switch>
+                    </el-form-item>
+                </el-form>
+
+                <template slot="footer">
+                    <el-button @click="zone = null">取 消</el-button>
+                    <el-button @click="update" type="primary">确 定</el-button>
+                </template>
+            </el-dialog>
+        </template>
     </div>
 </template>
 
@@ -103,7 +142,6 @@
     position: absolute;
     top: 0;
     left: 0;
-
     width: 100%;
     height: 60px;
     background: #fcf8e3;
@@ -114,7 +152,7 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 340px;
+    width: 390px;
 
     & div[role='button'] {
         background: #f2f2f2;
@@ -137,7 +175,7 @@
 .point {
     display: inline-block;
     vertical-align: middle;
-    width: 140px;
+    width: 190px;
     margin-left: 10px;
 }
 </style>
