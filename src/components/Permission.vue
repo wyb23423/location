@@ -13,12 +13,39 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { Component } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { TreeNode, TreeData, ElTree } from 'element-ui/types/tree';
 
 @Component
 export default class Permission extends Vue {
-    public defaultChecked: string[] = [
+    @Prop() public role?: string;
+
+    public get defaultChecked() {
+        if (!this.role) {
+            return this.oneLevels;
+        }
+
+        const role = JSON.parse(this.role);
+        const chcked: string[] = [];
+        this.oneLevels.forEach(k => {
+            const permissions: string[] = [];
+            ['put', 'delete', 'post', 'get'].forEach(r => {
+                if (role[k][r]) {
+                    permissions.push(`${k}:${r}`);
+                }
+            });
+
+            if (permissions.length === 4) {
+                chcked.push(k);
+            } else {
+                chcked.push(...permissions);
+            }
+        });
+
+        return chcked;
+    }
+
+    private readonly oneLevels: string[] = [
         'admin',
         'fence',
         'camera',
@@ -63,7 +90,7 @@ export default class Permission extends Vue {
         const twoLevelKeys = tree.getCheckedKeys(true);
 
         const permission: IJson = {};
-        this.defaultChecked.forEach(k => {
+        this.oneLevels.forEach(k => {
             permission[k] = {
                 put: true,
                 delete: true,

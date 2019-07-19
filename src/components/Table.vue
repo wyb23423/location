@@ -103,7 +103,7 @@ export default class Table extends Vue {
     //     window.addEventListener('resize', this.scaleRoot.bind(this), false);
     // }
 
-    public emit(name: string, row: any, index: number) {
+    public emit(name: OperationItem, row: any, index: number) {
         name = parseOpItem(name, index);
         this.$emit(name, row, index);
     }

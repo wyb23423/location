@@ -3,7 +3,7 @@ import Component from 'vue-class-component';
 import { loopAwait } from '../assets/utils/util';
 import { Watch, Prop } from 'vue-property-decorator';
 import table2Excel from '../assets/utils/table2excel';
-import Table from '../components/Table.vue';
+import Table from '@/components/Table.vue';
 
 interface TableData {
     count: number;
@@ -25,7 +25,7 @@ export default class TableMixin extends Vue {
     protected pageSize: number = 10;
     protected page: number = 1;
 
-    public get op() {
+    public get op(): any[] {
         return this.permission.delete
             ? [{ type: 'danger', name: 'del', desc: '删除' }]
             : [];
