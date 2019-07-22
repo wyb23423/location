@@ -302,10 +302,12 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                 });
             } else {
                 // 第一次收到信号
+
+                const tagData: ITag = this.tagAll[tag.sTagNo];
                 const info = {
-                    ...this.tagAll[tag.sTagNo],
+                    ...(tagData || {}),
                     name: tag.sTagNo,
-                    tagName: this.tagAll[tag.sTagNo].name,
+                    tagName: tagData ? tagData.name : '未知标签',
                     ...coord
                 };
 

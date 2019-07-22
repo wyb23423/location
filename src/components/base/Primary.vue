@@ -90,17 +90,19 @@ export default class Primary extends Vue {
     };
 
     public created() {
-        // this.$http
-        //     .post({
-        //         url: '/api/protocol/sendProtocol',
-        //         body: {
-        //             ip: this.data.ip,
-        //             port: 50000,
-        //             protocol: '2345201801230D0A'
-        //         }
-        //     })
-        //     .then(console.log)
-        //     .catch(console.log);
+        this.$http
+            .post({
+                url: '/api/protocol/sendReceive',
+                body: {
+                    ip: this.data.ip,
+                    port: 50000,
+                    protocol: '2345201801230D0A'
+                }
+            })
+            .then(res => {
+                console.log(res);
+            })
+            .catch(console.log);
     }
 
     public onSubmit() {

@@ -32,7 +32,9 @@
                             :key="i"
                             :v-show="!scope.row.hidden"
                             :type="v.type | parse(scope.$index)"
-                            :disabled="!v.isDisable || v.isDisable(scope.row)"
+                            :disabled="
+                                v.isDisable ? v.isDisable(scope.row) : false
+                            "
                             @click="emit(v.name, scope.row, scope.$index)"
                         >
                             {{ v.desc | parse(scope.$index) }}

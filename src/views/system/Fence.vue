@@ -51,9 +51,35 @@
                         <el-select v-model="form.mode" placeholder="请选择">
                             <el-option label="进入区域" :value="0"></el-option>
                             <el-option label="离开区域" :value="1"></el-option>
-                            <el-option label="切换区域" :value="2"></el-option>
+                            <el-option
+                                label="切换区域"
+                                :value="2"
+                                v-if="groups.length >= 2"
+                            ></el-option>
                         </el-select>
                     </el-form-item>
+                    <template v-if="form.mode === 2">
+                        <el-form-item label="基站分组1">
+                            <el-select v-model="form.group1">
+                                <el-option
+                                    v-for="v of groups"
+                                    :key="v"
+                                    :value="v"
+                                    :disabled="v === form.group2"
+                                ></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="基站分组2">
+                            <el-select v-model="form.group2">
+                                <el-option
+                                    v-for="v of groups"
+                                    :key="v"
+                                    :value="v"
+                                    :disabled="v === form.group1"
+                                ></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </template>
                     <el-form-item
                         v-for="(v, index) in form.position"
                         :label="'区域坐标' + (index + 1)"

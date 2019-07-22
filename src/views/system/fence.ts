@@ -1,7 +1,6 @@
 
 import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
-
 import MapMixin from '@/mixins/map';
 import { ElForm } from 'element-ui/types/form';
 
@@ -10,6 +9,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
     public activeNames: string[] = ['info', 'add'];
     public pointIndex: number = -1; // 设置区域顶点时的索引
     public zone: IZone | null = null; // 设置中的区域
+    public groups: string[] = [];
     // ===================================table
     public colCfg: any[] = [
         { prop: 'name', label: '区域', sortable: true, width: 90 },
@@ -44,6 +44,21 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         if (this.permission.post) {
             this.operation.push({ type: 'warning', name: 'setting', desc: '设置' });
         }
+
+        this.$http.get('/api/base/getall', {
+            currentPage: 1,
+            pageSize: 9999999
+        }).then(res => {
+            const guoups = new Set();
+            res.pagedData.datas.forEach(v => guoups.add(v.groupCode));
+            this.groups = Array.from(guoups);
+
+            if (this.groups.length >= 2) {
+                this.form.group1 = this.groups[0];
+                this.form.group2 = this.groups[1];
+            }
+        })
+            .catch(console.log);
     }
 
     /**
