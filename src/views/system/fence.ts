@@ -171,7 +171,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
             this.$http.post('/api/zone/updateZone', data, { 'Content-Type': 'application/json' })
                 .then(() => {
                     this.$message.success('修改区域信息成功');
-                    this.getData(this.page, this.pageSize);
+                    this.refresh();
                 })
                 .catch(console.log);
         }

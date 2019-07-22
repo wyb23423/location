@@ -20,6 +20,17 @@ import { TreeNode, TreeData, ElTree } from 'element-ui/types/tree';
 export default class Permission extends Vue {
     @Prop() public role?: string;
 
+    private readonly oneLevels: string[] = [
+        'admin',
+        'fence',
+        'camera',
+        'protocol',
+        'base',
+        'people',
+        'map',
+        'alarm'
+    ];
+
     public get defaultChecked() {
         if (!this.role) {
             return this.oneLevels;
@@ -36,7 +47,11 @@ export default class Permission extends Vue {
         this.oneLevels.forEach(k => {
             const permissions: string[] = [];
             ['put', 'delete', 'post', 'get'].forEach(r => {
-                if (role[k] && role[k][r]) {
+                if (
+                    role[k] &&
+                    (role[k][r] ||
+                        (Array.isArray(role[k]) && role[k].includes(r)))
+                ) {
                     permissions.push(`${k}:${r}`);
                 }
             });
@@ -50,17 +65,6 @@ export default class Permission extends Vue {
 
         return chcked;
     }
-
-    private readonly oneLevels: string[] = [
-        'admin',
-        'fence',
-        'camera',
-        'protocol',
-        'base',
-        'people',
-        'map',
-        'alarm'
-    ];
 
     public loadNode(
         node: TreeNode<string, TreeData>,

@@ -8,7 +8,7 @@ export const BASE_URL = process.env.NODE_ENV === 'production' ? process.env.BASE
 // 主题数据位置
 export const MAP_THEME_URL: string = '/data/theme';
 // 地图数据位置
-export const MAP_DATA_URL: string = '/data/huijinguangchang/';
+export const MAP_DATA_URL: string = '/data/huijinguangchang';
 
 export const DEFAULT_WIDTH: number = 1600; // 屏幕默认宽度
 export const SX_WIDTH: number = 768; // 小屏宽度
@@ -16,14 +16,14 @@ export const LOSS_TIME: number = 10000; // 用于判断信号是否丢失
 
 // 全部权限
 export const ALL_PERMISSION = {
-    admin: { put: true, delete: true, post: true, get: true },
-    fence: { put: true, delete: true, post: true, get: true },
-    camera: { put: true, delete: true, post: true, get: true },
-    protocol: { put: true, delete: true, post: true, get: true },
-    base: { put: true, delete: true, post: true, get: true },
-    people: { put: true, delete: true, post: true, get: true },
-    map: { put: true, delete: true, post: true, get: true },
-    alarm: { put: true, delete: true, post: true, get: true }
+    admin: { put: true, delete: true, post: true, get: true }, // 管理员
+    fence: { put: true, delete: true, post: true, get: true }, // 区域(电子围栏)
+    camera: { put: true, delete: true, post: true, get: true }, // 摄像机
+    protocol: { put: true, delete: true, post: true, get: true }, // 协议
+    base: { put: true, delete: true, post: true, get: true }, // 设备(基站)
+    people: { put: true, delete: true, post: true, get: true }, // 人员(标签)
+    map: { put: true, delete: true, post: true, get: true }, // 地图(监控)
+    alarm: { put: true, delete: true, post: true, get: true } // 报警信息
 };
 
 // 开发者申请应用下web服务的key

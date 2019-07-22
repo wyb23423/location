@@ -54,7 +54,10 @@ export default class TableMixin extends Vue {
         return { count: 0, data: [] };
     }
 
-    // 刷新列表
+    /**
+     * 刷新列表
+     * @param page 页数
+     */
     protected refresh(page?: number) {
         if (page == null) {
             page = this.tableData.length > 1
@@ -63,6 +66,24 @@ export default class TableMixin extends Vue {
         }
 
         this.getData(Math.max(1, page), this.pageSize);
+    }
+
+    private headStr() {
+        const thead = ['<thead><tr>'];
+        this.colCfg.forEach(v => thead.push(`<th>${v.label}</th>`));
+        thead.push('</tr></thead>');
+        return thead.join('');
+    }
+    private async bodyStr() {
+        const data = (await this.fetch(1, this.totalCount)).data;
+        const tbody = ['<tbody>'];
+        data.forEach(v => {
+            tbody.push('<tr>');
+            this.colCfg.forEach(c => tbody.push(`<td>${v[c.prop]}</td>`));
+            tbody.push('</tr>');
+        });
+        tbody.push('</tbody>');
+        return tbody.join('');
     }
 
     @Watch('$store.state.rootScale')
@@ -80,22 +101,5 @@ export default class TableMixin extends Vue {
 
             }
         }
-    }
-    private headStr() {
-        const thead = ['<thead><tr>'];
-        this.colCfg.forEach(v => thead.push(`<th>${v.label}</th>`));
-        thead.push('</tr></thead>');
-        return thead.join('');
-    }
-    private async bodyStr() {
-        const data = (await this.fetch(1, this.totalCount)).data;
-        const tbody = ['<tbody>'];
-        data.forEach(v => {
-            tbody.push('<tr>');
-            this.colCfg.forEach(c => tbody.push(`<td>${v[c.prop]}</td>`));
-            tbody.push('</tr>');
-        });
-        tbody.push('</tbody>');
-        return tbody.join('');
     }
 }

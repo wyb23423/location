@@ -9,6 +9,7 @@
         >
             <el-table-column
                 v-for="(v, i) of colCfg"
+                show-overflow-tooltip
                 :key="i"
                 :prop="v.prop"
                 :label="v.label"
@@ -19,7 +20,6 @@
             </el-table-column>
             <el-table-column
                 label="操作"
-                fixed="right"
                 :resizable="true"
                 v-if="op && op.length"
                 :min-width="opWidth == null ? undefined : opWidth * scale"
@@ -28,10 +28,11 @@
                     <div class="flex-center">
                         <el-button
                             v-for="(v, i) of op"
-                            :key="i"
                             size="mini"
+                            :key="i"
                             :v-show="!scope.row.hidden"
                             :type="v.type | parse(scope.$index)"
+                            :disabled="!v.isDisable || v.isDisable(scope.row)"
                             @click="emit(v.name, scope.row, scope.$index)"
                         >
                             {{ v.desc | parse(scope.$index) }}
@@ -71,12 +72,11 @@ import Component from 'vue-class-component';
 import { Prop, Emit } from 'vue-property-decorator';
 import { SX_WIDTH, DEFAULT_WIDTH } from '../constant';
 
-type OperationItem = string | { [i: string]: string };
-
 export interface TableRowOperation {
-    type: OperationItem;
-    name: OperationItem;
-    desc: OperationItem;
+    type: string | IJson;
+    name: string | IJson;
+    desc: string | IJson;
+    isDisable?: (row: any) => boolean;
 }
 
 @Component({
@@ -87,11 +87,10 @@ export default class Table extends Vue {
     @Prop() public tableData!: any[]; // 表格数据
     @Prop() public totalCount!: number; // 数据总条数
     @Prop() public colCfg!: any[]; // 列配置
-
     @Prop() public op!: TableRowOperation[]; // 操作
-    @Prop() public noPrint!: boolean;
-    @Prop() public isSmall!: boolean;
-    @Prop() public opWidth?: boolean;
+    @Prop() public noPrint!: boolean; // 是否不显示导出按钮
+    @Prop() public isSmall!: boolean; // 是否采用小尺寸布局
+    @Prop() public opWidth?: boolean; // 操作列的最小宽
 
     public pageSize: number = 10;
     public page: number = 1;
@@ -104,7 +103,7 @@ export default class Table extends Vue {
     //     window.addEventListener('resize', this.scaleRoot.bind(this), false);
     // }
 
-    public emit(name: OperationItem, row: any, index: number) {
+    public emit(name: string | IJson, row: any, index: number) {
         name = parseOpItem(name, index);
         this.$emit(name, row, index);
     }
@@ -133,7 +132,7 @@ export default class Table extends Vue {
 }
 
 // 处理表格操作按钮
-function parseOpItem(item: OperationItem, index: number) {
+function parseOpItem(item: string | IJson, index: number): string {
     if (typeof item === 'string') {
         return item;
     }

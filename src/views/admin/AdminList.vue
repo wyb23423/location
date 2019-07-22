@@ -74,10 +74,20 @@ export default class AdminList extends mixins(TableMixin) {
     public get op() {
         const op: TableRowOperation[] = [];
         if (this.permission.delete) {
-            op.push({ type: 'danger', name: 'del', desc: '删除' });
+            op.push({
+                type: 'danger',
+                name: 'del',
+                desc: '删除',
+                isDisable: this.isDisable
+            });
         }
         if (this.permission.post) {
-            op.push({ type: 'primary', name: 'setting', desc: '配置' });
+            op.push({
+                type: 'primary',
+                name: 'setting',
+                desc: '配置',
+                isDisable: this.isDisable
+            });
         }
 
         return op;
@@ -136,6 +146,16 @@ export default class AdminList extends mixins(TableMixin) {
         }
 
         return { count, data };
+    }
+
+    private isDisable(admin: IAdmin): boolean {
+        let user: string | IAdmin | null = sessionStorage.getItem('user');
+        if (!user) {
+            return true;
+        }
+
+        user = <IAdmin>JSON.parse(user);
+        return admin.id === user.id || admin.userName === user.userName;
     }
 }
 </script>

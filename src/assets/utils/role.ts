@@ -11,7 +11,11 @@ export class RouteList {
     constructor() {
         const user = sessionStorage.getItem('user');
         if (user) {
-            this.roles = JSON.parse(JSON.parse(user).role);
+            try {
+                this.roles = JSON.parse(JSON.parse(user).role);
+            } catch (e) {
+                //
+            }
         }
 
         ['admin', 'system', 'base', 'people', 'map', 'alarm'].forEach(v => {
@@ -304,7 +308,10 @@ export class RouteList {
 
     // 判断是否有权限
     private hasPermission(item: string, method: string) {
-        return this.roles[item][method];
+        return this.roles[item]
+            && (this.roles[item][method]
+                || Array.isArray(this.roles[item]) && this.roles[item].includes(method)
+            );
     }
 }
 
