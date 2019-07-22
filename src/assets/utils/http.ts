@@ -59,6 +59,14 @@ async function parseRes(res: Response) {
         const data: ResponseData = await res.json();
         const codeSuccess = isSuccess(data.code);
         if (codeSuccess && data.success) {
+            data.pagedData = data.pagedData || {
+                pageSize: 0,
+                currentPage: 1,
+                datas: [],
+                totalCount: 0
+            };
+            data.pagedData.datas = data.pagedData.datas || [];
+
             return data;
         } else {
             if (!codeSuccess) {
