@@ -119,7 +119,8 @@ export default class Stage extends Transform {
         const textures: PIXI.Texture[] = [];
         const emptys: number[] = [];
         for (let i = src.length - 1; i >= 0; i--) {
-            const texture = PIXI.utils.TextureCache[<string>src[i]];
+            const url = <string>src[i];
+            const texture = PIXI.utils.TextureCache[url];
             if (texture) {
                 textures[i] = texture;
                 src.splice(i, 1);

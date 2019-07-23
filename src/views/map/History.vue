@@ -191,7 +191,7 @@ export default class History extends mixins(MapMixin) {
                     );
                 }
             } else {
-                this.mgr.removeLine();
+                this.mgr.lineMgr.remove();
             }
         }
     }

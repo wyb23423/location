@@ -8,7 +8,7 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
     private layers: Map<string, fengmap.FMMarkerLayer<T>> = new Map();
     private markers: Map<string | number, T[]> = new Map();
 
-    constructor(protected map: fengmap.FMMap) {
+    constructor(private map: fengmap.FMMap) {
         //
     }
 
@@ -36,18 +36,15 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
         update?: (v: Vector2) => void,
         callback?: () => void
     ) {
-        const arr = this.markers.get(name);
-        if (arr) {
-            arr.forEach(v => {
-                v.moveTo({
-                    time,
-                    x: coord.x,
-                    y: coord.y,
-                    callback: callback || none,
-                    update: update || none
-                });
+        this.find(name).forEach(v => {
+            v.moveTo({
+                time,
+                x: coord.x,
+                y: coord.y,
+                callback: callback || none,
+                update: update || none
             });
-        }
+        });
     }
 
     public stopMoveTo(name?: string | number) {
@@ -68,11 +65,12 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
 
     public dispose() {
         Reflect.set(this, 'map', null);
+        this.layers.forEach(v => v.removeAll());
         this.layers.clear();
         this.markers.clear();
     }
 
-    protected save(marker: T, name: string | number, layerName: string, gid: number) {
+    protected save(marker: T, name: string | number, layerName: string, gid?: number) {
         // 获取layer
         gid = gid == null
             ? this.map.focusGroupID == null
@@ -88,9 +86,7 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
         }
 
         // 将layerName绑定到marker上
-        const custom = marker.custom || {};
-        custom.layerName = layerName;
-        marker.custom = custom;
+        (marker.custom || (marker.custom = {})).layerName = layerName;
 
         layer.addMarker(marker);
         const arr = this.markers.get(name) || [];

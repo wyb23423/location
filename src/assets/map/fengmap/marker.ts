@@ -65,7 +65,7 @@ export class ImageMgr extends BaseMarkerMgr<fengmap.FMImageMarker> {
 export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
     private lines: Map<string | number, fengmap.FMLineMarker> = new Map();
 
-    constructor(public map: fengmap.FMMap) {
+    constructor(private map: fengmap.FMMap) {
         //
     }
 
@@ -127,22 +127,46 @@ export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
     public append(points: Vector3[], name: string | number) {
         const line = this.lines.get(name);
         if (line) {
-            const seg = new fengmap.FMSegment();
-            seg.groupId = this.map.focusGroupID;
-            seg.points = points;
-            line.addSegment(seg);
+            if (!points.length) {
+                return;
+            }
 
-            this.map.drawLineMark(
-                line,
-                line.custom && line.custom.style
-                    ? line.custom.style
-                    : {
-                        lineType: fengmap.FMLineType.FULL,
-                        lineWidth: 1
-                    }
-            );
+            const style = line.custom && line.custom.style
+                ? line.custom.style
+                : {
+                    lineType: fengmap.FMLineType.FULL,
+                    lineWidth: 1
+                };
+
+            if (line.segment.length >= 30) {
+                // 片段过多合成一条
+                points = line.segment.map(v => v.points).flat().concat(points);
+                this.remove(name); // 移除原来的线
+                this.add(points, name, style); // 创建新的线
+            } else {
+                const seg = new fengmap.FMSegment();
+                seg.groupId = this.map.focusGroupID;
+                seg.points = this.filterPoints(points); // 间隔取点, 优化点太密集时的性能
+                line.addSegment(seg);
+
+                this.map.drawLineMark(line, style);
+            }
         } else {
-            console.warn(`标识为${name}的线未找到`);
+            // console.warn(`标识为${name}的线未找到`);
         }
+    }
+
+    private filterPoints(v: Vector3[]) {
+        const points = [v[0]];
+        for (
+            let i = 1;
+            i < v.length - 1;
+            i += Math.ceil(v.length / 300)
+        ) {
+            points.push(v[i]);
+        }
+        points.push(v[v.length - 1]);
+
+        return points;
     }
 }

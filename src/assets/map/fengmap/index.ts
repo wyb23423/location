@@ -8,11 +8,11 @@ import { PolygonMgr, TextMgr, ImageMgr, LineMgr } from './marker';
 export class FengMapMgr extends CoordTransformer {
     public readonly has3D: boolean = true;
     public map!: fengmap.FMMap;
+    public lineMgr!: LineMgr;
 
     private polygonMgr!: PolygonMgr;
     private textMgr!: TextMgr;
     private imageMgr!: ImageMgr;
-    private lineMgr!: LineMgr;
 
     private isLoaded: boolean = false;
 
@@ -175,15 +175,6 @@ export class FengMapMgr extends CoordTransformer {
             }
         }
 
-        if (update) {
-            const oldUpdate = update;
-            update = (v: Vector2) => {
-                if (this.map) {
-                    oldUpdate(this.map.coordMapToScreen(v.x, v.y, 0, true));
-                }
-            };
-        }
-
         this.polygonMgr.moveTo(name, coord, time, update, callback);
         this.textMgr.moveTo(name, coord, time, update, callback);
         this.imageMgr.moveTo(name, coord, time, update, callback);
@@ -227,10 +218,6 @@ export class FengMapMgr extends CoordTransformer {
         }
 
         this.lineMgr.add(points, name, lineStyle);
-    }
-    // 清除线
-    public removeLine(name?: string | number) {
-        this.lineMgr.remove(name);
     }
     // 为一条线添加片段
     public appendLine(name: string | number, points: Vector3[], isMapCoor: boolean = false) {

@@ -49,7 +49,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
             currentPage: 1,
             pageSize: 9999999
         }).then(res => {
-            const guoups = new Set();
+            const guoups: Set<string> = new Set();
             res.pagedData.datas.forEach(v => guoups.add(v.groupCode));
             this.groups = Array.from(guoups);
 

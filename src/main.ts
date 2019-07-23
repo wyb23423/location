@@ -49,16 +49,19 @@ router.beforeEach((to: Route, from: Route, next: any) => {
 
 initConfig()
   .then(() => {
-    console.log('app init');
     if (+(<string>sessionStorage.getItem('login'))) {
+      console.log('load router...');
       initRouter();
     }
 
-    new Vue({
-      router,
-      store,
-      render: (h) => h(App),
-    }).$mount('#app');
+    setTimeout(() => {
+      console.log('app init...');
+      new Vue({
+        router,
+        store,
+        render: (h) => h(App),
+      }).$mount('#app');
+    }, 100);
   });
 
 

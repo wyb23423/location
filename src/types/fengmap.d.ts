@@ -178,6 +178,8 @@ declare namespace fengmap {
 
     class FMLineMarker {
         public custom?: any;
+        public show: boolean;
+        public readonly segment: FMSegment[];
 
         public addSegment(seg: FMSegment): void;
     }

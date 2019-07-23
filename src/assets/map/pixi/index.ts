@@ -9,9 +9,9 @@ import 'pixi-action';
 
 export class PIXIMgr extends Stage {
     public readonly has3D: boolean = false;
+    public lineMgr!: LineMgr;
 
     private els: Map<string | number, any[]> = new Map(); // 已添加到舞台上的元素
-    private lineMgr!: LineMgr;
 
     constructor(bg: string, dom: HTMLElement) {
         super(bg, dom);
@@ -186,7 +186,7 @@ export class PIXIMgr extends Stage {
             const animation = PIXI.actionManager.runAction(v, action);
             animation.on('update', (s: PIXI.Container) => {
                 if (update) {
-                    update(s.getGlobalPosition());
+                    update(s.position);
                 }
             });
             if (callback) {
@@ -233,10 +233,6 @@ export class PIXIMgr extends Stage {
         }
 
         this.lineMgr.add(points, name, lineStyle);
-    }
-    // 清除线
-    public removeLine(name?: string | number) {
-        this.lineMgr.remove(name);
     }
     // 为一条线添加片段
     public appendLine(name: string | number, points: Vector3[], isMapCoor: boolean = false) {

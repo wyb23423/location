@@ -15,6 +15,16 @@
                 ></el-button>
             </el-input>
         </div>
+        <el-switch
+            v-model="showPath"
+            active-text="显示轨迹"
+            inactive-text="隐藏轨迹"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            :class="$style.switch"
+            @change="createOrRemovePath"
+        ></el-switch>
+
         <div ref="map" style="height: 100%; overflow: hidden"></div>
         <div :class="$style.tools">
             <el-button
@@ -79,5 +89,10 @@
     margin: 0 !important;
     border-radius: 0 !important;
     display: block;
+}
+.switch {
+    position: absolute;
+    right: 20px;
+    top: 70px;
 }
 </style>

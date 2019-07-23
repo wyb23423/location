@@ -25,9 +25,7 @@ export default class LineMgr implements MarkerMgr<PIXI.Graphics> {
         this.lines.set(name, painter);
 
         if (points.length) {
-            const start = <Vector3>points.shift();
-            painter.moveTo(start.x, start.y);
-
+            (<any>painter).start = <Vector3>points.shift();
             this.append(points, name);
         }
 
@@ -52,6 +50,7 @@ export default class LineMgr implements MarkerMgr<PIXI.Graphics> {
     }
     public show(name?: string | number, isShow?: boolean) {
         throw new ReferenceError('Method LineMgr.prototype.show is not defined');
+        // this.find(name).forEach(v => v.visible = isShow == null ? !v.visible : isShow);
     }
 
     public find(name?: string | number) {
@@ -70,9 +69,23 @@ export default class LineMgr implements MarkerMgr<PIXI.Graphics> {
     public append(points: Vector3[], name: string | number) {
         const line = this.lines.get(name);
         if (line) {
-            points.forEach(v => line.lineTo(v.x, v.y));
+            if (points.length) {
+                const start: Vector3 = (<any>line).start;
+                line.moveTo(start.x, start.y);
+
+                for (
+                    let i = 0;
+                    i < points.length - 1;
+                    i += Math.ceil(points.length / 300)
+                ) {
+                    line.lineTo(points[i].x, points[i].y);
+                }
+
+                const end = (<any>line).start = <Vector3>points.pop();
+                line.lineTo(end.x, end.y);
+            }
         } else {
-            console.warn(`标识为${name}的线未找到`);
+            // console.warn(`标识为${name}的线未找到`);
         }
     }
 }

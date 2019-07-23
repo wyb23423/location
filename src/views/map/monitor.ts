@@ -33,13 +33,14 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
     ];
     public zoneAll: IZone[] = []; // 区域列表
     public findTarget: string = ''; // 查询标签的标签号
+    public showPath: boolean = false; // 是否显示轨迹
 
     private baseAll: IBaseStation[] = []; // 基站列表
     private tagAll: { [x: string]: ITag } = {}; // 标签
     private ws: WebSocket[] = [];
     private renderTags: { [x: string]: number } = {}; // 已经在地图上的标签, {tagNo: timer}
 
-    private pops: Map<string, Pop[]> = new Map(); // 关闭标签信息的函数
+    private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
 
     public created() {
         Promise.all(['tag', 'zone'].map(async v => {
@@ -114,16 +115,32 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         if (this.mgr && !this.pops.has(this.findTarget)) {
             const tags = this.mgr.find(this.findTarget);
 
-            if (tags) {
-                const arr = this.pops.get(this.findTarget) || [];
-                arr.push(...tags.map(tag => this.mgr!.addPopInfo(tag)));
-                this.pops.set(this.findTarget, arr);
+            if (tags.length) {
+                this.pops.set(this.findTarget, tags.map(tag => this.mgr!.addPopInfo(tag))[0]);
             } else {
                 this.$message.info(`未找到标签号为${this.findTarget}的标签`);
             }
         }
 
         this.findTarget = '';
+    }
+
+    public createOrRemovePath() {
+        if (!this.mgr) {
+            return;
+        }
+
+        if (this.showPath) {
+            Object.keys(this.renderTags).forEach(id => {
+                this.mgr!.addLine([], {
+                    lineType: fengmap.FMLineType.FULL,
+                    lineWidth: 2,
+                    smooth: false
+                }, id);
+            });
+        } else {
+            this.mgr.lineMgr.remove();
+        }
     }
 
     // ==================================
@@ -149,19 +166,11 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                 ) {
                     const tagNo = event.target.custom.info.tagNo;
                     if (!this.pops.has(tagNo)) {
-                        const arr = this.pops.get(tagNo) || [];
-                        arr.push(this.mgr.addPopInfo(<any>event.target));
-                        this.pops.set(tagNo, arr);
+                        this.pops.set(tagNo, this.mgr.addPopInfo(<any>event.target));
                     }
                 } else {
                     for (const [k, p] of this.pops.entries()) {
-                        for (let i = p.length - 1; i >= 0; i--) {
-                            if (p[i].close()) {
-                                p.splice(i, 1);
-                            }
-                        }
-
-                        if (!p.length) {
+                        if (p.close()) {
                             this.pops.delete(k);
                         }
                     }
@@ -225,7 +234,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         if (this.mgr) {
             const map = this.mgr.map;
             if (this.mgr instanceof FengMapMgr) {
-                (<any>map).gestureEnableController.enableMapHover = true;
+                (<fengmap.FMMap>map).gestureEnableController.enableMapHover = true;
             }
 
             return this.mgr.addImage(
@@ -285,24 +294,32 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
 
         if (tag.position.every(v => +v >= 0)) {
             const timer = this.renderTags[tag.sTagNo];
-            const coord: Vector2 = {
+            const coord: Vector3 = {
                 x: +tag.position[0],
-                y: +tag.position[1]
+                y: +tag.position[1],
+                z: 0
             };
 
             if (timer) {
                 clearTimeout(timer);
-
                 this.mgr.show(tag.sTagNo, true);
-                this.mgr.moveTo(tag.sTagNo, coord, 1, () => {
-                    const p = this.pops.get(tag.sTagNo);
-                    if (p) {
-                        p.forEach(v => v.update && v.update());
+
+                const points: Vector3[] = [];
+                this.mgr.moveTo(
+                    tag.sTagNo, coord, 1,
+                    (v: Vector2) => {
+                        const p = this.pops.get(tag.sTagNo);
+                        p && p.update && p.update();
+
+                        points.push({ x: v.x, y: v.y, z: 0 });
+                        if (this.mgr && points.length >= 10) {
+                            this.mgr.appendLine(tag.sTagNo, points, true);
+                            points.length = 0;
+                        }
                     }
-                });
+                );
             } else {
                 // 第一次收到信号
-
                 const tagData: ITag = this.tagAll[tag.sTagNo];
                 const info = {
                     ...(tagData || {}),
@@ -321,8 +338,11 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
 
                 if (this.mgr) {
                     this.mgr.show(tag.sTagNo, false);
-                    (this.pops.get(tag.sTagNo) || []).forEach(v => v.close(true));
-                    this.pops.delete(tag.sTagNo);
+                    if (this.pops.has(tag.sTagNo)) {
+                        (<Pop>this.pops.get(tag.sTagNo)).close(true);
+                        this.pops.delete(tag.sTagNo);
+                    }
+
                 }
             }, LOSS_TIME);
         }

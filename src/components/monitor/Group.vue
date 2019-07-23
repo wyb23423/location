@@ -21,6 +21,7 @@ import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
 import { Prop } from 'vue-property-decorator';
 import { FengMapMgr } from '../../assets/map/fengmap';
+import { PIXIMgr } from '@/assets/map/pixi';
 
 @Component
 export default class Group extends mixins(TableMixin) {
@@ -30,7 +31,7 @@ export default class Group extends mixins(TableMixin) {
 
     public switchZone(row: { id: string; children: IBaseStation[] }) {
         if (this.$parent) {
-            const mgr: FengMapMgr = Reflect.get(this.$parent, 'mgr');
+            const mgr: FengMapMgr | PIXIMgr = Reflect.get(this.$parent, 'mgr');
             if (mgr) {
                 row.children.forEach(v => mgr.show(v.baseNo));
             }
