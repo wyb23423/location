@@ -89,7 +89,7 @@ export default class PeopleList extends mixins(TableMixin) {
         if (this.permission.delete) {
             op.push({ type: 'danger', name: 'del', desc: '删除' });
         }
-        if (this.permission.post) {
+        if (this.permission.put) {
             op.push({ type: 'primary', name: 'setting', desc: '配置' });
         }
 

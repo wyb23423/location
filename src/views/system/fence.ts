@@ -41,7 +41,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         if (this.permission.delete) {
             this.operation.push({ type: 'danger', name: 'del', desc: '删除' });
         }
-        if (this.permission.post) {
+        if (this.permission.put) {
             this.operation.push({ type: 'warning', name: 'setting', desc: '设置' });
         }
 

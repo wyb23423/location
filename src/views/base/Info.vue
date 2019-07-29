@@ -29,21 +29,21 @@
             <el-tab-pane
                 label="基本属性设置"
                 name="primary"
-                v-if="!!permission.post"
+                v-if="!!permission.put"
             >
                 <base-primary :data="base"></base-primary>
             </el-tab-pane>
             <el-tab-pane
                 label="网络参数设置"
                 name="net"
-                v-if="!!permission.post"
+                v-if="!!permission.put"
             >
                 <base-net :data="base"></base-net>
             </el-tab-pane>
             <el-tab-pane
                 label="位置设置"
                 name="position"
-                v-if="!!permission.post"
+                v-if="!!permission.put"
             >
                 <base-position :data="base"></base-position>
             </el-tab-pane>

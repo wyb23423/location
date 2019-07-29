@@ -32,7 +32,7 @@
             <el-collapse-item
                 title="添加区域"
                 name="add"
-                v-if="!!permission.put"
+                v-if="!!permission.post"
             >
                 <el-form
                     :model="form"

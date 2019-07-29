@@ -81,7 +81,7 @@ export default class AdminList extends mixins(TableMixin) {
                 isDisable: this.isDisable
             });
         }
-        if (this.permission.post) {
+        if (this.permission.put) {
             op.push({
                 type: 'primary',
                 name: 'setting',
