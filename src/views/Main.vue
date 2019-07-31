@@ -32,9 +32,11 @@ export default class Main extends Vue {
                 })
                 .then(res => {
                     res.pagedData.datas.forEach((v: IAlarm) => {
-                        this.$notify.warning(
-                            `标签${v.tagNo}异常。\n${v.alarmMsg}`
-                        );
+                        if (Date.now() - v.alarmTime <= 1000) {
+                            this.$notify.warning(
+                                `标签${v.tagNo}异常。\n${v.alarmMsg}`
+                            );
+                        }
                     });
 
                     this.timer = setTimeout(fn, 1000);

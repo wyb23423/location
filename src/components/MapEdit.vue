@@ -41,6 +41,21 @@
                 ></el-input-number>
             </el-form-item>
         </el-form-item>
+        <el-form-item label="关联分组" prop="groupCode" required>
+            <el-select
+                v-model="form.groupCode"
+                multiple
+                filterable
+                allow-create
+                clearable
+                default-first-option
+                placeholder="关联分组"
+                class="select_input"
+                :popper-class="$style.hidden"
+            >
+            </el-select>
+        </el-form-item>
+
         <el-form-item required label="地图">
             <el-upload
                 :auto-upload="false"
@@ -82,7 +97,8 @@ export default class MapEdit extends Vue {
         url: '',
         filename: '',
         map: null,
-        name: ''
+        name: '',
+        groupCode: []
     };
 
     public changeUpload: ((file: any) => void) | null = null; // 选择图片后回调
@@ -128,7 +144,10 @@ export default class MapEdit extends Vue {
                     return this.$message.warning('地图文件不能为空');
                 }
 
-                const data = { ...this.form };
+                const data = {
+                    ...this.form,
+                    groupCode: this.form.groupCode.join(',')
+                };
                 this.$emit('update:data', data);
                 this.$emit('submit', data);
             })
@@ -161,4 +180,31 @@ export default class MapEdit extends Vue {
     display: inline-block;
     vertical-align: middle;
 }
+
+.hidden {
+    display: none;
+}
 </style>
+
+<style lang="postcss">
+.select_input {
+    width: 50%;
+
+    & i.el-icon-arrow-up {
+        display: none;
+    }
+
+    & .el-tag,
+    & .el-select__tags-text {
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    & .el-select__tags-text {
+        max-width: calc(100% - 16px);
+        display: inline-block;
+        vertical-align: middle;
+    }
+}
+</style>
+

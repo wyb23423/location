@@ -4,7 +4,7 @@ interface DataBase extends IJson {
     createUser?: string;
     createTime?: string | number;
     updateUser?: string;
-    updateime?: string | number;
+    updateTime?: string | number;
 }
 
 // ============================================数据库表
@@ -59,7 +59,7 @@ declare interface ICamera extends DataBase {
 declare interface IMap extends DataBase {
     name: string;
     margin: string | number[][]; // 地图边界值[左下, 左上, 右上, 右下, [监控区域宽, 监控区域高]]
-    groupCode: string;
+    groupCode: string | string[]; // 关联的基站分组
     filepath: string; // 地图文件。背景图或.fmap
 }
 
@@ -91,6 +91,8 @@ declare interface IZone extends DataBase {
     name: string;
     position: string | TPosition; // 区域边界点
     enable: 0 | 1; // 是否启用
+    mode: number; // 区域类型
+    group: string | [string, string]; // 切换区域时的两个关联组号
 }
 
 declare interface IAlarm extends IJson {
@@ -98,7 +100,7 @@ declare interface IAlarm extends IJson {
     baseNo: string;
     tagNo: string;
     type: number;
-    alarmTime: number | string;
+    alarmTime: number;
     alarmMsg: string;
 }
 

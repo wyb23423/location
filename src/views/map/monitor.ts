@@ -267,14 +267,14 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
 
         let ip: string = location.host;
         if (process.env.NODE_ENV !== 'production') {
-            const res = BASE_URL.match(/^http:\/\/([\w\d\.]+)\/$/);
+            const res = BASE_URL.match(/^http:\/\/([\w\d\.]+)(:\d+)?\/$/);
             if (res) {
                 ip = res[1];
             }
         }
 
         this.ws = Object.keys(this.group).map(k => {
-            const ws = new WebSocket(`ws://${ip}:80/realtime/position/${k}/${time}`);
+            const ws = new WebSocket(`ws://${ip}/realtime/position/${k}/${time}`);
             ws.onmessage = (event: MessageEvent) => {
                 const data: ITagInfo = JSON.parse(event.data);
                 if (this.tagAll[data.sTagNo]) {

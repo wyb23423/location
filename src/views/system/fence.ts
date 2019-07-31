@@ -137,7 +137,9 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
             name: this.form.name,
             enable: this.form.open ? 1 : 0,
             createTime: now,
-            updateime: now
+            updateTime: now,
+            mode: 0,
+            group: ''
         };
         this.mgr!.createPolygonMarker(position, data.name, true);
 
