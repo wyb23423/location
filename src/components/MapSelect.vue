@@ -48,7 +48,7 @@ export default class MapSelect extends Vue {
         // TODO
         const data: IMap = {
             id: 1,
-            groupCode: '001',
+            groupCode: ['0001'],
             name: '办公室',
             filepath: '\\image\\huijinguangchang.fmap', // '/images/5ad8909aeff13.png', //
             margin: [

@@ -60,6 +60,7 @@ export default class MapAdd extends Vue {
             maxY: margin[2][1],
             width: margin[4][0],
             height: margin[4][1],
+            groupCode: data.groupCode,
             [data.filepath.endsWith('.fmap')
                 ? 'filename'
                 : 'url']: data.filepath
