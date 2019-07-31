@@ -27,7 +27,7 @@ export default class MapMixin extends Vue {
                     this.dispose();
 
                     this.mgr = createMap(data, dom);
-                    this.bindEvents();
+                    this.bindEvents(data);
                 } catch (e) {
                     console.warn(e);
                 }
@@ -35,7 +35,7 @@ export default class MapMixin extends Vue {
         }
     }
 
-    protected bindEvents() {
+    protected bindEvents(data?: IMap) {
         //
     }
 

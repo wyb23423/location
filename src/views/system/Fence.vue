@@ -59,7 +59,7 @@
                         </el-select>
                     </el-form-item>
                     <template v-if="form.mode === 2">
-                        <el-form-item label="基站分组1">
+                        <el-form-item label="基站分组1" required prop="group1">
                             <el-select v-model="form.group1">
                                 <el-option
                                     v-for="v of groups"
@@ -69,7 +69,7 @@
                                 ></el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="基站分组2">
+                        <el-form-item label="基站分组2" required prop="group2">
                             <el-select v-model="form.group2">
                                 <el-option
                                     v-for="v of groups"

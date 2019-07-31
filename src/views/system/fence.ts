@@ -29,7 +29,9 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         name: '',
         mode: 0,
         position: [null],
-        open: true
+        open: true,
+        group1: '',
+        group2: ''
     };
     public get formHeight() {
         return `calc(${100 / this.$store.state.rootScale}vh - 500px)`;
@@ -44,21 +46,6 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         if (this.permission.put) {
             this.operation.push({ type: 'warning', name: 'setting', desc: '设置' });
         }
-
-        this.$http.get('/api/base/getall', {
-            currentPage: 1,
-            pageSize: 9999999
-        }).then(res => {
-            const guoups: Set<string> = new Set();
-            res.pagedData.datas.forEach(v => guoups.add(v.groupCode));
-            this.groups = Array.from(guoups);
-
-            if (this.groups.length >= 2) {
-                this.form.group1 = this.groups[0];
-                this.form.group2 = this.groups[1];
-            }
-        })
-            .catch(console.log);
     }
 
     /**
@@ -118,58 +105,22 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
             }
         }
     }
-    public onSubmit() {
-        if (!this.form.name.length) {
-            return this.$message.warning('区域名称必填');
-        }
+    public async onSubmit() {
+        try {
+            await (<ElForm>this.$refs.form).validate();
 
-        if (this.form.position.length < 4) {
-            return this.$message.warning('区域坐标最少设置3个');
+            // position数组最后一项始终为用于占位的null
+            if (this.form.position.length < 4) {
+                return this.$message.warning('区域坐标最少设置3个');
+            }
+        } catch {
+            return;
         }
 
         const position = <TPosition>[...this.form.position];
         position.pop();
-
-        const now = Date.now();
-        const data: IZone = {
-            id: 0,
-            position,
-            name: this.form.name,
-            enable: this.form.open ? 1 : 0,
-            createTime: now,
-            updateTime: now,
-            mode: 0,
-            group: ''
-        };
-        this.mgr!.createPolygonMarker(position, data.name, true);
-
-        setTimeout(() => {
-            this.$confirm('请确定当前区域范围', '提示', { type: 'info' })
-                .then(() => {
-                    position.forEach(<any>this.setPosition, this);
-                    if (this.mgr) {
-                        data.position = JSON.stringify(position.map(v => this.mgr!.getCoordinate(v)));
-                    } else {
-                        this.$message.error('地图不存在, 提交失败!');
-                        return Promise.reject('地图不存在');
-                    }
-                    Reflect.deleteProperty(data, 'id');
-
-                    return this.$http.post('/api/zone/addZone', data, { 'Content-Type': 'application/json' });
-                })
-                .then(() => {
-                    this.$message.success('添加成功');
-                    this.refresh(this.page);
-
-                    (<ElForm>this.$refs.form).resetFields();
-                })
-                .catch(console.log)
-                .finally(() => {
-                    if (this.mgr) {
-                        this.mgr.remove(data.name);
-                    }
-                });
-        }, 1000);
+        this.mgr && this.mgr.createPolygonMarker(position, this.form.name, true);
+        setTimeout(() => this.put(position), 1000);
     }
 
     public update() {
@@ -222,7 +173,9 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         return { count, data };
     }
 
-    protected bindEvents() {
+    protected bindEvents(data: IMap) {
+        this.groups = <string[]>data.groupCode;
+
         this.mgr!.on('mapClickNode', (event: FMMapClickEvent) => {
             if (event.nodeType === fengmap.FMNodeType.NONE) {
                 return;
@@ -246,5 +199,55 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
                 this.form.position.push(null);
             }
         });
+    }
+
+    // 确认并添加区域
+    private put(position: TPosition) {
+        this.$confirm('请确定当前区域范围', '提示', { type: 'info' })
+            .then(() => this.assemble(position))
+            .then((data: IZone) => {
+                position.forEach(<any>this.setPosition, this);
+                if (this.mgr) {
+                    data.position = JSON.stringify(position.map(v => this.mgr!.getCoordinate(v)));
+                } else {
+                    this.$message.error('地图不存在, 提交失败!');
+                    return Promise.reject('地图不存在');
+                }
+                Reflect.deleteProperty(data, 'id');
+
+                return this.$http.post('/api/zone/addZone', data, { 'Content-Type': 'application/json' });
+            })
+            .then(() => {
+                this.$message.success('添加成功');
+                this.refresh(this.page);
+            })
+            .catch(console.log)
+            .finally(() => {
+                if (this.mgr) {
+                    this.mgr.remove(this.form.name);
+                }
+
+                (<ElForm>this.$refs.form).resetFields();
+            });
+    }
+
+    // 组织添加区域时的数据
+    private assemble(position: TPosition) {
+        const now = Date.now();
+        const data: IZone = {
+            id: 0,
+            position,
+            name: this.form.name,
+            enable: this.form.open ? 1 : 0,
+            createTime: now,
+            updateTime: now,
+            mode: this.form.mode,
+            group: ''
+        };
+        if (this.form.group1 && this.form.group2) {
+            data.group = this.form.group1 + ',' + this.form.group2;
+        }
+
+        return data;
     }
 }
