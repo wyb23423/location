@@ -55,14 +55,13 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         try {
             await this.$confirm(`确认删除区域${row.name}?`, '确认删除');
             await this.$http.post('/api/zone/deleteZone', { id: row.id });
-
-            this.$message.success('删除成功');
-
-            this.refresh();
-            this.display(row, index, true);
         } catch (e) {
-            console.log(e);
+            return console.log(e);
         }
+
+        this.$message.success('删除成功');
+        this.refresh();
+        this.display(row, index, true);
     }
     /**
      * 切换区域显示
@@ -95,9 +94,11 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         const index = this.form.position.indexOf(point);
 
         if (point && index > -1) {
+            // 删除已设置的顶点
             this.form.position.splice(index, 1);
-            this.mgr!.remove(JSON.stringify(point));
+            this.mgr && this.mgr.remove(JSON.stringify(point));
         } else {
+            // 进入设置区域顶点模式
             this.pointIndex = i;
             if (this.isFirst) {
                 this.$message.info('点击地图设置区域顶点');
@@ -105,6 +106,8 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
             }
         }
     }
+
+    // 添加区域
     public async onSubmit() {
         try {
             await (<ElForm>this.$refs.form).validate();
@@ -123,6 +126,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         setTimeout(() => this.put(position), 1000);
     }
 
+    // 更新区域数据
     public update() {
         if (this.zone) {
             if (!this.zone.name) {
