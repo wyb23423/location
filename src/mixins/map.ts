@@ -15,6 +15,7 @@ import { Watch } from 'vue-property-decorator';
 export default class MapMixin extends Vue {
     public mgr?: FengMapMgr | PIXIMgr;
     public showPath: boolean = false;
+    public groups: string[] = []; // 当前地图关联组号
 
     protected renderTags?: { [x: string]: number } | Set<string>;
 
@@ -24,6 +25,7 @@ export default class MapMixin extends Vue {
 
     public async selectMap(data: IMap) {
         if (data) {
+            this.groups = <string[]>data.groupCode;
             const dom = <HTMLElement>this.$refs.map;
             if (dom) {
                 try {

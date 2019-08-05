@@ -49,7 +49,7 @@
         </transition>
 
         <transition name="el-fade-in-linear">
-            <Group :group="group" v-if="tools[3].active"></Group>
+            <Group :group="groupData" v-if="tools[3].active"></Group>
             <Zone :zones="zoneAll" v-if="tools[2].active"></Zone>
         </transition>
     </div>

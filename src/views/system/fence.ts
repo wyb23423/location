@@ -9,7 +9,6 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
     public activeNames: string[] = ['info', 'add'];
     public pointIndex: number = -1; // 设置区域顶点时的索引
     public zone: IZone | null = null; // 设置中的区域
-    public groups: string[] = []; // 当前地图关联组号
 
     // ===================================table
     public colCfg: any[] = [
@@ -178,9 +177,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         return { count, data };
     }
 
-    protected bindEvents(data: IMap) {
-        this.groups = <string[]>data.groupCode;
-
+    protected bindEvents() {
         this.mgr!.on('mapClickNode', (event: FMMapClickEvent) => {
             if (event.nodeType === fengmap.FMNodeType.NONE) {
                 return;

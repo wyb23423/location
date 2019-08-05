@@ -133,6 +133,13 @@ export default class History extends mixins(MapMixin) {
                     );
                 })
                 .then(({ prev, target, record }) => {
+                    // 标签离开了当前地图，移除
+                    if (!this.groups.includes(target.group)) {
+                        this.renderTags.delete(tagNo);
+                        return this.mgr && this.mgr.remove(tagNo);
+                    }
+
+                    // ===============================================
                     if (!(prev && this.renderTags.has(tagNo))) {
                         // 将标签添加到地图中
                         this.start(target, tagNo);

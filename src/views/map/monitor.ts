@@ -22,7 +22,7 @@ interface Pop {
     }
 })
 export default class Monitor extends mixins(MapMixin, TableMixin) {
-    public group: { [x: string]: IBaseStation[] } = {}; // 基站分组
+    public groupData: { [x: string]: IBaseStation[] } = {}; // 基站分组
     // 右下工具栏列表
     public tools: ToolItem[] = [
         { name: '2D', active: true, display: true },
@@ -134,7 +134,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
 
                 this.tagAnchor().then(data => {
                     this.baseAll = data;
-                    this.group = arr2obj(data, 'groupCode');
+                    this.groupData = arr2obj(data, 'groupCode');
                     this.initWebSoket();
                 });
             }
@@ -245,8 +245,6 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
     }
 
     private initWebSoket() {
-        const time = Date.now();
-
         let ip: string = location.host;
         if (process.env.NODE_ENV !== 'production') {
             const res = BASE_URL.match(/^http:\/\/([\w\d\.]+)(:\d+)?\/$/);
@@ -255,8 +253,9 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
             }
         }
 
-        this.ws = Object.keys(this.group).map(k => {
-            const ws = new WebSocket(`ws://${ip}/realtime/position`);
+        const time = Date.now();
+        this.ws = this.groups.map(k => {
+            const ws = new WebSocket(`ws://${ip}/realtime/position/${k}/${time}`);
             ws.onmessage = (event: MessageEvent) => {
                 const data: ITagInfo = JSON.parse(event.data);
                 if (this.tagAll[data.sTagNo]) {

@@ -9,11 +9,11 @@ import localforage from '@/assets/lib/localforage';
 
 export interface PositionItem extends Vector3 {
     time: number;
+    group: string;
 }
 export interface Fragment { [x: string]: PositionItem[]; }
 
-// const DEFAULT_FRAGMENT: number = 1200000;
-const DEFAULT_FRAGMENT: number = 300000;
+const DEFAULT_FRAGMENT: number = 1200000;
 @Component
 export default class ControlMixin extends Vue {
     @Prop() public date?: number[]; // 选择的时间范围
@@ -95,7 +95,7 @@ export default class ControlMixin extends Vue {
             .then(datas => {
                 if (!index) {
                     // 根据第一个片段数据量改变之后片段的时间长度
-                    this.fragmentLength = DEFAULT_FRAGMENT * 1000 / (datas.length || 1000);
+                    this.fragmentLength = DEFAULT_FRAGMENT * 10000 / (datas.length || 10000);
                 }
                 this.hasData = true;
 
@@ -169,7 +169,8 @@ export default class ControlMixin extends Vue {
                         x: +v.position[1],
                         y: +v.position[2],
                         z: +v.position[3] || 0,
-                        time: new Date((<string>v.time)).getTime() + offset
+                        time: new Date((<string>v.time)).getTime() + offset,
+                        group: v.sGroupNo
                     });
                 }
             });
