@@ -133,10 +133,14 @@ export default class History extends mixins(MapMixin) {
                     );
                 })
                 .then(({ prev, target, record }) => {
-                    // 标签离开了当前地图，移除
+                    // 标签此时不在当前地图
                     if (!this.groups.includes(target.group)) {
-                        this.renderTags.delete(tagNo);
-                        return this.mgr && this.mgr.remove(tagNo);
+                        if (this.mgr) {
+                            this.mgr.remove(tagNo); // 移除标签
+                            this.mgr.lineMgr.remove(tagNo); // 移除对应的轨迹线
+                        }
+
+                        return this.renderTags.delete(tagNo); // 移除渲染记录
                     }
 
                     // ===============================================
