@@ -11,7 +11,9 @@
                     :disabled="isPlaying"
                     @change="change"
                     style="min-width: 200px"
+                    multiple-limit="5"
                     multiple
+                    collapse-tags
                 >
                     <el-option
                         v-for="v of tags"
