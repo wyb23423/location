@@ -9,9 +9,9 @@
                 <el-select
                     v-model="tagNos"
                     :disabled="isPlaying"
+                    :multiple-limit="5"
                     @change="change"
                     style="min-width: 200px"
-                    multiple-limit="5"
                     multiple
                     collapse-tags
                 >
