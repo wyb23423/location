@@ -9,7 +9,8 @@ import { Message } from 'element-ui';
 export async function get(
     url: string | RequestParams,
     params: any = {},
-    headers: any = {}
+    headers: any = {},
+    signal?: AbortSignal
 ): Promise<ResponseData> {
     const req = parseArgs(url, true, params, headers);
     if (typeof req === 'string') {
@@ -18,19 +19,24 @@ export async function get(
         return Promise.reject(req);
     }
 
-    const res = await fetch(req.url, {
+
+    const init: RequestInit = {
         headers: req.headers,
         credentials: 'include',
         method: 'GET'
-    });
+    };
+    if (signal) {
+        init.signal = signal;
+    }
 
-    return parseRes(res);
+    return parseRes(await fetch(req.url, init));
 }
 
 export async function post(
     url: string | RequestParams,
     params: any = {},
-    headers: any = {}
+    headers: any = {},
+    signal?: AbortSignal
 ): Promise<ResponseData> {
     const req = parseArgs(url, false, params, headers);
     if (typeof req === 'string') {
@@ -39,19 +45,18 @@ export async function post(
         return Promise.reject(req);
     }
 
-    try {
-        const res = await fetch(req.url, {
-            headers: req.headers,
-            body: req.params,
-            credentials: 'include',
-            method: 'POST'
-        });
-        return parseRes(res);
-    } catch (e) {
-        console.error(e);
-
-        return Promise.reject(e);
+    const init: RequestInit = {
+        headers: req.headers,
+        body: req.params,
+        credentials: 'include',
+        method: 'POST'
+    };
+    if (signal) {
+        init.signal = signal;
     }
+
+    return parseRes(await fetch(req.url, init));
+
 }
 
 async function parseRes(res: Response) {

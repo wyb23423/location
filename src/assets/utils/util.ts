@@ -1,3 +1,4 @@
+import localforage from '@/assets/lib/localforage';
 
 /**
  * 轮询等待条件达成
@@ -155,7 +156,7 @@ export function getPosition(e: MouseEvent | TouchEvent) {
 }
 
 /**
- * 讲一个时间段转化为"dd:hh:mm:ss"的形式
+ * 将一个时间段转化为"dd:hh:mm:ss"的形式
  * @param range 时间范围
  * @param progress 需转化的时间占range的比例
  */
@@ -188,26 +189,13 @@ export function formatTime(range: number, progress: number) {
     return tip.map((v, i) => (i ? v.toString().padStart(2, '0') : v)).join(':');
 }
 
-/**
- * 为方法添加try-catch块
- * @param errorHandler 出错时的处理函数
- */
-// export function TryCatch(errorHandler?: (e?: Error) => any) {
-//     return (
-//         prototype: IJson,
-//         name: string | symbol,
-//         descriptor: TypedPropertyDescriptor<(...args: any[]) => any>
-//     ) => {
-//         const func = descriptor.value;
-//         // tslint:disable-next-line: space-before-function-paren
-//         descriptor.value = function (this: any, ...args: any[]) {
-//             try {
-//                 return func ? func.apply(this, args) : null;
-//             } catch (e) {
-//                 return errorHandler ? errorHandler.call(this, e) : null;
-//             }
-//         };
 
-//         return descriptor;
-//     };
-// }
+export function localforageGetItem<T>(key: string): Promise<T> {
+    return localforage.getItem<T>(key)
+        .then(data => {
+            if (data == null) {
+                return Promise.reject();
+            }
+            return data;
+        });
+}

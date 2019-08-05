@@ -17,14 +17,15 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
     }
 
     public remove(name?: string | number) {
+        this.find(name).forEach(v => {
+            v.stopMoveTo();
+            const layer = this.findLayerByMarker(v);
+            layer && layer.removeMarker(v);
+        });
+
         if (name == null) {
-            this.layers.forEach(layer => layer.removeAll());
             this.markers.clear();
-        } else if (this.markers.has(name)) {
-            (<T[]>this.markers.get(name)).forEach(v => {
-                const layer = this.findLayerByMarker(v);
-                layer && layer.removeMarker(v);
-            });
+        } else {
             this.markers.delete(name);
         }
     }

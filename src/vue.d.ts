@@ -25,7 +25,7 @@ interface Action {
 }
 
 interface WorkerObj {
-    postMessage(message: string, args?: any[]): Promise<any>;
+    postMessage<T = any>(message: string, args?: any[]): Promise<T>;
     postAll(args?: Array<string | Args>): Promise<any[]>;
     register(actions: Action | Action[]): void;
     unregister(message: string | string[]): void;

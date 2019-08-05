@@ -9,7 +9,8 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
     public activeNames: string[] = ['info', 'add'];
     public pointIndex: number = -1; // 设置区域顶点时的索引
     public zone: IZone | null = null; // 设置中的区域
-    public groups: string[] = [];
+    public groups: string[] = []; // 当前地图关联组号
+
     // ===================================table
     public colCfg: any[] = [
         { prop: 'name', label: '区域', sortable: true, width: 90 },

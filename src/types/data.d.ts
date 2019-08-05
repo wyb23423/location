@@ -118,6 +118,7 @@ declare interface RequestParams {
     body?: any;
     data?: any;
     headers?: any;
+    signal?: AbortSignal; // 用于中止请求
 }
 // 响应数据
 declare interface ResponseData {

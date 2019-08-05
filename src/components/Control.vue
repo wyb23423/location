@@ -6,40 +6,46 @@
                 :class="$style.item"
                 style="margin-right: 20px;"
             >
-                <app-select
-                    url="/api/tag/getall"
+                <el-select
                     v-model="tagNos"
-                    :keys="{ id: 'tagNo', name: 'name' }"
-                    :multiple="true"
-                    :disabled="isStart"
-                    @change="change($event, true)"
+                    :disabled="isPlaying"
+                    @change="change"
                     style="min-width: 200px"
-                ></app-select>
+                    multiple
+                >
+                    <el-option
+                        v-for="v of tags"
+                        :key="v.id"
+                        :value="v.tagNo"
+                        :label="v.name"
+                    ></el-option>
+                </el-select>
                 <el-date-picker
                     v-model="dateProxy"
-                    :disabled="isStart"
+                    :disabled="isPlaying"
                     type="datetimerange"
+                    value-format="timestamp"
                     range-separator="至"
                     start-placeholder="开始日期"
                     end-placeholder="结束日期"
-                    @change="change($event, false)"
+                    @change="change"
                     style="margin: 0 20px;"
                 >
                 </el-date-picker>
-                <el-switch
+                <!-- <el-switch
                     v-model="showPath"
                     active-text="显示"
                     inactive-text="隐藏"
-                    :disabled="!path"
+                    :disabled="!hasData"
                     @change="switchPathVisible"
                     style="flex-shrink: 0;"
                 >
-                </el-switch>
+                </el-switch> -->
             </div>
             <div class="flex-center" :class="$style.item">
                 <el-button
                     :icon="
-                        isStart ? 'el-icon-video-pause' : 'el-icon-video-play'
+                        isPlaying ? 'el-icon-video-pause' : 'el-icon-video-play'
                     "
                     :disabled="!canPlay"
                     type="text"
@@ -47,8 +53,8 @@
                     style="font-size: 24px"
                 ></el-button>
                 <el-button
+                    :disabled="!hasData"
                     icon="el-icon-refresh"
-                    :disabled="!canPlay || !path"
                     type="text"
                     @click="rePlay"
                     style="font-size: 24px"
@@ -59,8 +65,8 @@
                         v-model="progress"
                         :disabled="!canPlay"
                         :format-tooltip="format"
-                        @input="$emit('progress', $event)"
-                        @change="$emit('play', $event)"
+                        @input="$emit('progress')"
+                        @change="$emit('play')"
                         style="flex-grow: 1; padding: 0 15px"
                     ></el-slider>
                     <span>{{ timeRange | formatTime(100) }}</span>
@@ -72,120 +78,65 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import Component from 'vue-class-component';
-import Select from './Select.vue';
+import Component, { mixins } from 'vue-class-component';
 import { formatTime } from '@/assets/utils/util';
+import ControlMixin, { PositionItem } from '@/mixins/control';
 import { Prop } from 'vue-property-decorator';
-import { WorkerObj } from '@/vue';
-
-export interface PositionItem extends Vector3 {
-    time: number;
-}
-
-export interface HistoryPath {
-    id: string;
-    position: PositionItem[];
-    icon: string;
-}
 
 @Component({
-    components: { 'app-select': Select },
     filters: { formatTime }
 })
-export default class Control extends Vue {
-    @Prop() public date!: Date[] | null;
-    @Prop() public path!: HistoryPath[] | null; // 历史路径
+export default class Control extends mixins(ControlMixin) {
+    @Prop() public tags!: ITag[];
 
-    public tagNos: string[] = [];
-    public isStart: boolean = false;
-    public progress: number = 0;
-    public showPath: boolean = false;
-
-    // tslint:disable-next-line:ban-types
+    public showPath: boolean = false; // 是否显示轨迹
     public format: ((value: number) => string) | null = null; // 格式化 tooltip message
+    public isPlaying: boolean = false; // 是否正在播放
 
-    private timer?: number;
-    private tags?: Array<{ id: string; data: ITag; name: string }>;
-
-    public get dateProxy() {
-        return this.date;
-    }
-    public set dateProxy(date: Date[] | null) {
-        this.$emit('update:date', date);
-    }
-
-    public get canPlay() {
-        return !!(this.tagNos.length && this.date && this.date.length >= 2);
-    }
-    public get timeRange() {
-        if (this.date && this.date.length >= 2) {
-            return this.date[1].getTime() - this.date[0].getTime();
-        }
-
-        return 0;
-    }
+    private timer?: number; // 播放定时器
 
     public created() {
         this.format = (value: number) => formatTime(this.timeRange, value);
     }
     public destroyed() {
-        this._end();
+        this.pause();
     }
 
     // 切换路径显示状态
     public switchPathVisible(visible: boolean) {
-        this.showPath = visible;
-        this.$emit('pathVisible', visible);
+        // this.showPath = visible;
+        // this.$emit('pathVisible', visible);
     }
     // 选择的标签及日期变化时的回调函数
-    public change(data: any[] | null, isTag: boolean) {
-        this.$emit('update:path', null);
+    public change() {
+        this.hasData = false;
         this.progress = 0;
         this.switchPathVisible(false);
-
-        if (isTag) {
-            this.tags = data || undefined;
-        }
     }
     // 重播放
     public rePlay() {
-        this._end().play();
+        this.pause();
+        Promise.resolve().then(this.play.bind(this));
     }
     public play() {
-        if (this.isStart) {
-            // 暂停
-            this._end(this.progress);
-            this.$emit('pause');
+        if (this.isPlaying) {
+            // ========================暂停
+            this.pause(this.progress).$emit('pause');
         } else {
-            if (this.path) {
+            if (this.hasData) {
+                this.isPlaying = true;
                 this._play();
-            } else if (this.tags) {
-                // 重新获取历史记录
-                this.isStart = true; // 禁止改变时间及标签
+            } else if (this.tagNos.length) {
+                // =======================重新获取历史记录
 
-                this.$http
-                    .post({
-                        url: '/api/tag/queryTagHistory',
-                        body: {
-                            startTime: this.date![0],
-                            endTime: this.date![1],
-                            tagNos: this.tagNos
-                        },
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then((res: ResponseData) => {
-                        const datas: ITagInfo[] = res.pagedData.datas;
-                        if (!datas.length) {
-                            return Promise.reject();
-                        }
-                        return Promise.resolve(datas);
-                    })
-                    .then(this.parsePath.bind(this))
-                    .catch((e: any) => {
-                        this.$message.error('未查询到历史轨迹');
-                        this.isStart = false;
+                // 立即进入播放状态, 禁止修改时间及标签
+                this.isPlaying = true;
+
+                this.loadData()
+                    .then(this._play.bind(this))
+                    .catch((message: string) => {
+                        message && this.$message.error(message);
+                        this.isPlaying = false;
                     });
             } else {
                 this.$message.warning('请选择标签');
@@ -193,50 +144,16 @@ export default class Control extends Vue {
         }
     }
 
-    private parsePath(datas: ITagInfo[]) {
-        const currPath: HistoryPath[] = [];
-        let loadWorker: any = this.createWorker(); // 将处理返回数据的计算放到worker中执行
+    // 暂停播放
+    public pause(progress: number = 0) {
+        if (this.timer) {
+            cancelAnimationFrame(this.timer);
+            this.timer = undefined;
+        }
+        this.progress = progress;
+        this.isPlaying = false;
 
-        // 分段处理返回的历史记录
-        const loop = () => {
-            loadWorker
-                .postMessage('loadPath', [datas.splice(0, 1000), this.tags])
-                .then((fragment: HistoryPath[]) => {
-                    if (fragment.length) {
-                        for (const v of fragment) {
-                            const f = currPath.find(p => p.id === v.id);
-                            if (f) {
-                                f.position.push(...v.position);
-                            } else {
-                                currPath.push(v);
-                            }
-                        }
-                        this.$emit('update:path', currPath);
-
-                        // 绘制路径
-                        if (this.showPath) {
-                            this.$emit('pathVisible', false);
-                            this.$emit('pathVisible', true);
-                        }
-
-                        // 开始播放
-                        if (currPath.length === fragment.length) {
-                            this._play();
-                        }
-                    }
-
-                    if (datas.length) {
-                        loop();
-                    } else {
-                        this.$emit('loaded');
-                        loadWorker.close();
-                        loadWorker = null;
-                    }
-                })
-                .catch(console.log);
-        };
-
-        loop();
+        return this;
     }
 
     private _play() {
@@ -248,12 +165,12 @@ export default class Control extends Vue {
         let time = Date.now();
         const onPlay = () => {
             const now = Date.now();
-            if (this.isStart) {
+            if (this.isPlaying) {
                 this.progress += ((now - time) / this.timeRange) * 100;
             }
 
             if (this.progress >= 100) {
-                this._end();
+                this.pause();
             } else {
                 this.timer = requestAnimationFrame(onPlay);
             }
@@ -261,72 +178,8 @@ export default class Control extends Vue {
             time = now;
         };
 
-        this.isStart = true;
         onPlay();
-        this.$emit('play', this.progress);
-    }
-
-    private _end(progress: number = 0) {
-        this.progress = progress;
-        this.isStart = false;
-        if (this.timer) {
-            cancelAnimationFrame(this.timer);
-            this.timer = undefined;
-        }
-
-        return this;
-    }
-
-    private createWorker() {
-        let worker: WorkerObj | null = this.$worker.create([
-            {
-                message: 'loadPath',
-                func(
-                    info: ITagInfo[],
-                    tags?: Array<{ id: string; data: ITag; name: string }>
-                ) {
-                    const path: { [id: string]: PositionItem[] } = {};
-                    info.forEach(v => {
-                        const id = v.position[0];
-                        const data: PositionItem = {
-                            x: +v.position[1],
-                            y: +v.position[2],
-                            z: +v.position[3] || 0,
-                            time: new Date(<string>v.time).getTime()
-                        };
-                        if (data.x >= 0 && data.y >= 0 && data.z >= 0) {
-                            (path[id] || (path[id] = [])).push(data);
-                        }
-                    });
-
-                    const tmp: HistoryPath[] = [];
-                    if (tags) {
-                        for (const id in path) {
-                            if (path.hasOwnProperty) {
-                                const position = path[id];
-                                const tag = tags.find(v => v.id === id);
-                                if (tag) {
-                                    tmp.push({
-                                        id,
-                                        position,
-                                        icon: tag.data.photo
-                                    });
-                                }
-                            }
-                        }
-                    }
-
-                    return tmp;
-                }
-            }
-        ]);
-
-        return {
-            ...worker,
-            close() {
-                worker = null;
-            }
-        };
+        this.$emit('play');
     }
 }
 </script>
