@@ -255,22 +255,17 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
             }
         }
 
-        // this.ws = Object.keys(this.group).map(k => {
-        const ws = new WebSocket(`ws://${ip}/realtime/position`);
-        ws.onopen = () => {
-            ws.send(JSON.stringify(Object.keys(this.group)));
-        };
-        ws.onmessage = (event: MessageEvent) => {
-            const data: ITagInfo = JSON.parse(event.data);
-            if (this.tagAll[data.sTagNo]) {
-                this.move(data);
-            }
-        };
+        this.ws = Object.keys(this.group).map(k => {
+            const ws = new WebSocket(`ws://${ip}/realtime/position`);
+            ws.onmessage = (event: MessageEvent) => {
+                const data: ITagInfo = JSON.parse(event.data);
+                if (this.tagAll[data.sTagNo]) {
+                    this.move(data);
+                }
+            };
 
-        //     return ws;
-        // });
-
-        this.ws = [ws];
+            return ws;
+        });
     }
 
     // 获取标签位置信息后的处理函数
