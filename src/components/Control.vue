@@ -32,15 +32,14 @@
                     style="margin: 0 20px;"
                 >
                 </el-date-picker>
-                <!-- <el-switch
-                    v-model="showPath"
+                <el-switch
+                    v-model="showPathProxy"
                     active-text="显示"
                     inactive-text="隐藏"
                     :disabled="!hasData"
-                    @change="switchPathVisible"
                     style="flex-shrink: 0;"
                 >
-                </el-switch> -->
+                </el-switch>
             </div>
             <div class="flex-center" :class="$style.item">
                 <el-button
@@ -88,12 +87,19 @@ import { Prop } from 'vue-property-decorator';
 })
 export default class Control extends mixins(ControlMixin) {
     @Prop() public tags!: ITag[];
+    @Prop() public showPath!: boolean; // 是否显示轨迹
 
-    public showPath: boolean = false; // 是否显示轨迹
     public format: ((value: number) => string) | null = null; // 格式化 tooltip message
     public isPlaying: boolean = false; // 是否正在播放
 
     private timer?: number; // 播放定时器
+
+    public get showPathProxy() {
+        return this.showPath;
+    }
+    public set showPathProxy(visible: boolean) {
+        this.$emit('update:showPath', visible);
+    }
 
     public created() {
         this.format = (value: number) => formatTime(this.timeRange, value);
@@ -101,17 +107,10 @@ export default class Control extends mixins(ControlMixin) {
     public destroyed() {
         this.pause();
     }
-
-    // 切换路径显示状态
-    public switchPathVisible(visible: boolean) {
-        // this.showPath = visible;
-        // this.$emit('pathVisible', visible);
-    }
     // 选择的标签及日期变化时的回调函数
     public change() {
-        this.hasData = false;
+        this.hasData = this.showPathProxy = false;
         this.progress = 0;
-        this.switchPathVisible(false);
     }
     // 重播放
     public rePlay() {

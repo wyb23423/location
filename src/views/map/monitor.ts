@@ -35,11 +35,11 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
     public findTarget: string = ''; // 查询标签的标签号
     public showPath: boolean = false; // 是否显示轨迹
 
+    protected renderTags: { [x: string]: number } = {}; // 已经在地图上的标签, {tagNo: timer}
+
     private baseAll: IBaseStation[] = []; // 基站列表
     private tagAll: { [x: string]: ITag } = {}; // 标签
     private ws: WebSocket[] = [];
-    private renderTags: { [x: string]: number } = {}; // 已经在地图上的标签, {tagNo: timer}
-
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
 
     public created() {
@@ -123,24 +123,6 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         }
 
         this.findTarget = '';
-    }
-
-    public createOrRemovePath() {
-        if (!this.mgr) {
-            return;
-        }
-
-        if (this.showPath) {
-            Object.keys(this.renderTags).forEach(id => {
-                this.mgr!.addLine([], {
-                    lineType: fengmap.FMLineType.FULL,
-                    lineWidth: 2,
-                    smooth: false
-                }, id);
-            });
-        } else {
-            this.mgr.lineMgr.remove();
-        }
     }
 
     // ==================================
@@ -273,17 +255,22 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
             }
         }
 
-        this.ws = Object.keys(this.group).map(k => {
-            const ws = new WebSocket(`ws://${ip}/realtime/position/${k}/${time}`);
-            ws.onmessage = (event: MessageEvent) => {
-                const data: ITagInfo = JSON.parse(event.data);
-                if (this.tagAll[data.sTagNo]) {
-                    this.move(data);
-                }
-            };
+        // this.ws = Object.keys(this.group).map(k => {
+        const ws = new WebSocket(`ws://${ip}/realtime/position`);
+        ws.onopen = () => {
+            ws.send(JSON.stringify(Object.keys(this.group)));
+        };
+        ws.onmessage = (event: MessageEvent) => {
+            const data: ITagInfo = JSON.parse(event.data);
+            if (this.tagAll[data.sTagNo]) {
+                this.move(data);
+            }
+        };
 
-            return ws;
-        });
+        //     return ws;
+        // });
+
+        this.ws = [ws];
     }
 
     // 获取标签位置信息后的处理函数
@@ -303,21 +290,10 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
             if (timer) {
                 clearTimeout(timer);
                 this.mgr.show(tag.sTagNo, true);
-
-                const points: Vector3[] = [];
-                this.mgr.moveTo(
-                    tag.sTagNo, coord, 1,
-                    (v: Vector2) => {
-                        const p = this.pops.get(tag.sTagNo);
-                        p && p.update && p.update();
-
-                        points.push({ x: v.x, y: v.y, z: 0 });
-                        if (this.mgr && points.length >= 10) {
-                            this.mgr.appendLine(tag.sTagNo, points, true);
-                            points.length = 0;
-                        }
-                    }
-                );
+                this.moveTo(tag.sTagNo, coord, 1, () => {
+                    const p = this.pops.get(tag.sTagNo);
+                    p && p.update && p.update();
+                });
             } else {
                 // 第一次收到信号
                 const tagData: ITag = this.tagAll[tag.sTagNo];

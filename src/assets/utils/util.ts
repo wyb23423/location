@@ -180,10 +180,11 @@ export function formatTime(range: number, progress: number) {
     time = time % MINUTE_MS;
 
     const tip: number[] = [minute, Math.round(time / 1000)];
+    if (hour > 0) {
+        tip.unshift(hour);
+    }
     if (day > 0) {
         tip.unshift(day, hour);
-    } else if (hour > 0) {
-        tip.unshift(hour);
     }
 
     return tip.map((v, i) => (i ? v.toString().padStart(2, '0') : v)).join(':');

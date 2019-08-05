@@ -10,6 +10,7 @@
         <history-control
             ref="control"
             :date.sync="date"
+            :showPath.sync="showPath"
             :timeRange="timeRange"
             :tags="tags"
             :loadCall="loadCall"
@@ -17,7 +18,6 @@
             @play="onPlay"
             @progress="onProgress"
             @pause="onPause"
-            @pathVisible="switchVisible"
         ></history-control>
         <div v-if="isLoading" :class="$style.mark" class="flex-center">
             <i class="el-icon-loading"></i>
@@ -42,6 +42,8 @@ export default class History extends mixins(MapMixin) {
     public tags: ITag[] = [];
     public isLoading: boolean = false; // 是否当前进度的数据正在加载
 
+    protected renderTags: Set<string> = new Set(); // 已经在地图上的标签
+
     private next: PlayRecord = {}; // 下一个数据点
     private moving: Set<string> = new Set(); // 正在移动中的标签
     private fragmentIndex: number = -1; // 当前points所在的片段索引
@@ -57,7 +59,18 @@ export default class History extends mixins(MapMixin) {
     }
 
     public created() {
-        this.fetchTags();
+        this.$http
+            .get('/api/tag/getall', {
+                pageSize: 1000000,
+                currentPage: 1
+            })
+            .then(res => {
+                this.tags = (<ITag[]>res.pagedData.datas).map(v => {
+                    this.icons.set(v.tagNo, v.photo);
+                    return v;
+                });
+            })
+            .catch(console.log);
 
         this.loadCall = (control: Control, index: number) => {
             if (index === this.fragmentIndex && this.isLoading) {
@@ -76,15 +89,18 @@ export default class History extends mixins(MapMixin) {
         this.getFragment()
             .then(() => {
                 this.mgr && this.mgr.remove();
+
+                // 移除节点是异步操作
                 setTimeout(() => {
                     this.next = {};
                     this.moving.clear();
+                    this.renderTags.clear();
                 }, 100);
             })
             .catch(console.log);
     }
     // 播放中
-    public onProgress() {
+    public async onProgress() {
         if (this.fragmentIndex < 0) {
             return;
         }
@@ -92,92 +108,54 @@ export default class History extends mixins(MapMixin) {
         const oldFragmentIndex = this.fragmentIndex;
         const oldPoints = this.points;
 
-        this.getFragment()
-            .then(() => {
-                for (const [tagNo, pointsData] of Object.entries(this.points)) {
-                    if (this.moving.has(tagNo)) {
-                        continue;
+        try {
+            await this.getFragment();
+        } catch (e) {
+            return console.log(e);
+        }
+
+        for (const [tagNo, pointsData] of Object.entries(this.points)) {
+            if (this.moving.has(tagNo)) {
+                continue;
+            }
+
+            Promise.resolve()
+                .then(() => {
+                    if (!this.mgr) {
+                        return Promise.reject('地图不存在');
                     }
 
-                    Promise.resolve()
-                        .then(() => {
-                            if (!this.mgr) {
-                                return Promise.reject('地图不存在');
-                            }
-
-                            return this.parseProgress(
-                                pointsData,
-                                oldFragmentIndex,
-                                oldPoints[tagNo] || [],
-                                tagNo
-                            );
-                        })
-                        .then(({ prev, target, record }) => {
-                            if (!prev) {
-                                // 将标签添加到地图中
-                                this.start(target, tagNo);
-                            } else {
-                                const time =
-                                    target.time - prev.time + record.errorTime;
-                                this.mgr &&
-                                    this.mgr.moveTo(
-                                        tagNo,
-                                        target,
-                                        time / 1000,
-                                        undefined,
-                                        () => this.moving.delete(tagNo)
-                                    );
-
-                                this.moving.add(tagNo);
-
-                                record.index++;
-                                this.next[tagNo] = record;
-                            }
-                        })
-                        .catch(console.log);
-                }
-            })
-            .catch(console.log);
+                    return this.parseProgress(
+                        pointsData,
+                        oldFragmentIndex,
+                        oldPoints[tagNo] || [],
+                        tagNo
+                    );
+                })
+                .then(({ prev, target, record }) => {
+                    if (!(prev && this.renderTags.has(tagNo))) {
+                        // 将标签添加到地图中
+                        this.start(target, tagNo);
+                    } else {
+                        const time = target.time - prev.time + record.errorTime;
+                        this.moveTo(tagNo, target, time).then(() =>
+                            this.moving.delete(tagNo)
+                        );
+                        this.moving.add(tagNo);
+                        record.index++;
+                        this.next[tagNo] = record;
+                    }
+                })
+                .catch(console.log);
+        }
     }
 
     // 暂停
     public onPause() {
-        if (this.mgr) {
-            this.mgr.stopMoveTo();
-        }
-
-        return this;
+        this.mgr && this.mgr.stopMoveTo();
     }
 
-    // 切换路径显示状态
-    public switchVisible(visible: boolean) {
-        // if (this.path && this.mgr) {
-        //     if (visible) {
-        //         for (const v of this.path) {
-        //             const points = [v.position[0]];
-        //             for (
-        //                 let i = 1;
-        //                 i < v.position.length - 1;
-        //                 i += Math.ceil(v.position.length / 300)
-        //             ) {
-        //                 points.push(v.position[i]);
-        //             }
-        //             points.push(v.position[v.position.length - 1]);
-        //             this.mgr.addLine(
-        //                 points,
-        //                 {
-        //                     lineType: fengmap.FMLineType.FULL,
-        //                     lineWidth: 2
-        //                 },
-        //                 v.id
-        //             );
-        //         }
-        //     } else {
-        //         this.mgr.lineMgr.remove();
-        //     }
-        // }
-    }
-
+    // 进度更新时获取相关数据点
     private async parseProgress(
         pointsData: PositionItem[],
         oldFragmentIndex: number,
@@ -189,24 +167,27 @@ export default class History extends mixins(MapMixin) {
             errorTime: 0
         };
 
-        let target: PositionItem | undefined | null;
-        let prev: PositionItem | undefined | null;
+        let target: PositionItem | undefined | null; // 本次数据点
+        let prev: PositionItem | undefined | null; // 上一次数据点
         if (oldFragmentIndex === this.fragmentIndex) {
+            // ====================================未更换数据片段
             target = pointsData[record.index];
             prev = pointsData[record.index - 1];
         } else {
+            // ======================================已更换数据片段
             target = pointsData[0];
             prev = old ? old.pop() : null;
         }
 
         if (!target) {
             if (
-                !pointsData.length ||
-                (<Control>this.$refs.control).count <= this.fragmentIndex + 1
+                !pointsData.length || // 当前数据片段数据为空
+                (<Control>this.$refs.control).count <= this.fragmentIndex + 1 // 播放完毕
             ) {
                 this.mgr && this.mgr.remove(tagNo);
                 return Promise.reject();
             } else {
+                // =========================时间点落在一个数据片段最后一个数据及下一个数据片段开始之间
                 try {
                     const data = await localforage.getItem<Fragment>(
                         this.fragmentIndex + 1 + ''
@@ -241,9 +222,7 @@ export default class History extends mixins(MapMixin) {
                     x: target.x,
                     y: target.y,
                     height: 0.5,
-                    url:
-                        this.icons.get(tagNo) ||
-                        '/image/d7e6933a6db64df798e6dc027d2532a7.png',
+                    url: this.icons.get(tagNo),
                     size: 48
                 },
                 tagNo,
@@ -251,6 +230,7 @@ export default class History extends mixins(MapMixin) {
                 false
             );
 
+            this.renderTags.add(tagNo);
             this.next[tagNo] = {
                 index: 1,
                 errorTime: 0
@@ -258,21 +238,7 @@ export default class History extends mixins(MapMixin) {
         }
     }
 
-    private fetchTags() {
-        this.$http
-            .get('/api/tag/getall', {
-                pageSize: 1000000,
-                currentPage: 1
-            })
-            .then(res => {
-                this.tags = (<ITag[]>res.pagedData.datas).map(v => {
-                    this.icons.set(v.tagNo, v.photo);
-                    return v;
-                });
-            })
-            .catch(console.log);
-    }
-
+    // 获取数据片段
     private getFragment() {
         return Promise.resolve()
             .then(() => {
@@ -289,6 +255,7 @@ export default class History extends mixins(MapMixin) {
             .catch(this.loading.bind(this));
     }
 
+    // 数据加载中...
     private loading() {
         this.isLoading = true;
         (<Control>this.$refs.control).pause();

@@ -22,7 +22,6 @@
             active-color="#13ce66"
             inactive-color="#ff4949"
             :class="$style.switch"
-            @change="createOrRemovePath"
         ></el-switch>
 
         <div ref="map" style="height: 100%; overflow: hidden"></div>
