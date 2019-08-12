@@ -38,7 +38,6 @@
                     v-model="form"
                     :form-height="formHeight"
                     :groups="groups"
-                    ref="add"
                 >
                     <el-form-item
                         v-for="(v, index) in form.position"

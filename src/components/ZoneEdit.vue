@@ -1,7 +1,6 @@
 <template>
     <el-form
         :model="zone"
-        ref="form"
         label-width="90px"
         style="overflow: auto;"
         :style="{ 'max-height': formHeight }"
@@ -71,8 +70,6 @@ export default class ZoneEidt extends Vue {
     @Prop({ default: () => 'none' }) public readonly formHeight!: string;
     @Prop() public readonly groups!: string[];
     @Model('change') public readonly value!: IZone;
-
-    @Ref('form') public readonly form!: ElForm;
 
     public zone: IZone = <IZone>{};
 

@@ -114,16 +114,14 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
     }
 
     // 添加区域
-    public async onSubmit() {
-        try {
-            await (<any>this.zoneForm).form.validate();
+    public onSubmit() {
+        if (!this.form.name) {
+            return this.$message.error('区域名称不能为空');
+        }
 
-            // position数组最后一项始终为用于占位的null
-            if (this.form.position.length < 4) {
-                return this.$message.warning('区域坐标最少设置3个');
-            }
-        } catch {
-            return;
+        // position数组最后一项始终为用于占位的null
+        if (this.form.position.length < 4) {
+            return this.$message.warning('区域坐标最少设置3个');
         }
 
         const position = <TPosition>[...this.form.position];
@@ -214,18 +212,14 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         this.$confirm('请确定当前区域范围', '提示', { type: 'info' })
             .then(() => this.submitAddZone(position))
             .then(() => {
+                position.forEach(<any>this.setPosition, this); // 移除设置的顶点
+                this.form.name = '';
+
                 this.$message.success('添加成功');
                 this.refresh(this.page);
             })
             .catch(console.log)
-            .finally(() => {
-                position.forEach(<any>this.setPosition, this); // 移除设置的顶点
-                if (this.mgr) {
-                    this.mgr.remove(this.form.name);
-                }
-
-                (<any>this.zoneForm).form.resetFields();
-            });
+            .finally(() => this.mgr && this.mgr.remove(this.form.name));
     }
 
     // 组织并提交数据(添加数据)
