@@ -18,7 +18,7 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
 
     public remove(name?: string | number) {
         this.find(name).forEach(v => {
-            v.stopMoveTo();
+            v.stopMoveTo && v.stopMoveTo();
             const layer = this.findLayerByMarker(v);
             layer && layer.removeMarker(v);
         });

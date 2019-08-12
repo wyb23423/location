@@ -2,10 +2,17 @@
 import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
 import MapMixin from '@/mixins/map';
-import { ElForm } from 'element-ui/types/form';
+import ZoneEidt from '@/components/ZoneEdit.vue';
+import { Ref } from 'vue-property-decorator';
 
-@Component
+@Component({
+    components: {
+        'zone-input': ZoneEidt
+    }
+})
 export default class Fence extends mixins(TableMixin, MapMixin) {
+    @Ref('add') public readonly zoneForm!: ZoneEidt;
+
     public activeNames: string[] = ['info', 'add'];
     public pointIndex: number = -1; // 设置区域顶点时的索引
     public zone: IZone | null = null; // 设置中的区域
@@ -27,11 +34,10 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
     // =======================form
     public form: any = {
         name: '',
-        mode: 0,
+        mode: 1,
         position: [null],
         open: true,
-        group1: '',
-        group2: ''
+        groupCode: []
     };
     public get formHeight() {
         return `calc(${100 / this.$store.state.rootScale}vh - 500px)`;
@@ -110,7 +116,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
     // 添加区域
     public async onSubmit() {
         try {
-            await (<ElForm>this.$refs.form).validate();
+            await (<any>this.zoneForm).form.validate();
 
             // position数组最后一项始终为用于占位的null
             if (this.form.position.length < 4) {
@@ -206,50 +212,37 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
     // 确认并添加区域
     private put(position: TPosition) {
         this.$confirm('请确定当前区域范围', '提示', { type: 'info' })
-            .then(() => this.assemble(position))
-            .then((data: IZone) => {
-                position.forEach(<any>this.setPosition, this);
-                if (this.mgr) {
-                    data.position = JSON.stringify(position.map(v => this.mgr!.getCoordinate(v)));
-                } else {
-                    this.$message.error('地图不存在, 提交失败!');
-                    return Promise.reject('地图不存在');
-                }
-                Reflect.deleteProperty(data, 'id');
-
-                return this.$http.post('/api/zone/addZone', data, { 'Content-Type': 'application/json' });
-            })
+            .then(() => this.submitAddZone(position))
             .then(() => {
                 this.$message.success('添加成功');
                 this.refresh(this.page);
             })
             .catch(console.log)
             .finally(() => {
+                position.forEach(<any>this.setPosition, this); // 移除设置的顶点
                 if (this.mgr) {
                     this.mgr.remove(this.form.name);
                 }
 
-                (<ElForm>this.$refs.form).resetFields();
+                (<any>this.zoneForm).form.resetFields();
             });
     }
 
-    // 组织添加区域时的数据
-    private assemble(position: TPosition) {
+    // 组织并提交数据(添加数据)
+    private submitAddZone(position: TPosition): Promise<ResponseData> {
         const now = Date.now();
-        const data: IZone = {
-            id: 0,
-            position,
-            name: this.form.name,
-            enable: this.form.open ? 1 : 0,
-            createTime: now,
-            updateTime: now,
-            mode: this.form.mode,
-            group: ''
-        };
-        if (this.form.group1 && this.form.group2) {
-            data.group = this.form.group1 + ',' + this.form.group2;
+        if (!this.mgr) {
+            this.$message.error('地图不存在, 提交失败!');
+            return Promise.reject('地图不存在');
         }
 
-        return data;
+        const data: IZone = Object.assign({}, this.form, {
+            position: JSON.stringify(position.map(v => this.mgr!.getCoordinate(v))),
+            enable: this.form.open ? 1 : 0,
+            createTime: now,
+            updateTime: now
+        });
+
+        return this.$http.post('/api/zone/addZone', data, { 'Content-Type': 'application/json' });
     }
 }

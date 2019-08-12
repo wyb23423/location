@@ -34,52 +34,12 @@
                 name="add"
                 v-if="!!permission.post"
             >
-                <el-form
-                    :model="form"
-                    ref="form"
-                    label-width="90px"
-                    :class="$style.form"
-                    :style="{ 'max-height': formHeight }"
+                <zone-input
+                    v-model="form"
+                    :form-height="formHeight"
+                    :groups="groups"
+                    ref="add"
                 >
-                    <el-form-item label="区域名称" required>
-                        <el-input
-                            v-model="form.name"
-                            placeholder="请输入名称"
-                        ></el-input>
-                    </el-form-item>
-                    <el-form-item label="区域模式">
-                        <el-select v-model="form.mode" placeholder="请选择">
-                            <el-option label="进入区域" :value="0"></el-option>
-                            <el-option label="离开区域" :value="1"></el-option>
-                            <el-option
-                                label="切换区域"
-                                :value="2"
-                                v-if="groups.length >= 2"
-                            ></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <template v-if="form.mode === 2">
-                        <el-form-item label="基站分组1" required prop="group1">
-                            <el-select v-model="form.group1">
-                                <el-option
-                                    v-for="v of groups"
-                                    :key="v"
-                                    :value="v"
-                                    :disabled="v === form.group2"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="基站分组2" required prop="group2">
-                            <el-select v-model="form.group2">
-                                <el-option
-                                    v-for="v of groups"
-                                    :key="v"
-                                    :value="v"
-                                    :disabled="v === form.group1"
-                                ></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </template>
                     <el-form-item
                         v-for="(v, index) in form.position"
                         :label="'区域坐标' + (index + 1)"
@@ -96,15 +56,7 @@
                             {{ v ? JSON.stringify(v) : '' }}
                         </span>
                     </el-form-item>
-                    <el-form-item label="启动">
-                        <el-switch
-                            v-model="form.open"
-                            active-text="true"
-                            inactive-text="false"
-                        >
-                        </el-switch>
-                    </el-form-item>
-                </el-form>
+                </zone-input>
                 <el-button
                     @click="onSubmit"
                     type="success"
@@ -122,29 +74,7 @@
                 :modal-append-to-body="false"
                 @close="zone = null"
             >
-                <el-form label-width="auto" ref="form">
-                    <el-form-item label="区域名称" required>
-                        <el-input
-                            v-model="zone.name"
-                            style="width: 70%"
-                        ></el-input>
-                    </el-form-item>
-                    <el-form-item label="区域模式">
-                        <el-select v-model="zone.mode" placeholder="请选择">
-                            <el-option label="进入区域" :value="0"></el-option>
-                            <el-option label="离开区域" :value="1"></el-option>
-                            <el-option label="切换区域" :value="2"></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="启动">
-                        <el-switch
-                            v-model="zone.open"
-                            active-text="true"
-                            inactive-text="false"
-                        >
-                        </el-switch>
-                    </el-form-item>
-                </el-form>
+                <zone-input v-model="zone" :groups="groups"> </zone-input>
 
                 <template slot="footer">
                     <el-button @click="zone = null">取 消</el-button>
@@ -189,9 +119,6 @@
     & div[role='tabpanel'] {
         padding: 10px;
     }
-}
-.form {
-    overflow: auto;
 }
 .submit {
     height: 50px;

@@ -245,11 +245,13 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
     }
 
     private initWebSoket() {
-        let ip: string = location.host;
+        let ip: string = location.hostname;
         if (process.env.NODE_ENV !== 'production') {
             const res = BASE_URL.match(/^http:\/\/([\w\d\.]+)(:\d+)?\/$/);
             if (res) {
                 ip = res[1];
+            } else {
+                return console.error('域名解析失败');
             }
         }
 
