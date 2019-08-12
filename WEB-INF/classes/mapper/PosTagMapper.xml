@@ -599,6 +599,8 @@
   <select id="selectWithPage" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
     from pos_tag
     <where>
     	<if test="filter.id != null and filter.id != ''">
