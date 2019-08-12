@@ -52,9 +52,7 @@
             <mvc:exclude-mapping path="/config.json"/>
             <mvc:exclude-mapping path="/css/**"/>
             <mvc:exclude-mapping path="/js/**"/>
-            <mvc:exclude-mapping path="/data/**"/>
             <mvc:exclude-mapping path="/lib/**"/>
-            <mvc:exclude-mapping path="/images/**"/>
             <mvc:exclude-mapping path="/fonts/**"/>
 
             <bean class="com.pos.inhouse.web.interceptor.AuthInterceptor"></bean>

@@ -160,21 +160,21 @@
 		    <artifactId>javabuilder</artifactId>  
 		    <version>1.0</version>  
 		    <scope>system</scope>  
-		    <systemPath>D:\Personal\inhouse\libs\javabuilder.jar</systemPath>  
+		    <systemPath>D:\Workspace\inhouse\libs\javabuilder.jar</systemPath>  
 		</dependency>
 		<dependency>  
 		    <groupId>OneDim2SLocation</groupId>  
 		    <artifactId>OneDim2SLocation</artifactId>  
 		    <version>1.0</version>  
 		    <scope>system</scope>  
-		    <systemPath>D:\Personal\inhouse\libs\OneDim2SLocation.jar</systemPath>  
+		    <systemPath>D:\Workspace\inhouse\libs\OneDim2SLocation.jar</systemPath>  
 		</dependency>
 		<dependency>  
 		    <groupId>TwoDim4SLocation</groupId>  
 		    <artifactId>TwoDim4SLocation</artifactId>  
 		    <version>1.0</version>  
 		    <scope>system</scope>  
-		    <systemPath>D:\Personal\inhouse\libs\TwoDim4SLocation.jar</systemPath>  
+		    <systemPath>D:\Workspace\inhouse\libs\TwoDim4SLocation.jar</systemPath>  
 		</dependency>
 		
 		<!-- swagger start -->
