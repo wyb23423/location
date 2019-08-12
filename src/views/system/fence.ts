@@ -11,8 +11,6 @@ import { Ref } from 'vue-property-decorator';
     }
 })
 export default class Fence extends mixins(TableMixin, MapMixin) {
-    @Ref('add') public readonly zoneForm!: ZoneEidt;
-
     public activeNames: string[] = ['info', 'add'];
     public pointIndex: number = -1; // 设置区域顶点时的索引
     public zone: IZone | null = null; // 设置中的区域
