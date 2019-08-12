@@ -3,7 +3,6 @@ import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
 import MapMixin from '@/mixins/map';
 import ZoneEidt from '@/components/ZoneEdit.vue';
-import { Ref } from 'vue-property-decorator';
 
 @Component({
     components: {

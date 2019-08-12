@@ -54,14 +54,12 @@ initConfig()
       initRouter();
     }
 
-    setTimeout(() => {
-      console.log('app init...');
-      new Vue({
-        router,
-        store,
-        render: (h) => h(App),
-      }).$mount('#app');
-    }, 100);
+    console.log('app init...');
+    new Vue({
+      router,
+      store,
+      render: (h) => h(App),
+    }).$mount('#app');
   });
 
 

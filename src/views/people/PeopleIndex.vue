@@ -16,24 +16,24 @@ export default class PeopleIndex extends Vue {
 
     public tabs = [
         {
-            title: '人员列表',
+            title: '标签列表',
             to: 'list',
             icon: 'el-icon-user',
             children: [
                 {
-                    title: '常驻人员',
+                    title: '常驻标签',
                     to: '/people/list/1',
                     icon: 'el-icon-user-solid'
                 },
                 {
-                    title: '临时人员',
+                    title: '临时标签',
                     to: '/people/list/2',
                     icon: 'el-icon-s-custom'
                 }
             ]
         },
         {
-            title: '人员添加',
+            title: '标签添加',
             to: '/people/add',
             icon: 'el-icon-document-add'
         }

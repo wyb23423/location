@@ -63,6 +63,8 @@ export default class Select extends Vue {
                             ? this.options[0].id
                             : this.value;
                 }
+
+                this.change(this.currValue);
             })
             .catch(console.error);
     }

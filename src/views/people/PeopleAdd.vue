@@ -22,13 +22,13 @@ export default class PeopleAdd extends Vue {
         height: '1024px'
     };
     public preview: any = null; // 裁剪预览
+    public imgIndex: number = 0;
 
     public form: any = {
-        sex: 1,
-        level: 'T1',
         type: 1,
         reason: '',
-        avatar: ''
+        avatar: '',
+        properties: ''
     };
 
     public created() {
@@ -71,74 +71,110 @@ export default class PeopleAdd extends Vue {
 
     public ok() {
         const cropper: any = this.$refs.cropper;
-        cropper.getCropData((data: string) => {
-            this.form.avatar = data;
-            this.$message.success('设置成功');
+        if (cropper) {
+            cropper.getCropData((data: string) => {
+                this.form.avatar = data;
+                this.$message.success('设置成功');
 
-            this.visible = false;
-        });
+                this.imgIndex = 2;
+                this.visible = false;
+            });
+        } else {
+            this.$message.warning('请选择图片!!!');
+        }
+    }
+
+    public selectAvator(e: Event) {
+        const index = (<HTMLImageElement>e.target).dataset.index;
+        if (index) {
+            if (+index < 2) {
+                this.imgIndex = +index;
+            } else if (+index === 2) {
+                if (this.form.avatar) {
+                    this.imgIndex = 2;
+                }
+
+                this.visible = true;
+            }
+        }
     }
 
     public onSubmit() {
-        const form = <ElForm>this.$refs.form;
-        form.validate((valid: boolean) => {
-            if (valid) {
-                const tagPhoto = this.getcanvas(
-                    this.form.avatar,
-                    this.form.name
-                ).then(c =>
+        const url = ['/images/P.png', '/images/item.png', this.form.avatar][
+            this.imgIndex
+        ];
+
+        (<ElForm>this.$refs.form)
+            .validate()
+            .then(() => {
+                const tagPhoto = this.getcanvas(url, this.form.name).then(c =>
                     this.$http.post('/api/tag/upload/tagPhoto', {
                         tagPhoto: c.toDataURL('image/png', 1.0)
                     })
                 );
 
-                const avatar = this.getcanvas(this.form.avatar).then(c =>
-                    this.$http.post('/api/tag/upload/avatar', {
-                        avatar: c.toDataURL('image/png', 1.0)
-                    })
+                let avatar = Promise.resolve(<ResponseData>{
+                    code: 200,
+                    message: '',
+                    pagedData: {
+                        currentPage: 1,
+                        datas: [],
+                        pageSize: 0,
+                        totalCount: 0
+                    },
+                    success: true,
+                    resultMap: {
+                        avatarUrl: url
+                    }
+                });
+                if (this.imgIndex > 1) {
+                    avatar = this.getcanvas(url).then(c =>
+                        this.$http.post('/api/tag/upload/avatar', {
+                            avatar: c.toDataURL('image/png', 1.0)
+                        })
+                    );
+                }
+
+                return Promise.all([tagPhoto, avatar]);
+            })
+            .then(([res1, res2]) => {
+                const now = Date.now();
+                const data = Object.assign(
+                    {
+                        createTime: now,
+                        updateTime: now,
+                        updateUser: 'string',
+                        createUser: 'string',
+                        locked: true,
+                        photo: res1.resultMap.photoUrl
+                    },
+                    this.form
                 );
+                data.avatar = res2.resultMap.avatarUrl;
 
-                Promise.all([tagPhoto, avatar])
-                    .then(([res1, res2]) => {
-                        const now = Date.now();
-                        const data = Object.assign(
-                            {
-                                createTime: now,
-                                updateTime: now,
-                                updateUser: 'string',
-                                createUser: 'string',
-                                locked: true,
-                                photo: res1.resultMap.photoUrl
-                            },
-                            this.form
-                        );
-                        data.avatar = res2.resultMap.avatarUrl;
-
-                        return this.$http.post('/api/tag/addTag', data, {
-                            'Content-Type': 'application/json'
-                        });
-                    })
-                    .then(() => {
-                        this.$message.success('添加成功');
-                        this.reset();
-                    })
-                    .catch(console.log);
-            }
-        });
+                return this.$http.post('/api/tag/addTag', data, {
+                    'Content-Type': 'application/json'
+                });
+            })
+            .then(() => {
+                this.$message.success('添加成功');
+                this.reset();
+            })
+            .catch(console.log);
     }
 
     public reset() {
         (<ElForm>this.$refs.form).resetFields();
-        this.form.avatar = '';
+        this.form.avatar = this.form.properties = '';
     }
 
     private getcanvas(
-        url: string = '/images/P.png',
+        url: string,
         text?: string,
         canvas: HTMLCanvasElement = document.createElement('canvas')
     ): Promise<HTMLCanvasElement> {
         const img = new Image();
-        img.src = url || '/images/P.png';
+        img.src = url;
 
         return new Promise((resolve, reject) => {
             img.onload = () => {
@@ -172,15 +208,17 @@ export default class PeopleAdd extends Vue {
 
 <style lang="postcss" module>
 .avatar {
-    width: 20%;
+    width: 54px;
+    margin-right: 10px;
     cursor: pointer;
     border: 3px solid #fff;
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+}
 
-    @media (width <= 768px) {
-        width: 75%;
-    }
+.selected {
+    border-color: #e00;
+    /* background: #fff; */
 }
 
 .btn {

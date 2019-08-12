@@ -22,7 +22,13 @@
                 :modal-append-to-body="false"
                 @close="person = null"
             >
-                <el-form :model="person">
+                <el-form :model="person" label-width="auto">
+                    <el-form-item label="名称" required prop="name">
+                        <el-input
+                            v-model="person.name"
+                            style="width: 80%"
+                        ></el-input>
+                    </el-form-item>
                     <el-form-item label="区域">
                         <el-select v-model="person.zone">
                             <el-option
@@ -33,19 +39,10 @@
                             ></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="等级">
-                        <el-select v-model="person.level">
-                            <el-option
-                                v-for="v of [1, 2, 3]"
-                                :key="v"
-                                :value="'T' + v"
-                            ></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="名称" required prop="name">
+                    <el-form-item label="属性">
                         <el-input
-                            v-model="person.name"
-                            style="width: 80%"
+                            v-model="person.properties"
+                            placeholder="性别: 女, 部门: 研发"
                         ></el-input>
                     </el-form-item>
                 </el-form>
@@ -71,18 +68,14 @@ export default class PeopleList extends mixins(TableMixin) {
     @Prop() public permission!: Permission;
 
     public person: any = null;
-
     public colCfg: any[] = [
-        { prop: 'id', label: 'ID', sortable: true, width: 120 },
-        { prop: 'name', label: '名称', width: 160 },
+        { prop: 'id', label: 'ID', sortable: true, width: 100 },
+        { prop: 'name', label: '名称', width: 120 },
         { prop: 'tagNo', label: '编号', width: 120 },
-        { prop: 'department', label: '部门', width: 160 },
-        { prop: 'job', label: '职位', width: 160 },
-        { prop: 'level', label: '等级', sortable: true, width: 120 },
-        { prop: 'zoneName', label: '区域', width: 220 }
+        { prop: 'zoneName', label: '区域', width: 120 },
+        { prop: 'properties', label: '属性', width: 200 }
     ];
-
-    private zones?: ResponseData;
+    public zones?: ResponseData;
 
     public get op() {
         const op = [];
@@ -152,7 +145,7 @@ export default class PeopleList extends mixins(TableMixin) {
                 })
             ]);
 
-            data = res.pagedData.datas.map((v: any) => {
+            data = res.pagedData.datas.map((v: ITag) => {
                 const zone = zones.pagedData.datas.find(
                     (z: any) => +z.id === +v.zone
                 );

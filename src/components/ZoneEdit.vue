@@ -55,14 +55,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import {
-    Component,
-    Prop,
-    Watch,
-    Model,
-    Emit,
-    Ref
-} from 'vue-property-decorator';
+import { Component, Prop, Watch, Model, Emit } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
 
 @Component
