@@ -2,6 +2,7 @@
     <el-form
         ref="form"
         :model="form"
+        :rules="rules"
         label-width="100px"
         style="padding-right: 20%"
     >
@@ -21,12 +22,7 @@
                 <el-radio :label="51">上行模式</el-radio>
             </el-radio-group>
         </el-form-item>
-        <el-form-item
-            label="距离参数"
-            required
-            prop="distance"
-            :rules="{ type: 'number' }"
-        >
+        <el-form-item label="距离参数" required prop="distance">
             <el-input v-model.number="form.distance">
                 <template slot="append">
                     cm
@@ -39,21 +35,21 @@
                 <el-radio :label="5"></el-radio>
             </el-radio-group>
         </el-form-item>
-        <el-form-item
-            label="时间补偿"
-            required
-            prop="time"
-            :rules="{ type: 'number' }"
-        >
+        <el-form-item label="时间补偿" required prop="time">
             <el-input
                 v-model.number="form.time"
                 prefix-icon="el-icon-timer"
             ></el-input>
         </el-form-item>
-        <el-form-item label="频率等级">
-            <el-rate v-model="form.power" :colors="colors" show-score></el-rate>
+        <el-form-item label="频率等级" :class="$style.item">
+            <el-rate
+                v-model="form.power"
+                :colors="colors"
+                show-score
+                :class="$style.center"
+            ></el-rate>
         </el-form-item>
-        <el-form-item label="发送等级">
+        <el-form-item label="发送等级" :class="$style.item">
             <el-rate
                 v-model="form.send"
                 :colors="colors"
@@ -61,6 +57,7 @@
                 :low-threshold="1"
                 :high-threshold="3"
                 show-score
+                :class="$style.center"
             >
             </el-rate>
         </el-form-item>
@@ -73,12 +70,13 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { Prop } from 'vue-property-decorator';
+import { Prop, Ref } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
 
 @Component
 export default class Primary extends Vue {
-    @Prop() public data!: IBaseStation;
+    @Ref('form') public readonly elForm!: ElForm;
+    @Prop() public readonly data!: IBaseStation;
 
     public readonly colors: string[] = ['#99A9BF', '#F7BA2A', '#FF9900'];
     public form: IJson = {
@@ -87,6 +85,23 @@ export default class Primary extends Vue {
         channel: 2,
         send: 1,
         mode: 17
+    };
+    public rules = {
+        groupCode: {
+            pattern: /^[0-9A-Fa-f]{1, 4}$/,
+            message:
+                'groupCode is not a hexadecimal string less than 4 in length'
+        },
+        distance: {
+            type: 'number',
+            max: 0xffff,
+            min: 0
+        },
+        time: {
+            type: 'number',
+            max: 0xffffffff,
+            min: 0
+        }
     };
 
     public created() {
@@ -106,9 +121,8 @@ export default class Primary extends Vue {
     }
 
     public onSubmit() {
-        const form = <ElForm>this.$refs.form;
-
-        form.validate()
+        this.elForm
+            .validate()
             .then(() => this.$confirm('确认设置?'))
             .then(() =>
                 this.$http.post('/api/protocol/sendProtocol', {
@@ -158,3 +172,16 @@ export default class Primary extends Vue {
 }
 </script>
 
+
+<style lang="postcss" module>
+.center {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+}
+
+.item > div {
+    position: relative;
+}
+</style>

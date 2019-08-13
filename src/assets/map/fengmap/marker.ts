@@ -140,12 +140,24 @@ export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
 
             if (line.segment.length >= 30) {
                 // 片段过多合成一条
-                points = line.segment.map(v => v.points).flat().concat(points);
+                for (const [i, v] of line.segment.entries()) {
+                    if (i) {
+                        v.points.shift();
+                    }
+
+                    points.unshift(...v.points);
+                }
                 this.remove(name); // 移除原来的线
                 this.add(points, name, style); // 创建新的线
             } else {
                 const seg = new fengmap.FMSegment();
                 seg.groupId = this.map.focusGroupID;
+
+                const last = line.segment[line.segment.length - 1];
+                if (last && last.points.length) {
+                    points.unshift(last.points[last.points.length - 1]);
+                }
+
                 seg.points = this.filterPoints(points); // 间隔取点, 优化点太密集时的性能
                 line.addSegment(seg);
 

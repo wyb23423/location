@@ -81,7 +81,7 @@ export default class MapMixin extends Vue {
                     (v: Vector2) => {
                         update && update();
 
-                        points.push({ x: v.x, y: v.y, z: 0 });
+                        points.push({ x: v.x, y: v.y, z: 1 });
                         if (this.mgr && points.length >= 10) {
                             this.mgr.appendLine(tagNo, points, true);
                             points.length = 0;

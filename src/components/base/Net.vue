@@ -2,6 +2,7 @@
     <el-form
         ref="form"
         :model="form"
+        :rules="rules"
         label-width="100px"
         style="padding-right: 20%"
     >
@@ -14,14 +15,14 @@
         <el-form-item label="基站MAC" required>
             <ip-input v-model="form.mac" :length="6"></ip-input>
         </el-form-item>
-        <el-form-item label="基站端口" required prop="basePort">
-            <el-input v-model="form.basePort"></el-input>
+        <el-form-item label="基站端口" prop="basePort">
+            <el-input v-model.number="form.basePort"></el-input>
         </el-form-item>
         <el-form-item label="服务器IP" required>
             <ip-input v-model="form.serverIp"></ip-input>
         </el-form-item>
-        <el-form-item label="服务器端口" required prop="serverPort">
-            <el-input v-model="form.serverPort"></el-input>
+        <el-form-item label="服务器端口" prop="serverPort">
+            <el-input v-model.number="form.serverPort"></el-input>
         </el-form-item>
         <el-form-item label="传输模式">
             <el-radio-group v-model="form.mode">
@@ -56,6 +57,18 @@ export default class Net extends Vue {
         mask: [],
         mac: [],
         mode: 85
+    };
+    public rules = {
+        basePort: {
+            type: 'number',
+            max: 0xffff,
+            required: true
+        },
+        serverPort: {
+            type: 'number',
+            max: 0xffff,
+            required: true
+        }
     };
 
     public onSubmit() {
