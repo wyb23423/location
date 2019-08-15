@@ -7,7 +7,12 @@ declare module 'vue/types/vue' {
     }
 }
 
-type HTTPMethod = (url: string | RequestParams, params?: any, headers?: any) => Promise<ResponseData>;
+type HTTPMethod = (
+    url: string | RequestParams,
+    params?: any,
+    headers?: any,
+    controller?: AbortController
+) => Promise<ResponseData>;
 
 interface HTTP {
     get: HTTPMethod;

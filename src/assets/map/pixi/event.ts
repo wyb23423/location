@@ -2,10 +2,34 @@
  * pixi地图的缩放及移动事件
  */
 
-import { getPosition } from '@/assets/utils/util';
 import * as PIXI from 'pixi.js';
 
 export class MapEvent {
+    // 获取点击点
+    public static getPosition(e: MouseEvent | TouchEvent) {
+        if (e instanceof MouseEvent) {
+            return {
+                x: e.clientX,
+                y: e.clientY
+            };
+        } else if (e instanceof TouchEvent) {
+            if (!e.touches.length) {
+                return {
+                    x: 0,
+                    y: 0
+                };
+            }
+            return {
+                x: e.touches[0].clientX,
+                y: e.touches[0].clientY
+            };
+        }
+
+        console.error('事件对象错误: 事件对象必须是MouseEvent或TouchEvent');
+
+        return { x: 0, y: 0 };
+    }
+
     // 计算两点间距离
     public static getDistance(start: Vector2, stop: Vector2) {
         return Math.sqrt(Math.pow((stop.x - start.x), 2) + Math.pow((stop.y - start.y), 2));
@@ -60,7 +84,7 @@ export class MapEvent {
     private downHandler(e: MouseEvent | TouchEvent, type: string) {
         e = e || window.event;
 
-        const pos = getPosition(e);
+        const pos = MapEvent.getPosition(e);
         this.downX = pos.x;
         this.downY = pos.y;
         if (e instanceof TouchEvent && e.touches.length > 1) {
@@ -85,7 +109,7 @@ export class MapEvent {
             return;
         }
 
-        const pos = getPosition(ev);
+        const pos = MapEvent.getPosition(ev);
         if (ev instanceof TouchEvent && ev.touches.length > 1) {
             // 缩放
             const distance = MapEvent.getDistance(pos, {

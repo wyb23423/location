@@ -1,11 +1,5 @@
 <template>
     <div :style="{ height: mainHeight }" style="overflow-y: auto">
-        <!-- <el-alert
-            title="监控区域1->三号楼 F区域设备损坏报警，请尽快维修检查"
-            type="warning"
-            show-icon
-        >
-        </el-alert> -->
         <div style="padding: 30px;">
             <div :class="$style.cards">
                 <router-link
@@ -46,10 +40,10 @@
                 <el-collapse-item title="区域信息：记录" name="2">
                     <el-timeline :class="$style['collapse-item']">
                         <el-timeline-item
-                            v-for="(v, i) in records"
+                            v-for="(v, i) of records"
                             :key="i"
                             :type="v.type"
-                            :timestamp="v.timestamp"
+                            :timestamp="v.timestamp | date"
                         >
                             {{ v.content }}
                         </el-timeline-item>

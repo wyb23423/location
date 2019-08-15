@@ -19,8 +19,14 @@ const router = new Router({
   base: process.env.BASE_URL,
 });
 
-// 根据权限初始化路由
+
+// ==========================根据权限初始化路由
+let loadRouter = false;
 export function initRouter() {
+  if (loadRouter) {
+    return;
+  }
+
   const routes = new RouteList().routes;
 
   router.addRoutes([
@@ -33,6 +39,8 @@ export function initRouter() {
     },
     { path: '*', redirect: '/404' }
   ]);
+
+  loadRouter = true;
 }
 
 export default router;

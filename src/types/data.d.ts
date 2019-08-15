@@ -74,15 +74,9 @@ declare interface ITag extends DataBase {
     name: string;
     tagNo: string;
     type: 1 | 2; // 标签类型。1——常驻，2——临时
-    // sex: 0 | 1;
     avatar: string; // 头像
     photo: string; // 图标
-    // department: string;
-    // job: string;
     zone: string;
-    // level: string;
-    // phone: string;
-    // leader: string;
     reason: string; // 临时添加原因
     locked: 0 | 1;
     properties: string;
@@ -119,7 +113,7 @@ declare interface RequestParams {
     body?: any;
     data?: any;
     headers?: any;
-    signal?: AbortSignal; // 用于中止请求
+    controller?: AbortController; // 用于中止请求
 }
 // 响应数据
 declare interface ResponseData {

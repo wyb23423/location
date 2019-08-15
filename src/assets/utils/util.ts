@@ -1,4 +1,3 @@
-import localforage from '@/assets/lib/localforage';
 
 /**
  * 轮询等待条件达成
@@ -130,31 +129,6 @@ export const getTextWidth = (() => {
     };
 })();
 
-// 获取点击点
-export function getPosition(e: MouseEvent | TouchEvent) {
-    if (e instanceof MouseEvent) {
-        return {
-            x: e.clientX,
-            y: e.clientY
-        };
-    } else if (e instanceof TouchEvent) {
-        if (!e.touches.length) {
-            return {
-                x: 0,
-                y: 0
-            };
-        }
-        return {
-            x: e.touches[0].clientX,
-            y: e.touches[0].clientY
-        };
-    }
-
-    console.error('事件对象错误: 事件对象必须是MouseEvent或TouchEvent');
-
-    return { x: 0, y: 0 };
-}
-
 /**
  * 将一个时间段转化为"dd:hh:mm:ss"的形式
  * @param range 时间范围
@@ -190,13 +164,3 @@ export function formatTime(range: number, progress: number) {
     return tip.map((v, i) => (i ? v.toString().padStart(2, '0') : v)).join(':');
 }
 
-
-export function localforageGetItem<T>(key: string): Promise<T> {
-    return localforage.getItem<T>(key)
-        .then(data => {
-            if (data == null) {
-                return Promise.reject();
-            }
-            return data;
-        });
-}

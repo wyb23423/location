@@ -116,7 +116,7 @@ export default class ControlMixin extends Vue {
             arr.push(
                 this.fetch(
                     time, Math.min(time + this.fragmentLength, this.date[1]),
-                    this.controller.signal
+                    this.controller
                 )
                     .then((datas: ITagInfo[]) => {
                         this.savePosition(index + i, datas);
@@ -135,7 +135,7 @@ export default class ControlMixin extends Vue {
     }
 
     // 请求数据
-    private fetch(start: number, end: number, signal?: AbortSignal) {
+    private fetch(start: number, end: number, controller?: AbortController) {
         const offset = new Date().getTimezoneOffset() * 60000;
         return this.$http
             .post({
@@ -148,7 +148,7 @@ export default class ControlMixin extends Vue {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                signal
+                controller
             }).then(res => {
                 const datas: ITagInfo[] = res.pagedData.datas;
 

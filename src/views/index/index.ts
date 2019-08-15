@@ -1,9 +1,12 @@
+/**
+ * 主页
+ */
+
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import echarts from 'echarts';
 import { Getter } from 'vuex-class';
 import { loopAwait } from '@/assets/utils/util';
-import { Upload } from 'element-ui';
 
 interface CardInfo {
     icon: string;
@@ -14,7 +17,7 @@ interface CardInfo {
 
 interface RecordItem {
     content: string;
-    timestamp: string;
+    timestamp: number;
     type: string;
 }
 
@@ -27,17 +30,23 @@ export default class Main extends Vue {
         { icon: 'qy', title: '监控区域', num: 3, to: '/system/fence' },
         { icon: 'adminbg', title: '管理人员', num: 3, to: '/admin/list' },
         { icon: 'ter', title: '监控人员', num: 3, to: '/people/list/1' },
-        { icon: 'bj', title: '报警次数', num: 3, to: '/alarm' },
-        // { icon: 'bj', title: '暂停功能', num: 3, to: '' },
-        // { icon: 'bj', title: '暂停功能', num: 3, to: '' }
+        { icon: 'bj', title: '报警次数', num: 3, to: '/alarm' }
     ];
-    public records: RecordItem[] = [];
+    public records: RecordItem[] = []; // 报警记录
 
     private chart1?: echarts.ECharts;
     private chart2?: echarts.ECharts;
 
     public created() {
-        this.getRecords();
+        this.$http.get('/api/alarm/getall?pageSize=20&currentPage=1')
+            .then(res => {
+                this.records = res.pagedData.datas.map<RecordItem>((v: IAlarm) => ({
+                    type: 'warning',
+                    content: v.alarmMsg,
+                    timestamp: v.alarmTime
+                }));
+            })
+            .catch(console.log);
     }
     public mounted() {
         this.createPie().then(chart => this.chart1 = chart);
@@ -50,18 +59,6 @@ export default class Main extends Vue {
 
         if (this.chart2) {
             this.chart2.dispose();
-        }
-    }
-
-    private getRecords() {
-        // 模拟数据
-        // TODO 替换为向服务器请求数据
-        for (let i = 0; i < 10; i++) {
-            this.records.push({
-                timestamp: '2018年5月3号 13：00',
-                content: '监控区域1设备损坏，需要紧急检查维修',
-                type: 'warning'
-            });
         }
     }
 

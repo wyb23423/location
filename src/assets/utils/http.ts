@@ -3,6 +3,7 @@
  */
 import { isThisType } from './util';
 import { Message } from 'element-ui';
+
 /**
  * 发送get请求
  */
@@ -10,24 +11,23 @@ export async function get(
     url: string | RequestParams,
     params: any = {},
     headers: any = {},
-    signal?: AbortSignal
+    controller?: AbortController
 ): Promise<ResponseData> {
-    const req = parseArgs(url, true, params, headers);
+    const req = parseArgs(url, true, params, headers, controller);
     if (typeof req === 'string') {
         console.error(req);
 
         return Promise.reject(req);
     }
 
-
     const init: RequestInit = {
         headers: req.headers,
         credentials: 'include',
         method: 'GET'
     };
-    if (signal) {
-        init.signal = signal;
-    }
+
+    controller = req.controller || new AbortController();
+    init.signal = controller.signal;
 
     return parseRes(await fetch(req.url, init));
 }
@@ -36,9 +36,9 @@ export async function post(
     url: string | RequestParams,
     params: any = {},
     headers: any = {},
-    signal?: AbortSignal
+    controller?: AbortController
 ): Promise<ResponseData> {
-    const req = parseArgs(url, false, params, headers);
+    const req = parseArgs(url, false, params, headers, controller);
     if (typeof req === 'string') {
         console.error(req);
 
@@ -51,8 +51,8 @@ export async function post(
         credentials: 'include',
         method: 'POST'
     };
-    if (signal) {
-        init.signal = signal;
+    if (req.controller) {
+        init.signal = req.controller.signal;
     }
 
     return parseRes(await fetch(req.url, init));
@@ -96,7 +96,8 @@ function parseArgs(
     url: string | RequestParams,
     isGet: boolean,
     params: any = {},
-    headers: any = {}
+    headers: any = {},
+    controller?: AbortController
 ) {
     if (typeof url !== 'string') {
         if (!isThisType(url, 'object')) {
@@ -105,6 +106,7 @@ function parseArgs(
 
         params = url.body || url.data || url.params || {};
         headers = url.headers || {};
+        controller = url.controller;
         url = url.url;
     }
 
@@ -131,7 +133,7 @@ function parseArgs(
     }
 
 
-    return { url, params, headers };
+    return { url, params, headers, controller };
 }
 
 function isSuccess(status: number) {

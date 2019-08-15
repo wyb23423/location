@@ -92,10 +92,12 @@ export default class Login extends Vue {
 
                             const admin = res.pagedData
                                 ? res.pagedData.datas[0]
-                                : null;
+                                : '';
 
                             return Promise.resolve(
-                                admin ? JSON.stringify(admin) : ''
+                                admin
+                                    ? JSON.stringify(admin.admin || admin)
+                                    : ''
                             );
                         } else {
                             return Promise.reject({
