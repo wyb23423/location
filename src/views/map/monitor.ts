@@ -255,13 +255,33 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
             }
         }
 
-        const time = Date.now();
+        const datas: any[] = [];
+        let time: number = 0;
+        // const ws = new WebSocket(`ws://${ip}/realtime/position`);
+        // ws.onmessage = (event: MessageEvent) => {
+        //     const data: ITagInfo = JSON.parse(event.data);
+        //     if (this.tagAll[data.sTagNo]) {
+        //         datas.push(data);
+        //         if (Date.now() - time > 50 / 3) {
+        //             datas.forEach(v => this.move(v));
+        //             datas.length = 0;
+        //             time = Date.now();
+        //         }
+        //     }
+        // };
+
+        const t = Date.now();
         this.ws = this.groups.map(k => {
-            const ws = new WebSocket(`ws://${ip}/realtime/position/${k}/${time}`);
+            const ws = new WebSocket(`ws:// ${ip}/realtime/position/${k}/${t}`);
             ws.onmessage = (event: MessageEvent) => {
                 const data: ITagInfo = JSON.parse(event.data);
                 if (this.tagAll[data.sTagNo]) {
-                    this.move(data);
+                    datas.push(data);
+                    if (Date.now() - time > 50 / 3) {
+                        datas.forEach(v => this.move(v));
+                        datas.length = 0;
+                        time = Date.now();
+                    }
                 }
             };
 
@@ -306,7 +326,9 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
 
             // 长时间未收到信号, 发出警告
             this.renderTags[tag.sTagNo] = setTimeout(() => {
-                this.$notify.warning(`标签${tag.sTagNo}异常。\n信号丢失!`);
+                requestAnimationFrame(() => {
+                    this.$notify.warning(`标签${tag.sTagNo}异常。信号丢失!`);
+                });
 
                 if (this.mgr) {
                     this.mgr.show(tag.sTagNo, false);
@@ -314,7 +336,6 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                         (<Pop>this.pops.get(tag.sTagNo)).close(true);
                         this.pops.delete(tag.sTagNo);
                     }
-
                 }
             }, LOSS_TIME);
         }

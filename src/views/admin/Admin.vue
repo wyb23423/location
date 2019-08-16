@@ -21,7 +21,6 @@ export default class Admin extends Vue {
             to: '/admin/add',
             icon: 'el-icon-circle-plus-outline'
         }
-        // { title: '权限管理', to: '/admin/chown ', icon: 'el-icon-s-operation' }
     ];
 }
 </script>
