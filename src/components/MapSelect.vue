@@ -60,7 +60,12 @@ export default class MapSelect extends Vue {
             ]
         };
 
-        this.options.push(data);
+        this.options.push(data, {
+            ...data,
+            id: 2,
+            name: '办公室-pixi-demo',
+            filepath: '/images/5ad8909aeff13.png'
+        });
 
         if (this.options.length) {
             this.value = this.options[0].id;

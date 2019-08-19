@@ -1,10 +1,6 @@
 /**
  * 配置及常量
  */
-
-// 服务器地址
-export const BASE_URL = process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://192.168.1.180:8081/';
-
 // 主题数据位置
 export const MAP_THEME_URL: string = '/data/theme';
 // 地图数据位置
@@ -30,6 +26,8 @@ export const ALL_PERMISSION = {
 export let APP_KEY: string = '83a75157d56ffe85317ed7ba1e8120ff';
 // 开发者申请应用名称
 export let APP_NAME: string = 'hunjingguanchang';
+// 服务器地址
+export let BASE_URL = process.env.BASE_URL;
 
 /**
  * 初始化配置
@@ -40,6 +38,10 @@ export function initConfig() {
         .then(res => {
             APP_KEY = res.APP_KEY;
             APP_NAME = res.APP_NAME;
+            if (process.env.NODE_ENV !== 'production') {
+                BASE_URL = res.PROXY_TARGET;
+            }
+
             sessionStorage.setItem('config', JSON.stringify(res));
         })
         .catch(console.error);

@@ -137,6 +137,8 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                     this.groupData = arr2obj(data, 'groupCode');
                     this.initWebSoket();
                 });
+
+                this.init();
             }
         });
 
@@ -159,6 +161,15 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                 }
             }
         });
+    }
+
+    private init() {
+        Object.values(this.renderTags).forEach(clearTimeout);
+        this.renderTags = {};
+
+        this.pops.clear();
+        this.showPath = false;
+        this.findTarget = '';
     }
 
     // 获取并显示基站
@@ -223,7 +234,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                 {
                     x: info.x,
                     y: info.y,
-                    height: 0.5,
+                    height: 1,
                     url: info.photo,
                     size: info.size || 48,
                     callback: (im: any) => {
@@ -257,22 +268,29 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
 
         const datas: any[] = [];
         let time: number = 0;
-        // const ws = new WebSocket(`ws://${ip}/realtime/position`);
-        // ws.onmessage = (event: MessageEvent) => {
-        //     const data: ITagInfo = JSON.parse(event.data);
-        //     if (this.tagAll[data.sTagNo]) {
-        //         datas.push(data);
-        //         if (Date.now() - time > 50 / 3) {
-        //             datas.forEach(v => this.move(v));
-        //             datas.length = 0;
-        //             time = Date.now();
-        //         }
-        //     }
-        // };
+        const handler = (event: MessageEvent) => {
+            const data: ITagInfo = JSON.parse(event.data);
+            if (this.tagAll[data.sTagNo]) {
+                datas.push(data);
+                if (Date.now() - time > 50 / 3) {
+                    datas.forEach(v => this.move(v));
+                    datas.length = 0;
+                    time = Date.now();
+                }
+            }
+        };
 
-        const t = Date.now();
-        this.ws = this.groups.map(k => {
-            const ws = new WebSocket(`ws:// ${ip}/realtime/position/${k}/${t}`);
+        const countConfig = JSON.parse(sessionStorage.getItem('config')!).SOCKET_COUNT;
+        if (countConfig === 'multiple') {
+            const t = Date.now();
+            this.ws = this.groups.map(k => {
+                const ws = new WebSocket(`ws://${ip}/realtime/position/${k}/${t}`);
+                ws.onmessage = handler;
+
+                return ws;
+            });
+        } else {
+            const ws = new WebSocket(`ws://${ip}/realtime/position`);
             ws.onmessage = (event: MessageEvent) => {
                 const data: ITagInfo = JSON.parse(event.data);
                 if (this.tagAll[data.sTagNo]) {
@@ -285,8 +303,8 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                 }
             };
 
-            return ws;
-        });
+            this.ws = [ws];
+        }
     }
 
     // 获取标签位置信息后的处理函数
@@ -300,16 +318,18 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
             const coord: Vector3 = {
                 x: +tag.position[0],
                 y: +tag.position[1],
-                z: 0
+                z: 1
             };
-
             if (timer) {
                 clearTimeout(timer);
                 this.mgr.show(tag.sTagNo, true);
-                this.moveTo(tag.sTagNo, coord, 1, () => {
-                    const p = this.pops.get(tag.sTagNo);
-                    p && p.update && p.update();
-                });
+                this.moveTo(
+                    tag.sTagNo, coord, 1,
+                    () => {
+                        const p = this.pops.get(tag.sTagNo);
+                        p && p.update && p.update();
+                    }
+                );
             } else {
                 // 第一次收到信号
                 const tagData: ITag = this.tagAll[tag.sTagNo];
@@ -327,6 +347,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
             // 长时间未收到信号, 发出警告
             this.renderTags[tag.sTagNo] = setTimeout(() => {
                 requestAnimationFrame(() => {
+                    // 瞬间大量标签同时丢失信号时会导致页面卡死
                     this.$notify.warning(`标签${tag.sTagNo}异常。信号丢失!`);
                 });
 

@@ -1,5 +1,6 @@
 
-const PROXY_TARGET = 'http://192.168.1.180:8081/';
+const config = require('./public/config.json');
+const PROXY_TARGET = config.PROXY_TARGET;
 
 module.exports = {
     devServer: {

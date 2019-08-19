@@ -38,6 +38,11 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
         callback?: () => void
     ) {
         this.find(name).forEach(v => {
+            if (v.stopMoveTo) {
+                v.stopMoveTo();
+                (<any>v)._isMoving = false;
+            }
+
             v.moveTo({
                 time,
                 x: coord.x,

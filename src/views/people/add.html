@@ -18,7 +18,10 @@
                 </el-tooltip>
             </div>
         </el-form-item>
-        <el-form-item label="标签名称：" prop="name" required>
+        <el-form-item label="标签名称：" prop="name" required :rules="{
+            pattern: /^[0-9A-Fa-f]{8}$/,
+            message: 'name is not a hexadecimal string of length 8'
+        }">
             <el-input v-model="form.name"></el-input>
         </el-form-item>
         <el-form-item label="标签号：" prop="tagNo" required>

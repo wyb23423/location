@@ -183,15 +183,24 @@ export class PIXIMgr extends Stage {
 
         const action = new PIXI.action.MoveTo(coord.x, coord.y, time);
         this.find(name).forEach(v => {
+            if (v.animation && v.animation.moveTo) {
+                PIXI.actionManager.cancelAction(v.animation.moveTo);
+                v.animation = null;
+            }
+
             const animation = PIXI.actionManager.runAction(v, action);
             animation.on('update', (s: PIXI.Container) => {
                 if (update) {
                     update(s.position);
                 }
             });
-            if (callback) {
-                animation.on('end', callback);
-            }
+            animation.on('end', () => {
+                if (v.animation) {
+                    v.animation.moveTo = null;
+                }
+
+                callback && callback();
+            });
 
             v.animation = v.animation || {};
             v.animation.moveTo = animation;
