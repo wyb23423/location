@@ -140,7 +140,8 @@ export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
 
             if (line.segment.length >= 30) {
                 // 片段过多合成一条
-                for (const [i, v] of line.segment.entries()) {
+                for (let i = line.segment.length - 1; i >= 0; i--) {
+                    const v = line.segment[i];
                     if (i) {
                         v.points.shift();
                     }
