@@ -19,8 +19,6 @@ export default class MapMixin extends Vue {
 
     protected renderTags?: { [x: string]: number } | Set<string>;
 
-    private hasDeal: boolean = false;
-
     public beforeDestroy() {
         this.dispose();
     }
@@ -45,10 +43,9 @@ export default class MapMixin extends Vue {
 
     @Watch('showPath')
     public createOrRemovePath() {
-        if (!this.mgr || !this.renderTags || this.hasDeal) {
-            return this.hasDeal = false;
+        if (!this.mgr || !this.renderTags) {
+            return;
         }
-        this.hasDeal = true;
 
         if (this.showPath) {
             const keys = this.renderTags instanceof Set ? this.renderTags : Object.keys(this.renderTags);
