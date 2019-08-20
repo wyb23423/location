@@ -115,7 +115,12 @@ export default class Primary extends Vue {
                 }
             })
             .then(res => {
-                console.log(res);
+                console.log(
+                    encodeURIComponent(res.resultMap.resp)
+                        .split('%')
+                        .map(v => parseInt(v, 16))
+                        .join('')
+                );
             })
             .catch(console.log);
     }

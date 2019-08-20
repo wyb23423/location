@@ -10,7 +10,7 @@ import Census from '@/components/monitor/Census.vue';
 import { FengMapMgr } from '@/assets/map/fengmap';
 
 interface Pop {
-    close(immediately?: boolean): void | true;
+    close(immediately?: boolean): void | boolean;
     update?(): void;
 }
 
@@ -236,7 +236,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                     y: info.y,
                     height: 1,
                     url: info.photo,
-                    size: info.size || 48,
+                    size: info.size || 24,
                     callback: (im: any) => {
                         if (!im.custom) {
                             im.custom = {};
@@ -286,23 +286,11 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
             this.ws = this.groups.map(k => {
                 const ws = new WebSocket(`ws://${ip}/realtime/position/${k}/${t}`);
                 ws.onmessage = handler;
-
                 return ws;
             });
         } else {
             const ws = new WebSocket(`ws://${ip}/realtime/position`);
-            ws.onmessage = (event: MessageEvent) => {
-                const data: ITagInfo = JSON.parse(event.data);
-                if (this.tagAll[data.sTagNo]) {
-                    datas.push(data);
-                    if (Date.now() - time > 50 / 3) {
-                        datas.forEach(v => this.move(v));
-                        datas.length = 0;
-                        time = Date.now();
-                    }
-                }
-            };
-
+            ws.onmessage = handler;
             this.ws = [ws];
         }
     }

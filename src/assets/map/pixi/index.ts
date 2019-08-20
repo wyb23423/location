@@ -272,21 +272,30 @@ export class PIXIMgr extends Stage {
         img.addChild(triangle);
 
         let text: PIXI.Text;
-        if ((<any>img).custom && (<any>img).custom.info) {
-            const info = (<any>img).custom.info;
-            text = new PIXI.Text(`名字: ${info.tagName}\n\n编号: ${info.tagNo}`, { fontSize: 24 });
+        const custom = (<any>img).custom;
+        if (custom && custom.info) {
+            text = new PIXI.Text(`名字: ${custom.info.tagName}\n\n编号: ${custom.info.tagNo}`, { fontSize: 24 });
             text.anchor.y = 0.5;
             text.position.set(-75, -105);
             text.alpha = 0.8;
             img.addChild(text);
+
+            custom.zIndex = img.zIndex;
+            img.zIndex = Math.max(99, img.zIndex);
+            this.stage.sortChildren();
         }
 
         return {
             close: () => {
                 img.removeChild(triangle);
+                img.zIndex = custom.zIndex;
+                this.stage.sortChildren();
+
                 if (text) {
                     img.removeChild(text);
                 }
+
+                return true;
             }
         };
     }
