@@ -324,6 +324,7 @@ export default class Avator extends Vue {
 <style lang="postcss" module>
 .avatar {
     width: 54px;
+    height: 54px;
     margin-right: 10px;
     cursor: pointer;
     border: 3px solid #fff;
