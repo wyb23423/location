@@ -10,6 +10,6 @@ declare interface MarkerMgr<T> {
     ): void;
     stopMoveTo(name?: string | number): void;
     show(name?: string | number, isShow?: boolean): void;
-    find(name?: string | number): T[];
+    find(name?: string | number, isName?: boolean): T[];
     dispose(): void;
 }

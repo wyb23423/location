@@ -271,12 +271,12 @@ export class FengMapMgr extends CoordTransformer {
     }
 
     // 查找标记为name的marker
-    public find(name?: string | number) {
+    public find(name?: string | number, isName: boolean = false) {
         const markers: Array<fengmap.FMMarker<any>> = [];
         markers.push(
-            ...this.polygonMgr.find(name),
-            ...this.textMgr.find(name),
-            ...this.imageMgr.find(name),
+            ...this.polygonMgr.find(name, isName),
+            ...this.textMgr.find(name, isName),
+            ...this.imageMgr.find(name, isName),
         );
 
         return markers;

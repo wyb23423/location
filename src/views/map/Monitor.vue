@@ -3,11 +3,15 @@
         <div :class="$style['tool-bar']" class="flex-center">
             <map-select @selectmap="selectMap"></map-select>
             <el-input
-                placeholder="请输入标签号"
+                :placeholder="`请输入${isName ? '标签名' : '标签号'}`"
                 type="search"
                 v-model="findTarget"
-                style="width: 200px"
+                style="max-width: 350px"
             >
+                <el-select slot="prepend" v-model="isName" style="width: 100px">
+                    <el-option :value="0" label="标签号"></el-option>
+                    <el-option :value="1" label="标签名"></el-option>
+                </el-select>
                 <el-button
                     slot="append"
                     icon="el-icon-search"

@@ -34,6 +34,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
     public zoneAll: IZone[] = []; // 区域列表
     public findTarget: string = ''; // 查询标签的标签号
     public showPath: boolean = false; // 是否显示轨迹
+    public isName: number = 0;
 
     protected renderTags: { [x: string]: number } = {}; // 已经在地图上的标签, {tagNo: timer}
 
@@ -108,17 +109,23 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
 
     // 查询标签
     public find() {
+        const key = this.isName ? '标签名' : '标签号';
         if (!this.findTarget) {
-            return this.$message.warning('请输入标签号');
+            return this.$message.warning('请输入' + key);
         }
 
         if (this.mgr && !this.pops.has(this.findTarget)) {
-            const tags = this.mgr.find(this.findTarget);
+            const tags = this.mgr.find(this.findTarget, !!this.isName);
 
             if (tags.length) {
-                this.pops.set(this.findTarget, tags.map(tag => this.mgr!.addPopInfo(tag))[0]);
+                tags.forEach(v => {
+                    const info = v.custom && v.custom.info ? v.custom.info : null;
+                    if (info) {
+                        this.pops.set(info.name, this.mgr!.addPopInfo(v));
+                    }
+                });
             } else {
-                this.$message.info(`未找到标签号为${this.findTarget}的标签`);
+                this.$message.info(`未找到标签${key}为${this.findTarget}的标签`);
             }
         }
 

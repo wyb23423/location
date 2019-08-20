@@ -61,12 +61,25 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
         this.find(name).forEach(marker => marker.show = isShow == null ? !marker.show : isShow);
     }
 
-    public find(name?: string | number) {
+    /**
+     * 查找标记为name的元素
+     * @param isName 是否通过tagName查找
+     */
+    public find(name?: string | number, isName: boolean = false) {
         if (name == null) {
             return Array.from(this.markers.values()).flat();
         }
 
-        return this.markers.get(name) || [];
+        if (isName) {
+            const result: T[][] = [];
+            this.markers.forEach(v => result.push(
+                v.filter(m => m.custom && m.custom.info && m.custom.info.tagName === name))
+            );
+
+            return result.flat();
+        } else {
+            return this.markers.get(name) || [];
+        }
     }
 
     public dispose() {

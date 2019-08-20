@@ -300,10 +300,22 @@ export class PIXIMgr extends Stage {
         };
     }
 
-    // 查找标记为name的元素
-    public find(name?: string | number) {
+    /**
+     * 查找标记为name的元素
+     * @param isName 是否通过tagName查找
+     */
+    public find(name?: string | number, isName: boolean = false) {
         if (name == null) {
             return Array.from(this.els.values()).flat();
+        }
+
+        if (isName) {
+            const result: any[][] = [];
+            this.els.forEach(v => result.push(
+                v.filter(m => m.custom && m.custom.info && m.custom.info.tagName === name))
+            );
+
+            return result.flat();
         }
 
         return this.els.get(name) || [];

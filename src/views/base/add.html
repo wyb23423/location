@@ -50,7 +50,7 @@
                 <el-form-item label="区域" required>
                     <app-select url="/api/zone/getall" v-model="form.zone"></app-select>
                 </el-form-item>
-                <el-form-item label="基站位置">
+                <el-form-item label="基站位置" required>
                     <el-col :span="6">
                         <el-form-item prop="coordx" required>
                             <el-input v-model.number="form.coordx" placeholder="x"></el-input>
@@ -67,13 +67,16 @@
                         </el-form-item>
                     </el-col>
                 </el-form-item>
+                <el-form-item label="安装地址" required prop="location">
+                    <el-input v-model="form.location" placeholder="请输入基站安装地址"></el-input>
+                </el-form-item>
                 <el-form-item label="补偿值" required prop="timeCorrectionValue">
                     <el-input v-model="form.timeCorrectionValue" placeholder="请输入补偿值"></el-input>
                 </el-form-item>
                 <el-form-item label="算法类型" required prop="algorithmType">
                     <el-input v-model.number="form.algorithmType" placeholder="请输入算法类型"></el-input>
                 </el-form-item>
-                <el-form-item label="分组基站数量">
+                <el-form-item label="分组基站数量" required>
                     <el-col :span="8">
                         <el-form-item prop="groupBaseSize" required>
                             <el-input v-model.number="form.groupBaseSize" placeholder="基站总数"></el-input>

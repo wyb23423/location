@@ -115,6 +115,7 @@ export default class BaseAdd extends mixins(MapMixin, TableMixin) {
             .then(() => {
                 const orign = this.coord || { x: 0, y: 0, z: 0 };
 
+                const now = Date.now();
                 const arr = this.bases.map(v => {
                     const data: IBaseStation = {
                         ...v,
@@ -123,17 +124,12 @@ export default class BaseAdd extends mixins(MapMixin, TableMixin) {
                         work: true,
                         coordx: orign.x + v.coordx,
                         coordy: orign.y + v.coordy,
-                        createTime: null,
-                        createUser: null,
-                        description: null,
-                        installTime: null,
-                        location: null,
                         loseRate: '0',
-                        owner: null,
-                        updateTime: null,
                         updateUser: 'string',
                         uploadType: '1',
-                        groupCode: v.groupCode + ''
+                        groupCode: v.groupCode + '',
+                        createTime: now,
+                        updateTime: now
                     };
 
                     delete data.flag;
