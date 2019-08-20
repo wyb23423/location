@@ -159,7 +159,7 @@ export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
                     points.unshift(last.points[last.points.length - 1]);
                 }
 
-                seg.points = this.filterPoints(points); // 间隔取点, 优化点太密集时的性能
+                seg.points = points.slice(-10000);
                 line.addSegment(seg);
 
                 this.map.drawLineMark(line, style);
@@ -168,18 +168,9 @@ export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
             // console.warn(`标识为${name}的线未找到`);
         }
     }
+}
 
-    private filterPoints(v: Vector3[]) {
-        const points = [v[0]];
-        for (
-            let i = 1;
-            i < v.length - 1;
-            i += Math.ceil(v.length / 300)
-        ) {
-            points.push(v[i]);
-        }
-        points.push(v[v.length - 1]);
 
-        return points;
-    }
+export class HeatMap {
+    //
 }

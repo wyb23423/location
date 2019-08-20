@@ -2,6 +2,11 @@
  * fengmap类型声明(简)
  * 只声明了项目中需要用的
  */
+
+interface PointData extends Vector2 {
+    value: number;
+}
+
 interface FMMapOptions {
     container: HTMLElement;
     appName: string;
@@ -200,6 +205,20 @@ declare namespace fengmap {
         addMarker(marker: T): void;
         removeMarker(marker: T): void;
         removeAll(): void;
+    }
+
+    interface FMHeatMap {
+        create(map: FMMap, config: {
+            radius?: number;
+            opacity?: number;
+            max?: number;
+            maxSize?: number;
+            gradient?: { [x: string]: string }
+        }): FMHeatMap;
+
+        addPoint(x: number, y: number, value: number): void;
+        addPoints(datas: PointData[]): void;
+        clearPoints(): void;
     }
 
     interface FMNode extends Vector3 {

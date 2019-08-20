@@ -4,12 +4,33 @@
 
 import { MapEvent } from './event';
 
-class Transform extends MapEvent {
+export default class Stage extends MapEvent {
+    public map!: PIXI.Renderer;
+
     public margin?: TPosition[];
     public locOrigion: Vector2 = { x: 0, y: 0 };
 
+    protected loaded: Array<() => void> = []; // 加载完成后的执行函数
+    protected timer: number | null = null;
+
     // tslint:disable-next-line:variable-name
     private _locRange?: Vector2;
+
+    constructor(private bg: string, dom: HTMLElement) {
+        super(dom);
+
+        this.map = PIXI.autoDetectRenderer({
+            width: dom.offsetWidth,
+            height: dom.offsetHeight,
+            backgroundColor: 0xe2e2e2
+        });
+
+        dom.innerHTML = '';
+        dom.appendChild(this.map.view);
+
+        this.loop();
+    }
+
     public set locRange(data: Vector2) {
         if (!this._locRange) {
             this._locRange = data;
@@ -45,32 +66,6 @@ class Transform extends MapEvent {
 
         v.z = v.z == null ? 0 : v.z;
         return <Vector3>v;
-    }
-
-    protected initStageAndAddBg(vec: Vector2) {
-        throw new ReferenceError('Method Transform.prototype.initStageAndAddBg is not defined');
-    }
-}
-
-export default class Stage extends Transform {
-    public map!: PIXI.Renderer;
-
-    protected loaded: Array<() => void> = []; // 加载完成后的执行函数
-    protected timer: number | null = null;
-
-    constructor(private bg: string, dom: HTMLElement) {
-        super(dom);
-
-        this.map = PIXI.autoDetectRenderer({
-            width: dom.offsetWidth,
-            height: dom.offsetHeight,
-            backgroundColor: 0xe2e2e2
-        });
-
-        dom.innerHTML = '';
-        dom.appendChild(this.map.view);
-
-        this.loop();
     }
 
     public dispose() {
