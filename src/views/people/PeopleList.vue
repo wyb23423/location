@@ -130,7 +130,7 @@ export default class PeopleList extends mixins(TableMixin) {
         try {
             await this.$confirm('确认修改?');
         } catch (e) {
-            //
+            return;
         }
 
         this.person.updateTime = Date.now();
