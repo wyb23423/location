@@ -9,7 +9,6 @@ export class FengMapMgr extends CoordTransformer {
     public readonly has3D: boolean = true;
     public map!: fengmap.FMMap;
     public lineMgr!: LineMgr;
-    public heatMap!: fengmap.FMHeatMap;
 
     private polygonMgr!: PolygonMgr;
     private textMgr!: TextMgr;
@@ -251,7 +250,13 @@ export class FengMapMgr extends CoordTransformer {
 
         return {
             update: () => {
-                this.map && this.map.updatePopPosition(pop);
+                try {
+                    this.map && this.map.updatePopPosition(pop);
+                } catch (e) {
+                    return false;
+                }
+
+                return true;
             },
             close: (immediately?: boolean) => {
                 if (pop && (immediately || Date.now() - createTime >= 200)) {
@@ -284,17 +289,5 @@ export class FengMapMgr extends CoordTransformer {
         this.textMgr = new TextMgr(this.map);
         this.imageMgr = new ImageMgr(this.map);
         this.lineMgr = new LineMgr(this.map);
-        this.heatMap = (<any>fengmap).FMHeatMap.create(this.map, {
-            radius: 20,
-            opacity: .5,
-            max: 100,
-            gradient: {
-                0.45: 'rgb(201,135,255)',
-                0.55: 'rgb(189,97,255)',
-                0.65: 'rgb(155,49,255)',
-                0.95: 'yellow',
-                1.0: 'rgb(157,53,255)'
-            }
-        });
     }
 }

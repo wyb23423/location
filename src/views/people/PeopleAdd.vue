@@ -1,29 +1,67 @@
-<template src="./add.html"></template>
+<template>
+    <div style="padding-left: 5%; padding-top: 3%;">
+        <h3 style="color: #009688;">添加标签</h3>
+        <el-form ref="form" :model="form" label-width="auto" style="width: 80%">
+            <el-form-item label="头像：">
+                <app-avator v-model="form.avatar" ref="avator"></app-avator>
+            </el-form-item>
+            <el-form-item label="标签名称：" prop="name" required>
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item
+                label="标签号："
+                prop="tagNo"
+                required
+                :rules="{
+                    pattern: /^[0-9A-Fa-f]{8}$/,
+                    message: 'tagNo is not a hexadecimal string of length 8'
+                }"
+            >
+                <el-input v-model="form.tagNo"></el-input>
+            </el-form-item>
+            <el-form-item label="区域: ">
+                <app-select
+                    url="/api/zone/getall"
+                    v-model="form.zone"
+                ></app-select>
+            </el-form-item>
+            <el-form-item label="其他属性：">
+                <el-input
+                    v-model="form.properties"
+                    placeholder="性别: 女, 部门: 研发"
+                ></el-input>
+            </el-form-item>
+            <el-form-item label="标签类型：" prop="type">
+                <el-radio-group v-model="form.type">
+                    <el-radio :label="1">常驻</el-radio>
+                    <el-radio :label="2">临时</el-radio>
+                </el-radio-group>
+            </el-form-item>
+            <el-form-item label="添加原因：" v-if="form.type === 2">
+                <el-input v-model="form.reason"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="onSubmit">立即创建</el-button>
+                <el-button @click="reset">重置</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+</template>
 
 <script lang="ts">
-import Component from 'vue-class-component';
 import Vue from 'vue';
+import { Ref, Component } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
 import Select from '../../components/Select.vue';
+import Avator from '../../components/Avator.vue';
 
 @Component({
     components: {
-        'app-select': Select
+        'app-select': Select,
+        'app-avator': Avator
     }
 })
 export default class PeopleAdd extends Vue {
-    public url: string = ''; // 选择的图片
-    public visible: boolean = false;
-    public changeUpload: ((file: any) => void) | null = null; // 选择图片后回调
-
-    // 预览图父div大小
-    public previewBox: { width: string; height: string } = {
-        width: '1024px',
-        height: '1024px'
-    };
-    public preview: any = null; // 裁剪预览
-    public imgIndex: number = 0;
-
     public form: any = {
         type: 1,
         reason: '',
@@ -31,120 +69,19 @@ export default class PeopleAdd extends Vue {
         properties: ''
     };
 
-    public created() {
-        this.changeUpload = (file: any) => {
-            if (
-                file.raw.type !== 'image/png' &&
-                file.raw.type !== 'image/jpeg'
-            ) {
-                return this.$message.error('只能上传jpg/png文件!');
-            }
-
-            if (file.size / 1024 / 1024 > 5) {
-                return this.$message.error('上传文件大小不能超过 5MB!');
-            }
-
-            const reader = new FileReader();
-            reader.onload = (e: ProgressEvent) => {
-                // target.result 该属性表示目标对象的DataURL
-                this.url = <string>(<FileReader>e.target).result;
-            };
-            // 传入一个参数对象即可得到基于该参数对象的文本内容
-            reader.readAsDataURL(file.raw);
-        };
-
-        this.preview = {
-            url: '/images/true.png',
-            div: this.previewBox,
-            w: 1024
-        };
-    }
-
-    public realTime(data: any) {
-        this.preview = data;
-
-        this.previewBox = {
-            width: data.w + 'px',
-            height: data.h + 'px'
-        };
-    }
-
-    public ok() {
-        const cropper: any = this.$refs.cropper;
-        if (cropper) {
-            cropper.getCropData((data: string) => {
-                this.form.avatar = data;
-                this.$message.success('设置成功');
-
-                this.imgIndex = 2;
-                this.visible = false;
-            });
-        } else {
-            this.$message.warning('请选择图片!!!');
-        }
-    }
-
-    public selectAvator(e: Event) {
-        const index = (<HTMLImageElement>e.target).dataset.index;
-        if (index) {
-            if (+index < 2) {
-                this.imgIndex = +index;
-            } else if (+index === 2) {
-                if (this.form.avatar) {
-                    this.imgIndex = 2;
-                }
-
-                this.visible = true;
-            }
-        }
-    }
+    @Ref('form') private readonly elForm!: ElForm;
+    @Ref('avator') private readonly avator!: Avator;
 
     public onSubmit() {
-        const url = ['/images/P.png', '/images/item.png', this.form.avatar][
-            this.imgIndex
-        ];
-
-        (<ElForm>this.$refs.form)
+        this.elForm
             .validate()
-            .then(() => {
-                const tagPhoto = this.getcanvas(url, this.form.name).then(c =>
-                    this.$http.post('/api/tag/upload/tagPhoto', {
-                        tagPhoto: c.toDataURL('image/png', 1.0)
-                    })
-                );
-
-                let avatar = Promise.resolve(<ResponseData>{
-                    code: 200,
-                    message: '',
-                    pagedData: {
-                        currentPage: 1,
-                        datas: [],
-                        pageSize: 0,
-                        totalCount: 0
-                    },
-                    success: true,
-                    resultMap: {
-                        avatarUrl: url
-                    }
-                });
-                if (this.imgIndex > 1) {
-                    avatar = this.getcanvas(url).then(c =>
-                        this.$http.post('/api/tag/upload/avatar', {
-                            avatar: c.toDataURL('image/png', 1.0)
-                        })
-                    );
-                }
-
-                return Promise.all([tagPhoto, avatar]);
-            })
+            .then(() => this.avator.getImgUrl(this.form.name))
             .then(([res1, res2]) => {
                 const now = Date.now();
                 const data = Object.assign(
                     {
                         createTime: now,
                         updateTime: now,
-                        updateUser: 'string',
-                        createUser: 'string',
                         locked: true,
                         photo: res1.resultMap.photoUrl
                     },
@@ -167,108 +104,6 @@ export default class PeopleAdd extends Vue {
         (<ElForm>this.$refs.form).resetFields();
         this.form.avatar = this.form.properties = '';
     }
-
-    private getcanvas(
-        url: string,
-        text?: string,
-        canvas: HTMLCanvasElement = document.createElement('canvas')
-    ): Promise<HTMLCanvasElement> {
-        const img = new Image();
-        img.src = url;
-
-        return new Promise((resolve, reject) => {
-            img.onload = () => {
-                canvas.width = 100;
-                canvas.height = text ? 100 : 70;
-                const ctx = <CanvasRenderingContext2D>canvas.getContext('2d');
-
-                if (text) {
-                    if (ctx.font !== '20px Arial') {
-                        ctx.font = '20px Arial';
-                    }
-                    if (ctx.strokeStyle !== 'blue') {
-                        ctx.strokeStyle = 'blue';
-                    }
-                    if (ctx.textAlign !== 'center') {
-                        ctx.textAlign = 'center';
-                    }
-
-                    ctx.fillText(text, 50, 80);
-                }
-
-                ctx.drawImage(img, 25, 10, 50, 50);
-                resolve(canvas);
-            };
-
-            img.onerror = reject;
-        });
-    }
 }
 </script>
-
-<style lang="postcss" module>
-.avatar {
-    width: 54px;
-    margin-right: 10px;
-    cursor: pointer;
-    border: 3px solid #fff;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
-}
-
-.selected {
-    border-color: #e00;
-    /* background: #fff; */
-}
-
-.btn {
-    display: flex;
-    align-items: center;
-    font-weight: 700;
-}
-
-.divider {
-    position: absolute;
-    top: 28px;
-    left: 0;
-}
-
-.tip {
-    font-size: responsive;
-    margin: 10px 0;
-}
-.center {
-    display: flex;
-    height: 100%;
-    justify-content: center;
-    align-items: center;
-}
-
-.preview {
-    overflow: hidden;
-    border: 1px solid #ccc;
-    margin: 10px;
-}
-.model > div {
-    min-width: 720px;
-
-    @media (width <= 768px) {
-        min-width: auto;
-    }
-}
-</style>
-
-
-<style lang="postcss">
-.avatar-upload {
-    height: 100%;
-
-    & .el-upload,
-    & .el-upload-dragger {
-        width: 100%;
-        height: 100%;
-        border-radius: 0;
-    }
-}
-</style>
 

@@ -11,7 +11,7 @@ import { FengMapMgr } from '@/assets/map/fengmap';
 
 interface Pop {
     close(immediately?: boolean): void | boolean;
-    update?(): void;
+    update?(): boolean;
 }
 
 @Component({
@@ -322,7 +322,9 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                     tag.sTagNo, coord, 1,
                     () => {
                         const p = this.pops.get(tag.sTagNo);
-                        p && p.update && p.update();
+                        if (p && p.update) {
+                            p.update() || this.pops.delete(tag.sTagNo);
+                        }
                     }
                 );
             } else {

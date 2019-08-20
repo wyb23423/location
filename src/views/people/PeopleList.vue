@@ -23,6 +23,12 @@
                 @close="person = null"
             >
                 <el-form :model="person" label-width="auto">
+                    <el-form-item label="头像：">
+                        <app-avator
+                            v-model="person.avatar"
+                            ref="avator"
+                        ></app-avator>
+                    </el-form-item>
                     <el-form-item label="名称" required prop="name">
                         <el-input
                             v-model="person.name"
@@ -59,15 +65,20 @@
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
-import { Prop, Watch } from 'vue-property-decorator';
+import { Prop, Watch, Ref } from 'vue-property-decorator';
 import { Route } from 'vue-router';
+import Avator from '@/components/Avator.vue';
 
-@Component
+@Component({
+    components: {
+        'app-avator': Avator
+    }
+})
 export default class PeopleList extends mixins(TableMixin) {
     @Prop() public type!: number;
     @Prop() public permission!: Permission;
 
-    public person: any = null;
+    public person: ITag | null = null;
     public colCfg: any[] = [
         { prop: 'id', label: 'ID', sortable: true, width: 100 },
         { prop: 'name', label: '名称', width: 120 },
@@ -76,6 +87,9 @@ export default class PeopleList extends mixins(TableMixin) {
         { prop: 'properties', label: '属性', width: 200 }
     ];
     public zones?: ResponseData;
+
+    @Ref('avator') private readonly avator!: Avator;
+    private oldData?: ITag;
 
     public get op() {
         const op = [];
@@ -101,21 +115,38 @@ export default class PeopleList extends mixins(TableMixin) {
 
     public setting(row: any) {
         this.person = row;
+        this.oldData = { ...row };
     }
 
-    public submit() {
+    public async submit() {
+        if (!(this.person && this.oldData)) {
+            return;
+        }
+
         if (!this.person.name) {
             return this.$message.warning('name is required!');
         }
 
-        this.person.updateTime = Date.now();
+        try {
+            await this.$confirm('确认修改?');
+        } catch (e) {
+            //
+        }
 
-        this.$confirm('确认修改?')
-            .then(() =>
-                this.$http.post('/api/tag/updateTag', this.person, {
-                    'Content-Type': 'application/json'
-                })
-            )
+        this.person.updateTime = Date.now();
+        if (
+            this.person.name === this.oldData.name &&
+            this.person.name === this.oldData.avatar
+        ) {
+            this.person.photo = (await this.avator.getImgUrl(
+                this.person.name
+            ))[0].resultMap.photoUrl;
+        }
+
+        this.$http
+            .post('/api/tag/updateTag', this.person, {
+                'Content-Type': 'application/json'
+            })
             .then(() => {
                 this.$message.success('修改成功');
                 this.refresh();
