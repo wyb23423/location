@@ -10,17 +10,23 @@
                     v-model="tagNos"
                     :disabled="isPlaying"
                     :multiple-limit="5"
+                    :loading="loading"
+                    :remote-method="remoteMethod"
+                    placeholder="请输入关键词"
                     @change="change"
                     style="min-width: 200px"
                     multiple
+                    remote
+                    filterable
                     collapse-tags
                 >
                     <el-option
-                        v-for="v of tags"
-                        :key="v.id"
-                        :value="v.tagNo"
-                        :label="v.name"
-                    ></el-option>
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                    >
+                    </el-option>
                 </el-select>
                 <el-date-picker
                     v-model="dateProxy"
@@ -84,15 +90,22 @@ import { formatTime } from '@/assets/utils/util';
 import ControlMixin, { PositionItem } from '@/mixins/control';
 import { Prop } from 'vue-property-decorator';
 
+interface Option {
+    label: string;
+    value: string;
+}
+
 @Component({
     filters: { formatTime }
 })
 export default class Control extends mixins(ControlMixin) {
-    @Prop() public tags!: ITag[];
-    @Prop() public showPath!: boolean; // 是否显示轨迹
+    @Prop() public readonly showPath!: boolean; // 是否显示轨迹
 
+    public loading: boolean = false;
+    public remoteMethod: ((key: string) => void) | null = null;
     public format: ((value: number) => string) | null = null; // 格式化 tooltip message
     public isPlaying: boolean = false; // 是否正在播放
+    public options: Option[] = [];
 
     private timer?: number; // 播放定时器
 
@@ -105,6 +118,44 @@ export default class Control extends mixins(ControlMixin) {
 
     public created() {
         this.format = (value: number) => formatTime(this.timeRange, value);
+
+        let timer: number = 0;
+        this.remoteMethod = (key: string) => {
+            if (this.loading) {
+                return;
+            }
+
+            clearTimeout(timer);
+            if (!key) {
+                return (this.options.length = 0);
+            }
+
+            timer = setTimeout(() => {
+                this.loading = true;
+
+                this.$http
+                    .get('/api/tag/getall', {
+                        pageSize: 100,
+                        currentPage: 1,
+                        name: key
+                    })
+                    .then(res => {
+                        this.options.length = 0;
+                        const icons = new Map<string, string>();
+                        res.pagedData.datas.forEach(v => {
+                            this.options.push({
+                                label: v.name,
+                                value: v.tagNo
+                            });
+                            icons.set(v.tagNo, v.photo);
+                        });
+
+                        this.$emit('set-icons', icons);
+                        this.loading = false;
+                    })
+                    .catch(console.log);
+            }, 500);
+        };
     }
     public destroyed() {
         this.pause();

@@ -12,12 +12,12 @@
             :date.sync="date"
             :showPath.sync="showPath"
             :timeRange="timeRange"
-            :tags="tags"
             :loadCall="loadCall"
             v-model="progress"
             @play="onPlay"
             @progress="onProgress"
             @pause="onPause"
+            @set-icons="setIcons"
         ></history-control>
         <div v-if="isLoading" :class="$style.mark" class="flex-center">
             <i class="el-icon-loading"></i>
@@ -59,25 +59,16 @@ export default class History extends mixins(MapMixin) {
     }
 
     public created() {
-        this.$http
-            .get('/api/tag/getall', {
-                pageSize: 1000000,
-                currentPage: 1
-            })
-            .then(res => {
-                this.tags = (<ITag[]>res.pagedData.datas).map(v => {
-                    this.icons.set(v.tagNo, v.photo);
-                    return v;
-                });
-            })
-            .catch(console.log);
-
         this.loadCall = (control: Control, index: number) => {
             if (index === this.fragmentIndex && this.isLoading) {
                 this.isLoading = false;
                 control.play();
             }
         };
+    }
+
+    public setIcons(icons: Map<string, string>) {
+        icons.forEach((v, k) => this.icons.set(k, v));
     }
 
     // 开始播放

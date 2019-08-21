@@ -58,7 +58,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         }))
             .then(res => {
                 this.zoneAll = res[1];
-                this.tagAll = arr2obj(res[0], 'tagNo', false);
+                // this.tagAll = arr2obj(res[0], 'tagNo', false);
             });
     }
 
@@ -71,6 +71,9 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         }
 
         Object.values(this.renderTags).forEach(clearTimeout);
+        this.pops.forEach(v => v.close());
+
+        this.tagAll = {};
     }
 
 
@@ -174,6 +177,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         Object.values(this.renderTags).forEach(clearTimeout);
         this.renderTags = {};
 
+        this.pops.forEach(v => v.close());
         this.pops.clear();
         this.showPath = false;
         this.findTarget = '';
