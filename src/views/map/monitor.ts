@@ -39,11 +39,13 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
     protected renderTags: { [x: string]: number } = {}; // 已经在地图上的标签, {tagNo: timer}
 
     private baseAll: IBaseStation[] = []; // 基站列表
-    private tagAll: { [x: string]: ITag } = {}; // 标签
+    private tagAll!: { [x: string]: ITag }; // 标签
     private ws: WebSocket[] = [];
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
 
     public created() {
+        this.tagAll = {};
+
         Promise.all(['tag', 'zone'].map(async v => {
             try {
                 const res = await this.$http.get(`/api/${v}/getall`, {
@@ -58,7 +60,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         }))
             .then(res => {
                 this.zoneAll = res[1];
-                // this.tagAll = arr2obj(res[0], 'tagNo', false);
+                this.tagAll = arr2obj(res[0], 'tagNo', false);
             });
     }
 

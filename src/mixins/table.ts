@@ -26,7 +26,7 @@ export default class TableMixin extends Vue {
     protected page: number = 1;
 
     public get op(): any[] {
-        return this.permission.delete
+        return this.permission && this.permission.delete
             ? [{ type: 'danger', name: 'del', desc: '删除' }]
             : [];
     }
