@@ -65,6 +65,7 @@ export default class Census extends Vue {
         };
     }
 
+    @Watch('renderTags', { deep: true })
     @Watch('value')
     private getInfo() {
         if (this.zones && this.renderTags) {
@@ -80,8 +81,10 @@ export default class Census extends Vue {
                             zone: this.value
                         })
                         .then(res => {
-                            const list = res.pagedData.datas.filter(v =>
-                                Reflect.has(this.renderTags, v.tagNo)
+                            const list = res.pagedData.datas.filter(
+                                v =>
+                                    Reflect.has(this.renderTags, v.tagNo) &&
+                                    this.renderTags[v.tagNo] >= 0
                             );
 
                             this.info = {

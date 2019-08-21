@@ -87,7 +87,8 @@ declare interface IZone extends DataBase {
     position: string | TPosition; // 区域边界点
     enable: 0 | 1; // 是否启用
     mode: number; // 区域类型
-    groupCode: string | [string, string]; // 切换区域时的两个关联组号
+    baseNo1: string;
+    baseNo2: string;
 }
 
 declare interface IAlarm extends IJson {

@@ -42,6 +42,8 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
     private baseAll: IBaseStation[] = []; // 基站列表
     private ws: WebSocket[] = [];
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
+    private infoArr: string[] = [];
+    private timer: number = 0;
 
     public created() {
         this.tagAll = {};
@@ -62,6 +64,8 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
                 this.zoneAll = res[1];
                 this.tagAll = arr2obj(res[0], 'tagNo', false);
             });
+
+        this.warning();
     }
 
     public beforeDestroy() {
@@ -76,6 +80,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         this.pops.forEach(v => v.close());
 
         this.tagAll = {};
+        cancelAnimationFrame(this.timer);
     }
 
 
@@ -189,6 +194,8 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         for (let i = 2; i < this.tools.length; i++) {
             this.tools[i].active = false;
         }
+
+        this.infoArr.length = 0;
     }
 
     // 获取并显示基站
@@ -354,23 +361,28 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
             }
 
             // 长时间未收到信号, 发出警告
-            this.renderTags[tag.sTagNo] = setTimeout(() => {
-                requestAnimationFrame(() => {
-                    // 瞬间大量标签同时丢失信号时会导致页面卡死
-                    this.$notify.warning(`标签${tag.sTagNo}异常。信号丢失!`);
-                });
-
-                if (this.mgr) {
-                    this.mgr.show(tag.sTagNo, false);
-                    this.renderTags[tag.sTagNo] = -1;
-
-                    if (this.pops.has(tag.sTagNo)) {
-                        (<Pop>this.pops.get(tag.sTagNo)).close(true);
-                        this.pops.delete(tag.sTagNo);
-                    }
-                }
-            }, LOSS_TIME);
+            this.renderTags[tag.sTagNo] = setTimeout(() => this.infoArr.push(tag.sTagNo), LOSS_TIME);
         }
+    }
+
+    private warning() {
+        const tagNo = this.infoArr.shift();
+
+        if (tagNo) {
+            this.$notify.warning(`标签${tagNo}异常。信号丢失!`);
+
+            if (this.mgr) {
+                this.mgr.show(tagNo, false);
+                this.renderTags[tagNo] = -1;
+
+                if (this.pops.has(tagNo)) {
+                    (<Pop>this.pops.get(tagNo)).close(true);
+                    this.pops.delete(tagNo);
+                }
+            }
+        }
+
+        this.timer = requestAnimationFrame(this.warning.bind(this));
     }
 }
 

@@ -10,33 +10,33 @@
         </el-form-item>
         <el-form-item label="区域模式">
             <el-select v-model="zone.mode" placeholder="请选择">
-                <el-option label="进入区域" :value="1"></el-option>
-                <el-option label="离开区域" :value="2"></el-option>
+                <el-option label="进入区域" :value="2"></el-option>
+                <el-option label="离开区域" :value="3"></el-option>
                 <el-option
                     label="切换区域"
-                    :value="3"
+                    :value="1"
                     v-if="groups.length >= 2"
                 ></el-option>
             </el-select>
         </el-form-item>
         <template v-if="zone.mode === 3">
             <el-form-item label="基站分组1" required>
-                <el-select v-model="zone.groupCode[0]">
+                <el-select v-model="zone.baseNo1">
                     <el-option
                         v-for="v of groups"
                         :key="v"
                         :value="v"
-                        :disabled="v === zone.groupCode[1]"
+                        :disabled="v === zone.baseNo2"
                     ></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="基站分组2" required>
-                <el-select v-model="zone.groupCode[1]">
+                <el-select v-model="zone.baseNo2">
                     <el-option
                         v-for="v of groups"
                         :key="v"
                         :value="v"
-                        :disabled="v === zone.groupCode[0]"
+                        :disabled="v === zone.baseNo1"
                     ></el-option>
                 </el-select>
             </el-form-item>

@@ -164,3 +164,21 @@ export function formatTime(range: number, progress: number) {
     return tip.map((v, i) => (i ? v.toString().padStart(2, '0') : v)).join(':');
 }
 
+// 将字符转成utf-8编码
+export function encodeUtf8(text: string) {
+    const code = encodeURIComponent(text);
+    const bytes = [];
+    for (let i = 0; i < code.length; i++) {
+        const c = code.charAt(i);
+        if (c === '%') {
+            const hex = code.charAt(i + 1) + code.charAt(i + 2);
+            const hexVal = parseInt(hex, 16);
+            bytes.push(hexVal);
+            i += 2;
+        } else {
+            bytes.push(c.charCodeAt(0));
+        }
+    }
+
+    return bytes;
+}

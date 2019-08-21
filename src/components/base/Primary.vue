@@ -72,6 +72,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Ref } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
+import { encodeUtf8 } from '@/assets/utils/util';
 
 @Component
 export default class Primary extends Vue {
@@ -115,12 +116,7 @@ export default class Primary extends Vue {
                 }
             })
             .then(res => {
-                console.log(
-                    encodeURIComponent(res.resultMap.resp)
-                        .split('%')
-                        .map(v => parseInt(v, 16))
-                        .join('')
-                );
+                console.log(encodeUtf8(res.resultMap.resp));
             })
             .catch(console.log);
     }
@@ -159,7 +155,8 @@ export default class Primary extends Vue {
 
             let start: number = 0;
             keys.forEach(([k, byte]) => {
-                data[k] = +('0x' + value.substr(start, <number>byte * 2));
+                const str = value.substr(start, <number>byte * 2);
+                data[k] = start ? +('0x' + str) : str.toUpperCase();
                 start += <number>byte * 2;
             });
 

@@ -34,7 +34,8 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         mode: 1,
         position: [null],
         open: true,
-        groupCode: []
+        baseNo2: '',
+        baseNo1: ''
     };
     public get formHeight() {
         return `calc(${100 / this.$store.state.rootScale}vh - 500px)`;
@@ -211,6 +212,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
             .then(() => {
                 position.forEach(<any>this.setPosition, this); // 移除设置的顶点
                 this.form.name = '';
+                this.form.mode = 1;
 
                 this.$message.success('添加成功');
                 this.refresh(this.page);
