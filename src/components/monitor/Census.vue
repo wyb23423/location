@@ -25,11 +25,13 @@
                 </el-form-item>
             </el-form>
 
-            <div
-                v-if="!!info"
-                style="border-bottom: 1px solid #ccc; text-align: center"
-            >
-                {{ info.name }}标签数量: {{ info.count }}
+            <div style="text-align: center">
+                <div v-show="!!info" style="border-bottom: 1px solid #ccc;">
+                    {{ (info || {}).name }}标签数量: {{ (info || {}).count }}
+                </div>
+                <div v-show="!info">
+                    <i class="el-icon-loading" style="font-size: 24px"></i>
+                </div>
             </div>
         </el-card>
     </div>
@@ -38,7 +40,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { Prop } from 'vue-property-decorator';
+import { Prop, Watch } from 'vue-property-decorator';
 
 @Component
 export default class Census extends Vue {
@@ -47,9 +49,21 @@ export default class Census extends Vue {
     @Prop() public renderTags!: { [x: string]: number };
 
     public value: number = -1;
+    public info: any = {
+        name: '当前地图',
+        count: 0
+    };
 
-    public get info() {
-        if (this.tags && this.zones && this.renderTags) {
+    public created() {
+        this.info = {
+            name: '当前地图',
+            count: Object.keys(this.renderTags).length
+        };
+    }
+
+    @Watch('value')
+    public getInfo() {
+        if (this.zones && this.renderTags) {
             const tagsArr = Object.keys(this.renderTags);
             if (this.value === -1) {
                 return {
@@ -58,22 +72,30 @@ export default class Census extends Vue {
                 };
             } else {
                 const zone = this.zones.find(v => v.id === this.value);
-
                 if (zone) {
-                    const list = tagsArr.filter(
-                        k => +this.tags[k].zone === this.value
-                    );
-                    return {
-                        name:
-                            zone.name +
-                            (zone.name.endsWith('区域') ? '' : '区域'),
-                        count: list.length
-                    };
+                    this.$http
+                        .get('/api/tag/getall', {
+                            currentPage: 1,
+                            pageSize: 1_0000_0000,
+                            zone: this.value
+                        })
+                        .then(res => {
+                            const list = res.pagedData.datas.filter(v =>
+                                Reflect.has(this.renderTags, v.tagNo)
+                            );
+
+                            this.info = {
+                                name:
+                                    zone.name +
+                                    (zone.name.endsWith('区域') ? '' : '区域'),
+                                count: list.length
+                            };
+                        });
                 }
+
+                this.info = null;
             }
         }
-
-        return null;
     }
 }
 </script>

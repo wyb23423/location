@@ -31,6 +31,7 @@ import { PositionItem, Fragment } from '@/mixins/control';
 import MapMixin from '@/mixins/map';
 import Control from '@/components/Control.vue';
 import localforage from '@/assets/lib/localforage';
+import { Ref } from 'vue-property-decorator';
 
 @Component({
     components: { 'history-control': Control }
@@ -39,10 +40,11 @@ export default class History extends mixins(MapMixin) {
     public date: number[] | null = null; // 选择的时间范围
     public progress: number = 0; // 当前进度
     public loadCall: ((control: Control, index: number) => void) | null = null;
-    public tags: ITag[] = [];
     public isLoading: boolean = false; // 是否当前进度的数据正在加载
 
     protected renderTags: Set<string> = new Set(); // 已经在地图上的标签
+
+    @Ref('control') private readonly control!: Control;
 
     private next: PlayRecord = {}; // 下一个数据点
     private moving: Set<string> = new Set(); // 正在移动中的标签
@@ -184,7 +186,7 @@ export default class History extends mixins(MapMixin) {
         if (!target) {
             if (
                 !pointsData.length || // 当前数据片段数据为空
-                (<Control>this.$refs.control).count <= this.fragmentIndex + 1 // 播放完毕
+                this.control.count <= this.fragmentIndex + 1 // 播放完毕
             ) {
                 this.mgr && this.mgr.remove(tagNo);
                 return Promise.reject();
@@ -244,7 +246,7 @@ export default class History extends mixins(MapMixin) {
     private getFragment() {
         return Promise.resolve()
             .then(() => {
-                const fragmentIndex = (<Control>this.$refs.control).index;
+                const fragmentIndex = this.control.index;
 
                 if (fragmentIndex !== this.fragmentIndex) {
                     this.fragmentIndex = fragmentIndex;
@@ -260,7 +262,7 @@ export default class History extends mixins(MapMixin) {
     // 数据加载中...
     private loading() {
         this.isLoading = true;
-        (<Control>this.$refs.control).pause();
+        this.control.pause();
 
         return Promise.reject('loading...');
     }

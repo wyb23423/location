@@ -38,8 +38,8 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
 
     protected renderTags: { [x: string]: number } = {}; // 已经在地图上的标签, {tagNo: timer}
 
-    private baseAll: IBaseStation[] = []; // 基站列表
     private tagAll!: { [x: string]: ITag }; // 标签
+    private baseAll: IBaseStation[] = []; // 基站列表
     private ws: WebSocket[] = [];
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
 
@@ -356,6 +356,7 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
 
                 if (this.mgr) {
                     this.mgr.show(tag.sTagNo, false);
+                    delete this.renderTags[tag.sTagNo];
                     if (this.pops.has(tag.sTagNo)) {
                         (<Pop>this.pops.get(tag.sTagNo)).close(true);
                         this.pops.delete(tag.sTagNo);
