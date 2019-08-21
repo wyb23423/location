@@ -362,7 +362,8 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
 
                 if (this.mgr) {
                     this.mgr.show(tag.sTagNo, false);
-                    delete this.renderTags[tag.sTagNo];
+                    this.renderTags[tag.sTagNo] = -1;
+
                     if (this.pops.has(tag.sTagNo)) {
                         (<Pop>this.pops.get(tag.sTagNo)).close(true);
                         this.pops.delete(tag.sTagNo);

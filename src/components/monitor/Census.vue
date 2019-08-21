@@ -55,21 +55,21 @@ export default class Census extends Vue {
     };
 
     public created() {
-        this.info = {
+        this.info = this.getAllInfo();
+    }
+
+    private getAllInfo() {
+        return {
             name: '当前地图',
-            count: Object.keys(this.renderTags).length
+            count: Object.values(this.renderTags).filter(v => v >= 0).length
         };
     }
 
     @Watch('value')
-    public getInfo() {
+    private getInfo() {
         if (this.zones && this.renderTags) {
-            const tagsArr = Object.keys(this.renderTags);
             if (this.value === -1) {
-                return {
-                    name: '当前地图',
-                    count: tagsArr.length
-                };
+                this.info = this.getAllInfo();
             } else {
                 const zone = this.zones.find(v => v.id === this.value);
                 if (zone) {
