@@ -142,6 +142,8 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
     protected bindEvents() {
         this.mgr!.on('loadComplete', () => {
             if (this.mgr) {
+                this.tools[0].active = true;
+                this.tools[1].active = false;
                 this.tools[1].display = this.mgr.has3D;
 
                 this.tagAnchor().then(data => {
@@ -183,6 +185,10 @@ export default class Monitor extends mixins(MapMixin, TableMixin) {
         this.pops.clear();
         this.showPath = false;
         this.findTarget = '';
+
+        for (let i = 2; i < this.tools.length; i++) {
+            this.tools[i].active = false;
+        }
     }
 
     // 获取并显示基站
