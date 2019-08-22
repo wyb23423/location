@@ -5,7 +5,7 @@
 const uri: string = 'data:application/vnd.ms-excel;base64,';
 
 function base64(s: string) {
-    return window.btoa(decodeURIComponent(encodeURIComponent(s)));
+    return window.btoa(unescape(encodeURIComponent(s)));
 }
 
 function format(table: string) {

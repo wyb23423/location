@@ -79,7 +79,11 @@ export default class TableMixin extends Vue {
         const tbody = ['<tbody>'];
         data.forEach(v => {
             tbody.push('<tr>');
-            this.colCfg.forEach(c => tbody.push(`<td>${v[c.prop]}</td>`));
+            this.colCfg.forEach(c => tbody.push(
+                `<td style="mso-number-format:'\@'">${
+                v[c.prop] == null ? ' ' : v[c.prop]
+                }</td>`
+            ));
             tbody.push('</tr>');
         });
         tbody.push('</tbody>');
