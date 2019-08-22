@@ -17,6 +17,12 @@
                     :value="1"
                     v-if="groups.length >= 2"
                 ></el-option>
+                <el-option label="分组区域" :value="3"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="相关分组" required v-if="zone.mode === 4">
+            <el-select v-model="zone.baseNo1">
+                <el-option v-for="v of groups" :key="v" :value="v"></el-option>
             </el-select>
         </el-form-item>
         <template v-if="zone.mode === 3">

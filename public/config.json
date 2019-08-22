@@ -2,5 +2,5 @@
     "APP_KEY": "83a75157d56ffe85317ed7ba1e8120ff",
     "APP_NAME": "hunjingguanchang",
     "SOCKET_COUNT": "single",
-    "PROXY_TARGET": "http://127.0.0.1/"
+    "PROXY_TARGET": "http://192.168.1.202/"
 }
