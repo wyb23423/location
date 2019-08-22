@@ -61,6 +61,7 @@ export default class History extends mixins(MapMixin) {
     }
 
     public created() {
+        // 慢加载完一个数据片段后执行的函数
         this.loadCall = (control: Control, index: number) => {
             if (index === this.fragmentIndex && this.isLoading) {
                 this.isLoading = false;
@@ -70,6 +71,7 @@ export default class History extends mixins(MapMixin) {
     }
 
     public setIcons(icons: Map<string, string>) {
+        // 保存已获取过的标签的图标
         icons.forEach((v, k) => this.icons.set(k, v));
     }
 

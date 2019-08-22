@@ -89,7 +89,7 @@ export default class PeopleList extends mixins(TableMixin) {
     public zones?: ResponseData;
 
     @Ref('avator') private readonly avator!: Avator;
-    private oldData?: ITag;
+    private oldData?: ITag; // 用于比较是否需要重新上传图片
 
     public get op() {
         const op = [];
