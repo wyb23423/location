@@ -10,22 +10,26 @@
         </el-form-item>
         <el-form-item label="区域模式">
             <el-select v-model="zone.mode" placeholder="请选择">
-                <el-option label="进入区域" :value="2"></el-option>
-                <el-option label="离开区域" :value="3"></el-option>
+                <el-option label="进入区域" :value="zoneMode.in"></el-option>
+                <el-option label="离开区域" :value="zoneMode.out"></el-option>
                 <el-option
                     label="切换区域"
-                    :value="1"
+                    :value="zoneMode.switch"
                     v-if="groups.length >= 2"
                 ></el-option>
-                <el-option label="分组区域" :value="3"></el-option>
+                <el-option label="分组区域" :value="zoneMode.group"></el-option>
             </el-select>
         </el-form-item>
-        <el-form-item label="相关分组" required v-if="zone.mode === 4">
+        <el-form-item
+            label="相关分组"
+            required
+            v-if="zone.mode === zoneMode.group"
+        >
             <el-select v-model="zone.baseNo1">
                 <el-option v-for="v of groups" :key="v" :value="v"></el-option>
             </el-select>
         </el-form-item>
-        <template v-if="zone.mode === 3">
+        <template v-if="zone.mode === zoneMode.switch">
             <el-form-item label="基站分组1" required>
                 <el-select v-model="zone.baseNo1">
                     <el-option
@@ -63,9 +67,13 @@
 import Vue from 'vue';
 import { Component, Prop, Watch, Model, Emit } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
+import { State } from 'vuex-class/lib/bindings';
+import { ZoneMode } from '@/store';
 
 @Component
 export default class ZoneEidt extends Vue {
+    @State public readonly zoneMode!: ZoneMode;
+
     @Prop({ default: () => 'none' }) public readonly formHeight!: string;
     @Prop() public readonly groups!: string[];
     @Model('change') public readonly value!: IZone;

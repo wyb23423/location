@@ -88,7 +88,7 @@ import { State } from 'vuex-class/lib/bindings';
 
 @Component
 export default class BaseInfo extends Vue {
-    @Prop() public data!: any;
+    @Prop() public readonly data!: IBaseStation;
 }
 </script>
 

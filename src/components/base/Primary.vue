@@ -72,7 +72,6 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Ref } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
-import { encodeUtf8 } from '@/assets/utils/util';
 
 @Component
 export default class Primary extends Vue {
@@ -104,22 +103,6 @@ export default class Primary extends Vue {
             min: 0
         }
     };
-
-    public created() {
-        this.$http
-            .post({
-                url: '/api/protocol/sendReceive',
-                body: {
-                    ip: this.data.ip,
-                    port: 50000,
-                    protocol: '2345201801230D0A'
-                }
-            })
-            .then(res => {
-                console.log(encodeUtf8(res.resultMap.resp));
-            })
-            .catch(console.log);
-    }
 
     public onSubmit() {
         this.elForm

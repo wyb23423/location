@@ -1,20 +1,33 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { BASE_URL } from './constant';
-import { RouteConfig } from 'vue-router/types/router';
 
 Vue.use(Vuex);
+
+export interface ZoneMode {
+  in: number; // 进入区域
+  out: number; // 离开区域
+  switch: number; // 切换区域
+  group: number; // 分组区域
+}
 
 interface State {
   baseUrl: string;
   rootScale: number;
+  zoneMode: ZoneMode;
 }
 
 
 export default new Vuex.Store({
   state: {
     baseUrl: BASE_URL,
-    rootScale: 1
+    rootScale: 1,
+    zoneMode: {
+      in: 2,
+      out: 3,
+      switch: 1,
+      group: 4
+    }
   },
   getters: {
     mainHeight(state: State) {

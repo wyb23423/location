@@ -43,6 +43,7 @@
                         v-for="(v, index) in form.position"
                         :label="'区域坐标' + (index + 1)"
                         :key="index"
+                        v-show="form.mode > 1 || index < 4"
                     >
                         <el-button
                             @click="setPosition(v, index)"

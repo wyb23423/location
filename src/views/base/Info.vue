@@ -18,7 +18,7 @@
 
     <div v-else :class="$style.info">
         <el-page-header
-            @back="look(null)"
+            @back="base = null"
             style="margin-bottom: 20px"
         ></el-page-header>
 
@@ -58,6 +58,7 @@ import BaseInfo from '../../components/base/BaseInfo.vue';
 import Primary from '../../components/base/Primary.vue';
 import Net from '../../components/base/Net.vue';
 import Position from '../../components/base/Position.vue';
+import { encodeUtf8 } from '@/assets/utils/util';
 
 @Component({
     components: {
@@ -100,7 +101,20 @@ export default class Info extends mixins(TableMixin) {
     }
 
     public look(row: IBaseStation) {
-        this.base = row;
+        this.$http
+            .post({
+                url: '/api/protocol/sendReceive',
+                body: {
+                    ip: '192.168.1.30',
+                    port: 50000,
+                    protocol: '2345201801230D0A'
+                }
+            })
+            .then(res => {
+                console.log(encodeUtf8(res.resultMap.resp));
+                this.base = row;
+            })
+            .catch(console.log);
     }
 
     protected async fetch(page: number, pageSize: number) {

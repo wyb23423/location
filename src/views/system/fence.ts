@@ -3,6 +3,8 @@ import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
 import MapMixin from '@/mixins/map';
 import ZoneEidt from '@/components/ZoneEdit.vue';
+import { State } from 'vuex-class';
+import { ZoneMode } from '@/store';
 
 @Component({
     components: {
@@ -41,6 +43,8 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         return `calc(${100 / this.$store.state.rootScale}vh - 500px)`;
     }
     // ====================================
+    @State private readonly zoneMode!: ZoneMode;
+
     private isFirst: boolean = true; // 是否是第一次点击设置点
 
     public created() {
@@ -118,8 +122,13 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         }
 
         // position数组最后一项始终为用于占位的null
-        if (this.form.position.length < 4) {
+        const pointsCount = this.form.position.length - 1;
+        if (pointsCount < 3) {
             return this.$message.warning('区域坐标最少设置3个');
+        }
+
+        if (this.form.mode === this.zoneMode.switch && pointsCount !== 4) {
+            return this.$message.warning('切换区域坐标必须为4个');
         }
 
         const position = <TPosition>[...this.form.position];
