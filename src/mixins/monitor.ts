@@ -91,7 +91,7 @@ export default class MonitorMixin extends mixins(MapMixin) {
     }
 
     protected bindEvents() {
-        this.initWebSoket();
+        this.closeWebSocket().initWebSoket();
 
         this.mgr!.on('loadComplete', () => {
             // 清空已显示的标签的记录
@@ -229,8 +229,6 @@ export default class MonitorMixin extends mixins(MapMixin) {
     }
 
     private initWebSoket() {
-        this.closeWebSocket();
-
         const ip = this.ip;
         if (!ip) {
             return;
@@ -275,6 +273,8 @@ export default class MonitorMixin extends mixins(MapMixin) {
             ws.onmessage = null;
             ws = this.ws.pop();
         }
+
+        return this;
     }
 
     // 获取标签位置信息后的处理函数
