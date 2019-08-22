@@ -75,7 +75,7 @@ export default class TableMixin extends Vue {
         return thead.join('');
     }
     private async bodyStr() {
-        const data = (await this.fetch(1, this.totalCount)).data;
+        const data = (await this.fetch(this.page, Math.min(this.totalCount, 2000))).data;
         const tbody = ['<tbody>'];
         data.forEach(v => {
             tbody.push('<tr>');
