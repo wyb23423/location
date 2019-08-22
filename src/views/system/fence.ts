@@ -33,7 +33,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
     // =======================form
     public form: any = {
         name: '',
-        mode: 1,
+        mode: 2,
         position: [null],
         open: true,
         baseNo2: '',
@@ -54,6 +54,8 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         if (this.permission.put) {
             this.operation.push({ type: 'warning', name: 'setting', desc: '设置' });
         }
+
+        this.form.mode = this.zoneMode.in;
     }
 
     /**
@@ -138,10 +140,26 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
     }
 
     // 更新区域数据
-    public update() {
+    public async update() {
         if (this.zone) {
             if (!this.zone.name) {
                 return this.$message.error('区域名称不能为空');
+            }
+
+            if (this.zone.mode === this.zoneMode.switch) {
+                const pointsCount = this.zone.position.length;
+                if (pointsCount < 4) {
+                    return this.$message.warning('此区域坐标数少于4, 不能设置为切换区域');
+                }
+
+                if (pointsCount > 4) {
+                    try {
+                        await this.$confirm(`此区域坐标数为${pointsCount}, 将删除最后的${pointsCount - 4}个坐标点`);
+                        this.zone.position = <TPosition>this.zone.position.slice(0, 4);
+                    } catch (e) {
+                        return;
+                    }
+                }
             }
 
             const data: IZone = {
@@ -220,14 +238,16 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
             .then(() => this.submitAddZone(position))
             .then(() => {
                 position.forEach(<any>this.setPosition, this); // 移除设置的顶点
-                this.form.name = '';
-                this.form.mode = 1;
-
                 this.$message.success('添加成功');
                 this.refresh(this.page);
             })
             .catch(console.log)
-            .finally(() => this.mgr && this.mgr.remove(this.form.name));
+            .finally(() => {
+                this.mgr && this.mgr.remove(this.form.name);
+
+                this.form.mode = this.zoneMode.in;
+                this.form.name = '';
+            });
     }
 
     // 组织并提交数据(添加数据)
