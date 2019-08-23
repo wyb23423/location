@@ -1,2 +1,0 @@
-ALTER TABLE pos_tag ADD COLUMN photo VARCHAR(255) NULL COMMENT '标签图片' AFTER avatar;
-ALTER TABLE pos_map ADD COLUMN group_code VARCHAR(255) NULL COMMENT '关联的基站分组' AFTER margin;

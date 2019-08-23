@@ -1,1 +1,0 @@
-alter table `pos_base_station` change `time_correction_value` `time_correction_value` varchar(255) null  comment '时间补偿值,多个用英文逗号(,)隔开';
