@@ -4,7 +4,7 @@
             <el-form-item label="摄像头品牌：">
                 <el-select v-model="form.brand">
                     <el-option
-                        v-for="(item, index) of ['海康', '大华', '其他']"
+                        v-for="(item, index) of ['海康', '大华']"
                         :key="index"
                         :label="item"
                         :value="index + 1"

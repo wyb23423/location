@@ -52,6 +52,7 @@ import { Message } from 'element-ui';
 import Router from 'vue-router';
 import { State } from 'vuex-class/lib/bindings';
 import { initRouter } from '@/router';
+import { load } from '@/assets/lib/slow-loading';
 
 interface LoginInfo {
     password: string;
@@ -108,6 +109,7 @@ export default class Login extends Vue {
                     .then((user: string) => {
                         user && sessionStorage.setItem('user', user);
                         initRouter();
+                        load('/api/tag/getall', 'tagNo', 'tag');
 
                         this.$router.push('/');
                     })

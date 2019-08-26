@@ -13,6 +13,7 @@ import VueWorker from 'vue-worker';
 import VueCropper from 'vue-cropper';
 import * as PIXI from 'pixi.js';
 import { initConfig } from './constant';
+import forage from './assets/lib/localforage';
 
 
 // ========================================全局变量及注入vue实例的属性
@@ -93,5 +94,3 @@ initConfig()
       render: (h) => h(App),
     }).$mount('#app');
   });
-
-

@@ -9,19 +9,21 @@ const stores: Map<string, LocalForage> = new Map();
 
 export function load(url: string, key: string, name: string) {
     const store = getAndCreateStore(name);
-    let isEnd = false;
 
-    function _load(currentPage: number = 1) {
-        get(url, { pageSize: 1000, currentPage })
-            .then(res => {
-                const data = res.pagedData;
-                data.datas.forEach((v: any) => store.setItem(v[key], v));
-                isEnd = currentPage++ * 1000 >= data.totalCount;
-            })
-            .catch(console.log)
-            .finally(() => isEnd || _load(currentPage));
+    if (!localStorage.getItem(name)) {
+        let isEnd = false;
+        function _load(currentPage: number = 1) {
+            get(url, { pageSize: 1000, currentPage })
+                .then(res => {
+                    const data = res.pagedData;
+                    data.datas.forEach((v: any) => store.setItem(v[key], v));
+                    isEnd = currentPage++ * 1000 >= data.totalCount;
+                })
+                .catch(console.log)
+                .finally(() => isEnd ? localStorage.setItem(name, '1') : _load(currentPage));
+        }
+        _load();
     }
-    _load();
 
     return store;
 }
@@ -49,7 +51,7 @@ function getAndCreateStore(name: string): LocalForage {
         return stores.get(name)!;
     }
 
-    const store = localforage.createInstance({});
+    const store = localforage.createInstance({ storeName: name });
     store.getItem = <T>(key: string): Promise<T> => {
         return localforageGetItem<T>(key, store);
     };
