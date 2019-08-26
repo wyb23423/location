@@ -24,6 +24,8 @@ export default class MapMixin extends Vue {
     }
 
     public async selectMap(data: IMap) {
+        this.initData();
+
         if (data) {
             this.groups = <string[]>data.groupCode;
             const dom = <HTMLElement>this.$refs.map;
@@ -62,7 +64,10 @@ export default class MapMixin extends Vue {
     }
 
     protected bindEvents(data?: IMap) {
-        //
+        // 绑定地图数据
+    }
+    protected initData() {
+        // 在选择地图后初始化数据
     }
 
     protected dispose() {

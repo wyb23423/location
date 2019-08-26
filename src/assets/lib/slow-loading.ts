@@ -26,10 +26,23 @@ export function load(url: string, key: string, name: string) {
     return store;
 }
 
-export function getStore(name: string) {
-    return stores.has(name) ? stores.get(name) : null;
+export function getItem<T>(store: string, key: string) {
+    const db = stores.get(store);
+    if (db) {
+        return db.getItem<T>(key);
+    }
+
+    return Promise.reject(`标识为${store}的缓存数据不存在`);
 }
 
+export function setItem<T>(store: string, key: string, value: T) {
+    const db = stores.get(store);
+    if (db) {
+        return db.setItem<T>(key, value);
+    }
+
+    return Promise.reject(`标识为${store}的缓存数据不存在`);
+}
 
 function getAndCreateStore(name: string): LocalForage {
     if (stores.has(name)) {

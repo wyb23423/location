@@ -105,8 +105,8 @@ export default class Info extends mixins(TableMixin) {
             .post({
                 url: '/api/protocol/sendReceive',
                 body: {
-                    ip: '192.168.1.30',
-                    port: 50000,
+                    ip: '192.168.1.19', // row.ip,
+                    port: 60000,
                     protocol: '2345201801230D0A'
                 }
             })

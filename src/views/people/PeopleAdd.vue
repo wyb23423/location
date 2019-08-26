@@ -23,6 +23,7 @@
                 <app-select
                     url="/api/zone/getall"
                     v-model="form.zone"
+                    :canEmpty="true"
                 ></app-select>
             </el-form-item>
             <el-form-item label="其他属性：">

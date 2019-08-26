@@ -12,7 +12,7 @@
                     :multiple-limit="5"
                     :loading="loading"
                     :remote-method="remoteMethod"
-                    placeholder="请输入关键词"
+                    placeholder="请输入标签名"
                     @change="change"
                     style="min-width: 200px"
                     multiple

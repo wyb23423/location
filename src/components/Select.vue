@@ -30,14 +30,15 @@ interface Option<T> {
 
 @Component
 export default class Select extends Vue {
-    @Prop() public url!: string;
-    @Prop() public value!: any;
-    @Prop({
-        default: () => ({ id: 'id', name: 'name' })
-    })
-    public keys!: Option<string>;
-    @Prop() public multiple?: boolean;
-    @Prop() public disabled?: boolean;
+    @Prop() public readonly url!: string;
+    @Prop() public readonly value!: any;
+    @Prop() public readonly multiple?: boolean;
+    @Prop() public readonly disabled?: boolean;
+
+    @Prop({ default: () => false }) public readonly canEmpty?: boolean;
+
+    @Prop({ default: () => ({ id: 'id', name: 'name' }) })
+    public readonly keys!: Option<string>;
 
     public options: Array<Option<any>> = [];
     public currValue: any = null;
@@ -57,7 +58,7 @@ export default class Select extends Vue {
 
                 if (this.multiple) {
                     this.currValue = [];
-                } else {
+                } else if (!this.canEmpty) {
                     this.currValue =
                         this.value == null || this.value === ''
                             ? this.options[0].id

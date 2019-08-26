@@ -46,14 +46,14 @@
             <Census
                 v-if="tools[4].active"
                 @close="tools[4].active = false"
-                :zones="zoneAll"
+                :zones="zones"
                 :renderTags="renderTags"
             ></Census>
         </transition>
 
         <transition name="el-fade-in-linear">
             <Group :group="groupData" v-if="tools[3].active"></Group>
-            <Zone :zones="zoneAll" v-if="tools[2].active"></Zone>
+            <Zone :zones="zones" v-if="tools[2].active"></Zone>
         </transition>
     </div>
 </template>

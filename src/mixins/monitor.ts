@@ -24,6 +24,7 @@ export default class MonitorMixin extends mixins(MapMixin) {
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
     private infoArr: string[] = [];
     private timer: number = 0;
+    private zoneAll: IZone[] = []; // 所有区域
 
     private get ip() {
         let ip: string = location.hostname;
@@ -40,25 +41,24 @@ export default class MonitorMixin extends mixins(MapMixin) {
     }
 
     public created() {
+        // 获取所有标签数据
         this.tagAll = {};
+        this.$http.get('/api/tag/getall', {
+            currentPage: 1,
+            pageSize: 1_0000_0000
+        })
+            .then(res => this.tagAll = arr2obj(res.pagedData.datas, 'tagNo', false))
+            .catch(() => console.log);
 
-        Promise.all(['tag', 'zone'].map(async v => {
-            try {
-                const res = await this.$http.get(`/api/${v}/getall`, {
-                    currentPage: 1,
-                    pageSize: 1_0000_0000
-                });
+        // 获取区域数据
+        this.$http.get('/api/zone/getall', {
+            currentPage: 1,
+            pageSize: 1_0000_0000
+        })
+            .then(res => this.zoneAll = res.pagedData.datas)
+            .catch(() => console.log);
 
-                return res.pagedData.datas;
-            } catch (e) {
-                return [];
-            }
-        }))
-            .then(res => {
-                this.setData('zoneAll', res[1]);
-                this.tagAll = arr2obj(res[0], 'tagNo', false);
-            });
-
+        // 开启警告循环
         this.warning();
     }
 
@@ -110,10 +110,11 @@ export default class MonitorMixin extends mixins(MapMixin) {
             // 渲染基站
             this.tagAnchor().then(data => {
                 this.baseAll = data;
+                this.setData('zones', this.filterZoneAll(data));
                 this.setData('groupData', arr2obj(data, 'groupCode'));
             });
 
-            this.init();
+            this.mapCreated();
         });
 
         this.mgr!.on('mapClickNode', (event: FMMapClickEvent) => {
@@ -137,12 +138,17 @@ export default class MonitorMixin extends mixins(MapMixin) {
         });
     }
 
-    protected init() {
+    protected mapCreated() {
         // 其他地图创建后的初始化操作
     }
 
     protected setData(key: string, data: any) {
         // 设置实例数据
+    }
+
+    private filterZoneAll(data: IBaseStation[]) {
+        const ids = new Set(data.map(v => +v.zone));
+        return this.zoneAll.filter(v => ids.has(v.id));
     }
 
     // 获取并显示基站

@@ -15,7 +15,7 @@ import MonitorMixin from '@/mixins/monitor';
 })
 export default class Monitor extends mixins(MonitorMixin, TableMixin) {
     public groupData: { [x: string]: IBaseStation[] } = {}; // 基站分组
-    public zoneAll: IZone[] = []; // 区域列表
+    public zones: IZone[] = []; // 区域列表
 
     // 右下工具栏列表
     public tools: ToolItem[] = [
@@ -72,7 +72,7 @@ export default class Monitor extends mixins(MonitorMixin, TableMixin) {
     }
 
     // ==================================
-    protected init() {
+    protected initData() {
         this.tools[0].active = true;
         this.tools[1].active = false;
         this.tools[1].display = !!this.mgr && this.mgr.has3D;
