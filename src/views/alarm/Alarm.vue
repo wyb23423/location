@@ -49,7 +49,7 @@ export default class Alarm extends mixins(TableMixin) {
         { prop: 'id', label: '报警ID', sortable: true, width: 140 },
         { prop: 'tagNo', label: '报警标签', width: 160 },
         { prop: 'baseNo', label: '基站编号', width: 160 },
-        { prop: 'type', label: '报警类型', width: 140 },
+        { prop: 'type', label: '报警类型', sortable: true, width: 140 },
         { prop: 'alarmTime', label: '时间', width: 200 },
         { prop: 'alarmMsg', label: '报警信息', width: 240 }
     ];

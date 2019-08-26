@@ -33,7 +33,11 @@ export default class IpInput extends Vue {
         const value = this.parseIp(currValue);
         this.$set(this.value, i, value);
 
-        if (value.length >= (this.max + '').length && i < this.length - 1) {
+        if (
+            (value.length >= (this.max + '').length ||
+                /^\d+\.$/.test(currValue)) &&
+            i < this.length - 1
+        ) {
             (<ElInput[]>this.$refs.ip)[i + 1].focus();
         }
 

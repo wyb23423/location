@@ -1,6 +1,5 @@
 /**
- * pixi-action类型声明(简)
- * 只声明了项目中需要用的
+ * pixi-action类型声明
  */
 
 import { Sprite, utils } from 'pixi.js';

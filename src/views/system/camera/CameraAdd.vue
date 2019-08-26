@@ -1,6 +1,16 @@
 <template>
     <div style="padding-left: 5%; padding-top: 3%;">
         <el-form ref="form" :model="form" label-width="auto" style="width: 80%">
+            <el-form-item label="摄像头品牌：">
+                <el-select v-model="form.brand">
+                    <el-option
+                        v-for="(item, index) of ['海康', '大华', '其他']"
+                        :key="index"
+                        :label="item"
+                        :value="index + 1"
+                    ></el-option>
+                </el-select>
+            </el-form-item>
             <el-form-item label="摄像头IP：" required>
                 <ip-input v-model="form.ip"></ip-input>
             </el-form-item>
@@ -101,7 +111,8 @@ export default class CameraAdd extends Vue {
             port: '',
             groupCode: '',
             windowSplit: 1,
-            password: ''
+            password: '',
+            brand: 1
         };
     }
 }

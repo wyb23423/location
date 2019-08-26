@@ -10,23 +10,7 @@ import Component from 'vue-class-component';
 import { DEFAULT_WIDTH, SX_WIDTH } from './constant';
 
 @Component
-export default class App extends Vue {
-    // private timer?: number;
-    // public mounted() {
-    //     this.scaleRoot();
-    //     window.addEventListener('resize', this.scaleRoot.bind(this), false);
-    // }
-    // private scaleRoot() {
-    //     if (!this.timer) {
-    //         this.timer = setTimeout(() => {
-    //             const rootWidth = document.body.clientWidth;
-    //             const width = rootWidth <= SX_WIDTH ? SX_WIDTH : DEFAULT_WIDTH;
-    //             this.$store.commit('setRootScale', rootWidth / width);
-    //             // this.setBodyHeight();
-    //         }, 300);
-    //     }
-    // }
-}
+export default class App extends Vue {}
 </script>
 
 <style lang="postcss" module>
