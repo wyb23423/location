@@ -38,6 +38,10 @@
                     <el-form-item label="区域">
                         <el-select v-model="person.zone">
                             <el-option
+                                :value="undefined"
+                                label="--"
+                            ></el-option>
+                            <el-option
                                 v-for="v of zones.pagedData.datas"
                                 :key="v.id"
                                 :value="v.id + ''"

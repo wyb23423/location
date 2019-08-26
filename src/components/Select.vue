@@ -8,6 +8,7 @@
         :disabled="!!disabled"
         collapse-tags
     >
+        <el-option label="--" :value="undefined" v-if="canEmpty"> </el-option>
         <el-option
             v-for="item of options"
             :key="item.id"
