@@ -74,7 +74,7 @@ export default class Info extends mixins(TableMixin) {
         { prop: 'baseNo', label: '基站编号', width: 175 },
         { prop: 'name', label: '基站名称', width: 175 },
         { prop: 'main', label: '主基站', width: 145 },
-        { prop: 'zone', label: '基站区域', width: 170 },
+        { prop: 'status', label: '基站状态', width: 170 },
         { prop: 'ip', label: '基站IP', width: 210 }
     ];
 
@@ -112,9 +112,9 @@ export default class Info extends mixins(TableMixin) {
             })
             .then(res => {
                 console.log(encodeUtf8(res.resultMap.resp));
-                this.base = row;
             })
-            .catch(console.log);
+            .catch(console.log)
+            .finally(() => (this.base = row));
     }
 
     protected async fetch(page: number, pageSize: number) {

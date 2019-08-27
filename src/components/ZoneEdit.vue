@@ -18,6 +18,7 @@
                     v-if="groups.length >= 2"
                 ></el-option>
                 <el-option label="分组区域" :value="zoneMode.group"></el-option>
+                <el-option label="其他" :value="zoneMode.other"></el-option>
             </el-select>
         </el-form-item>
         <el-form-item

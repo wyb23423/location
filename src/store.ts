@@ -9,6 +9,7 @@ export interface ZoneMode {
   out: number; // 离开区域
   switch: number; // 切换区域
   group: number; // 分组区域
+  other: number; // 其他
 }
 
 interface State {
@@ -26,7 +27,8 @@ export default new Vuex.Store({
       in: 2,
       out: 3,
       switch: 1,
-      group: 4
+      group: 4,
+      other: 5
     }
   },
   getters: {

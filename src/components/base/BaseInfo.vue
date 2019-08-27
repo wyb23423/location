@@ -37,7 +37,7 @@
                 <li>
                     <div>
                         <span :class="$style.title">是否工作：</span>
-                        <span>{{ !!data.work }}</span>
+                        <span>{{ !!data.status }}</span>
                     </div>
                     <div>
                         <span :class="$style.title">安装时间：</span>
