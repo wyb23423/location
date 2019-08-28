@@ -6,6 +6,7 @@ import Component, { mixins } from 'vue-class-component';
 import MapMixin from './map';
 import { FengMapMgr } from '@/assets/map/fengmap';
 import { PIXIMgr } from '@/assets/map/pixi';
+import segmentsIntersect from '@/assets/utils/intersect';
 
 @Component
 export default class ZoneMixin extends mixins(MapMixin) {
@@ -164,7 +165,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
         const last = this.points[this.points.length - 1];
         if (last) {
             for (let i = 0; i < this.points.length - 1; i++) {
-                const { isCollinear, result } = this.segmentsIntersect(this.points[i], this.points[i + 1], last, p);
+                const { isCollinear, result } = segmentsIntersect(this.points[i], this.points[i + 1], last, p);
                 if (result && (isCollinear || this.points[i + 1] !== last && this.points[i] !== p)) {
                     return true;
                 }
@@ -202,42 +203,5 @@ export default class ZoneMixin extends mixins(MapMixin) {
 
         console.warn('地图错误....');
         return { x, y, z: 9 };
-    }
-
-    // 判断两条线段是否相交
-    private segmentsIntersect(a1: Vector3, a2: Vector3, b1: Vector3, b2: Vector3) {
-        const t1 = this.cross(a1, a2, b1);
-        const t2 = this.cross(a1, a2, b2);
-        const t3 = this.cross(b1, b2, a1);
-        const t4 = this.cross(b1, b2, a2);
-        if (((t1 * t2) > 0) || ((t3 * t4) > 0)) {    // 一条线段的两个端点在另一条线段的同侧，不相交。（可能需要额外处理以防止乘法溢出，视具体情况而定。）
-            return { isCollinear: false, result: false };
-        } else if (t1 === 0 && t2 === 0) {             // 两条线段共线，利用快速排斥实验进一步判断。此时必有 t3 == 0 && t4 == 0。
-            return { isCollinear: true, result: this.rectsIntersect(a1, a2, b1, b2) };
-        } else {                                    // 其它情况，两条线段相交。
-            return { isCollinear: false, result: true };
-        }
-    }
-
-    /**
-     * 计算两个向量的外积（叉乘）。可以根据结果的符号判断三个点的位置关系
-     *
-     * @returns
-     *  向量AC与向量AB的外积。如果结果为正数，表明点C在直线AB（直线方向为从A到B）的右侧；
-     *  如果结果为负数，表明点C在直线AB（直线方向为从A到B）的左侧；如果结果为0，表明点C在直线AB上
-     */
-    private cross(a: Vector3, b: Vector3, c: Vector3) {
-        return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
-    }
-
-    /**
-     * 快速排斥实验，判断两个线段张成的矩形区域是否相交。
-     * @returns 两个线段张成的矩形区域是否相交。具有对称性，即交换两条线段（参数S1与S2交换、E1与E2交换），结果不变
-     */
-    private rectsIntersect(s1: Vector3, e1: Vector3, s2: Vector3, e2: Vector3) {
-        return Math.min(s1.y, e1.y) <= Math.max(s2.y, e2.y)
-            && Math.max(s1.y, e1.y) >= Math.min(s2.y, e2.y)
-            && Math.min(s1.x, e1.x) <= Math.max(s2.x, e2.x)
-            && Math.max(s1.x, e1.x) >= Math.min(s2.x, e2.x);
     }
 }
