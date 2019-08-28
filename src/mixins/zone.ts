@@ -57,7 +57,9 @@ export default class ZoneMixin extends mixins(MapMixin) {
         if (this.hasIntersection(p)) {
             return;
         }
+
         this._addPoint(p);
+        this.popPoints.length = 0;
     }
 
     public enterDrawingMode() {
@@ -82,7 +84,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
     // 将回撤的点重现绘制
     public next() {
         const p = this.popPoints.pop();
-        p && this._addPoint(p, true);
+        p && this._addPoint(p);
     }
 
     // 清除图形
@@ -124,7 +126,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
     }
 
     // 将点的标注及线段添加到地图上
-    private _addPoint(p: Vector3, isNext?: boolean) {
+    private _addPoint(p: Vector3) {
         if (!this.mgr) {
             return;
         }
@@ -155,8 +157,6 @@ export default class ZoneMixin extends mixins(MapMixin) {
                 );
             }
         }
-
-        isNext || (this.popPoints.length = 0);
     }
 
     // 是否存在无效点
