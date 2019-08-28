@@ -13,7 +13,7 @@
                 @selectmap="selectMap"
                 v-show="!isDrawing"
             ></map-select>
-            <div v-if="isDrawing" style="padding-left: 10%">
+            <div v-if="isDrawing" style="padding-left: 10%; width: 100%">
                 <el-button
                     size="mini"
                     icon="el-icon-d-arrow-left"

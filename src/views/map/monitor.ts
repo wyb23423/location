@@ -41,7 +41,7 @@ export default class Monitor extends mixins(MonitorMixin, TableMixin) {
             otherMode.active = !otherMode.active;
 
             if (this.mgr) {
-                this.mgr.switchViewMode();
+                this.mgr.switchViewMode(i ? fengmap.FMViewMode.MODE_3D : fengmap.FMViewMode.MODE_2D);
             }
         }
 
@@ -75,13 +75,15 @@ export default class Monitor extends mixins(MonitorMixin, TableMixin) {
     protected initData() {
         this.tools[0].active = true;
         this.tools[1].active = false;
-        this.tools[1].display = !!this.mgr && this.mgr.has3D;
 
         this.findTarget = '';
-
         for (let i = 2; i < this.tools.length; i++) {
             this.tools[i].active = false;
         }
+    }
+
+    protected mapCreated() {
+        this.tools[1].display = !!this.mgr && this.mgr.has3D;
     }
 
     protected setData(key: string, data: any) {
