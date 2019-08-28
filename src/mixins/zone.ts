@@ -61,22 +61,10 @@ export default class ZoneMixin extends mixins(MapMixin) {
     }
 
     public enterDrawingMode() {
-        if (this.isClose) {
-            if (this.mgr) {
-                this.mgr.lineMgr.remove(ZoneMixin.LINE_NAME);
-                if (this.points.length > 1) {
-                    this.mgr.addLine(
-                        [...this.points],
-                        ZoneMixin.LINE_STYLE,
-                        ZoneMixin.LINE_NAME,
-                        true
-                    );
-                }
-            }
+        this.isClose && this.rePaint();
 
-            this.isClose = false;
-        }
         this.isDrawing = true;
+        this.isClose = false;
     }
 
     // 回撤一个点
@@ -86,9 +74,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
             this.popPoints.push(p);
             if (this.mgr) {
                 this.mgr.remove(JSON.stringify({ x: p.x, y: p.y }));
-
-                this.isClose = true;
-                this.enterDrawingMode();
+                this.rePaint();
             }
         }
     }
@@ -111,8 +97,9 @@ export default class ZoneMixin extends mixins(MapMixin) {
 
     // 确定图形并退出绘制模式
     public ok() {
-        this.mgr && this.mgr.appendLine(ZoneMixin.LINE_NAME, [this.points[0]], true);
         this.isClose = true;
+        this.rePaint();
+        this.mgr && this.mgr.appendLine(ZoneMixin.LINE_NAME, [this.points[0]], true);
 
         if (this.hasIntersection(this.points[0])) {
             return this.$message.warning('当前图形存在相交线段，请重新设置');
@@ -185,6 +172,21 @@ export default class ZoneMixin extends mixins(MapMixin) {
         }
 
         return false;
+    }
+
+    // 重绘路径
+    private rePaint() {
+        if (this.mgr) {
+            this.mgr.lineMgr.remove(ZoneMixin.LINE_NAME);
+            if (this.points.length > 1) {
+                this.mgr.addLine(
+                    [...this.points],
+                    ZoneMixin.LINE_STYLE,
+                    ZoneMixin.LINE_NAME,
+                    true
+                );
+            }
+        }
     }
 
     // 获取地图坐标
