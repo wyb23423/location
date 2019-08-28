@@ -132,6 +132,7 @@ declare namespace fengmap {
         openMapById(id: string): void;
         getFMGroup(gid: number): FMGroup;
         coordMapToScreen(x: number, y: number, z?: number, isFloat?: boolean, giveMeRaw?: boolean): Vector2;
+        coordScreenToMap(x: number, y: number, z: number, isFloat?: boolean, giveMeRaw?: boolean): Vector3;
         drawLineMark(line: FMLineMarker, style: LineStyle): void;
         clearLineMark(): void;
         removeLineMarker(line: FMLineMarker): void;

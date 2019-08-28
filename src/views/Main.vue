@@ -24,6 +24,7 @@ export default class Main extends Vue {
     private timer?: number;
 
     public created() {
+        let errorCount: number = 0;
         const fn = () => {
             this.$http
                 .get('/api/alarm/getall', {
@@ -31,6 +32,8 @@ export default class Main extends Vue {
                     currentPage: 1
                 })
                 .then(res => {
+                    errorCount = 0;
+
                     res.pagedData.datas.forEach((v: IAlarm) => {
                         if (Date.now() - v.alarmTime <= 1000) {
                             this.$notify.warning(
@@ -42,8 +45,10 @@ export default class Main extends Vue {
                     this.timer = setTimeout(fn, 1000);
                 })
                 .catch(e => {
-                    sessionStorage.removeItem('login');
-                    this.$router.push('/login');
+                    if (++errorCount >= 5) {
+                        sessionStorage.removeItem('login');
+                        this.$router.push('/login');
+                    }
                 });
         };
 

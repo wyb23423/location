@@ -35,8 +35,6 @@ import TableMixin from '../../mixins/table';
     }
 })
 export default class Alarm extends mixins(TableMixin) {
-    @Getter('mainHeight') public mainHeight!: string;
-
     public tabs = [
         {
             title: '报警列表',

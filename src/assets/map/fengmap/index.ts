@@ -69,6 +69,12 @@ export class FengMapMgr extends CoordTransformer {
     public on(type: string, callback: any) {
         this.map.on(type, (e: FMMapClickEvent) => {
             if (e.eventInfo && this.map && e.eventInfo.coord) {
+                // ===============================处理移动端时的坐标误差
+                if (e.eventInfo.domEvent instanceof TouchEvent) {
+                    e.eventInfo.coord.x -= 2.8;
+                    e.eventInfo.coord.y += 1.4;
+                }
+
                 const { x, y } = e.eventInfo.coord;
                 e.data = { global: this.map.coordMapToScreen(x, y) };
             }
@@ -87,7 +93,7 @@ export class FengMapMgr extends CoordTransformer {
         let p: Vector3 | undefined = {
             x: opt.x,
             y: opt.y,
-            z: group.groupHeight + this.map.layerLocalHeight
+            z: group.groupHeight + this.map.layerLocalHeight || 0
         };
 
         if (!isMapCoor) {

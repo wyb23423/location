@@ -34,8 +34,7 @@ export class MapEvent {
     public static getDistance(start: Vector2, stop: Vector2) {
         return Math.sqrt(Math.pow((stop.x - start.x), 2) + Math.pow((stop.y - start.y), 2));
     }
-
-    protected stage: PIXI.Container = new PIXI.Container(); // 场景舞台
+    public stage: PIXI.Container = new PIXI.Container(); // 场景舞台
 
     // 用于平移
     private downX: number = 0;

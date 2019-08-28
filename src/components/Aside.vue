@@ -1,5 +1,5 @@
 <template>
-    <div :class="$style.aside" :style="{ height }">
+    <div style="background: #393d49;" :style="{ height }">
         <el-tooltip
             effect="dark"
             :content="isCollapse ? '展开' : '收起'"
@@ -54,7 +54,7 @@ import { Prop, Watch } from 'vue-property-decorator';
 import { Getter } from 'vuex-class/lib/bindings';
 import Router from 'vue-router';
 
-interface TabItem {
+export interface TabItem {
     title: string;
     to: string;
     icon?: string;
@@ -120,13 +120,6 @@ export default class Aside extends Vue {
 </script>
 
 <style lang="postcss" module>
-.aside {
-    background: #393d49;
-    position: absolute;
-    top: 60px;
-    left: 0;
-    z-index: 9999;
-}
 .icon {
     color: #fff;
     cursor: pointer;

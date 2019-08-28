@@ -1,19 +1,19 @@
-<template src="../../components/page.html"></template>
+<template>
+    <app-page :tabs="tabs"></app-page>
+</template>
 
 <script lang="ts">
 import Component from 'vue-class-component';
-import Aside from '../../components/Aside.vue';
 import { Getter } from 'vuex-class/lib/bindings';
 import Vue from 'vue';
+import Page from '@/components/Page.vue';
 
 @Component({
     components: {
-        'app-aside': Aside
+        'app-page': Page
     }
 })
 export default class System extends Vue {
-    @Getter('mainHeight') public mainHeight!: string;
-
     public tabs = [
         { title: '电子围栏', to: '/system/fence', icon: 'el-icon-crop' },
         // { title: '路线规划', to: '/system/route', icon: 'el-icon-rank' },

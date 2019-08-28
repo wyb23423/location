@@ -3,7 +3,7 @@
         type="flex"
         justify="space-around"
         align="middle"
-        style="background: #393d49;height: 100%"
+        :class="$style.row"
     >
         <el-col :sm="2" :xs="3" :offset="1">
             <router-link to="/index" :class="$style.link">LOGO</router-link>
@@ -42,8 +42,12 @@
             <span :class="$style.link" @click="loginout">退出</span>
         </el-col>
 
-        <el-col :span="19" :class="$style['hidden-sm-and-up']"></el-col>
-        <el-col :span="2" :class="$style['hidden-sm-and-up']">
+        <el-col
+            :span="1"
+            :class="$style['hidden-sm-and-up']"
+            style="flex-grow: 1"
+        ></el-col>
+        <el-col :class="$style['hidden-sm-and-up']" style="width: auto">
             <el-menu
                 background-color="#393d49"
                 text-color="#fff"
@@ -126,6 +130,11 @@ export default class Header extends Vue {
 </script>
 
 <style lang="postcss" module>
+.row {
+    background: #393d49;
+    height: 100%;
+}
+
 .link {
     color: color(#fff alpha(70%));
     text-decoration: none;

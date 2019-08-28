@@ -1,13 +1,49 @@
 <template>
     <div :class="$style.box">
+        <div ref="map" :class="$style.map"></div>
+        <div
+            :class="[$style.map, $style.mask]"
+            v-show="isDrawing"
+            @pointermove="move"
+            @pointerup="addPoint"
+        ></div>
         <div :class="$style['tool-bar']">
             <map-select
                 style="margin-left: 50px"
                 @selectmap="selectMap"
+                v-show="!isDrawing"
             ></map-select>
+            <div v-if="isDrawing" style="padding-left: 10%">
+                <el-button
+                    size="mini"
+                    icon="el-icon-d-arrow-left"
+                    :disabled="!points.length"
+                    @click="prev"
+                ></el-button>
+                <el-button
+                    size="mini"
+                    icon="el-icon-d-arrow-right"
+                    :disabled="!popPoints.length"
+                    @click="next"
+                ></el-button>
+                <el-button
+                    size="mini"
+                    icon="el-icon-check"
+                    @click="ok"
+                ></el-button>
+                <el-button
+                    size="mini"
+                    icon="el-icon-close"
+                    @click="cancel"
+                ></el-button>
+            </div>
         </div>
-        <div ref="map" style="height: 100%; overflow: hidden"></div>
-        <el-collapse v-model="activeNames" :class="$style.op">
+
+        <el-collapse
+            v-model="activeNames"
+            :class="$style.op"
+            v-show="!isDrawing"
+        >
             <el-collapse-item
                 name="info"
                 title="区域信息"
@@ -39,22 +75,14 @@
                     :form-height="formHeight"
                     :groups="groups"
                 >
-                    <el-form-item
-                        v-for="(v, index) in form.position"
-                        :label="'区域坐标' + (index + 1)"
-                        :key="index"
-                        v-show="form.mode > 1 || index < 4"
-                    >
+                    <el-form-item label="区域顶点">
                         <el-button
-                            @click="setPosition(v, index)"
-                            :type="v ? 'warning' : 'success'"
                             size="mini"
+                            type="primary"
+                            @click="enterDrawingMode"
                         >
-                            {{ v ? '删除' : pointIndex >= 0 ? '...' : '设置' }}
+                            设置
                         </el-button>
-                        <span class="ellipsis" :class="$style.point">
-                            {{ v ? JSON.stringify(v) : '' }}
-                        </span>
                     </el-form-item>
                 </zone-input>
                 <el-button
@@ -109,6 +137,7 @@
     top: 0;
     right: 0;
     width: 390px;
+    max-width: 100%;
 
     & div[role='button'] {
         background: #f2f2f2;
@@ -130,5 +159,18 @@
     vertical-align: middle;
     width: 190px;
     margin-left: 10px;
+}
+
+.map {
+    height: 100%;
+    overflow: hidden;
+}
+
+.mask {
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    touch-action: none;
 }
 </style>

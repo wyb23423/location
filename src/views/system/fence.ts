@@ -1,19 +1,18 @@
 
 import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
-import MapMixin from '@/mixins/map';
 import ZoneEidt from '@/components/ZoneEdit.vue';
 import { State } from 'vuex-class';
 import { ZoneMode } from '@/store';
+import ZoneMixin from '@/mixins/zone';
 
 @Component({
     components: {
         'zone-input': ZoneEidt
     }
 })
-export default class Fence extends mixins(TableMixin, MapMixin) {
+export default class Fence extends mixins(TableMixin, ZoneMixin) {
     public activeNames: string[] = ['info', 'add'];
-    public pointIndex: number = -1; // 设置区域顶点时的索引
     public zone: IZone | null = null; // 设置中的区域
 
     // ===================================table
@@ -34,7 +33,6 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
     public form: any = {
         name: '',
         mode: 2,
-        position: [null],
         open: true,
         baseNo2: '',
         baseNo1: ''
@@ -44,8 +42,6 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
     }
     // ====================================
     @State private readonly zoneMode!: ZoneMode;
-
-    private isFirst: boolean = true; // 是否是第一次点击设置点
 
     public created() {
         if (this.permission.delete) {
@@ -97,24 +93,6 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
 
             this.$set(this.operation, i, op);
         }
-
-    }
-
-    public setPosition(point: Vector3, i: number) {
-        const index = this.form.position.indexOf(point);
-
-        if (point && index > -1) {
-            // 删除已设置的顶点
-            this.form.position.splice(index, 1);
-            this.mgr && this.mgr.remove(JSON.stringify(point));
-        } else {
-            // 进入设置区域顶点模式
-            this.pointIndex = i;
-            if (this.isFirst) {
-                this.$message.info('点击地图设置区域顶点');
-                this.isFirst = false;
-            }
-        }
     }
 
     // 添加区域
@@ -123,8 +101,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
             return this.$message.error('区域名称不能为空');
         }
 
-        // position数组最后一项始终为用于占位的null
-        const pointsCount = this.form.position.length - 1;
+        const pointsCount = this.points.length;
         if (pointsCount < 3) {
             return this.$message.warning('区域坐标最少设置3个');
         }
@@ -133,10 +110,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
             return this.$message.warning('切换区域坐标必须为4个');
         }
 
-        const position = <TPosition>[...this.form.position];
-        position.pop();
-        this.mgr && this.mgr.createPolygonMarker(position, this.form.name, true);
-        setTimeout(() => this.put(position), 1000);
+        this.put();
     }
 
     // 更新区域数据
@@ -206,52 +180,22 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         return { count, data };
     }
 
-    protected bindEvents() {
-        this.mgr!.on('mapClickNode', (event: FMMapClickEvent) => {
-            if (event.nodeType === fengmap.FMNodeType.NONE) {
-                return;
-            }
-
-            if (this.pointIndex > -1) {
-                // 获取坐标信息
-                const eventInfo = event.eventInfo.coord;
-
-                const p = this.mgr!.addImage({
-                    x: eventInfo.x,
-                    y: eventInfo.y,
-                    url: '/images/blueImageMarker.png',
-                    size: 32,
-                    height: 2
-                });
-
-                this.$set(this.form.position, this.pointIndex, p);
-
-                this.pointIndex = -1;
-                this.form.position.push(null);
-            }
-        });
-    }
-
     // 确认并添加区域
-    private put(position: TPosition) {
+    private put() {
         this.$confirm('请确定当前区域范围', '提示', { type: 'info' })
-            .then(() => this.submitAddZone(position))
+            .then(this.submitAddZone.bind(this))
             .then(() => {
-                position.forEach(<any>this.setPosition, this); // 移除设置的顶点
+                this.remove();
+                this.form.mode = this.zoneMode.in;
+                this.form.name = '';
                 this.$message.success('添加成功');
                 this.refresh(this.page);
             })
-            .catch(console.log)
-            .finally(() => {
-                this.mgr && this.mgr.remove(this.form.name);
-
-                this.form.mode = this.zoneMode.in;
-                this.form.name = '';
-            });
+            .catch(console.log);
     }
 
     // 组织并提交数据(添加数据)
-    private submitAddZone(position: TPosition): Promise<ResponseData> {
+    private submitAddZone(): Promise<ResponseData> {
         const now = Date.now();
         if (!this.mgr) {
             this.$message.error('地图不存在, 提交失败!');
@@ -259,7 +203,7 @@ export default class Fence extends mixins(TableMixin, MapMixin) {
         }
 
         const data: IZone = Object.assign({}, this.form, {
-            position: JSON.stringify(position.map(v => this.mgr!.getCoordinate(v))),
+            position: JSON.stringify(this.points.map(v => this.mgr!.getCoordinate(v))),
             enable: this.form.open ? 1 : 0,
             createTime: now,
             updateTime: now

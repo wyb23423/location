@@ -5,7 +5,7 @@ import { createMap } from '@/assets/map';
 import { FengMapMgr } from '@/assets/map/fengmap';
 import MapSelect from '@/components/MapSelect.vue';
 import { PIXIMgr } from '@/assets/map/pixi';
-import { Watch } from 'vue-property-decorator';
+import { Watch, Ref } from 'vue-property-decorator';
 
 @Component({
     components: {
@@ -17,6 +17,7 @@ export default class MapMixin extends Vue {
     public showPath: boolean = false;
     public groups: string[] = []; // 当前地图关联组号
 
+    @Ref('map') protected readonly canvas?: HTMLCanvasElement;
     protected renderTags?: { [x: string]: number } | Set<string>;
 
     public beforeDestroy() {
@@ -28,13 +29,12 @@ export default class MapMixin extends Vue {
 
         if (data) {
             this.groups = <string[]>data.groupCode;
-            const dom = <HTMLElement>this.$refs.map;
-            if (dom) {
+            if (this.canvas) {
                 try {
-                    await loopAwait(() => !!dom.offsetWidth && !!dom.offsetHeight);
+                    await loopAwait(() => !!(this.canvas && this.canvas.offsetWidth && this.canvas.offsetHeight));
                     this.dispose();
 
-                    this.mgr = createMap(data, dom);
+                    this.mgr = createMap(data, this.canvas);
                     this.bindEvents(data);
                 } catch (e) {
                     console.warn(e);

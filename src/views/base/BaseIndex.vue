@@ -1,19 +1,19 @@
-<template src="../../components/page.html"></template>
+<template>
+    <app-page :tabs="tabs"></app-page>
+</template>
 
 <script lang="ts">
 import Component from 'vue-class-component';
-import Aside from '../../components/Aside.vue';
 import { Getter } from 'vuex-class/lib/bindings';
 import Vue from 'vue';
+import Page from '@/components/Page.vue';
 
 @Component({
     components: {
-        'app-aside': Aside
+        'app-page': Page
     }
 })
 export default class BaseIndex extends Vue {
-    @Getter('mainHeight') public mainHeight!: string;
-
     public tabs = [
         { title: '设备信息', to: '/base/info', icon: 'el-icon-info' },
         {
