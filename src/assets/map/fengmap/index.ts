@@ -4,6 +4,7 @@
 import { MAP_THEME_URL, APP_KEY, APP_NAME, MAP_DATA_URL } from '@/constant';
 import { CoordTransformer } from './coordtransformer';
 import { PolygonMgr, TextMgr, ImageMgr, LineMgr } from './marker';
+import { getCustomInfo } from '../common';
 
 export class FengMapMgr extends CoordTransformer {
     public readonly has3D: boolean = true;
@@ -107,6 +108,13 @@ export class FengMapMgr extends CoordTransformer {
             .then(im => opt.callback && opt.callback(im));
 
         return p;
+    }
+
+    public modifyImg(name: string | number, img?: string) {
+        this.imageMgr.find(name).forEach(v => {
+            img = img || getCustomInfo(v, 'info').photo;
+            img && (v.url = img);
+        });
     }
 
     public createPolygonMarker(

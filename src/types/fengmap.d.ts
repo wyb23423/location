@@ -173,6 +173,7 @@ declare namespace fengmap {
     }
 
     class FMImageMarker extends FMMarker<FMImageMarkerOptions> {
+        public url: string;
         public avoid(value: boolean): void;
     }
 

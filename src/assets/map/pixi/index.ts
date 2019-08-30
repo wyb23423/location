@@ -6,6 +6,7 @@ import Stage from './stage';
 import LineMgr from './line';
 import { randomNum } from '@/assets/utils/util';
 import 'pixi-action';
+import { getCustomInfo } from '../common';
 
 export class PIXIMgr extends Stage {
     public readonly has3D: boolean = false;
@@ -100,6 +101,21 @@ export class PIXIMgr extends Stage {
         });
 
         return p;
+    }
+
+    public modifyImg(name: string | number, img?: string) {
+        this.find(name).forEach(v => {
+            if (v instanceof PIXI.Text || v instanceof PIXI.Graphics) {
+                return;
+            }
+
+            img = img || getCustomInfo(v, 'info').photo;
+            if (img) {
+                this.load(img)
+                    .then(([texture]) => v.texture = texture)
+                    .catch(console.log);
+            }
+        });
     }
 
     /**
