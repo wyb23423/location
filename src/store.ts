@@ -18,8 +18,7 @@ interface State {
   zoneMode: ZoneMode;
 }
 
-
-export default new Vuex.Store({
+const store = new Vuex.Store({
   state: {
     baseUrl: BASE_URL,
     rootScale: 1,
@@ -40,8 +39,7 @@ export default new Vuex.Store({
     setRootScale(state: State, scale: number) {
       state.rootScale = scale;
     },
-  },
-  actions: {
-
-  },
+  }
 });
+
+export default store;

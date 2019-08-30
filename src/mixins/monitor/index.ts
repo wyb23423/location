@@ -2,7 +2,7 @@ import Component, { mixins } from 'vue-class-component';
 import MapMixin from '../map';
 import { WebSocketInit } from './websocket';
 import { arr2obj } from '@/assets/utils/util';
-import { LOSS_TIME } from '@/constant';
+import { LOSS_TIME, MODIFY_TAG_ICON } from '@/constant';
 import { FengMapMgr } from '@/assets/map/fengmap';
 
 interface Pop {
@@ -13,7 +13,6 @@ interface Pop {
 @Component
 export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
     public renderTags: { [x: string]: number } = {}; // 已经在地图上的标签, {tagNo: timer}
-
     private baseAll: IBaseStation[] = []; // 基站列表
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
     private infoArr: string[] = [];
@@ -31,9 +30,13 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
 
         // 开启警告循环
         this.warning();
+
+        this.$event.on(MODIFY_TAG_ICON, this.modifyImg.bind(this));
     }
 
     public beforeDestroy() {
+        this.$event.off(MODIFY_TAG_ICON);
+
         Object.values(this.renderTags).forEach(clearTimeout);
         this.pops.forEach(v => v.close());
         cancelAnimationFrame(this.timer);

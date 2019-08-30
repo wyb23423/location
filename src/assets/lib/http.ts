@@ -1,7 +1,7 @@
 /**
  * 发送请求
  */
-import { isThisType } from './util';
+import { isThisType } from '../utils/util';
 import { Message } from 'element-ui';
 
 /**

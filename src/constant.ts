@@ -10,6 +10,8 @@ export const DEFAULT_WIDTH: number = 1600; // 屏幕默认宽度
 export const SX_WIDTH: number = 768; // 小屏宽度
 export const LOSS_TIME: number = 10000; // 用于判断信号是否丢失
 
+export const MODIFY_TAG_ICON = Symbol('modifyMonitorTagIcon'); // 修改标签图标的全局事件名
+
 // 全部权限
 export const ALL_PERMISSION = {
     admin: { put: true, delete: true, post: true, get: true }, // 管理员

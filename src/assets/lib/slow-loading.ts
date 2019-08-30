@@ -3,7 +3,7 @@
  */
 
 import localforage, { localforageGetItem } from './localforage';
-import { get } from '../utils/http';
+import { get } from './http';
 
 const stores: Map<string, LocalForage> = new Map();
 

@@ -7,14 +7,13 @@ import store from './store';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import './assets/public.css';
-import * as http from './assets/utils/http';
+import * as http from './assets/lib/http';
 import { Route } from 'vue-router';
 import VueWorker from 'vue-worker';
 import VueCropper from 'vue-cropper';
 import * as PIXI from 'pixi.js';
 import { initConfig } from './constant';
-import forage from './assets/lib/localforage';
-
+import Events from './assets/lib/events';
 
 // ========================================全局变量及注入vue实例的属性
 (<any>window).PIXI = PIXI; // add code
@@ -24,6 +23,7 @@ Vue.use(VueCropper)
   .use(ElementUI)
   .use(VueWorker);
 Vue.prototype.$http = http;
+Vue.prototype.$event = new Events();
 Vue.config.productionTip = false;
 
 

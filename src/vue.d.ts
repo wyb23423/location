@@ -1,9 +1,11 @@
 import Vue from 'vue';
+import Events from './assets/lib/events';
 
 declare module 'vue/types/vue' {
     interface Vue {
         $http: HTTP;
         $worker: VueWorker;
+        $event: Events;
     }
 }
 

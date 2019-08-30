@@ -6,7 +6,7 @@ import Main from './views/Main.vue';
 import Index from './views/index/Index.vue';
 import NotFound from './views/NotFound.vue';
 
-import { RouteList } from './assets/utils/role';
+import { RouteList } from './assets/lib/role';
 
 Vue.use(Router);
 
