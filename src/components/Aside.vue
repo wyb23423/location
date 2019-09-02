@@ -1,5 +1,5 @@
 <template>
-    <div style="background: #393d49;" :style="{ height }">
+    <div style="background: #393d49;" :style="{ height }" @click.stop>
         <el-tooltip
             effect="dark"
             :content="isCollapse ? '展开' : '收起'"

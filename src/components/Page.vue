@@ -1,8 +1,9 @@
 <template>
-    <div>
+    <div @click="isMini && (display = false)">
         <div class="main">
             <div :style="{ height: mainHeight }" style="overflow-y: auto">
-                <router-view />
+                <router-view v-if="hasRouter" />
+                <slot></slot>
             </div>
         </div>
         <app-aside
@@ -11,7 +12,7 @@
             :class="$style.aside"
         ></app-aside>
         <el-button
-            @click="switchAsideShow"
+            @click.stop="display = !display"
             :class="$style.btn"
             v-if="isMini"
             :icon="`el-icon-caret-${display ? 'left' : 'right'}`"
@@ -40,17 +41,26 @@ import { Prop } from 'vue-property-decorator';
 export default class Page extends Vue {
     @Getter('mainHeight') public readonly mainHeight!: string;
     @Prop() public readonly tabs!: TabItem[];
+    @Prop({ default: () => true }) public readonly hasRouter!: boolean;
 
     public display: boolean = true;
     public isMini: boolean = false;
 
+    private removeListener?: () => void;
+
     public created() {
         this.resize();
-        window.addEventListener('resize', this.resize.bind(this), false);
+
+        const resize = this.resize.bind(this);
+        window.addEventListener('resize', resize, false);
+
+        this.removeListener = () => {
+            window.removeEventListener('resize', resize, false);
+        };
     }
 
-    public switchAsideShow() {
-        this.display = !this.display;
+    public destroyed() {
+        this.removeListener && this.removeListener();
     }
 
     private resize() {

@@ -1,40 +1,40 @@
 <template>
-    <div>
-        <div class="main">
-            <div :style="{ height: mainHeight }" style="overflow-y: auto">
-                <div style="padding: 5%; height: 100%">
-                    <el-card class="card" ref="table">
-                        <app-table
-                            :max-height="maxHeight"
-                            :table-data="tableData"
-                            :col-cfg="colCfg"
-                            :total-count="totalCount"
-                            :op="op"
-                            :op-width="120"
-                            @del="del"
-                            @updateData="getData"
-                            @toExcel="toExcel"
-                        ></app-table>
-                    </el-card>
-                </div>
-            </div>
+    <app-page :tabs="tabs" :hasRouter="false">
+        <div style="padding: 5%; height: 100%">
+            <el-card class="card" ref="table">
+                <el-button type="mini" style="margin-bottom: 10px">
+                    类型筛选
+                </el-button>
+
+                <app-table
+                    :max-height="maxHeight"
+                    :table-data="tableData"
+                    :col-cfg="colCfg"
+                    :total-count="totalCount"
+                    :op="op"
+                    :op-width="120"
+                    @del="del"
+                    @updateData="getData"
+                    @toExcel="toExcel"
+                ></app-table>
+            </el-card>
         </div>
-        <app-aside :tabs="tabs"></app-aside>
-    </div>
+    </app-page>
 </template>
 
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
-import Aside from '../../components/Aside.vue';
 import { Getter } from 'vuex-class/lib/bindings';
 import TableMixin from '../../mixins/table';
+import Page from '@/components/Page.vue';
 
 @Component({
     components: {
-        'app-aside': Aside
+        'app-page': Page
     }
 })
 export default class Alarm extends mixins(TableMixin) {
+    public type = '';
     public tabs = [
         {
             title: '报警列表',
@@ -42,7 +42,6 @@ export default class Alarm extends mixins(TableMixin) {
             icon: 'el-icon-alarm-clock'
         }
     ];
-
     public colCfg: any[] = [
         { prop: 'id', label: '报警ID', sortable: true, width: 140 },
         { prop: 'tagNo', label: '报警标签', width: 160 },
@@ -50,6 +49,13 @@ export default class Alarm extends mixins(TableMixin) {
         { prop: 'type', label: '报警类型', sortable: true, width: 140 },
         { prop: 'alarmTime', label: '时间', width: 200 },
         { prop: 'alarmMsg', label: '报警信息', width: 240 }
+    ];
+
+    // TODO
+    public alarms = [
+        { value: 1, label: '非法侵入' },
+        { value: 2, label: '非法逃离' },
+        { value: 3, label: '低电量' }
     ];
 
     public del(row: IAlarm) {
