@@ -23,9 +23,9 @@ const store = new Vuex.Store({
     baseUrl: BASE_URL,
     rootScale: 1,
     zoneMode: {
+      switch: 1,
       in: 2,
       out: 3,
-      switch: 1,
       group: 4,
       other: 5
     }

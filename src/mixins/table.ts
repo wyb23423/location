@@ -50,6 +50,9 @@ export default class TableMixin extends Vue {
         table2Excel(this.headStr() + body);
     }
 
+    /**
+     * 获取表格数据
+     */
     protected async fetch(page: number, pageSize: number): Promise<TableData> {
         return { count: 0, data: [] };
     }
@@ -66,6 +69,8 @@ export default class TableMixin extends Vue {
         }
 
         this.getData(Math.max(1, page), this.pageSize);
+
+        return this;
     }
 
     private headStr() {

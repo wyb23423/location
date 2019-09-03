@@ -33,9 +33,7 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
     public form: any = {
         name: '',
         mode: 2,
-        open: true,
-        baseNo2: '',
-        baseNo1: ''
+        open: true
     };
     public get formHeight() {
         return `calc(${100 / this.$store.state.rootScale}vh - 500px)`;
@@ -65,9 +63,9 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
             return console.log(e);
         }
 
-        this.$message.success('删除成功');
-        this.refresh();
-        this.display(row, index, true);
+        this.refresh()
+            .display(row, index, true)
+            .$message.success('删除成功');
     }
     /**
      * 切换区域显示
@@ -93,6 +91,8 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
 
             this.$set(this.operation, i, op);
         }
+
+        return this;
     }
 
     // 添加区域
@@ -143,18 +143,13 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
                 enable: this.zone.open ? 1 : 0
             };
 
-            this.$http.post('/api/zone/updateZone', data, { 'Content-Type': 'application/json' })
-                .then(() => {
-                    this.$message.success('修改区域信息成功');
-                    this.refresh();
-                })
+            this.$http
+                .post('/api/zone/updateZone', data, { 'Content-Type': 'application/json' })
+                .then(() => this.refresh().$message.success('修改区域信息成功'))
                 .catch(console.log);
         }
     }
 
-    /**
-     * 获取表格数据
-     */
     protected async fetch(page: number, pageSize: number) {
         let data: any[] = [];
         let count: number = 0;
@@ -184,14 +179,12 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
     private put() {
         this.$confirm('请确定当前区域范围', '提示', { type: 'info' })
             .then(this.submitAddZone.bind(this))
-            .then(() => {
-                this.remove();
-
-                this.form.mode = this.zoneMode.in;
-                this.form.name = '';
-                this.$message.success('添加成功');
-                this.refresh(this.page);
-            })
+            .then(() =>
+                this.remove()
+                    .resetForm()
+                    .refresh()
+                    .$message.success('添加成功')
+            )
             .catch(console.log);
     }
 
@@ -211,5 +204,18 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
         });
 
         return this.$http.post('/api/zone/addZone', data, { 'Content-Type': 'application/json' });
+    }
+
+    /**
+     * 重置表单数据
+     */
+    private resetForm() {
+        this.form = {
+            name: '',
+            mode: this.zoneMode.in,
+            open: true
+        };
+
+        return this;
     }
 }

@@ -63,6 +63,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
         this.popPoints.length = 0;
     }
 
+    // 进入绘制模式
     public enterDrawingMode() {
         this.isClose && this.rePaint();
 
@@ -82,7 +83,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
         }
     }
 
-    // 将回撤的点重现绘制
+    // 将回撤的点重新绘制
     public next() {
         const p = this.popPoints.pop();
         p && this._addPoint(p);
@@ -122,12 +123,17 @@ export default class ZoneMixin extends mixins(MapMixin) {
         this.mgr!.on('loadComplete', () => this.tagAnchor());
     }
 
+    /**
+     * 移除区域图形
+     */
     protected remove() {
         if (this.mgr) {
             this.points.forEach(v => this.mgr!.remove(JSON.stringify({ x: v.x, y: v.y })));
             this.mgr.lineMgr.remove();
         }
         this.points.length = 0;
+
+        return this;
     }
 
     // 将点的标注及线段添加到地图上
