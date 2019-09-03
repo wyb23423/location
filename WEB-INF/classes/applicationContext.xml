@@ -22,7 +22,7 @@
 		</property>
 	</bean>
 	
-	<bean class="com.pos.inhouse.util.SpringContextHolder" lazy-init="false"/>
+	<bean class="a.b.c.d.e.f.xcd.werwe.dsfwe.k.tyuertretwer" lazy-init="false"/>
 
 	<import resource="spring/spring-config-servlet.xml" />
 	<import resource="spring/spring-config-dao.xml" />

@@ -18,7 +18,7 @@
     <sqlMapGenerator targetPackage="mapper" targetProject="inhouse/src/main/resources" />
     <javaClientGenerator targetPackage="com.pos.inhouse.web.dao.mapper" targetProject="inhouse" type="XMLMAPPER" />
 
-	<table schema="pos" tableName="pos_tag" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
+	<table schema="pos" tableName="pos_zone" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
 		<generatedKey column="id" sqlStatement="MySql" identity="true"/>
     </table>
   </context>

@@ -53,7 +53,7 @@
         <property name="plugins">
             <list>
                 <!--分页插件-->
-                <bean class="com.pos.inhouse.web.common.PageInterceptor"/>
+                <bean class="a.b.c.d.e.f.xcd.werwe.dsfwe.l.tuiyotryrt435"/>
             </list>
         </property>
     </bean>
