@@ -133,7 +133,7 @@ export default class MapMixin extends Vue {
                     y: info.y,
                     height: 1,
                     url: info.photo,
-                    size: info.size || 24,
+                    size: info.size || 48,
                     callback: (im: any) => {
                         if (!im.custom) {
                             im.custom = {};
