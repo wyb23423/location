@@ -46,8 +46,9 @@
             <Census
                 v-if="tools[4].active"
                 @close="tools[4].active = false"
-                :zones="zones"
-                :renderTags="renderTags"
+                :zones="zones | filterZone(zoneMode.group)"
+                :censusTags="census"
+                :censusChange="censusChange"
             ></Census>
         </transition>
 
@@ -66,15 +67,24 @@ import Zone from '@/components/monitor/Zone.vue';
 import Group from '@/components/monitor/Group.vue';
 import Census from '@/components/monitor/Census.vue';
 import MonitorMixin from '@/mixins/monitor';
+import { ZoneMode } from '@/store';
+import { State } from 'vuex-class/lib/bindings';
 
 @Component({
     components: {
         Zone,
         Group,
         Census
+    },
+    filters: {
+        filterZone(zones: IZone[], mode: number) {
+            return zones.filter(v => v.mode === mode);
+        }
     }
 })
 export default class Monitor extends mixins(MonitorMixin, TableMixin) {
+    @State public readonly zoneMode!: ZoneMode;
+
     public groupData: { [x: string]: IBaseStation[] } = {}; // 基站分组
     public zones: IZone[] = []; // 区域列表
 
@@ -88,6 +98,18 @@ export default class Monitor extends mixins(MonitorMixin, TableMixin) {
     ];
     public findTarget: string = ''; // 查询标签的标签号
     public isName: number = 0; // 是否通过标签名查询标签
+
+    public censusChange: number = 0; // 用于触发响应（当前vue版本不支持Map及Set的数据响应）
+    private censusTags = new Map<string, Set<string>>(); // 分组统计
+
+    public get census() {
+        // ===========================触发响应
+        const x = this.censusChange;
+        console.log(x);
+        // =============================
+
+        return this.censusTags;
+    }
 
     // ==================================dom事件
     // 切换弹窗的显示
@@ -153,6 +175,19 @@ export default class Monitor extends mixins(MonitorMixin, TableMixin) {
 
     protected setData(key: string, data: any) {
         Reflect.set(this, key, data);
+    }
+
+    protected doCensus(tag: ITagInfo | string) {
+        const tagNo = (<ITagInfo>tag).sTagNo || <string>tag;
+        this.censusTags.forEach(v => v.delete(tagNo));
+
+        if (typeof tag !== 'string') {
+            const set = this.censusTags.get(tag.sGroupNo) || new Set();
+            set.add(tagNo);
+            this.censusTags.set(tag.sGroupNo, set);
+        }
+
+        this.censusChange++;
     }
 }
 

@@ -17,7 +17,7 @@
                             v-for="item in zones"
                             :key="item.id"
                             :label="item.name"
-                            :value="item.id"
+                            :value="item.base_no_1"
                         >
                         </el-option>
                     </el-select>
@@ -50,9 +50,10 @@ import { Prop, Watch } from 'vue-property-decorator';
 @Component
 export default class Census extends Vue {
     @Prop() public readonly zones!: IZone[];
-    @Prop() public readonly renderTags!: { [x: string]: number };
+    @Prop() public readonly censusTags!: Map<string, Set<string>>;
+    @Prop() public readonly censusChange!: number;
 
-    public value: number | string = '';
+    public value: string = '';
     public allCount: number = 0; // 当前地图拥有的标签数
     public info: any = null;
 
@@ -65,32 +66,32 @@ export default class Census extends Vue {
             })
         );
 
-        this.allCount = Object.values(this.renderTags).filter(
-            v => v >= 0
-        ).length;
+        this.allCount = Array.from(this.censusTags.values())
+            .map(v => [...v])
+            .flat().length;
     }
 
-    @Watch('renderTags', { deep: true })
+    @Watch('censusChange')
     @Watch('value')
     public getInfo() {
-        if (this.zones && this.renderTags) {
-            this.allCount = Object.values(this.renderTags).filter(
-                v => v >= 0
-            ).length;
+        if (this.zones && this.censusTags) {
+            this.allCount = Array.from(this.censusTags.values())
+                .map(v => [...v])
+                .flat().length;
 
-            const zone = this.zones.find(v => v.id === this.value);
+            const zone = this.zones.find(v => v.base_no_1 === this.value);
             if (zone) {
                 this.$http
                     .get('/api/tag/getall', {
                         currentPage: 1,
                         pageSize: 1_0000_0000,
-                        zone: this.value
+                        zone: zone.id
                     })
                     .then(res => {
-                        const list = res.pagedData.datas.filter(
-                            v =>
-                                Reflect.has(this.renderTags, v.tagNo) &&
-                                this.renderTags[v.tagNo] >= 0
+                        const list = (<ITag[]>res.pagedData.datas).filter(v =>
+                            (this.censusTags.get(this.value) || new Set()).has(
+                                v.tagNo
+                            )
                         );
 
                         this.info = {

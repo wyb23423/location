@@ -13,11 +13,14 @@ interface Pop {
 @Component
 export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
     public renderTags: { [x: string]: number } = {}; // 已经在地图上的标签, {tagNo: timer}
+
     private baseAll: IBaseStation[] = []; // 基站列表
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
     private infoArr: string[] = [];
     private timer: number = 0;
     private zoneAll: IZone[] = []; // 所有区域
+
+    private getZones?: () => void;
 
     public created() {
         // 获取区域数据
@@ -26,6 +29,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
             pageSize: 1_0000_0000
         })
             .then(res => this.zoneAll = res.pagedData.datas)
+            .then(() => this.getZones && this.getZones())
             .catch(() => console.log);
 
         // 开启警告循环
@@ -120,20 +124,26 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
             } else {
                 // 第一次收到信号
                 const tagData: ITag = this.tagAll[tag.sTagNo];
-                const info = {
+
+                const ids = (<any>this.mgr.map).groupIDs;
+                this.addIcon(ids ? ids[0] : 0, {
                     ...(tagData || {}),
                     name: tag.sTagNo,
                     tagName: tagData ? tagData.name : '未知标签',
                     ...coord
-                };
-
-                const ids = (<any>this.mgr.map).groupIDs;
-                this.addIcon(ids ? ids[0] : 0, info);
+                });
             }
 
             // 长时间未收到信号, 将标签号推入信号丢失报警队列
             this.renderTags[tag.sTagNo] = setTimeout(() => this.infoArr.push(tag.sTagNo), LOSS_TIME);
+
+            // 统计
+            this.doCensus(tag);
         }
+    }
+
+    protected doCensus(tag: ITagInfo | string) {
+        //
     }
 
     private mapCreated() {
@@ -153,7 +163,10 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
         // 渲染基站
         this.tagAnchor().then(data => {
             this.baseAll = data;
-            this.setData('zones', this.filterZoneAll(data));
+
+            this.getZones = () => this.setData('zones', this.filterZoneAll(data));
+            this.getZones();
+
             this.setData('groupData', arr2obj(data, 'groupCode'));
         });
 
@@ -261,6 +274,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
             if (this.mgr) {
                 this.mgr.show(tagNo, false);
                 this.renderTags[tagNo] = -1;
+                this.doCensus(tagNo);
 
                 if (this.pops.has(tagNo)) {
                     (<Pop>this.pops.get(tagNo)).close(true);
