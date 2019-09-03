@@ -186,6 +186,7 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
             .then(this.submitAddZone.bind(this))
             .then(() => {
                 this.remove();
+
                 this.form.mode = this.zoneMode.in;
                 this.form.name = '';
                 this.$message.success('添加成功');

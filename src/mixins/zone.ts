@@ -118,6 +118,10 @@ export default class ZoneMixin extends mixins(MapMixin) {
         this.isClose = false;
     }
 
+    protected bindEvents() {
+        this.mgr!.on('loadComplete', () => this.tagAnchor());
+    }
+
     protected remove() {
         if (this.mgr) {
             this.points.forEach(v => this.mgr!.remove(JSON.stringify({ x: v.x, y: v.y })));

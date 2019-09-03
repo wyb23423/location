@@ -99,4 +99,92 @@ export default class MapMixin extends Vue {
             }
         });
     }
+
+    // 获取并显示基站
+    protected async tagAnchor() {
+        try {
+            const res = await Promise.all(this.groups.map(v => {
+                return this.$http.get('/api/base/getall', {
+                    currentPage: 1,
+                    pageSize: 10000,
+                    groupCode: v
+                });
+            }));
+
+            const data: IBaseStation[] = res.map(v => v.pagedData.datas).flat();
+            this.createBases(data);
+
+            return data;
+        } catch (e) {
+            return [];
+        }
+    }
+
+    protected addIcon(gid: number, info: any, type: number = 1) {
+        if (this.mgr) {
+            const map = this.mgr.map;
+            if (this.mgr instanceof FengMapMgr) {
+                (<fengmap.FMMap>map).gestureEnableController.enableMapHover = true;
+            }
+
+            return this.mgr.addImage(
+                {
+                    x: info.x,
+                    y: info.y,
+                    height: 1,
+                    url: info.photo,
+                    size: info.size || 24,
+                    callback: (im: any) => {
+                        if (!im.custom) {
+                            im.custom = {};
+                        }
+
+                        Object.assign(im.custom, { type, info });
+
+                        if (info.callback) {
+                            info.callback(im);
+                        }
+                    }
+                },
+                info.name, gid,
+                !!info.isMapCoor
+            );
+        }
+    }
+
+    // 显示基站
+    private createBases(data: IBaseStation[]) {
+        if (this.mgr) {
+            for (const v of data) {
+                // 添加基站图标
+                this.addIcon(
+                    1,
+                    {
+                        x: v.coordx,
+                        y: v.coordy,
+                        name: v.baseNo,
+                        groupid: v.groupCode,
+                        photo: '/images/anchor.png',
+                        size: 32
+                    },
+                    2
+                );
+
+                // 添加基站名
+                this.mgr.addTextMarker(
+                    {
+                        height: 2,
+                        fillcolor: '#009688',
+                        fontsize: 15,
+                        type: 1,
+                        strokecolor: '255,255,0',
+                        x: v.coordx,
+                        y: v.coordy - 40
+                    },
+                    v.baseNo + ''
+                );
+            }
+        }
+    }
 }
+

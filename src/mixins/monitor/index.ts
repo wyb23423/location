@@ -161,14 +161,15 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
         this.infoArr.length = 0;
 
         // 渲染基站
-        this.tagAnchor().then(data => {
-            this.baseAll = data;
+        this.tagAnchor()
+            .then(data => {
+                this.baseAll = data;
 
-            this.getZones = () => this.setData('zones', this.filterZoneAll(data));
-            this.getZones();
+                this.getZones = () => this.setData('zones', this.filterZoneAll(data));
+                this.getZones();
 
-            this.setData('groupData', arr2obj(data, 'groupCode'));
-        });
+                this.setData('groupData', arr2obj(data, 'groupCode'));
+            });
 
         this.afterMapCreated();
     }
@@ -176,92 +177,6 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
     private filterZoneAll(data: IBaseStation[]) {
         const ids = new Set(data.map(v => +v.zone));
         return this.zoneAll.filter(v => ids.has(v.id));
-    }
-
-    // 获取并显示基站
-    private async tagAnchor() {
-        try {
-            let data: IBaseStation[] = [...this.baseAll];
-            if (!data.length) {
-                const res = await this.$http.get('/api/base/getall', {
-                    currentPage: 1,
-                    pageSize: 10000
-                });
-                data = res.pagedData.datas;
-            }
-            this.createBases(data);
-
-            return data;
-        } catch (e) {
-            return [];
-        }
-    }
-
-    // 显示基站
-    private createBases(data: IBaseStation[]) {
-        if (this.mgr) {
-            for (const v of data) {
-                // 添加基站图标
-                this.addIcon(
-                    1,
-                    {
-                        x: v.coordx,
-                        y: v.coordy,
-                        name: v.baseNo,
-                        groupid: v.groupCode,
-                        photo: '/images/anchor.png',
-                        size: 32
-                    },
-                    2
-                );
-
-                // 添加基站名
-                this.mgr.addTextMarker(
-                    {
-                        height: 2,
-                        fillcolor: '#009688',
-                        fontsize: 15,
-                        type: 1,
-                        strokecolor: '255,255,0',
-                        x: v.coordx,
-                        y: v.coordy - 40
-                    },
-                    v.baseNo + ''
-                );
-            }
-        }
-    }
-
-    private addIcon(gid: number, info: any, type: number = 1) {
-        if (this.mgr) {
-            const map = this.mgr.map;
-            if (this.mgr instanceof FengMapMgr) {
-                (<fengmap.FMMap>map).gestureEnableController.enableMapHover = true;
-            }
-
-            return this.mgr.addImage(
-                {
-                    x: info.x,
-                    y: info.y,
-                    height: 1,
-                    url: info.photo,
-                    size: info.size || 24,
-                    callback: (im: any) => {
-                        if (!im.custom) {
-                            im.custom = {};
-                        }
-
-                        Object.assign(im.custom, { type, info });
-
-                        if (info.callback) {
-                            info.callback(im);
-                        }
-                    }
-                },
-                info.name, gid,
-                !!info.isMapCoor
-            );
-        }
     }
 
     // 信号丢失报警循环
