@@ -336,7 +336,10 @@
 							<outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/lib</outputDirectory>
 							<includes>
 								<include>com/**</include>
+<<<<<<< HEAD
 								<include>a/b/c/**</include>
+=======
+>>>>>>> 0b0346beae08e3c8c720f4279d30f0bfefac4990
 							</includes>
 						</configuration>
 					</execution>
