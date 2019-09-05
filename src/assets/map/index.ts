@@ -3,6 +3,8 @@
  */
 import { FengMapMgr } from './fengmap';
 import { PIXIMgr } from './pixi';
+import FMHeatMap from './fengmap/heat_map';
+import PXHeatMap from './pixi/heat_map';
 
 
 /**
@@ -24,6 +26,17 @@ export function createMap(data: IMap, dom: HTMLElement) {
         console.error('地图文件错误:' + data.filepath);
     }
 }
+
+export function createHeatMap(mgr: FengMapMgr | PIXIMgr) {
+    if (mgr instanceof FengMapMgr) {
+        return new FMHeatMap({ map: mgr.map });
+    } else if (mgr instanceof PIXIMgr) {
+        return new PXHeatMap();
+    }
+
+    console.error('地图错误, 无法创建热力图对象');
+}
+
 
 function isFengMap(ext: string) {
     return ext === 'fmap';

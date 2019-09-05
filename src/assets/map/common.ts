@@ -16,7 +16,7 @@ export const DEFAULT_HEATMAP_CONFIG = {
         0.95: 'yellow',
         1.0: 'rgb(157,53,255)'
     },
-    opacity: 1,
+    opacity: 0.5,
     min: 0,
     max: 100,
     radius: 20

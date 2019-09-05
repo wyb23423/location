@@ -169,8 +169,3 @@ export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
         }
     }
 }
-
-
-export class HeatMap {
-    //
-}

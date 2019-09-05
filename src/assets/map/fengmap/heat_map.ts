@@ -26,10 +26,11 @@ export default class HeatMap {
     /**
      * 生成热力图
      * @param map 地图对象
+     *  类型只能是fengmap.FMMap, PIXI.Container是为了兼容另一种实现
      * @param groupID 楼层数
      */
-    public render(map: fengmap.FMMap, groupID?: number) {
-        if (!this.instance) {
+    public render(map: fengmap.FMMap | PIXI.Container, groupID?: number) {
+        if (!(this.instance && map instanceof fengmap.FMMap)) {
             return;
         }
 
@@ -37,12 +38,13 @@ export default class HeatMap {
             .applyHeatMap(this.instance);
     }
     /**
-     * 移除对应热力图
+     * 移除热力图
      * @param map 地图对象
+     *  类型只能是fengmap.FMMap, PIXI.Container是为了兼容另一种实现
      * @param groupID 楼层数
      */
-    public remove(map: fengmap.FMMap, groupID?: number) {
-        if (!this.instance) {
+    public remove(map: fengmap.FMMap | PIXI.Container, groupID?: number) {
+        if (!(this.instance && map instanceof fengmap.FMMap)) {
             return;
         }
 

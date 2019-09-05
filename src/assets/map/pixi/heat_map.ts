@@ -3,12 +3,12 @@
  */
 import { DEFAULT_HEATMAP_CONFIG } from '../common';
 
-export class HeatMap {
+export default class HeatMap {
     private data: PointData[] = [];
     private canvas: HTMLCanvasElement = this.createCanvas();
     private ctx = <CanvasRenderingContext2D>this.canvas.getContext('2d');
 
-    constructor(private config: HeatMapConfig) {
+    constructor(private config: HeatMapConfig = {}) {
         this.config = {
             ...DEFAULT_HEATMAP_CONFIG,
             ...config
@@ -24,14 +24,31 @@ export class HeatMap {
     public clearPoints() {
         this.data.length = 0;
     }
-    public render() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    /**
+     * 生成热力图
+     * @param stage 舞台容器
+     *  类型只能是PIXI.Container, fengmap.FMMap是为了兼容另一种实现
+     */
+    public render(stage: fengmap.FMMap | PIXI.Container) {
+        if (!(stage instanceof PIXI.Container)) {
+            return;
+        }
+
+        this.canvas.width = stage.width;
+        this.canvas.height = stage.height;
 
         this.renderAlpha();
         this.putColor();
     }
-    public remove() {
-        //
+    /**
+     * 移除热力图
+     * @param stage 舞台容器
+     *  类型只能是PIXI.Container, fengmap.FMMap是为了兼容另一种实现
+     */
+    public remove(stage: fengmap.FMMap | PIXI.Container) {
+        if (!(stage instanceof PIXI.Container)) {
+            return;
+        }
     }
 
     // 绘制alpha通道的圆
