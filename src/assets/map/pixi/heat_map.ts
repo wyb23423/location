@@ -1,43 +1,18 @@
 /**
  * 热力图
  */
-
-interface HeatMapConfig {
-    gradient?: object;
-    radius?: number;
-    min?: number;
-    max?: number;
-    opacity?: number;
-    stage: PIXI.Container;
-}
+import { DEFAULT_HEATMAP_CONFIG } from '../common';
 
 export class HeatMap {
-    public static defaultConfig = {
-        gradient: {
-            0.45: 'rgb(201,135,255)',
-            0.55: 'rgb(189,97,255)',
-            0.65: 'rgb(155,49,255)',
-            0.95: 'yellow',
-            1.0: 'rgb(157,53,255)'
-        },
-        opacity: 1,
-        min: 0,
-        max: 100,
-        radius: 20
-    };
-
     private data: PointData[] = [];
     private canvas: HTMLCanvasElement = this.createCanvas();
     private ctx = <CanvasRenderingContext2D>this.canvas.getContext('2d');
 
     constructor(private config: HeatMapConfig) {
         this.config = {
-            ...HeatMap.defaultConfig,
+            ...DEFAULT_HEATMAP_CONFIG,
             ...config
         };
-
-        this.canvas.width = this.config.stage.width;
-        this.canvas.height = this.config.stage.height;
     }
 
     public addPoints(data: PointData[]) {
@@ -50,8 +25,13 @@ export class HeatMap {
         this.data.length = 0;
     }
     public render() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
         this.renderAlpha();
         this.putColor();
+    }
+    public remove() {
+        //
     }
 
     // 绘制alpha通道的圆

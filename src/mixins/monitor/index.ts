@@ -3,7 +3,6 @@ import MapMixin from '../map';
 import { WebSocketInit } from './websocket';
 import { arr2obj } from '@/assets/utils/util';
 import { LOSS_TIME, MODIFY_TAG_ICON } from '@/constant';
-import { FengMapMgr } from '@/assets/map/fengmap';
 
 interface Pop {
     close(immediately?: boolean): void | boolean;
@@ -14,7 +13,6 @@ interface Pop {
 export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
     public renderTags: { [x: string]: number } = {}; // 已经在地图上的标签, {tagNo: timer}
 
-    private baseAll: IBaseStation[] = []; // 基站列表
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
     private infoArr: string[] = [];
     private timer: number = 0;
@@ -88,12 +86,11 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
         });
     }
 
-    protected setData(key: string, data: any) {
-        // 设置实例数据
-    }
-
     protected afterMapCreated() {
         // 其他地图创建完成后的操作
+    }
+    protected doCensus(tag: ITagInfo | string) {
+        //
     }
 
     // 获取标签位置信息后的处理函数
@@ -142,10 +139,6 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
         }
     }
 
-    protected doCensus(tag: ITagInfo | string) {
-        //
-    }
-
     private mapCreated() {
         // 清空已显示的标签的记录
         Object.values(this.renderTags).forEach(clearTimeout);
@@ -163,12 +156,10 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
         // 渲染基站
         this.tagAnchor()
             .then(data => {
-                this.baseAll = data;
-
-                this.getZones = () => this.setData('zones', this.filterZoneAll(data));
+                this.getZones = () => Reflect.set(this, 'zones', this.filterZoneAll(data));
                 this.getZones();
 
-                this.setData('groupData', arr2obj(data, 'groupCode'));
+                Reflect.set(this, 'groupData', arr2obj(data, 'groupCode'));
             });
 
         this.afterMapCreated();

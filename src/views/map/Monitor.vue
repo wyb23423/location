@@ -173,10 +173,6 @@ export default class Monitor extends mixins(MonitorMixin, TableMixin) {
         this.tools[1].display = !!this.mgr && this.mgr.has3D;
     }
 
-    protected setData(key: string, data: any) {
-        Reflect.set(this, key, data);
-    }
-
     protected doCensus(tag: ITagInfo | string) {
         const tagNo = (<ITagInfo>tag).sTagNo || <string>tag;
         this.censusTags.forEach(v => v.delete(tagNo));

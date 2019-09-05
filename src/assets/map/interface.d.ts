@@ -13,3 +13,12 @@ declare interface MarkerMgr<T> {
     find(name?: string | number, isName?: boolean): T[];
     dispose(): void;
 }
+
+declare interface HeatMapConfig {
+    gradient?: object;
+    radius?: number;
+    min?: number;
+    max?: number;
+    maxSize: number;
+    opacity?: number;
+}
