@@ -174,10 +174,8 @@ export default class MapMixin extends Vue {
                 this.mgr.addTextMarker(
                     {
                         height: 2,
-                        fillcolor: '#009688',
                         fontsize: 15,
                         type: 1,
-                        strokecolor: '255,255,0',
                         x: v.coordx,
                         y: v.coordy - 40
                     },

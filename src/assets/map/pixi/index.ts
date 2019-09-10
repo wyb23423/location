@@ -170,9 +170,10 @@ export class PIXIMgr extends Stage {
 
         return new Promise(resolve => {
             const message = new PIXI.Text(name, {
-                fill: coord.fillcolor || '#ff0000',
+                fill: coord.fillcolor || 0xee0000,
                 fontSize: coord.fontsize || 20,
-                stroke: coord.strokecolor || '#ffff00',
+                stroke: coord.strokecolor || 0xffff00,
+                strokeThickness: 1,
                 ...coord
             });
             message.position.set((<Vector23>newlist).x, (<Vector23>newlist).y);

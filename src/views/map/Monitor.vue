@@ -1,6 +1,6 @@
 <template>
-    <div :class="$style.box" @click="hiddenCover">
-        <div :class="$style['tool-bar']" class="flex-center">
+    <div class="map-box" @click="hiddenCover">
+        <div :class="$style['tool-bar']" class="map-tool-bar flex-center">
             <map-select @selectmap="selectMap"></map-select>
             <el-input
                 :placeholder="`请输入${isName ? '标签名' : '标签号'}`"
@@ -197,20 +197,9 @@ interface ToolItem {
 </script>
 
 <style lang="postcss" module>
-.box {
-    position: relative;
-    height: 100%;
-}
-
 .tool-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 60px;
-    padding: 0 5%;
-    background: #fcf8e3;
     justify-content: space-between;
+    padding: 0 5%;
 }
 .tools {
     position: absolute;

@@ -34,7 +34,17 @@ export function initRouter() {
       path: '/', name: 'main', component: Main,
       children: [
         { path: 'index', name: 'index', component: Index, alias: '' },
-        ...(<RouteConfig[]>routes)
+        ...(<RouteConfig[]>routes),
+        {
+          path: '/chart', name: 'chart',
+          component: () => import(/* webpackChunkName: "chart" */ '@/views/chart/ChartIndex.vue'),
+          children: [
+            {
+              path: 'heatmap', name: 'heatmap', alias: '',
+              component: () => import(/* webpackChunkName: "chart" */ '@/views/chart/HeatMap.vue'),
+            }
+          ]
+        }
       ]
     },
     { path: '*', redirect: '/404' }

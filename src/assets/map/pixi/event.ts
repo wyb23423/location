@@ -77,7 +77,7 @@ export class MapEvent {
             scale *= 11 / 10;
         }
 
-        scale = Math.max(0.3, Math.min(3, scale));
+        scale = Math.max(0.2, Math.min(3, scale));
         this.stage.scale.set(scale, scale);
     }
 

@@ -1,5 +1,5 @@
 <template>
-    <div :class="$style.box">
+    <div class="map-box">
         <div ref="map" :class="$style.map"></div>
         <div
             :class="[$style.map, $style.mask]"
@@ -7,7 +7,7 @@
             @pointermove="move"
             @pointerup="addPoint"
         ></div>
-        <div :class="$style['tool-bar']">
+        <div class="map-tool-bar" style="display: flex; align-items: center">
             <map-select
                 style="margin-left: 50px"
                 @selectmap="selectMap"
@@ -117,21 +117,6 @@
 </script>
 
 <style lang="postcss" module>
-.box {
-    position: relative;
-    height: 100%;
-}
-
-.tool-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 60px;
-    background: #fcf8e3;
-    display: flex;
-    align-items: center;
-}
 .op {
     position: absolute;
     top: 0;

@@ -151,7 +151,7 @@ export class FengMapMgr extends CoordTransformer {
             }
         }
 
-        return this.textMgr.add(newlist, name, { gid });
+        return this.textMgr.add(newlist, name, { ...coord, gid });
     }
 
     public dispose() {

@@ -22,7 +22,8 @@ export default class Stage extends MapEvent {
         this.map = PIXI.autoDetectRenderer({
             width: dom.offsetWidth,
             height: dom.offsetHeight,
-            backgroundColor: 0xe2e2e2
+            backgroundColor: 0xe2e2e2,
+            resolution: 2
         });
 
         dom.innerHTML = '';
@@ -92,8 +93,9 @@ export default class Stage extends MapEvent {
         const height = this.stage.height = this.map.height / 2;
         const width = this.stage.width = height * locRange.x / locRange.y;
 
-        this.stage.position.set(this.map.width / 2, height);
+        this.stage.position.set(this.map.width / 8, height / 4);
         this.stage.pivot.set(width / 2, height / 2);
+        this.stage.scale.set(0.4);
 
         this.load(this.bg).then((([texture]) => {
             const bgSprite = new PIXI.Sprite(texture);

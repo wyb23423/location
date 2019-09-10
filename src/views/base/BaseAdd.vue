@@ -1,8 +1,6 @@
 <template src="./add.html"></template>
 
 <script lang="ts">
-/// <reference path="../../types/fengmap.d.ts" />
-
 import Component, { mixins } from 'vue-class-component';
 import MapMixin from '../../mixins/map';
 import Select from '../../components/Select.vue';
@@ -205,11 +203,6 @@ export default class BaseAdd extends mixins(MapMixin, TableMixin) {
 
 <style lang="postcss" module>
 .tool-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 60px;
-    width: 100%;
     padding-left: 20%;
     padding-right: 20%;
 }

@@ -86,7 +86,7 @@ export default class Aside extends Vue {
         this.defaultActive = this.$route.path;
         if (this.$route.path.split('/').length < 3) {
             const tabs: TabItem[] = this.currTabs || [];
-            this.defaultActive = this.defaultTo(tabs);
+            tabs.length && (this.defaultActive = this.defaultTo(tabs));
         }
 
         this.activeTitle = this.defaultActive.split('/')[2];

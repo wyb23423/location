@@ -1,6 +1,9 @@
 <template>
-    <div :class="$style.box">
-        <div :class="$style['tool-bar']">
+    <div class="map-box">
+        <div
+            class="map-tool-bar flex-center"
+            style="justify-content: flex-start"
+        >
             <map-select
                 style="margin-left: 50px"
                 @selectmap="selectMap"
@@ -286,23 +289,6 @@ interface ProgressData {
 </script>
 
 <style lang="postcss" module>
-.box {
-    position: relative;
-    height: 100%;
-}
-
-.tool-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    height: 60px;
-    background: #fcf8e3;
-    display: flex;
-    align-items: center;
-}
-
 .mark {
     position: absolute;
     width: 100%;

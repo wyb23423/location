@@ -113,12 +113,12 @@ export default class Header extends Vue {
             ['设备管理', '/base'],
             ['标签管理', '/people'],
             ['实时监控', '/monitor'],
-            // ['电子围栏', '/fence'],
-            ['报警信息', '/alarm']
+            ['报警信息', '/alarm'],
+            ['数据图表', '/chart']
         ].filter(v => this.$router.resolve(v[1]).resolved.name !== '404');
 
         const rootWidth = document.body.offsetWidth;
-        if (rootWidth <= 870 && rootWidth > SX_WIDTH) {
+        if (rootWidth <= 996 && rootWidth > SX_WIDTH) {
             this.more = navItems.slice(5);
             this.tabs = navItems.slice(0, 5);
         } else {

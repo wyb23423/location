@@ -30,11 +30,9 @@ export function createMap(data: IMap, dom: HTMLElement) {
 export function createHeatMap(mgr: FengMapMgr | PIXIMgr) {
     if (mgr instanceof FengMapMgr) {
         return new FMHeatMap({ map: mgr.map });
-    } else if (mgr instanceof PIXIMgr) {
-        return new PXHeatMap();
     }
 
-    console.error('地图错误, 无法创建热力图对象');
+    return new PXHeatMap();
 }
 
 

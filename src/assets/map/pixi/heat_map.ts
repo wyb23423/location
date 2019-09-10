@@ -7,12 +7,15 @@ export default class HeatMap {
     private data: PointData[] = [];
     private canvas: HTMLCanvasElement = this.createCanvas();
     private ctx = <CanvasRenderingContext2D>this.canvas.getContext('2d');
+    private sprite = new PIXI.Sprite();
 
     constructor(private config: HeatMapConfig = {}) {
         this.config = {
             ...DEFAULT_HEATMAP_CONFIG,
             ...config
         };
+
+        this.sprite.zIndex = 99999;
     }
 
     public addPoints(data: PointData[]) {
@@ -39,6 +42,13 @@ export default class HeatMap {
 
         this.renderAlpha();
         this.putColor();
+
+        const isExit = !!this.sprite.texture;
+        this.sprite.texture = PIXI.Texture.from(this.canvas);
+
+        if (!isExit) {
+            stage.addChildAt(this.sprite, stage.children.length);
+        }
     }
     /**
      * 移除热力图
@@ -46,8 +56,8 @@ export default class HeatMap {
      *  类型只能是PIXI.Container, fengmap.FMMap是为了兼容另一种实现
      */
     public remove(stage: fengmap.FMMap | PIXI.Container) {
-        if (!(stage instanceof PIXI.Container)) {
-            return;
+        if (stage instanceof PIXI.Container) {
+            stage.removeChild(this.sprite);
         }
     }
 

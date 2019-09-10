@@ -73,6 +73,8 @@ declare namespace fengmap {
             enableMapSingleTap: boolean;
         };
 
+        constructor(options: FMMapOptions);
+
         public openMapById(id: string): void;
         public getFMGroup(gid: number): FMGroup;
         public coordMapToScreen(x: number, y: number, z?: number, isFloat?: boolean, giveMeRaw?: boolean): Vector2;
