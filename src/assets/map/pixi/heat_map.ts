@@ -2,6 +2,8 @@
  * 热力图
  */
 import { DEFAULT_HEATMAP_CONFIG } from '../common';
+import { PIXIMgr } from '.';
+import { FengMapMgr } from '../fengmap';
 
 export default class HeatMap {
     private data: PointData[] = [];
@@ -52,12 +54,12 @@ export default class HeatMap {
     }
     /**
      * 移除热力图
-     * @param stage 舞台容器
-     *  类型只能是PIXI.Container, fengmap.FMMap是为了兼容另一种实现
+     * @param mgr 地图管理器
+     *  类型只能是PIXIMgr, FengMapMgr是为了兼容另一种实现
      */
-    public remove(stage: fengmap.FMMap | PIXI.Container) {
-        if (stage instanceof PIXI.Container) {
-            stage.removeChild(this.sprite);
+    public remove(mgr: PIXIMgr | FengMapMgr) {
+        if (mgr instanceof PIXIMgr) {
+            mgr.stage.removeChild(this.sprite);
         }
     }
 

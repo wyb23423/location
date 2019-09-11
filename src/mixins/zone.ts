@@ -26,13 +26,13 @@ export default class ZoneMixin extends mixins(MapMixin) {
     private isClose: boolean = false; // 是否存在闭合路径
 
     public move(e: PointerEvent) {
-        if (!(this.mgr && this.points.length && this.canvas)) {
+        if (!(this.mgr && this.points.length && this.container)) {
             return;
         }
 
         this.mgr.lineMgr.remove(ZoneMixin.LINE_NAME);
 
-        const bounding = this.canvas.getBoundingClientRect();
+        const bounding = this.container.getBoundingClientRect();
         const p = this.getCoord(e.x - bounding.left, e.y - bounding.top);
         this.mgr.addLine(
             [...this.points, { ...p, z: 9 }],
@@ -43,7 +43,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
     }
 
     public addPoint(e: PointerEvent) {
-        if (!(this.mgr && this.canvas)) {
+        if (!(this.mgr && this.container)) {
             return;
         }
         if (this.isClose) {
@@ -51,7 +51,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
             this.isClose = false;
         }
 
-        const bounding = this.canvas.getBoundingClientRect();
+        const bounding = this.container.getBoundingClientRect();
         const p = this.getCoord(e.x - bounding.left, e.y - bounding.top);
 
         // ============================判断是否存在相交，有则忽略当前点

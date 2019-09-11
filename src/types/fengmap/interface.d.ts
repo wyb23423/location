@@ -16,6 +16,8 @@ interface FMMapOptions {
     defaultThemeName?: string;
     viewModeAnimateMode?: boolean;
     defaultViewMode?: fengmap.FMViewMode.MODE_2D | fengmap.FMViewMode.MODE_3D;
+
+    preserveDrawingBuffer?: boolean;
 }
 
 interface PolygonOpt {

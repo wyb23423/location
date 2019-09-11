@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { loopAwait } from '../assets/utils/util';
 import { Watch, Prop } from 'vue-property-decorator';
-import table2Excel from '../assets/utils/table2excel';
+import { table2Excel } from '../assets/utils/download';
 import Table from '@/components/Table.vue';
 
 interface TableData {

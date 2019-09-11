@@ -1,4 +1,6 @@
 import { DEFAULT_HEATMAP_CONFIG } from '../common';
+import { PIXIMgr } from '../pixi';
+import { FengMapMgr } from '.';
 
 export default class HeatMap {
     private instance?: fengmap.IFMHeatMap;
@@ -40,15 +42,15 @@ export default class HeatMap {
     /**
      * 移除热力图
      * @param map 地图对象
-     *  类型只能是fengmap.FMMap, PIXI.Container是为了兼容另一种实现
+     *  类型只能是FengMapMgr, PIXIMgr是为了兼容另一种实现
      * @param groupID 楼层数
      */
-    public remove(map: fengmap.FMMap | PIXI.Container, groupID?: number) {
-        if (!(this.instance && map instanceof fengmap.FMMap)) {
+    public remove(mgr: PIXIMgr | FengMapMgr, groupID?: number) {
+        if (!(this.instance && mgr instanceof FengMapMgr)) {
             return;
         }
 
-        map.getFMGroup(groupID || map.focusGroupID || 0)
+        mgr.map.getFMGroup(groupID || mgr.map.focusGroupID || 0)
             .removeHeatMap(this.instance);
     }
 }

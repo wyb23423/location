@@ -23,7 +23,8 @@ export default class Stage extends MapEvent {
             width: dom.offsetWidth,
             height: dom.offsetHeight,
             backgroundColor: 0xe2e2e2,
-            resolution: 2
+            resolution: 2,
+            preserveDrawingBuffer: true
         });
 
         dom.innerHTML = '';
@@ -67,6 +68,14 @@ export default class Stage extends MapEvent {
 
         v.z = v.z == null ? 0 : v.z;
         return <Vector3>v;
+    }
+
+    public parseCood(data: Vector23 | Vector23[]) {
+        if (Array.isArray(data)) {
+            return data.map(v => this.getCoordinate(v, true));
+        }
+
+        return this.getCoordinate(data, true);
     }
 
     public dispose() {

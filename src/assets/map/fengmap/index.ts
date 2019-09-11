@@ -38,6 +38,7 @@ export class FengMapMgr extends CoordTransformer {
             key: APP_KEY,
             // 开发者申请应用名称
             appName: APP_NAME,
+            preserveDrawingBuffer: true
         });
         this.map.openMapById(name);
         this.map.on('loadComplete', () => this.isLoaded = true);

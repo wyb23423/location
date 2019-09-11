@@ -17,7 +17,7 @@ export default class MapMixin extends Vue {
     public showPath: boolean = false;
     public groups: string[] = []; // 当前地图关联组号
 
-    @Ref('map') protected readonly canvas?: HTMLCanvasElement;
+    @Ref('map') protected readonly container?: HTMLElement;
     protected renderTags?: { [x: string]: number } | Set<string>;
 
     public beforeDestroy() {
@@ -29,12 +29,15 @@ export default class MapMixin extends Vue {
 
         if (data) {
             this.groups = <string[]>data.groupCode;
-            if (this.canvas) {
+            if (this.container) {
                 try {
-                    await loopAwait(() => !!(this.canvas && this.canvas.offsetWidth && this.canvas.offsetHeight));
+                    await loopAwait(() => !!(
+                        this.container && this.container.offsetWidth && this.container.offsetHeight
+                    ));
+
                     this.dispose();
 
-                    this.mgr = createMap(data, this.canvas);
+                    this.mgr = createMap(data, this.container);
                     this.bindEvents(data);
                 } catch (e) {
                     console.warn(e);
