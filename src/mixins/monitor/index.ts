@@ -121,15 +121,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
             } else {
                 // 第一次收到信号
                 const tagData: ITag = this.tagAll[tag.sTagNo];
-
-                let ids = [];
-                try {
-                    ids = (<any>this.mgr.map).groupIDs;
-                } catch (e) {
-                    //
-                }
-
-                this.addIcon(ids ? ids[0] : 0, {
+                this.addIcon(0, {
                     ...(tagData || {}),
                     name: tag.sTagNo,
                     tagName: tagData ? tagData.name : '未知标签',
