@@ -1,6 +1,7 @@
 <template>
     <div ref="root">
         <router-view />
+        <app-notice></app-notice>
     </div>
 </template>
 
@@ -8,8 +9,13 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { DEFAULT_WIDTH, SX_WIDTH } from './constant';
+import Notice from './components/Notice.vue';
 
-@Component
+@Component({
+    components: {
+        'app-notice': Notice
+    }
+})
 export default class App extends Vue {}
 </script>
 

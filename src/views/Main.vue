@@ -45,10 +45,12 @@ export default class Main extends Vue {
                     this.timer = setTimeout(fn, 1000);
                 })
                 .catch(e => {
-                    if (++errorCount >= 5) {
+                    if (++errorCount >= 3) {
                         sessionStorage.removeItem('login');
-                        this.$router.push('/login');
+                        return this.$router.push('/login');
                     }
+
+                    this.timer = setTimeout(fn, 1000);
                 });
         };
 

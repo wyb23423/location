@@ -2,7 +2,7 @@ import Component, { mixins } from 'vue-class-component';
 import MapMixin from '../map';
 import { WebSocketInit } from './websocket';
 import { arr2obj } from '@/assets/utils/util';
-import { LOSS_TIME, MODIFY_TAG_ICON } from '@/constant';
+import { LOSS_TIME, MODIFY_TAG_ICON, NOTIFY_KEY } from '@/constant';
 
 interface Pop {
     close(immediately?: boolean): void | boolean;
@@ -14,8 +14,6 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
     public renderTags: { [x: string]: number } = {}; // 已经在地图上的标签, {tagNo: timer}
 
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
-    private infoArr: string[] = [];
-    private timer: number = 0;
     private zoneAll: IZone[] = []; // 所有区域
 
     private getZones?: () => void;
@@ -30,9 +28,6 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
             .then(() => this.getZones && this.getZones())
             .catch(() => console.log);
 
-        // 开启警告循环
-        this.warning();
-
         this.$event.on(MODIFY_TAG_ICON, this.modifyImg.bind(this));
     }
 
@@ -41,7 +36,6 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
 
         Object.values(this.renderTags).forEach(clearTimeout);
         this.pops.forEach(v => v.close());
-        cancelAnimationFrame(this.timer);
     }
 
     // 在地图上显示标签信息
@@ -138,7 +132,14 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
             }
 
             // 长时间未收到信号, 将标签号推入信号丢失报警队列
-            this.renderTags[tag.sTagNo] = setTimeout(() => this.infoArr.push(tag.sTagNo), LOSS_TIME);
+            this.renderTags[tag.sTagNo] = setTimeout(() => {
+                this.$event.emit(NOTIFY_KEY, {
+                    tagNo: tag.sTagNo,
+                    alarmTime: Date.now(),
+                    alarmMsg: '信号丢失',
+                    type: 1
+                });
+            }, LOSS_TIME);
 
             // 统计
             this.doCensus(tag);
@@ -156,8 +157,6 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
 
         // 移除路径
         this.showPath = false;
-        // 清空报警列表
-        this.infoArr.length = 0;
 
         // 渲染基站
         this.tagAnchor()
@@ -174,28 +173,6 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
     private filterZoneAll(data: IBaseStation[]) {
         const ids = new Set(data.map(v => +v.zone));
         return this.zoneAll.filter(v => ids.has(v.id));
-    }
-
-    // 信号丢失报警循环
-    private warning() {
-        const tagNo = this.infoArr.shift();
-
-        if (tagNo && this.renderTags[tagNo] !== -1) {
-            this.$notify.warning(`标签${tagNo}异常。信号丢失!`);
-
-            if (this.mgr) {
-                this.mgr.show(tagNo, false);
-                this.renderTags[tagNo] = -1;
-                this.doCensus(tagNo);
-
-                if (this.pops.has(tagNo)) {
-                    (<Pop>this.pops.get(tagNo)).close(true);
-                    this.pops.delete(tagNo);
-                }
-            }
-        }
-
-        this.timer = requestAnimationFrame(this.warning.bind(this));
     }
 
     private modifyImg(tagNo: string, isError: boolean) {

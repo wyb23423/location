@@ -95,7 +95,7 @@ export default class Permission extends Vue {
     }
 
     public parse() {
-        const tree = <ElTree<string>>this.$refs.tree;
+        const tree = <ElTree<string, TreeData>>this.$refs.tree;
         const oneLevelKeys = tree.getCheckedKeys();
         const twoLevelKeys = tree.getCheckedKeys(true);
 
