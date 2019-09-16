@@ -54,6 +54,11 @@ import { ElTableColumn } from 'element-ui/types/table-column';
 
 @Component
 export default class Notice extends Vue {
+    public drawer: boolean = false;
+    public messages: IAlarm[] = [];
+    private elNotify = new Map<IAlarm | string, ElNotificationComponent>();
+    private notifyCount: number = 0;
+
     public get filters() {
         const type = new Set();
         const tagNo = new Set();
@@ -74,10 +79,6 @@ export default class Notice extends Vue {
             time: Array.from(time).map(v => ({ text: v, value: v }))
         };
     }
-    public drawer: boolean = false;
-    public messages: IAlarm[] = [];
-    private elNotify = new Map<IAlarm | string, ElNotificationComponent>();
-    private notifyCount: number = 0;
 
     public created() {
         this.$event.on(NOTIFY_KEY, this.notify.bind(this));
