@@ -2,7 +2,8 @@ import Component, { mixins } from 'vue-class-component';
 import MapMixin from '../map';
 import { WebSocketInit } from './websocket';
 import { arr2obj } from '@/assets/utils/util';
-import { LOSS_TIME, MODIFY_TAG_ICON, NOTIFY_KEY } from '@/constant';
+import { LOSS_TIME, MODIFY_TAG_ICON, NOTIFY_KEY, MISS_MSG } from '@/constant';
+import Link from './link';
 
 interface Pop {
     close(immediately?: boolean): void | boolean;
@@ -10,7 +11,7 @@ interface Pop {
 }
 
 @Component
-export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
+export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) {
     public renderTags: { [x: string]: number } = {}; // 已经在地图上的标签, {tagNo: timer}
 
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
@@ -28,7 +29,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
             .then(() => this.getZones && this.getZones())
             .catch(() => console.log);
 
-        this.$event.on(MODIFY_TAG_ICON, this.modifyImg.bind(this));
+        this.$event.on(MODIFY_TAG_ICON, (tagNo: string, img: string) => this.mgr && this.mgr.modifyImg(tagNo, img));
     }
 
     public beforeDestroy() {
@@ -102,6 +103,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
             };
             if (timer) {
                 clearTimeout(timer);
+
                 this.mgr.show(tag.sTagNo, true);
                 this.moveTo(
                     tag.sTagNo, coord, 1,
@@ -136,7 +138,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
                 this.$event.emit(NOTIFY_KEY, {
                     tagNo: tag.sTagNo,
                     alarmTime: Date.now(),
-                    alarmMsg: '信号丢失',
+                    alarmMsg: MISS_MSG,
                     type: 1
                 });
             }, LOSS_TIME);
@@ -173,9 +175,5 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit) {
     private filterZoneAll(data: IBaseStation[]) {
         const ids = new Set(data.map(v => +v.zone));
         return this.zoneAll.filter(v => ids.has(v.id));
-    }
-
-    private modifyImg(tagNo: string, isError: boolean) {
-        this.mgr && this.mgr.modifyImg(tagNo, isError ? '/images/error.png' : '');
     }
 }

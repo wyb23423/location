@@ -92,6 +92,7 @@ export default class MapMixin extends Vue {
                         points.push({ x: v.x, y: v.y, z: 1 });
                         if (this.mgr && points.length >= 10) {
                             this.mgr.appendLine(tagNo, points, true);
+                            this.link(tagNo, <Vector3>points.pop());
                             points.length = 0;
                         }
                     },
@@ -153,6 +154,11 @@ export default class MapMixin extends Vue {
                 !!info.isMapCoor
             );
         }
+    }
+
+    // 根据标签是否一组绘制连线
+    protected link(tagNo: string, coords: Vector3) {
+        //
     }
 
     // 显示基站

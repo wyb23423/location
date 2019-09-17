@@ -11,7 +11,7 @@ export const SX_WIDTH: number = 768; // 小屏宽度
 export const LOSS_TIME: number = 10000; // 用于判断信号是否丢失
 
 export const NOTICE_MAX: number = 3; // 同时出现的最大报警数
-
+export const MISS_MSG: string = '信号丢失'; // 标签信号丢失时的报警信息
 export const NOTIFY_KEY = Symbol('NOTIFY_KEY'); // 触发警报提示的全局事件名
 export const MODIFY_TAG_ICON = Symbol('MODIFY_TAG_ICON'); // 修改标签图标的全局事件名
 

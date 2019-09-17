@@ -1,4 +1,5 @@
 
+
 interface DataBase extends IJson {
     id: number;
     createUser?: string;
@@ -91,6 +92,10 @@ declare interface IZone extends DataBase {
     baseNo2: string;
 }
 
+declare interface IBangdings extends DataBase {
+    tags: string | string[];
+}
+
 declare interface IAlarm extends IJson {
     id: number;
     baseNo: string;
@@ -117,16 +122,16 @@ declare interface RequestParams {
     controller?: AbortController; // 用于中止请求
 }
 // 响应数据
-declare interface ResponseData {
+declare interface ResponseData<T = any, K = Record<string, any>> {
     code: number;
     message: string;
     pagedData: {
         currentPage: number;
-        datas: any[];
+        datas: T[];
         pageSize: number;
         totalCount: number;
     };
-    resultMap: IJson;
+    resultMap: K;
     success: boolean;
 }
 
