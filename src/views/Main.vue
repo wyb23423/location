@@ -14,6 +14,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import Header from '../components/Header.vue';
 import { Prop } from 'vue-property-decorator';
+import { NOTIFY_KEY } from '@/constant';
 
 @Component({
     components: {
@@ -36,9 +37,7 @@ export default class Main extends Vue {
 
                     res.pagedData.datas.forEach((v: IAlarm) => {
                         if (Date.now() - v.alarmTime <= 1000) {
-                            this.$notify.warning(
-                                `标签${v.tagNo}异常。\n${v.alarmMsg}`
-                            );
+                            this.$event.emit(NOTIFY_KEY, v);
                         }
                     });
 

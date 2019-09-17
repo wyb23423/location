@@ -19,7 +19,7 @@ export class CoordTransformer {
         return Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
     }
 
-    public margin?: TPosition;
+    public margin?: TPosition; // 地图大小（实际）
     public locOrigion: Vector2 = { x: 0, y: 0 };
     public mapRange: Vector2 = { x: 0, y: 0 }; // 映射地图大小
 
