@@ -29,13 +29,14 @@
                         placeholder="请输入密码"
                         prefix-icon="el-icon-lock"
                         type="password"
+                        @keyup.enter.native="submit"
                     ></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button
                         type="primary"
                         :disabled="!isVaild"
-                        @click="submit('loginForm')"
+                        @click="submit"
                     >
                         登录
                     </el-button>
@@ -53,6 +54,7 @@ import Router from 'vue-router';
 import { State } from 'vuex-class/lib/bindings';
 import { initRouter } from '@/router';
 import { load } from '@/assets/lib/slow-loading';
+import { ElForm } from 'element-ui/types/form';
 
 interface LoginInfo {
     password: string;
@@ -75,8 +77,8 @@ export default class Login extends Vue {
         ]
     };
 
-    public submit(name: string) {
-        const form: any = this.$refs[name];
+    public submit() {
+        const form = <ElForm>this.$refs.loginForm;
         form.validate((valid: boolean) => {
             if (valid) {
                 fetch('/api/admin/login', {

@@ -71,7 +71,8 @@ export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
 
     public add(points: Vector3[], name: string | number, style: LineStyle) {
         if (this.lines.has(name)) {
-            return console.error(`标识为${name}的线已存在`);
+            return;
+            // console.error(`标识为${name}的线已存在`);
         }
 
         style.color = style.color || randomColor();
@@ -94,7 +95,7 @@ export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
                 this.map.removeLineMarker(line);
                 this.lines.delete(name);
             } else {
-                console.warn(`标识为${name}的线未找到`);
+                // console.warn(`标识为${name}的线未找到`);
             }
         }
     }

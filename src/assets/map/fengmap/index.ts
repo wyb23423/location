@@ -200,14 +200,18 @@ export class FengMapMgr extends CoordTransformer {
 
     // 2D与3D切换
     public switchViewMode(mode?: fengmap.FMViewMode.MODE_2D | fengmap.FMViewMode.MODE_3D) {
-        if (mode) {
-            return this.map.viewMode = mode;
-        }
+        try {
+            if (mode) {
+                return this.map.viewMode = mode;
+            }
 
-        if (this.map.viewMode === fengmap.FMViewMode.MODE_2D) {
-            this.map.viewMode = fengmap.FMViewMode.MODE_3D;
-        } else {
-            this.map.viewMode = fengmap.FMViewMode.MODE_2D;
+            if (this.map.viewMode === fengmap.FMViewMode.MODE_2D) {
+                this.map.viewMode = fengmap.FMViewMode.MODE_3D;
+            } else {
+                this.map.viewMode = fengmap.FMViewMode.MODE_2D;
+            }
+        } catch (e) {
+            //
         }
     }
 

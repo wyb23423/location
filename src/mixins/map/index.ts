@@ -18,7 +18,6 @@ export default class MapMixin extends Vue {
     public groups: string[] = []; // 当前地图关联组号
 
     @Ref('map') protected readonly container?: HTMLElement;
-    // protected renderTags?: { [x: string]: number } | Set<string>;
 
     public beforeDestroy() {
         this.dispose();
@@ -45,26 +44,6 @@ export default class MapMixin extends Vue {
             }
         }
     }
-
-    // @Watch('showPath')
-    // public createOrRemovePath() {
-    //     if (!this.mgr || !this.renderTags) {
-    //         return;
-    //     }
-
-    //     if (this.showPath) {
-    //         const keys = this.renderTags instanceof Set ? this.renderTags : Object.keys(this.renderTags);
-    //         keys.forEach((id: string) => {
-    //             this.mgr!.addLine([], {
-    //                 lineType: fengmap.FMLineType.FULL,
-    //                 lineWidth: 2,
-    //                 smooth: false
-    //             }, id);
-    //         });
-    //     } else {
-    //         this.mgr.lineMgr.remove();
-    //     }
-    // }
 
     protected bindEvents(data?: IMap) {
         // 绑定地图数据

@@ -48,7 +48,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { NOTICE_MAX, NOTIFY_KEY } from '../constant';
+import { NOTICE_MAX, NOTIFY_KEY, ALARM_DEAL } from '../constant';
 import { ElNotificationComponent } from 'element-ui/types/notification';
 import { ElTableColumn } from 'element-ui/types/table-column';
 
@@ -82,6 +82,13 @@ export default class Notice extends Vue {
 
     public created() {
         this.$event.on(NOTIFY_KEY, this.notify.bind(this));
+        this.$event.on(ALARM_DEAL, (v: IAlarm) => {
+            const message = this.messages.find(m =>
+                Object.keys(m).every((k: keyof IAlarm) => m[k] === v[k])
+            );
+
+            message && this.reset(message);
+        });
     }
 
     public filterHandler(
@@ -89,26 +96,28 @@ export default class Notice extends Vue {
         row: IAlarm,
         column: ElTableColumn
     ) {
-        const prop = Reflect.get(column, 'property');
-        return Reflect.get(row, prop) === value;
+        return Reflect.get(row, Reflect.get(column, 'property')) === value;
     }
 
     public doDeal(v: IAlarm) {
         this.$confirm(`异常${v.alarmMsg}已解决?`)
-            .then(() => {
-                const el = this.elNotify.get(v);
-                el && el.close();
-                this.elNotify.delete(v);
-
-                const index = this.messages.indexOf(v);
-                if (index > -1) {
-                    this.messages.splice(index, 1);
-                    this.notifyCount--;
-
-                    this.notify(this.messages.splice(this.notifyCount, 1)[0]);
-                }
-            })
+            .then(() => this.reset(v))
             .catch(console.log);
+    }
+
+    private reset(v: IAlarm) {
+        const el = this.elNotify.get(v);
+        if (el) {
+            el.close();
+            this.notifyCount--;
+            this.elNotify.delete(v);
+        }
+
+        const index = this.messages.indexOf(v);
+        if (index > -1) {
+            this.messages.splice(index, 1);
+            this.notify(this.messages.splice(this.notifyCount, 1)[0]);
+        }
     }
 
     private notify(v?: IAlarm) {

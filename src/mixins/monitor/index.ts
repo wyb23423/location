@@ -2,7 +2,7 @@ import Component, { mixins } from 'vue-class-component';
 import MapMixin from '../map';
 import { WebSocketInit } from './websocket';
 import { arr2obj } from '@/assets/utils/util';
-import { LOSS_TIME, MODIFY_TAG_ICON, NOTIFY_KEY, MISS_MSG } from '@/constant';
+import { LOSS_TIME, MODIFY_TAG_ICON, NOTIFY_KEY, MISS_MSG, ALARM_DEAL } from '@/constant';
 import Link from '../map/link';
 
 interface Pop {
@@ -16,7 +16,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
     private zoneAll: IZone[] = []; // 所有区域
-
+    private alarmTimes = new Map<string, number>();
     private getZones?: () => void;
 
     public created() {
@@ -94,8 +94,9 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
             return console.log('获取地图失败!!');
         }
 
+        const tagNo = tag.sTagNo;
         if (tag.position.every(v => +v >= 0)) {
-            const timer = this.renderTags[tag.sTagNo];
+            const timer = this.renderTags[tagNo];
             const coord: Vector3 = {
                 x: +tag.position[0],
                 y: +tag.position[1],
@@ -104,12 +105,19 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
             if (timer) {
                 clearTimeout(timer);
 
+                this.$event.emit(ALARM_DEAL, {
+                    tagNo,
+                    alarmTime: this.alarmTimes.get(tagNo),
+                    alarmMsg: MISS_MSG,
+                    type: 1
+                });
+
                 this.moveTo(
-                    tag.sTagNo, coord, 1,
+                    tagNo, coord, 1,
                     () => {
-                        const p = this.pops.get(tag.sTagNo);
+                        const p = this.pops.get(tagNo);
                         if (p && p.update) {
-                            p.update() || this.pops.delete(tag.sTagNo);
+                            p.update() || this.pops.delete(tagNo);
                         }
                     }
                 );
@@ -123,17 +131,17 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
                 }
 
                 // 第一次收到信号
-                const tagData: ITag = this.tagAll[tag.sTagNo];
+                const tagData: ITag = this.tagAll[tagNo];
                 this.addIcon(ids ? ids[0] : 0, {
                     ...(tagData || {}),
-                    name: tag.sTagNo,
+                    name: tagNo,
                     tagName: tagData ? tagData.name : '未知标签',
                     ...coord
                 });
             }
 
             // 长时间未收到信号, 将标签号推入信号丢失报警队列
-            this.renderTags[tag.sTagNo] = setTimeout(this.miss.bind(this, tag.sTagNo), LOSS_TIME);
+            this.renderTags[tagNo] = setTimeout(this.miss.bind(this, tagNo), LOSS_TIME);
 
             // 统计
             this.doCensus(tag);
@@ -142,10 +150,12 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
     // 信号丢失报警循环
     private miss(tagNo: string) {
+        const now = Date.now();
+        this.alarmTimes.set(tagNo, now);
         // 抛出 信号丢失 事件
         this.$event.emit(NOTIFY_KEY, {
             tagNo,
-            alarmTime: Date.now(),
+            alarmTime: now,
             alarmMsg: MISS_MSG,
             type: 1
         });
