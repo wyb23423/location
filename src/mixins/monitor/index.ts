@@ -3,7 +3,7 @@ import MapMixin from '../map';
 import { WebSocketInit } from './websocket';
 import { arr2obj } from '@/assets/utils/util';
 import { LOSS_TIME, MODIFY_TAG_ICON, NOTIFY_KEY, MISS_MSG } from '@/constant';
-import Link from './link';
+import Link from '../map/link';
 
 interface Pop {
     close(immediately?: boolean): void | boolean;
@@ -12,7 +12,7 @@ interface Pop {
 
 @Component
 export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) {
-    public renderTags: { [x: string]: number } = {}; // 已经在地图上的标签, {tagNo: timer}
+    public renderTags: Record<string, number> = {}; // 已经在地图上的标签, {tagNo: timer}
 
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
     private zoneAll: IZone[] = []; // 所有区域
@@ -104,7 +104,6 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
             if (timer) {
                 clearTimeout(timer);
 
-                this.mgr.show(tag.sTagNo, true);
                 this.moveTo(
                     tag.sTagNo, coord, 1,
                     () => {
@@ -134,17 +133,35 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
             }
 
             // 长时间未收到信号, 将标签号推入信号丢失报警队列
-            this.renderTags[tag.sTagNo] = setTimeout(() => {
-                this.$event.emit(NOTIFY_KEY, {
-                    tagNo: tag.sTagNo,
-                    alarmTime: Date.now(),
-                    alarmMsg: MISS_MSG,
-                    type: 1
-                });
-            }, LOSS_TIME);
+            this.renderTags[tag.sTagNo] = setTimeout(this.miss.bind(this, tag.sTagNo), LOSS_TIME);
 
             // 统计
             this.doCensus(tag);
+        }
+    }
+
+    // 信号丢失报警循环
+    private miss(tagNo: string) {
+        // 抛出 信号丢失 事件
+        this.$event.emit(NOTIFY_KEY, {
+            tagNo,
+            alarmTime: Date.now(),
+            alarmMsg: MISS_MSG,
+            type: 1
+        });
+
+        if (this.mgr) {
+            this.renderTags[tagNo] = -1; // 标记标签已丢失
+
+            this.mgr.show(tagNo, false); // 隐藏标签
+            this.mgr.lineMgr.remove(tagNo); // 移除轨迹线
+            this.doCensus(tagNo); // 更新统计数据
+
+            // 移除信息框
+            if (this.pops.has(tagNo)) {
+                (<Pop>this.pops.get(tagNo)).close(true);
+                this.pops.delete(tagNo);
+            }
         }
     }
 

@@ -18,7 +18,7 @@ export default class MapMixin extends Vue {
     public groups: string[] = []; // 当前地图关联组号
 
     @Ref('map') protected readonly container?: HTMLElement;
-    protected renderTags?: { [x: string]: number } | Set<string>;
+    // protected renderTags?: { [x: string]: number } | Set<string>;
 
     public beforeDestroy() {
         this.dispose();
@@ -46,25 +46,25 @@ export default class MapMixin extends Vue {
         }
     }
 
-    @Watch('showPath')
-    public createOrRemovePath() {
-        if (!this.mgr || !this.renderTags) {
-            return;
-        }
+    // @Watch('showPath')
+    // public createOrRemovePath() {
+    //     if (!this.mgr || !this.renderTags) {
+    //         return;
+    //     }
 
-        if (this.showPath) {
-            const keys = this.renderTags instanceof Set ? this.renderTags : Object.keys(this.renderTags);
-            keys.forEach((id: string) => {
-                this.mgr!.addLine([], {
-                    lineType: fengmap.FMLineType.FULL,
-                    lineWidth: 2,
-                    smooth: false
-                }, id);
-            });
-        } else {
-            this.mgr.lineMgr.remove();
-        }
-    }
+    //     if (this.showPath) {
+    //         const keys = this.renderTags instanceof Set ? this.renderTags : Object.keys(this.renderTags);
+    //         keys.forEach((id: string) => {
+    //             this.mgr!.addLine([], {
+    //                 lineType: fengmap.FMLineType.FULL,
+    //                 lineWidth: 2,
+    //                 smooth: false
+    //             }, id);
+    //         });
+    //     } else {
+    //         this.mgr.lineMgr.remove();
+    //     }
+    // }
 
     protected bindEvents(data?: IMap) {
         // 绑定地图数据
@@ -81,6 +81,20 @@ export default class MapMixin extends Vue {
     }
 
     protected moveTo(tagNo: string, coord: Vector3, time: number, update?: () => void) {
+        if (this.mgr) {
+            this.mgr.show(tagNo, true);
+
+            if (this.showPath) {
+                this.mgr.addLine([], {
+                    lineType: fengmap.FMLineType.FULL,
+                    lineWidth: 2,
+                    smooth: false
+                }, tagNo);
+            } else {
+                this.mgr.lineMgr.remove(tagNo);
+            }
+        }
+
         return new Promise(resolve => {
             if (this.mgr) {
                 const points: Vector3[] = [];
