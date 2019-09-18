@@ -120,8 +120,8 @@ export class MapEvent {
             this.stage.scale.set(scale, scale);
         } else {
             // 平移
-            const left = this.stage.x + pos.x - this.downX;
-            const top = this.stage.y + pos.y - this.downY;
+            const left = this.stage.x + (pos.x - this.downX) / 2;
+            const top = this.stage.y + (pos.y - this.downY) / 2;
 
             this.stage.position.set(left, top);
 
