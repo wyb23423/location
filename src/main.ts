@@ -45,7 +45,8 @@ router.beforeEach((to: Route, from: Route, next: any) => {
         next(to);
       })
       .catch(e => {
-        next('/login');
+        next(false);
+        location.href = '/login';
       });
   } else {
     next();

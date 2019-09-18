@@ -94,8 +94,6 @@ export default class TableMixin extends Vue {
         tbody.push('</tbody>');
         return tbody.join('');
     }
-
-    @Watch('$store.state.rootScale')
     private async getMaxHeight() {
         const component: any = this.$refs.table;
         if (component) {

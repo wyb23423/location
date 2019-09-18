@@ -24,7 +24,7 @@
 
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
-import { Getter } from 'vuex-class/lib/bindings';
+
 import TableMixin from '../../mixins/table';
 import Page from '@/components/Page.vue';
 

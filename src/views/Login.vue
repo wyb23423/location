@@ -1,9 +1,5 @@
 <template>
-    <div
-        style="background: #007DDB;"
-        :style="{ height: `${100 / scale}vh` }"
-        class="flex-center"
-    >
+    <div style="background: #007DDB; height: 100vh" class="flex-center">
         <el-card :class="$style['box-card']" class="flex-center">
             <div :class="$style.title">
                 <h1>莱恩微定位</h1>
@@ -63,8 +59,6 @@ interface LoginInfo {
 
 @Component
 export default class Login extends Vue {
-    @State('rootScale') public scale!: number;
-
     public form: LoginInfo = { password: '', username: '' };
     public rules = {
         username: [

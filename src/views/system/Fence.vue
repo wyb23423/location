@@ -72,7 +72,7 @@
             >
                 <zone-input
                     v-model="form"
-                    :form-height="formHeight"
+                    form-height="calc(100vh - 500px)"
                     :groups="groups"
                 >
                     <el-form-item label="区域顶点">

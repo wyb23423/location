@@ -67,6 +67,11 @@ export class RouteList {
             return func.call(this);
         }).flat();
 
+        routes.push({
+            path: 'bind', name: 'bind',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/Bind.vue')
+        });
+
         if (routes.length) {
             routes[0].alias = '';
             this.routes.push({

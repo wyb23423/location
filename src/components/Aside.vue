@@ -1,5 +1,5 @@
 <template>
-    <div style="background: #393d49;" :style="{ height }" @click.stop>
+    <div style="background: #393d49; height: calc(100vh - 60px)" @click.stop>
         <el-tooltip
             effect="dark"
             :content="isCollapse ? '展开' : '收起'"
@@ -51,7 +51,6 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Watch } from 'vue-property-decorator';
-import { Getter } from 'vuex-class/lib/bindings';
 import Router from 'vue-router';
 
 export interface TabItem {
@@ -67,7 +66,6 @@ export default class Aside extends Vue {
     public isCollapse: boolean = true;
     public activeTitle: string = '';
 
-    @Getter('mainHeight') public height!: string;
     @Prop() public tabs!: TabItem[];
 
     public currTabs: TabItem[] = [];

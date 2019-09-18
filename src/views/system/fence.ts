@@ -35,9 +35,6 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
         mode: 2,
         open: true
     };
-    public get formHeight() {
-        return `calc(${100 / this.$store.state.rootScale}vh - 500px)`;
-    }
     // ====================================
     @State private readonly zoneMode!: ZoneMode;
 

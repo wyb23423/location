@@ -14,14 +14,12 @@ export interface ZoneMode {
 
 interface State {
   baseUrl: string;
-  rootScale: number;
   zoneMode: ZoneMode;
 }
 
 const store = new Vuex.Store({
   state: {
     baseUrl: BASE_URL,
-    rootScale: 1,
     zoneMode: {
       switch: 1,
       in: 2,
@@ -31,14 +29,10 @@ const store = new Vuex.Store({
     }
   },
   getters: {
-    mainHeight(state: State) {
-      return `calc(${100 / state.rootScale}vh - 60px)`;
-    }
+
   },
   mutations: {
-    setRootScale(state: State, scale: number) {
-      state.rootScale = scale;
-    },
+
   }
 });
 

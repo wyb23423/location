@@ -4,7 +4,6 @@
 
 <script lang="ts">
 import Component from 'vue-class-component';
-import { Getter } from 'vuex-class/lib/bindings';
 import Vue from 'vue';
 import Page from '@/components/Page.vue';
 
@@ -16,7 +15,7 @@ import Page from '@/components/Page.vue';
 export default class System extends Vue {
     public tabs = [
         { title: '电子围栏', to: '/system/fence', icon: 'el-icon-crop' },
-        // { title: '路线规划', to: '/system/route', icon: 'el-icon-rank' },
+        { title: '标签绑定', to: '/system/bind', icon: 'el-icon-connection' },
         // { title: '基站配置', to: '/system/base', icon: 'el-icon-setting' },
         {
             title: '摄像头',

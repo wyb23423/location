@@ -5,7 +5,6 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import echarts from 'echarts';
-import { Getter } from 'vuex-class';
 import { loopAwait } from '@/assets/utils/util';
 
 interface CardInfo {
@@ -23,8 +22,6 @@ interface RecordItem {
 
 @Component
 export default class Main extends Vue {
-    @Getter public mainHeight!: string;
-
     public activeNames: string[] = ['1', '2'];
     public cards: CardInfo[] = [
         { icon: 'qy', title: '监控区域', num: 3, to: '/system/fence' },

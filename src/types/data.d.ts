@@ -92,7 +92,7 @@ declare interface IZone extends DataBase {
     baseNo2: string;
 }
 
-declare interface IBangdings extends DataBase {
+declare interface IBingdings extends DataBase {
     tags: string | string[];
 }
 

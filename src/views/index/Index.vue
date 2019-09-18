@@ -1,5 +1,5 @@
 <template>
-    <div :style="{ height: mainHeight }" style="overflow-y: auto">
+    <div style="overflow-y: auto; height: calc(100vh - 60px)">
         <div style="padding: 30px;">
             <div :class="$style.cards">
                 <router-link

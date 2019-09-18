@@ -20,13 +20,17 @@ export default class Link extends Vue {
         // TODO 从服务器获取数据
         const testData = [
             {
-                id: 0,
-                tags: []
+                id: 1,
+                tags: ['00000004', '00000005']
             },
             {
-                id: 1,
-                tags: []
-            }
+                id: 2,
+                tags: ['00000001', '00000008']
+            },
+            {
+                id: 3,
+                tags: ['00000001', '00000011']
+            },
         ];
         this.normalize(testData);
 
@@ -92,7 +96,7 @@ export default class Link extends Vue {
         });
     }
 
-    private normalize(datas: IBangdings[]) {
+    private normalize(datas: IBingdings[]) {
         datas.forEach(v => {
             const tags: string[] = Array.isArray(v.tags) ? v.tags : JSON.parse(v.tags);
 

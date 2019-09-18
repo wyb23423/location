@@ -1,7 +1,7 @@
 <template>
     <div @click="isMini && (display = false)">
         <div class="main">
-            <div :style="{ height: mainHeight }" style="overflow-y: auto">
+            <div style="overflow-y: auto; height: calc(100vh - 60px)">
                 <router-view v-if="hasRouter" />
                 <slot></slot>
             </div>
@@ -39,7 +39,6 @@ import { Prop } from 'vue-property-decorator';
     }
 })
 export default class Page extends Vue {
-    @Getter('mainHeight') public readonly mainHeight!: string;
     @Prop() public readonly tabs!: TabItem[];
     @Prop({ default: () => true }) public readonly hasRouter!: boolean;
 

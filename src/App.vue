@@ -16,7 +16,9 @@ import Notice from './components/Notice.vue';
         'app-notice': Notice
     }
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+    //
+}
 </script>
 
 <style lang="postcss" module>

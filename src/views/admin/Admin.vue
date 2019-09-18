@@ -5,7 +5,7 @@
 <script lang="ts">
 import Component from 'vue-class-component';
 import Aside from '../../components/Aside.vue';
-import { Getter } from 'vuex-class/lib/bindings';
+
 import Vue from 'vue';
 import Page from '@/components/Page.vue';
 
