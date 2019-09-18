@@ -5,12 +5,12 @@
                 :autoplay="false"
                 style="width: 100%"
                 indicator-position="outside"
-                type="card"
+                :type="rootWidth >= 1300 ? 'card' : ''"
                 trigger="click"
-                :arrow="bindings.length > 1 ? 'always' : 'never'"
+                :arrow="bindings.length > 1 ? 'hover' : 'never'"
                 @change="index = $event"
             >
-                <el-carousel-item v-for="(i, v) of bindings" :key="v.id">
+                <el-carousel-item v-for="(v, i) of bindings" :key="v.id">
                     <el-transfer
                         type="card"
                         v-model="v.tags"
@@ -19,18 +19,66 @@
                         class="flex-center"
                     >
                         <el-input
-                            placeholder="标签名或标签号"
+                            placeholder="标签名/编号"
                             type="search"
                             v-model="keyWord[i]"
                             slot="left-footer"
                             style="transform: translateY(-1px)"
+                            @keyup.enter.native="getSource(i)"
                         >
-                            <el-button
-                                slot="append"
-                                icon="el-icon-search"
-                                @click="getSource(i)"
-                            ></el-button>
                         </el-input>
+                        <div
+                            slot="right-footer"
+                            class="flex-center"
+                            style="height:100%"
+                        >
+                            <template v-if="v.id !== -1">
+                                <el-tooltip
+                                    effect="dark"
+                                    content="更新"
+                                    placement="left"
+                                >
+                                    <el-button
+                                        :disabled="index !== i"
+                                        size="mini"
+                                        type="primary"
+                                        circle
+                                        icon="el-icon-refresh"
+                                        @click="doUpdata(i)"
+                                    ></el-button>
+                                </el-tooltip>
+                                <el-tooltip
+                                    effect="dark"
+                                    content="删除"
+                                    placement="right"
+                                >
+                                    <el-button
+                                        :disabled="index !== i"
+                                        size="mini"
+                                        type="danger"
+                                        circle
+                                        icon="el-icon-delete"
+                                        @click="doDelete(i)"
+                                    ></el-button>
+                                </el-tooltip>
+                            </template>
+                            <el-tooltip
+                                effect="dark"
+                                content="添加"
+                                placement="right"
+                                v-else
+                            >
+                                <el-button
+                                    :disabled="index !== i"
+                                    size="mini"
+                                    type="success"
+                                    icon="el-icon-plus"
+                                    circle
+                                    @click="doAdd(i)"
+                                >
+                                </el-button>
+                            </el-tooltip>
+                        </div>
                     </el-transfer>
                 </el-carousel-item>
             </el-carousel>
@@ -42,9 +90,12 @@
 import Vue from 'vue';
 import { TransferData } from 'element-ui/types/transfer';
 import Component from 'vue-class-component';
+import { State } from 'vuex-class/lib/bindings';
 
 @Component
 export default class Bind extends Vue {
+    @State public readonly rootWidth!: number;
+
     public bodyStyle = {
         height: '100%',
         display: 'flex',
@@ -53,8 +104,8 @@ export default class Bind extends Vue {
 
     public data: TransferData[][] = [];
     public bindings: IBingdings[] = [];
-    public index: number = 0;
     public keyWord: string[] = [];
+    public index: number = 0;
 
     public created() {
         this.initData();
@@ -78,6 +129,18 @@ export default class Bind extends Vue {
                 return true;
             })
             .catch(console.log);
+    }
+
+    public doAdd(index: number) {
+        console.log(index);
+    }
+
+    public doDelete(index: number) {
+        console.log(index);
+    }
+
+    public doUpdata(index: number) {
+        console.log(index);
     }
 
     private async initData() {

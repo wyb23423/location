@@ -17,7 +17,23 @@ import Notice from './components/Notice.vue';
     }
 })
 export default class App extends Vue {
-    //
+    public created() {
+        let timer: number;
+        const fn = () => {
+            if (timer) {
+                clearTimeout(timer);
+            }
+
+            timer = setTimeout(
+                () =>
+                    this.$store.commit('rootWidth', document.body.offsetWidth),
+                200
+            );
+        };
+
+        window.addEventListener('resize', fn, false);
+        fn();
+    }
 }
 </script>
 

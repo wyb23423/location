@@ -16,7 +16,7 @@
             :class="$style.btn"
             v-if="isMini"
             :icon="`el-icon-caret-${display ? 'left' : 'right'}`"
-            :style="{ left: display ? '45px' : '-20px' }"
+            :style="{ left: display ? '45px' : '-15px' }"
             type="success"
             circle
             plain

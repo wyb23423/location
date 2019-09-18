@@ -12,11 +12,6 @@ export interface ZoneMode {
   other: number; // 其他
 }
 
-interface State {
-  baseUrl: string;
-  zoneMode: ZoneMode;
-}
-
 const store = new Vuex.Store({
   state: {
     baseUrl: BASE_URL,
@@ -26,13 +21,13 @@ const store = new Vuex.Store({
       out: 3,
       group: 4,
       other: 5
-    }
-  },
-  getters: {
-
+    },
+    rootWidth: 0
   },
   mutations: {
-
+    rootWidth(state, width: number) {
+      state.rootWidth = width;
+    }
   }
 });
 

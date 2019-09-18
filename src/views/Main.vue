@@ -53,7 +53,7 @@ export default class Main extends Vue {
                 });
         };
 
-        fn();
+        // fn();
     }
 
     public destroyed() {
