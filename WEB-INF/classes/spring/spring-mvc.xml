@@ -56,7 +56,7 @@
             <mvc:exclude-mapping path="/fonts/**"/>
             <mvc:exclude-mapping path="/login"/>
 
-            <bean class="com.pos.inhouse.web.interceptor.AuthInterceptor"></bean>
+            <bean class="com.leoli.inhouse.web.interceptor.AuthInterceptor"></bean>
         </mvc:interceptor>
     </mvc:interceptors>
 

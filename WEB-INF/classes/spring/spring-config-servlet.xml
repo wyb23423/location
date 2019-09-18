@@ -17,7 +17,7 @@
 	http://www.springframework.org/schema/task/spring-task-3.1.xsd"
 	default-autowire="byName">
 
-	<context:component-scan base-package="com.pos.inhouse;a.b.c.d.e.f.xcd.werwe.dsfwe" />
+	<context:component-scan base-package="com.leoli.inhouse" />
 
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 	<context:annotation-config />

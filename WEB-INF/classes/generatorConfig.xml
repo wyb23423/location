@@ -14,12 +14,33 @@
   	
     <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://localhost:3306/pos" userId="root" password="root" />
     
-    <javaModelGenerator targetPackage="com.pos.inhouse.web.dao.model" targetProject="inhouse" />
+    <javaModelGenerator targetPackage="com.leoli.inhouse.web.dao.model" targetProject="inhouse" />
     <sqlMapGenerator targetPackage="mapper" targetProject="inhouse/src/main/resources" />
-    <javaClientGenerator targetPackage="com.pos.inhouse.web.dao.mapper" targetProject="inhouse" type="XMLMAPPER" />
+    <javaClientGenerator targetPackage="com.leoli.inhouse.web.dao.mapper" targetProject="inhouse" type="XMLMAPPER" />
 
-	<table schema="pos" tableName="pos_zone" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
+	<!-- <table schema="pos" tableName="pos_admin" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
 		<generatedKey column="id" sqlStatement="MySql" identity="true"/>
     </table>
+    <table schema="pos" tableName="pos_alarm" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
+		<generatedKey column="id" sqlStatement="MySql" identity="true"/>
+    </table>
+    <table schema="pos" tableName="pos_base_station" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
+		<generatedKey column="id" sqlStatement="MySql" identity="true"/>
+    </table>
+    <table schema="pos" tableName="pos_camera" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
+		<generatedKey column="id" sqlStatement="MySql" identity="true"/>
+    </table> -->
+    <table schema="pos" tableName="pos_map" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
+		<generatedKey column="id" sqlStatement="MySql" identity="true"/>
+    </table>
+    <table schema="pos" tableName="pos_protocol" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
+		<generatedKey column="id" sqlStatement="MySql" identity="true"/>
+    </table>
+	<!-- <table schema="pos" tableName="pos_tag" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
+		<generatedKey column="id" sqlStatement="MySql" identity="true"/>
+    </table>
+    <table schema="pos" tableName="pos_zone" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
+		<generatedKey column="id" sqlStatement="MySql" identity="true"/>
+    </table> -->
   </context>
 </generatorConfiguration>
