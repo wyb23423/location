@@ -29,11 +29,9 @@ this.emit('update', this.sprite); // 添加
 
 ---------------------------
 
-```json
-{
-    "APP_KEY": "83a75157d56ffe85317ed7ba1e8120ff", // fengmap 对应app_id
-    "APP_NAME": "hunjingguanchang", // fengmap 对应app_name
-    "SOCKET_COUNT": "multiple", // 实时监控使用多个websocket实现时此项为 multiple，单个时为任一值即可
-    "PROXY_TARGET": "http://127.0.0.1/" // 调试服务器地址, 最后的 / 必须
-}
-```
+    {
+        "APP_KEY": "83a75157d56ffe85317ed7ba1e8120ff", // fengmap 对应app_id
+        "APP_NAME": "hunjingguanchang", // fengmap 对应app_name
+        "SOCKET_COUNT": "multiple", // 实时监控使用多个websocket实现时此项为 multiple，单个时为任一值即可
+        "PROXY_TARGET": "http://127.0.0.1/" // 调试服务器地址, 最后的 / 必须
+    }
