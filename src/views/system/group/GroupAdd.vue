@@ -6,6 +6,7 @@
         style="padding: 10% 8%"
     >
         <el-form-item
+            v-if="showId"
             label="分组号"
             prop="id"
             required
@@ -55,6 +56,7 @@ import { CascaderOption } from 'element-ui/types/cascader';
 @Component
 export default class GroupAdd extends Vue {
     @Prop({ default: () => ({ description: '' }) }) public form!: IGroup;
+    @Prop({ default: () => true }) public showId!: boolean;
 
     public algorithmType: number[] = [];
     public algorithm: CascaderOption[] = [[0, 1, 2], [1, 2], [1, 2]].map(

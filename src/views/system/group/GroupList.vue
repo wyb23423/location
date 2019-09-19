@@ -14,14 +14,35 @@
                 @toExcel="toExcel"
             ></app-table>
         </el-card>
+
+        <template v-if="!!group">
+            <el-dialog
+                title="更改分组信息"
+                :visible="true"
+                :modal-append-to-body="false"
+                width="80%"
+                @close="group = null"
+            >
+                <group-add
+                    :form="group"
+                    :show-id="false"
+                    style="padding: 0"
+                ></group-add>
+            </el-dialog>
+        </template>
     </div>
 </template>
 
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
 import TableMixin from '@/mixins/table';
+import GroupAdd from './GroupAdd.vue';
 
-@Component
+@Component({
+    components: {
+        'group-add': GroupAdd
+    }
+})
 export default class GroupList extends mixins(TableMixin) {
     public group: Record<string, any> | null = null;
     public colCfg = [
