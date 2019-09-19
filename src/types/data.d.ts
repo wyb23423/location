@@ -96,6 +96,13 @@ declare interface IBingdings extends DataBase {
     tags: string | string[];
 }
 
+declare interface IGroup extends DataBase {
+    size: number; // 最大基站数
+    min: number; // 最小基站数
+    algorithmType: number; // 算法类型
+    description: string;
+}
+
 declare interface IAlarm extends IJson {
     id: number;
     baseNo: string;

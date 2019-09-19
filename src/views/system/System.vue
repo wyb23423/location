@@ -16,7 +16,23 @@ export default class System extends Vue {
     public tabs = [
         { title: '电子围栏', to: '/system/fence', icon: 'el-icon-crop' },
         { title: '标签绑定', to: '/system/bind', icon: 'el-icon-connection' },
-        // { title: '基站配置', to: '/system/base', icon: 'el-icon-setting' },
+        {
+            title: '分组配置',
+            to: 'group',
+            icon: 'el-icon-folder',
+            children: [
+                {
+                    title: '分组列表',
+                    to: '/system/group/list',
+                    icon: 'el-icon-folder-opened'
+                },
+                {
+                    title: '分组添加',
+                    to: '/system/group/add',
+                    icon: 'el-icon-folder-add'
+                }
+            ]
+        },
         {
             title: '摄像头',
             to: 'camera',

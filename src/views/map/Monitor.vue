@@ -1,23 +1,33 @@
 <template>
-    <div class="map-box" @click="hiddenCover">
+    <div class="map-box" @click="hiddenCover" ref="root">
         <div :class="$style['tool-bar']" class="map-tool-bar flex-center">
             <map-select @selectmap="selectMap"></map-select>
-            <el-input
-                :placeholder="`请输入${isName ? '标签名' : '标签号'}`"
-                type="search"
-                v-model="findTarget"
-                style="max-width: 350px"
-            >
-                <el-select slot="prepend" v-model="isName" style="width: 100px">
-                    <el-option :value="0" label="标签号"></el-option>
-                    <el-option :value="1" label="标签名"></el-option>
-                </el-select>
+            <div class="flex-center">
+                <el-input
+                    :placeholder="`请输入${isName ? '标签名' : '标签号'}`"
+                    type="search"
+                    v-model="findTarget"
+                    style="max-width: 350px; margin-right: 10px"
+                    @keyup.enter.native="find"
+                >
+                    <el-select
+                        slot="prepend"
+                        v-model="isName"
+                        style="width: 100px"
+                    >
+                        <el-option :value="0" label="标签号"></el-option>
+                        <el-option :value="1" label="标签名"></el-option>
+                    </el-select>
+                </el-input>
                 <el-button
-                    slot="append"
-                    icon="el-icon-search"
-                    @click="find"
+                    :icon="
+                        isFullScreen
+                            ? 'el-icon-ali-tuichuquanping'
+                            : 'el-icon-full-screen'
+                    "
+                    @click="fullScreen"
                 ></el-button>
-            </el-input>
+            </div>
         </div>
         <el-switch
             v-model="showPath"
@@ -62,6 +72,7 @@
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
 import TableMixin from '@/mixins/table';
+import EventMixin from '@/mixins/event';
 
 import Zone from '@/components/monitor/Zone.vue';
 import Group from '@/components/monitor/Group.vue';
@@ -69,6 +80,9 @@ import Census from '@/components/monitor/Census.vue';
 import MonitorMixin from '@/mixins/monitor';
 import { ZoneMode } from '@/store';
 import { State } from 'vuex-class/lib/bindings';
+import { Ref, Watch } from 'vue-property-decorator';
+import { PIXIMgr } from '@/assets/map/pixi';
+import { RESIZE } from '@/constant';
 
 @Component({
     components: {
@@ -82,7 +96,11 @@ import { State } from 'vuex-class/lib/bindings';
         }
     }
 })
-export default class Monitor extends mixins(MonitorMixin, TableMixin) {
+export default class Monitor extends mixins(
+    MonitorMixin,
+    TableMixin,
+    EventMixin
+) {
     @State public readonly zoneMode!: ZoneMode;
 
     public groupData: { [x: string]: IBaseStation[] } = {}; // 基站分组
@@ -96,11 +114,14 @@ export default class Monitor extends mixins(MonitorMixin, TableMixin) {
         { name: '分组列表', active: false, display: true },
         { name: '统计', active: false, display: true }
     ];
+    public isFullScreen: boolean = false;
     public findTarget: string = ''; // 查询标签的标签号
     public isName: number = 0; // 是否通过标签名查询标签
 
     public censusChange: number = 0; // 用于触发响应（当前vue版本不支持Map及Set的数据响应）
     private censusTags = new Map<string, Set<string>>(); // 分组统计
+
+    @Ref('root') private readonly root!: HTMLDivElement;
 
     public get census() {
         // ===========================触发响应
@@ -109,6 +130,19 @@ export default class Monitor extends mixins(MonitorMixin, TableMixin) {
         // =============================
 
         return this.censusTags;
+    }
+
+    public created() {
+        this.on(RESIZE, () => {
+            this.isFullScreen = !!document.fullscreenElement;
+
+            if (this.container && this.mgr instanceof PIXIMgr) {
+                this.mgr.map.resize(
+                    this.container.offsetWidth,
+                    this.container.offsetHeight
+                );
+            }
+        });
     }
 
     // ==================================dom事件
@@ -148,14 +182,21 @@ export default class Monitor extends mixins(MonitorMixin, TableMixin) {
 
     // 查询标签
     public find() {
-        const key = this.isName ? '标签名' : '标签号';
         if (!this.findTarget) {
-            return this.$message.warning('请输入' + key);
+            return this.$message.warning(
+                '请输入' + this.isName ? '标签名' : '标签号'
+            );
         }
+
         this.showInfo(this.findTarget, this.isName);
         this.findTarget = '';
     }
 
+    public fullScreen() {
+        document.fullscreenElement
+            ? document.exitFullscreen()
+            : this.root && this.root.requestFullscreen();
+    }
     // ==================================
     protected initData() {
         this.initWebSocket();

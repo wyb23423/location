@@ -8,7 +8,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { DEFAULT_WIDTH, SX_WIDTH } from './constant';
+import { DEFAULT_WIDTH, SX_WIDTH, RESIZE } from './constant';
 import Notice from './components/Notice.vue';
 
 @Component({
@@ -24,11 +24,10 @@ export default class App extends Vue {
                 clearTimeout(timer);
             }
 
-            timer = setTimeout(
-                () =>
-                    this.$store.commit('rootWidth', document.body.offsetWidth),
-                200
-            );
+            timer = setTimeout(() => {
+                this.$event.emit(RESIZE);
+                this.$store.commit('rootWidth', document.body.offsetWidth);
+            }, 200);
         };
 
         window.addEventListener('resize', fn, false);

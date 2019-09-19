@@ -41,6 +41,7 @@ export default class TableMixin extends Vue {
     public async getData(page: number, pageSize: number) {
         this.pageSize = pageSize;
         this.page = page;
+
         const res = await this.fetch(page, pageSize);
         this.totalCount = res.count;
         this.tableData = res.data;
