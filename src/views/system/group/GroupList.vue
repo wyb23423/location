@@ -37,7 +37,14 @@ export default class GroupList extends mixins(TableMixin) {
     }
 
     protected async fetch(page: number, pageSize: number) {
-        return { count: 0, data: [] };
+        const data: IGroup[] = [];
+        for (let i = 0; i < pageSize; i++) {
+            // data.push({
+            //     id: i,
+            // })
+        }
+
+        return { count: pageSize, data };
     }
 }
 </script>

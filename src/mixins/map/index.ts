@@ -24,23 +24,21 @@ export default class MapMixin extends Vue {
     }
 
     public async selectMap(data: IMap) {
+        data && (this.groups = <string[]>data.groupCode);
         this.initData();
 
-        if (data) {
-            this.groups = <string[]>data.groupCode;
-            if (this.container) {
-                try {
-                    await loopAwait(() => !!(
-                        this.container && this.container.offsetWidth && this.container.offsetHeight
-                    ));
+        if (data && this.container) {
+            try {
+                await loopAwait(() => !!(
+                    this.container && this.container.offsetWidth && this.container.offsetHeight
+                ));
 
-                    this.dispose();
+                this.dispose();
 
-                    this.mgr = createMap(data, this.container);
-                    this.bindEvents(data);
-                } catch (e) {
-                    console.warn(e);
-                }
+                this.mgr = createMap(data, this.container);
+                this.bindEvents(data);
+            } catch (e) {
+                console.warn(e);
             }
         }
     }
