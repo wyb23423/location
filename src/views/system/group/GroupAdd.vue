@@ -41,6 +41,9 @@
         <el-form-item label="分组描述">
             <el-input v-model="form.description"></el-input>
         </el-form-item>
+        <el-form-item label="所属地图">
+            <app-select url="/api/map/getall" v-model="form.mapId"></app-select>
+        </el-form-item>
         <el-form-item>
             <el-button type="primary" @click="onSubmit">立即创建</el-button>
         </el-form-item>
@@ -52,8 +55,13 @@ import Vue from 'vue';
 import { Ref, Prop, Watch, Component } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
 import { CascaderOption } from 'element-ui/types/cascader';
+import Select from '@/components/Select.vue';
 
-@Component
+@Component({
+    components: {
+        'app-select': Select
+    }
+})
 export default class GroupAdd extends Vue {
     @Prop({ default: () => ({ description: '' }) }) public form!: IGroup;
     @Prop({ default: () => true }) public showId!: boolean;

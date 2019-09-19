@@ -49,7 +49,8 @@ export default class GroupList extends mixins(TableMixin) {
         { prop: 'id', label: '组号', width: 140 },
         { prop: 'min', label: '最小基站数', width: 140 },
         { prop: 'size', label: '最大基站数', width: 140 },
-        { prop: 'description', label: '描述', width: 260 }
+        { prop: 'description', label: '描述', width: 260 },
+        { prop: 'mapName', label: '所属地图', width: 140 }
     ];
 
     public get op() {
@@ -73,7 +74,9 @@ export default class GroupList extends mixins(TableMixin) {
                 size: 7,
                 min: 4,
                 algorithmType: 11,
-                description: 'this is description'
+                description: 'this is description',
+                mapId: 1,
+                mapName: '办公室'
             });
         }
 

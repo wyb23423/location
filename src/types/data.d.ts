@@ -101,6 +101,7 @@ declare interface IGroup extends DataBase<string> {
     min: number; // 最小基站数
     algorithmType: number; // 算法类型
     description: string;
+    mapId: number;
 }
 
 declare interface IAlarm extends IJson {
