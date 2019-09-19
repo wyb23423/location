@@ -88,7 +88,7 @@ export default class Primary extends Vue {
     };
     public rules = {
         groupCode: {
-            pattern: /^[0-9A-Fa-f]{1, 4}$/,
+            pattern: /^[0-9A-Fa-f]{1,4}$/,
             message:
                 'groupCode is not a hexadecimal string less than 4 in length'
         },

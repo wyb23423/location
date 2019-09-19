@@ -62,7 +62,7 @@ export class RouteList {
 
     // 生成系统设置相关路由
     public system() {
-        const routes: RouteConfig[] = ['fence', 'camera', 'protocol'].map(k => {
+        const routes: RouteConfig[] = ['fence', 'camera', 'protocol', 'group'].map(k => {
             const func = Reflect.get(this, k);
             return func.call(this);
         }).flat();
@@ -164,6 +164,21 @@ export class RouteList {
         }
 
         return routes;
+    }
+    // 分组
+    public group() {
+        return [
+            {
+                path: 'group/list',
+                name: 'group-list',
+                component: () => import(/* webpackChunkName: "system" */ '@/views/system/group/GroupList.vue')
+            },
+            {
+                path: 'group/add',
+                name: 'group-add',
+                component: () => import(/* webpackChunkName: "system" */ '@/views/system/group/GroupAdd.vue')
+            }
+        ];
     }
 
     // 设备

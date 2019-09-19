@@ -13,7 +13,6 @@
                 :key="i"
                 :prop="v.prop"
                 :label="v.label"
-                :sortable="!!v.sortable"
                 :resizable="true"
                 :min-width="v.width == null ? undefined : v.width * scale"
             >

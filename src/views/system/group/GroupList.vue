@@ -24,6 +24,12 @@ import TableMixin from '@/mixins/table';
 @Component
 export default class GroupList extends mixins(TableMixin) {
     public group: Record<string, any> | null = null;
+    public colCfg = [
+        { prop: 'id', label: '组号', width: 140 },
+        { prop: 'min', label: '最小基站数', width: 140 },
+        { prop: 'size', label: '最大基站数', width: 140 },
+        { prop: 'description', label: '描述', width: 260 }
+    ];
 
     public get op() {
         return [
@@ -32,16 +38,22 @@ export default class GroupList extends mixins(TableMixin) {
         ];
     }
 
-    public del() {
-        //
+    public del(row: IGroup) {
+        this.$confirm(`删除分组${row.id}`)
+            .then(() => console.log(row))
+            .catch(console.log);
     }
 
     protected async fetch(page: number, pageSize: number) {
         const data: IGroup[] = [];
         for (let i = 0; i < pageSize; i++) {
-            // data.push({
-            //     id: i,
-            // })
+            data.push({
+                id: i + '',
+                size: 7,
+                min: 4,
+                algorithmType: 11,
+                description: 'this is description'
+            });
         }
 
         return { count: pageSize, data };

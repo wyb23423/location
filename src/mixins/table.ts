@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { loopAwait } from '../assets/utils/util';
-import { Watch, Prop } from 'vue-property-decorator';
+import { Prop } from 'vue-property-decorator';
 import { table2Excel } from '../assets/utils/download';
 import Table from '@/components/Table.vue';
 

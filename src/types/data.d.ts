@@ -1,7 +1,7 @@
 
 
-interface DataBase extends IJson {
-    id: number;
+interface DataBase<T = number> extends IJson {
+    id: T;
     createUser?: string;
     createTime?: string | number;
     updateUser?: string;
@@ -96,7 +96,7 @@ declare interface IBingdings extends DataBase {
     tags: string | string[];
 }
 
-declare interface IGroup extends DataBase {
+declare interface IGroup extends DataBase<string> {
     size: number; // 最大基站数
     min: number; // 最小基站数
     algorithmType: number; // 算法类型
