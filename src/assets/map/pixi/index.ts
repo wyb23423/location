@@ -109,7 +109,7 @@ export class PIXIMgr extends Stage {
                 return;
             }
 
-            img = img || getCustomInfo(v, 'info').photo;
+            img = img || getCustomInfo(v, 'info').icon;
             if (img) {
                 this.load(img)
                     .then(([texture]) => v.texture = texture)

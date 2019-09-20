@@ -113,7 +113,7 @@ export class FengMapMgr extends CoordTransformer {
 
     public modifyImg(name: string | number, img?: string) {
         this.imageMgr.find(name).forEach(v => {
-            img = img || getCustomInfo(v, 'info').photo;
+            img = img || getCustomInfo(v, 'info').icon;
             img && (v.url = img);
         });
     }

@@ -254,11 +254,18 @@ export default class Avator extends Vue {
             this.imgIndex
         ];
 
-        const tagPhoto = this.getcanvas(url, name).then(c =>
-            this.$http.post('/api/tag/upload/tagPhoto', {
-                tagPhoto: c.toDataURL('image/png', 1.0)
-            })
-        );
+        const tagPhoto = this.getcanvas(url, name)
+            .then(
+                c =>
+                    new Promise<Blob | null>(resolve =>
+                        c.toBlob(resolve, 'image/png', 1.0)
+                    )
+            )
+            .then(photo =>
+                this.$http.post('/api/tag/upload/tagPhoto', {
+                    tagPhoto: photo
+                })
+            );
 
         let avatar = Promise.resolve(<ResponseData>{
             code: 200,
@@ -271,12 +278,12 @@ export default class Avator extends Vue {
             },
             success: true,
             resultMap: {
-                avatarUrl: url
+                photoUrl: url
             }
         });
         if (this.imgIndex > 1) {
-            avatar = this.$http.post('/api/tag/upload/avatar', {
-                avatar: this.avatar
+            avatar = this.$http.post('/api/tag/upload/tagPhoto', {
+                tagPhoto: this.dataURLtoBlob(this.avatar)
             });
         }
 
@@ -317,6 +324,19 @@ export default class Avator extends Vue {
 
             img.onerror = reject;
         });
+    }
+
+    private dataURLtoBlob(dataurl: string) {
+        const arr = dataurl.split(',');
+        const mime = arr[0].match(/:(.*?);/)![1];
+        const bstr = atob(arr[1]);
+
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime });
     }
 }
 </script>

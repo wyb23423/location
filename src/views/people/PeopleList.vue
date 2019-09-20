@@ -25,7 +25,7 @@
                 <el-form :model="person" label-width="auto">
                     <el-form-item label="头像：">
                         <app-avator
-                            v-model="person.avatar"
+                            v-model="person.img"
                             ref="avator"
                         ></app-avator>
                     </el-form-item>
@@ -35,23 +35,9 @@
                             style="width: 80%"
                         ></el-input>
                     </el-form-item>
-                    <el-form-item label="区域">
-                        <el-select v-model="person.zone">
-                            <el-option
-                                :value="undefined"
-                                label="--"
-                            ></el-option>
-                            <el-option
-                                v-for="v of zones.pagedData.datas"
-                                :key="v.id"
-                                :value="v.id + ''"
-                                :label="v.name"
-                            ></el-option>
-                        </el-select>
-                    </el-form-item>
                     <el-form-item label="属性">
                         <el-input
-                            v-model="person.properties"
+                            v-model="person.content"
                             placeholder="性别: 女, 部门: 研发"
                         ></el-input>
                     </el-form-item>
@@ -84,13 +70,10 @@ export default class PeopleList extends mixins(TableMixin) {
 
     public person: ITag | null = null;
     public colCfg: any[] = [
-        { prop: 'id', label: 'ID', sortable: true, width: 100 },
+        { prop: 'id', label: '编号', width: 120 },
         { prop: 'name', label: '名称', width: 120 },
-        { prop: 'tagNo', label: '编号', width: 120 },
-        { prop: 'zoneName', label: '区域', width: 120 },
-        { prop: 'properties', label: '属性', width: 200 }
+        { prop: 'content', label: '属性', width: 200 }
     ];
-    public zones?: ResponseData;
 
     @Ref('avator') private readonly avator!: Avator;
     private oldData?: ITag; // 用于比较是否需要重新上传图片
@@ -139,12 +122,15 @@ export default class PeopleList extends mixins(TableMixin) {
 
         this.person.updateTime = Date.now();
         if (
-            this.person.name === this.oldData.name &&
-            this.person.name === this.oldData.avatar
+            this.person.name !== this.oldData.name ||
+            this.person.img !== this.oldData.img
         ) {
-            this.person.photo = (await this.avator.getImgUrl(
-                this.person.name
-            ))[0].resultMap.photoUrl;
+            const [p1, p2] = await this.avator.getImgUrl(this.person.name);
+            this.person.photo = p1.resultMap.photoUrl;
+
+            if (this.person.img !== this.oldData.img) {
+                this.person.img = p2.resultMap.photoUrl;
+            }
         }
 
         this.$http
@@ -163,35 +149,14 @@ export default class PeopleList extends mixins(TableMixin) {
         let count: number = 0;
 
         try {
-            const [res, zones] = await Promise.all([
-                this.$http.get('/api/tag/getall', {
-                    pageSize,
-                    currentPage: page,
-                    type: this.type || 1
-                }),
-                Promise.resolve().then(() => {
-                    return (
-                        this.zones ||
-                        this.$http.get('/api/zone/getall', {
-                            pageSize: 1000000,
-                            currentPage: 1
-                        })
-                    );
-                })
-            ]);
-
-            data = res.pagedData.datas.map((v: ITag) => {
-                const zone = zones.pagedData.datas.find(
-                    (z: any) => +z.id === +v.zone
-                );
-                v.zoneName = zone ? zone.name : '未知区域';
-
-                return v;
+            const res = await this.$http.get('/api/tag/getall', {
+                pageSize,
+                currentPage: page,
+                type: this.type || 1
             });
 
+            data = res.pagedData.datas;
             count = res.pagedData.totalCount;
-
-            this.zones = zones;
         } catch (e) {
             console.log(e);
         }

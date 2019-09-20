@@ -28,10 +28,8 @@
                         <span>{{ data.ip }}</span>
                     </div>
                     <div>
-                        <span :class="$style.title">数据类型：</span>
-                        <span>
-                            {{ data.uploadType ? '上行' : '单基站数据' }}
-                        </span>
+                        <span :class="$style.title">安装负责人：</span>
+                        <span>{{ data.owner || '保密' }}</span>
                     </div>
                 </li>
                 <li>
@@ -42,26 +40,6 @@
                     <div>
                         <span :class="$style.title">安装时间：</span>
                         <span>{{ data.installTime || '保密' }}</span>
-                    </div>
-                </li>
-                <li>
-                    <div>
-                        <span :class="$style.title">所属区域：</span>
-                        <span>{{ data.zone }}</span>
-                    </div>
-                    <div>
-                        <span :class="$style.title">安装负责人：</span>
-                        <span>{{ data.owner || '保密' }}</span>
-                    </div>
-                </li>
-                <li>
-                    <div>
-                        <span :class="$style.title">掉帧率：</span>
-                        <span>{{ data.loseRate || 0 }}</span>
-                    </div>
-                    <div>
-                        <span :class="$style.title">报警次数：</span>
-                        <span>{{ data.alarm || 0 }}</span>
                     </div>
                 </li>
             </ul>

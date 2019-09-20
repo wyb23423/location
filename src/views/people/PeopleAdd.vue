@@ -3,32 +3,25 @@
         <h3 style="color: #009688;">添加标签</h3>
         <el-form ref="form" :model="form" label-width="auto" style="width: 80%">
             <el-form-item label="头像：">
-                <app-avator v-model="form.avatar" ref="avator"></app-avator>
+                <app-avator v-model="form.img" ref="avator"></app-avator>
+            </el-form-item>
+            <el-form-item
+                label="标签号："
+                prop="id"
+                required
+                :rules="{
+                    pattern: /^[0-9A-Fa-f]{8}$/,
+                    message: 'id is not a hexadecimal string of length 8'
+                }"
+            >
+                <el-input v-model="form.id"></el-input>
             </el-form-item>
             <el-form-item label="标签名称：" prop="name" required>
                 <el-input v-model="form.name"></el-input>
             </el-form-item>
-            <el-form-item
-                label="标签号："
-                prop="tagNo"
-                required
-                :rules="{
-                    pattern: /^[0-9A-Fa-f]{8}$/,
-                    message: 'tagNo is not a hexadecimal string of length 8'
-                }"
-            >
-                <el-input v-model="form.tagNo"></el-input>
-            </el-form-item>
-            <el-form-item label="区域: ">
-                <app-select
-                    url="/api/zone/getall"
-                    v-model="form.zone"
-                    :canEmpty="true"
-                ></app-select>
-            </el-form-item>
             <el-form-item label="其他属性：">
                 <el-input
-                    v-model="form.properties"
+                    v-model="form.content"
                     placeholder="性别: 女, 部门: 研发"
                 ></el-input>
             </el-form-item>
@@ -37,9 +30,6 @@
                     <el-radio :label="1">常驻</el-radio>
                     <el-radio :label="2">临时</el-radio>
                 </el-radio-group>
-            </el-form-item>
-            <el-form-item label="添加原因：" v-if="form.type === 2">
-                <el-input v-model="form.reason"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="onSubmit">立即创建</el-button>
@@ -65,9 +55,8 @@ import Avator from '../../components/Avator.vue';
 export default class PeopleAdd extends Vue {
     public form: any = {
         type: 1,
-        reason: '',
-        avatar: '',
-        properties: ''
+        img: '',
+        content: ''
     };
 
     @Ref('form') private readonly elForm!: ElForm;
@@ -84,11 +73,11 @@ export default class PeopleAdd extends Vue {
                         createTime: now,
                         updateTime: now,
                         locked: true,
-                        photo: res1.resultMap.photoUrl
+                        icon: res1.resultMap.photoUrl
                     },
                     this.form
                 );
-                data.avatar = res2.resultMap.avatarUrl;
+                data.img = res2.resultMap.photoUrl;
 
                 return this.$http.post('/api/tag/addTag', data, {
                     'Content-Type': 'application/json'
@@ -103,7 +92,7 @@ export default class PeopleAdd extends Vue {
 
     public reset() {
         (<ElForm>this.$refs.form).resetFields();
-        this.form.avatar = this.form.properties = '';
+        this.form.img = this.form.content = '';
     }
 }
 </script>

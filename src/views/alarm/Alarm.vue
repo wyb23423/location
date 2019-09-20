@@ -44,11 +44,10 @@ export default class Alarm extends mixins(TableMixin) {
     ];
     public colCfg: any[] = [
         { prop: 'id', label: '报警ID', sortable: true, width: 140 },
-        { prop: 'tagNo', label: '报警标签', width: 160 },
-        { prop: 'baseNo', label: '基站编号', width: 160 },
+        { prop: 'deviceId', label: '设备编号', width: 160 },
         { prop: 'type', label: '报警类型', sortable: true, width: 140 },
-        { prop: 'alarmTime', label: '时间', width: 200 },
-        { prop: 'alarmMsg', label: '报警信息', width: 240 }
+        { prop: 'time', label: '时间', width: 200 },
+        { prop: 'content', label: '报警信息', width: 240 }
     ];
 
     // TODO

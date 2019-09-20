@@ -70,8 +70,7 @@ import { encodeUtf8 } from '@/assets/utils/util';
 })
 export default class Info extends mixins(TableMixin) {
     public colCfg: any[] = [
-        { prop: 'id', label: '基站ID', sortable: true, width: 150 },
-        { prop: 'baseNo', label: '基站编号', width: 175 },
+        { prop: 'id', label: '基站编号', width: 175 },
         { prop: 'name', label: '基站名称', width: 175 },
         { prop: 'main', label: '主基站', width: 145 },
         { prop: 'status', label: '基站状态', width: 170 },

@@ -147,7 +147,7 @@ export default class Control extends mixins(ControlMixin) {
                                 label: v.name,
                                 value: v.tagNo
                             });
-                            icons.set(v.tagNo, v.photo);
+                            icons.set(v.tagNo, v.icon);
                         });
 
                         this.$emit('set-icons', icons);

@@ -125,8 +125,8 @@ export default class Notice extends Vue {
             this.notifyCount++;
 
             const el = this.$notify.warning({
-                title: `标签${v.tagNo}异常`,
-                message: `${v.alarmTime}: ${v.alarmMsg}`,
+                title: `标签${v.deviceId}异常`,
+                message: `${v.content}: ${v.time}`,
                 duration: 0,
                 showClose: false,
                 customClass: 'notice-component',

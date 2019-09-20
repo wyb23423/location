@@ -23,9 +23,9 @@
                 @close="admin = null"
             >
                 <el-form :model="admin" label-width="auto" ref="form">
-                    <el-form-item label="管理员名称" required prop="adminName">
+                    <el-form-item label="管理员名称" required prop="name">
                         <el-input
-                            v-model="admin.adminName"
+                            v-model="admin.name"
                             style="width: 70%"
                         ></el-input>
                     </el-form-item>
@@ -52,6 +52,7 @@ import TableMixin from '../../mixins/table';
 import { TableRowOperation } from '@/components/Table.vue';
 import Permission from '@/components/Permission.vue';
 import { ElForm } from 'element-ui/types/form';
+import { Ref } from 'vue-property-decorator';
 
 @Component({
     components: {
@@ -60,16 +61,17 @@ import { ElForm } from 'element-ui/types/form';
 })
 export default class AdminList extends mixins(TableMixin) {
     public colCfg: any[] = [
-        { prop: 'id', label: 'ID', sortable: true, width: 100 },
-        { prop: 'adminName', label: '管理员名称', width: 140 },
+        { prop: 'username', label: '用户名', width: 140 },
+        { prop: 'name', label: '管理员名称', width: 140 },
         { prop: 'sexName', label: '性别', width: 120 },
         { prop: 'department', label: '部门', width: 160 },
         { prop: 'job', label: '职位', width: 140 },
-        { prop: 'level', label: '等级', sortable: true, width: 120 },
-        { prop: 'phone', label: '电话号码', width: 200 },
-        { prop: 'workNo', label: '工号', width: 100 }
+        { prop: 'phone', label: '电话号码', width: 200 }
     ];
     public admin: IAdmin | null = null;
+
+    @Ref('permission') private readonly elPermission!: Permission;
+    @Ref('form') private readonly elForm!: ElForm;
 
     public get op() {
         const op: TableRowOperation[] = [];
@@ -94,7 +96,7 @@ export default class AdminList extends mixins(TableMixin) {
     }
 
     public del(row: IAdmin) {
-        this.$confirm(`删除${row.adminName}?`)
+        this.$confirm(`删除${row.name}?`)
             .then(() =>
                 this.$http.post('/api/admin/deleteAdmin', { id: row.id })
             )
@@ -106,25 +108,19 @@ export default class AdminList extends mixins(TableMixin) {
     }
 
     public submit() {
-        const form = <ElForm>this.$refs.form;
-        form.validate((valid: boolean) => {
-            if (valid) {
-                const now = Date.now();
+        this.elForm
+            .validate()
+            .then(() => {
                 Object.assign(this.admin, {
-                    updateTime: now,
-                    role: JSON.stringify(
-                        (<Permission>this.$refs.permission).parse()
-                    )
+                    role: JSON.stringify(this.elPermission.parse())
                 });
 
-                this.$http
-                    .post('/api/admin/updateAdmin', this.admin, {
-                        'Content-Type': 'application/json'
-                    })
-                    .then(() => this.$message.success('修改管理员信息成功'))
-                    .catch(console.log);
-            }
-        });
+                return this.$http.post('/api/admin/updateAdmin', this.admin, {
+                    'Content-Type': 'application/json'
+                });
+            })
+            .then(() => this.$message.success('修改管理员信息成功'))
+            .catch(console.log);
     }
 
     protected async fetch(page: number, pageSize: number) {
@@ -155,7 +151,7 @@ export default class AdminList extends mixins(TableMixin) {
         }
 
         user = <IAdmin>JSON.parse(user);
-        return admin.id === user.id || admin.userName === user.userName;
+        return admin.userName === user.userName;
     }
 }
 </script>

@@ -8,16 +8,16 @@
             label-width="auto"
             style="width: 80%"
         >
-            <el-form-item label="管理者名称：" prop="adminName">
-                <el-input v-model="form.adminName"></el-input>
-            </el-form-item>
-            <el-form-item label="用户姓名：" prop="userName">
+            <el-form-item label="用户名：" prop="userName">
                 <el-input v-model="form.userName"></el-input>
                 <el-input class="hidden"></el-input>
             </el-form-item>
             <el-form-item label="登录密码：" prop="password">
                 <el-input class="hidden" type="password"></el-input>
                 <el-input v-model="form.password" type="password"></el-input>
+            </el-form-item>
+            <el-form-item label="管理者姓名：" prop="name">
+                <el-input v-model="form.name"></el-input>
             </el-form-item>
             <el-form-item label="性别：" prop="sex">
                 <el-radio-group v-model="form.sex">
@@ -35,18 +35,8 @@
             <el-form-item label="职位" prop="job" :inline-message="true">
                 <el-input v-model="form.job"></el-input>
             </el-form-item>
-            <el-form-item label="职位等级" prop="level">
-                <el-radio-group v-model="form.level">
-                    <el-radio label="T1"></el-radio>
-                    <el-radio label="T2"></el-radio>
-                    <el-radio label="T3"></el-radio>
-                </el-radio-group>
-            </el-form-item>
             <el-form-item label="电话号码：" prop="phone">
                 <el-input v-model.number="form.phone" type="number"></el-input>
-            </el-form-item>
-            <el-form-item label="工号：" prop="workNo">
-                <el-input v-model="form.workNo"></el-input>
             </el-form-item>
             <el-form-item label="系统权限">
                 <permission ref="permission"></permission>
@@ -64,6 +54,7 @@ import Component from 'vue-class-component';
 import Vue from 'vue';
 import { ElForm } from 'element-ui/types/form';
 import Permission from '@/components/Permission.vue';
+import { Ref } from 'vue-property-decorator';
 
 @Component({
     components: {
@@ -72,17 +63,18 @@ import Permission from '@/components/Permission.vue';
 })
 export default class AdminAdd extends Vue {
     public form = {
-        adminName: '',
+        name: '',
         userName: '',
         password: '',
         sex: 1,
         department: '',
         job: '',
-        level: 'T1',
-        phone: '',
-        workNo: ''
+        phone: ''
     };
     public rules = {};
+
+    @Ref('permission') private readonly permission!: Permission;
+    @Ref('form') private readonly elForm!: ElForm;
 
     public created() {
         Object.keys(this.form).forEach(k => {
@@ -108,33 +100,29 @@ export default class AdminAdd extends Vue {
     }
 
     public onSubmit() {
-        const form = <ElForm>this.$refs.form;
-        form.validate((valid: boolean) => {
-            if (valid) {
-                const now = Date.now();
-                const data = Object.assign({}, this.form, {
-                    createTime: now,
-                    updateTime: now,
-                    role: JSON.stringify(
-                        (<Permission>this.$refs.permission).parse()
-                    )
-                });
-
-                this.$http
-                    .post('/api/admin/addAdmin', data, {
+        this.elForm
+            .validate()
+            .then(() => {
+                return this.$http.post(
+                    '/api/admin/addAdmin',
+                    {
+                        ...this.form,
+                        role: JSON.stringify(this.permission.parse())
+                    },
+                    {
                         'Content-Type': 'application/json'
-                    })
-                    .then(() => {
-                        this.$message.success('添加成功');
-                        this.reset();
-                    })
-                    .catch(console.log);
-            }
-        });
+                    }
+                );
+            })
+            .then(() => {
+                this.$message.success('添加成功');
+                this.reset();
+            })
+            .catch(console.log);
     }
 
     public reset() {
-        (<ElForm>this.$refs.form).resetFields();
+        this.elForm.resetFields();
     }
 }
 </script>
