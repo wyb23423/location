@@ -5,7 +5,7 @@ import { createMap } from '@/assets/map';
 import { FengMapMgr } from '@/assets/map/fengmap';
 import MapSelect from '@/components/MapSelect.vue';
 import { PIXIMgr } from '@/assets/map/pixi';
-import { Watch, Ref } from 'vue-property-decorator';
+import { Ref } from 'vue-property-decorator';
 
 @Component({
     components: {

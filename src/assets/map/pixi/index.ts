@@ -306,7 +306,7 @@ export class PIXIMgr extends Stage {
             close: () => {
                 img.removeChild(triangle);
                 img.zIndex = custom.zIndex;
-                this.stage.sortChildren();
+                this.stage && this.stage.sortChildren();
 
                 if (text) {
                     img.removeChild(text);

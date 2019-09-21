@@ -1,3 +1,4 @@
+import { BASE_URL } from '@/constant';
 
 /**
  * 轮询等待条件达成
@@ -167,4 +168,18 @@ export function formatTime(range: number, progress: number) {
 // 将字符转成utf-8编码
 export function encodeUtf8(text: string) {
     return new Uint16Array(text.length).map((el, idx) => text.charCodeAt(idx));
+}
+
+export function getIp() {
+    let ip: string = location.hostname;
+    if (process.env.NODE_ENV !== 'production') {
+        const res = BASE_URL.match(/^http:\/\/([\w\d\.]+)(:\d+)?\/$/);
+        if (res) {
+            ip = res[1];
+        } else {
+            return console.error('域名解析失败');
+        }
+    }
+
+    return ip;
 }

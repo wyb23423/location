@@ -14,6 +14,7 @@
                         slot="prepend"
                         v-model="isName"
                         style="width: 100px"
+                        :popper-append-to-body="false"
                     >
                         <el-option :value="0" label="标签号"></el-option>
                         <el-option :value="1" label="标签名"></el-option>

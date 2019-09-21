@@ -1,6 +1,5 @@
 import Vue from 'vue';
-import { arr2obj } from '@/assets/utils/util';
-import { BASE_URL } from '@/constant';
+import { arr2obj, getIp } from '@/assets/utils/util';
 import Component from 'vue-class-component';
 
 @Component
@@ -29,7 +28,7 @@ export class WebSocketInit extends Vue {
     protected initWebSocket() {
         this.closeWebSocket();
 
-        const ip = this.getIp();
+        const ip = getIp();
         if (!ip) {
             return;
         }
@@ -80,19 +79,5 @@ export class WebSocketInit extends Vue {
         }
 
         return this;
-    }
-
-    private getIp() {
-        let ip: string = location.hostname;
-        if (process.env.NODE_ENV !== 'production') {
-            const res = BASE_URL.match(/^http:\/\/([\w\d\.]+)(:\d+)?\/$/);
-            if (res) {
-                ip = res[1];
-            } else {
-                return console.error('域名解析失败');
-            }
-        }
-
-        return ip;
     }
 }

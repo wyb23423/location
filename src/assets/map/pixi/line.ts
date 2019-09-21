@@ -13,7 +13,7 @@ export default class LineMgr implements MarkerMgr<PIXI.Graphics> {
 
     public add(points: Vector3[], name: string | number, style: LineStyle) {
         if (this.lines.has(name)) {
-            return console.error(`标识为${name}的线已存在`);
+            return;
         }
 
         const painter = new PIXI.Graphics();

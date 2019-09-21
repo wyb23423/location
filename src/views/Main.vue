@@ -15,6 +15,7 @@ import Component from 'vue-class-component';
 import Header from '../components/Header.vue';
 import { Prop } from 'vue-property-decorator';
 import { NOTIFY_KEY } from '@/constant';
+import { getIp } from '@/assets/utils/util';
 
 @Component({
     components: {
@@ -53,13 +54,25 @@ export default class Main extends Vue {
                 });
         };
 
-        fn();
+        // fn();
+
+        // this.link();
     }
 
     public destroyed() {
         if (this.timer) {
             clearTimeout(this.timer);
         }
+    }
+
+    private link() {
+        const ip = getIp();
+        if (!ip) {
+            return;
+        }
+
+        const ws = new WebSocket(`ws://${ip}:8081/sundries`);
+        ws.onmessage = console.log;
     }
 }
 </script>

@@ -5,6 +5,7 @@
         filterable
         default-first-option
         @change="selectmap"
+        :popper-append-to-body="false"
     >
         <el-option
             v-for="item of options"
@@ -43,29 +44,47 @@ export default class MapSelect extends Vue {
         }
     }
 
-    private _getMapData() {
-        // 模拟数据
-        // TODO
-        const data: IMap = {
-            id: 1,
-            groupCode: ['0001', '0002'],
-            name: '办公室',
-            filepath: '\\image\\huijinguangchang.fmap', // '/images/5ad8909aeff13.png', //
-            margin: [
-                [11582810.7716, 3575751.7814],
-                [11582810.7716, 3575775.267],
-                [11582841.6422, 3575775.267],
-                [11582841.6422, 3575751.7814],
-                [3073, 2326]
-            ]
-        };
+    private async _getMapData() {
+        try {
+            const res = await this.$http.get('/api/map/getall', {
+                currentPage: 1,
+                pageSize: 100000
+            });
+            this.options = res.pagedData.datas;
+        } catch (e) {
+            if (e.status !== 404) {
+                return;
+            }
 
-        this.options.push(data, {
-            ...data,
-            id: 2,
-            name: '办公室-pixi-demo',
-            filepath: '/images/5ad8909aeff13.png'
-        });
+            this.options = [
+                {
+                    id: 1,
+                    groupCode: ['0001', '0002'],
+                    name: '办公室',
+                    filepath: '/image/huijinguangchang.fmap',
+                    margin: [
+                        [11582810.7716, 3575751.7814],
+                        [11582810.7716, 3575775.267],
+                        [11582841.6422, 3575775.267],
+                        [11582841.6422, 3575751.7814],
+                        [3073, 2326]
+                    ]
+                },
+                {
+                    id: 2,
+                    name: '办公室-pixi',
+                    groupCode: ['0001', '0002'],
+                    filepath: '/images/5ad8909aeff13.png',
+                    margin: [
+                        [-275, 47],
+                        [-275, 2624],
+                        [3742, 2624],
+                        [3742, 47],
+                        [3073, 2326]
+                    ]
+                }
+            ];
+        }
 
         if (this.options.length) {
             this.value = this.options[0].id;

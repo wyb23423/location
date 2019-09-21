@@ -7,7 +7,6 @@ import { MapEvent } from './event';
 export default class Stage extends MapEvent {
     public map!: PIXI.Renderer;
 
-    public margin?: TPosition[];
     public locOrigion: Vector2 = { x: 0, y: 0 };
 
     protected loaded: Array<() => void> = []; // 加载完成后的执行函数
@@ -15,6 +14,8 @@ export default class Stage extends MapEvent {
 
     // tslint:disable-next-line:variable-name
     private _locRange?: Vector2;
+    // tslint:disable-next-line:variable-name
+    private _margin?: TPosition;
 
     constructor(private bg: string, dom: HTMLElement) {
         super(dom);
@@ -33,10 +34,19 @@ export default class Stage extends MapEvent {
         this.loop();
     }
 
+    public set margin(data: TPosition) {
+        if (!this._margin) {
+            this._margin = data;
+            this._locRange && this.initStageAndAddBg(this._locRange);
+        } else {
+            console.error('地图边界只能设置一次');
+        }
+    }
+
     public set locRange(data: Vector2) {
         if (!this._locRange) {
             this._locRange = data;
-            this.initStageAndAddBg(data);
+            this._margin && this.initStageAndAddBg(data);
         } else {
             console.error('地图范围只能设置一次');
         }
@@ -66,7 +76,7 @@ export default class Stage extends MapEvent {
             }
         }
 
-        v.z = v.z == null ? 0 : v.z;
+        v.z = v.z || 0;
         return <Vector3>v;
     }
 
@@ -106,14 +116,7 @@ export default class Stage extends MapEvent {
         this.stage.pivot.set(width / 2, height / 2);
         this.stage.scale.set(0.4);
 
-        this.load(this.bg).then((([texture]) => {
-            const bgSprite = new PIXI.Sprite(texture);
-            bgSprite.width = width;
-            bgSprite.height = height;
-            this.stage.addChild(bgSprite);
-
-            this.loaded.forEach(fn => fn());
-        }));
+        this.createBg(width / locRange.x, height / locRange.y);
     }
 
     // 加载纹理
@@ -157,5 +160,21 @@ export default class Stage extends MapEvent {
             this.map.render(this.stage);
             PIXI.actionManager.update();
         }
+    }
+
+    private async createBg(scaleX: number, scaleY: number) {
+        const [texture] = await this.load(this.bg);
+
+        const [p0, p1, p2] = this._margin!;
+
+        const bgSprite = new PIXI.Sprite(texture);
+        bgSprite.width = (p2.x - p0.x) * scaleX;
+        bgSprite.height = (p2.y - p0.y) * scaleY;
+        const { x, y } = this.getCoordinate(p1, true);
+        bgSprite.position.set(x, y);
+
+        this.stage.addChild(bgSprite);
+
+        this.loaded.forEach(fn => fn());
     }
 }
