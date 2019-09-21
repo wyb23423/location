@@ -197,7 +197,8 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
             position: JSON.stringify(this.points.map(v => this.mgr!.getCoordinate(v))),
             enable: this.form.open ? 1 : 0,
             createTime: now,
-            updateTime: now
+            updateTime: now,
+            mapId: this.mapId
         });
 
         return this.$http.post('/api/zone/addZone', data, { 'Content-Type': 'application/json' });

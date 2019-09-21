@@ -16,6 +16,7 @@ export default class MapMixin extends Vue {
     public mgr?: FengMapMgr | PIXIMgr;
     public showPath: boolean = false;
     public groups: string[] = []; // 当前地图关联组号
+    public mapId?: number;
 
     @Ref('map') protected readonly container?: HTMLElement;
 
@@ -28,6 +29,7 @@ export default class MapMixin extends Vue {
         this.initData();
 
         if (data && this.container) {
+            this.mapId = data.id;
             try {
                 await loopAwait(() => !!(
                     this.container && this.container.offsetWidth && this.container.offsetHeight
