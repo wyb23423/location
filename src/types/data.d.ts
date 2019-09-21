@@ -90,6 +90,7 @@ declare interface IZone extends DataBase {
     mode: number; // 区域类型
     baseNo1: string;
     baseNo2: string;
+    threshold: number;
 }
 
 declare interface IBingdings extends DataBase {

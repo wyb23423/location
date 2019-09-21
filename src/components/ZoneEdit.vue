@@ -30,7 +30,7 @@
                 <el-option v-for="v of groups" :key="v" :value="v"></el-option>
             </el-select>
         </el-form-item>
-        <template v-if="zone.mode === zoneMode.switch">
+        <template v-else-if="zone.mode === zoneMode.switch">
             <el-form-item label="基站分组1" required>
                 <el-select v-model="zone.baseNo1">
                     <el-option
@@ -52,6 +52,16 @@
                 </el-select>
             </el-form-item>
         </template>
+        <el-form-item
+            label="围栏阈值"
+            required
+            v-else-if="zone.mode !== zoneMode.other"
+        >
+            <el-input-number
+                v-model="zone.threshold"
+                :min="0"
+            ></el-input-number>
+        </el-form-item>
         <slot></slot>
         <el-form-item label="启动">
             <el-switch

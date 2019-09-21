@@ -183,3 +183,11 @@ export function getIp() {
 
     return ip;
 }
+
+export function hexadecimalRuleFactory(length: number, name: string) {
+    return {
+        pattern: new RegExp(`^[0-9A-Fa-f]{1,${length}}$`), // /^[0-9A-Fa-f]{1,4}$/,
+        message:
+            `${name} is not a hexadecimal string less than ${length} in length`
+    };
+}

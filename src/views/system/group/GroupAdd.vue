@@ -101,9 +101,14 @@ export default class GroupAdd extends Vue {
                 data,
                 { 'Content-Type': 'application/json' }
             )
-            .then(() =>
-                this.$message.success(this.showId ? '添加成功' : '更新成功')
-            )
+            .then(() => {
+                if (this.showId) {
+                    this.$message.success('添加成功');
+                    this.elForm.resetFields();
+                } else {
+                    this.$message.success('更新成功');
+                }
+            })
             .catch(console.log);
 
         this.$emit('input', data);

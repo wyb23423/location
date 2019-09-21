@@ -1,201 +1,155 @@
-<template src="./add.html"></template>
+<template>
+    <div style="padding: 5%; padding-top: 80px;">
+        <p style="color: #e00; font-size: 24px">
+            添加基站
+        </p>
+        <el-form
+            style="max-width: 800px"
+            :model="form"
+            :rules="rules"
+            label-width="auto"
+            ref="form"
+        >
+            <el-form-item label="基站名称" required prop="name">
+                <el-input
+                    v-model="form.name"
+                    placeholder="请输入基站名称"
+                ></el-input>
+            </el-form-item>
+            <el-form-item label="基站编号" required prop="id">
+                <el-input
+                    v-model="form.id"
+                    placeholder="请输入基站编号"
+                ></el-input>
+            </el-form-item>
+            <el-form-item label="基站组号" required prop="groupCode">
+                <app-select
+                    url="/api/basegroup/getall"
+                    v-model="form.groupCode"
+                    :keys="{ id: 'groupCode', name: 'groupCode' }"
+                ></app-select>
+            </el-form-item>
+            <el-form-item label="基站ip" required>
+                <ip-input v-model="form.ip"></ip-input>
+            </el-form-item>
+            <el-form-item label="基站类型" required>
+                <el-radio-group v-model="form.main">
+                    <el-radio :label="0">从基站</el-radio>
+                    <el-radio :label="1">主基站</el-radio>
+                </el-radio-group>
+            </el-form-item>
+            <el-form-item label="基站位置" required>
+                <el-col :span="6">
+                    <el-form-item prop="coordx" required>
+                        <el-input
+                            v-model.number="form.coordx"
+                            placeholder="x"
+                        ></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :offset="1" :span="6">
+                    <el-form-item prop="coordy" required>
+                        <el-input
+                            v-model.number="form.coordy"
+                            placeholder="y"
+                        ></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :offset="1" :span="6">
+                    <el-form-item prop="coordz" required>
+                        <el-input
+                            v-model.number="form.coordz"
+                            placeholder="z"
+                        ></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-form-item>
+            <el-form-item label="安装地址" required prop="location">
+                <el-input
+                    v-model="form.location"
+                    placeholder="请输入基站安装地址"
+                ></el-input>
+            </el-form-item>
+            <el-form-item label="补偿值" required prop="timeCorrectionValue">
+                <el-input
+                    v-model="form.timeCorrectionValue"
+                    placeholder="请输入补偿值"
+                ></el-input>
+            </el-form-item>
+            <el-form-item label="描述" prop="description">
+                <el-input v-model="form.description"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="add">
+                    添加
+                </el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+</template>
 
 <script lang="ts">
-import Component, { mixins } from 'vue-class-component';
-import MapMixin from '../../mixins/map';
-import Select from '../../components/Select.vue';
+import Component from 'vue-class-component';
 import IpInput from '../../components/IpInput.vue';
 import { ElForm } from 'element-ui/types/form';
-import TableMixin from '../../mixins/table';
-import { incrementalFactory } from '../../assets/utils/util';
-
-const ICON_NAME = 'origin';
+import Vue from 'vue';
+import { hexadecimalRuleFactory } from '@/assets/utils/util';
+import Select from '@/components/Select.vue';
 
 @Component({
     components: {
-        'app-select': Select,
-        'ip-input': IpInput
+        'ip-input': IpInput,
+        'app-select': Select
     }
 })
-export default class BaseAdd extends mixins(MapMixin, TableMixin) {
-    public progress: number = 1;
-
-    public coord: Vector3 | null = null;
-    public bases: any[] = [];
-
+export default class BaseAdd extends Vue {
     public form: any = {
         main: 0,
-        zone: null,
         ip: []
     };
     public rules: any = {};
 
-    public colCfg: any[] = [
-        { prop: 'name', label: '基站名称', width: 140 },
-        { prop: 'coordx', label: '相对原点x坐标', width: 160 },
-        { prop: 'coordy', label: '相对原点y坐标', width: 160 }
-    ];
-
-    private getNum = incrementalFactory();
-
     public created() {
-        [
-            'coordx',
-            'coordy',
-            'coordz',
-            'algorithmType',
-            'groupBaseSize',
-            'minBaseSize',
-            'groupCode'
-        ].forEach((k: string) => {
-            this.rules[k] = { type: 'number', tigger: 'change' };
-        });
-    }
+        ['coordx', 'coordy', 'coordz'].forEach(
+            (k: string) => (this.rules[k] = { type: 'number' })
+        );
 
-    // 下一步
-    public async next() {
-        if (this.progress === 0 && !this.coord) {
-            try {
-                await this.$confirm('未选择原点, 是否使用默认的地图原点?');
-            } catch (e) {
-                return;
+        Object.assign(this.rules, {
+            id: hexadecimalRuleFactory(8, 'id'),
+            timeCorrectionValue: {
+                pattern: /^[\d\.]+$/,
+                message: 'timeCorrectionValue is not a number'
             }
-        }
-
-        this.dispose();
-        this.progress++;
-
-        if (this.progress >= 2) {
-            this.getData(1, 10);
-        }
+        });
     }
 
     // 添加基站
     // 检测表单并暂存基站数据
     public add() {
-        const form = <ElForm>this.$refs.form;
-        form.validate((valid: boolean) => {
-            if (this.form.ip.length !== 4) {
-                return this.$message.warning('基站ip格式错误');
-            }
-
-            if (valid) {
-                this.bases.push({ ...this.form, flag: this.getNum() });
-                this.form = {
-                    main: 0,
-                    zone: null,
-                    ip: []
-                };
-                this.$notify.success('添加成功');
-
-                form.resetFields();
-            }
-        });
-    }
-
-    public del(row: any) {
-        const index = this.bases.findIndex(v => v.flag === row.flag);
-
-        if (index > -1) {
-            this.$confirm('确认删除该条数据?', '确认')
-                .then(() => {
-                    this.bases.splice(index, 1);
-                    this.getData(1, this.pageSize);
-                })
-                .catch(console.error);
-        } else {
-            this.$message.error('数据不存在!');
+        if (this.form.ip.length !== 4) {
+            return this.$message.warning('基站ip格式错误');
         }
-    }
 
-    public submit() {
-        this.$confirm('提交分组?')
-            .then(() => {
-                const orign = this.coord || { x: 0, y: 0, z: 0 };
-
-                const now = Date.now();
-                const arr = this.bases.map(v => {
-                    const data: IBaseStation = {
-                        ...v,
-                        ip: v.ip.join('.'),
-                        alarm: 0,
-                        work: true,
-                        coordx: orign.x + v.coordx,
-                        coordy: orign.y + v.coordy,
-                        loseRate: '0',
-                        updateUser: 'string',
-                        uploadType: '1',
-                        groupCode: v.groupCode + '',
-                        createTime: now,
-                        updateTime: now
-                    };
-
-                    delete data.flag;
-
-                    return this.$http.post('/api/base/addBase', data, {
+        const form = <ElForm>this.$refs.form;
+        form.validate()
+            .then(() =>
+                this.$http.post(
+                    '/api/base/addBase',
+                    {
+                        ...this.form,
+                        ip: this.form.ip.join('.'),
+                        id: this.form.id.padStart(8, '0')
+                    },
+                    {
                         'Content-Type': 'application/json'
-                    });
-                });
-
-                return Promise.all(arr);
-            })
+                    }
+                )
+            )
             .then(() => {
                 this.$message.success('添加成功');
                 location.href = location.href;
             })
             .catch(console.log);
-    }
-
-    // 绑定地图点击事件
-    protected bindEvents() {
-        this.mgr!.on('mapClickNode', (event: FMMapClickEvent) => {
-            if (event.nodeType === fengmap.FMNodeType.IMAGE_MARKER) {
-                return;
-            }
-
-            this.$confirm('你是否在进行原点选取?')
-                .then(() => {
-                    if (this.coord) {
-                        return this.$confirm(
-                            '你已经选取点，是否更换原点?',
-                            '确认'
-                        );
-                    }
-
-                    return 'confirm';
-                })
-                .then(() => {
-                    const eventInfo = event.eventInfo.coord;
-                    this.addOrigin(eventInfo.x, eventInfo.y);
-                })
-                .catch(console.log);
-        });
-    }
-
-    // 获取表格数据
-    protected fetch(page: number, pageSize: number) {
-        return Promise.resolve({
-            count: this.bases.length,
-            data: this.bases.slice((page - 1) * pageSize, page * pageSize)
-        });
-    }
-
-    private addOrigin(x: number, y: number) {
-        if (this.mgr) {
-            this.mgr.remove(ICON_NAME);
-            this.coord = this.mgr.getCoordinate(
-                this.mgr.addImage(
-                    {
-                        x,
-                        y,
-                        url: '/images/query_function_location.png',
-                        size: 32,
-                        height: 2
-                    },
-                    ICON_NAME
-                )
-            );
-        }
     }
 }
 </script>

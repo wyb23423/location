@@ -101,11 +101,12 @@ export default class Info extends mixins(TableMixin) {
     }
 
     public look(row: IBaseStation) {
+        const loadingInstance = this.$loading({ customClass: 'loading' });
         this.$http
             .post({
                 url: '/api/protocol/sendReceive',
                 body: {
-                    ip: '192.168.1.19', // row.ip,
+                    ip: '192.168.1.19',
                     port: 60000,
                     protocol: '2345201801230D0A'
                 }
@@ -114,7 +115,10 @@ export default class Info extends mixins(TableMixin) {
                 console.log(encodeUtf8(res.resultMap.resp));
             })
             .catch(console.log)
-            .finally(() => (this.base = row));
+            .finally(() => {
+                this.base = row;
+                loadingInstance.close();
+            });
     }
 
     protected async fetch(page: number, pageSize: number) {
@@ -145,3 +149,9 @@ export default class Info extends mixins(TableMixin) {
 }
 </style>
 
+<style lang="postcss">
+.loading {
+    z-index: 99999999 !important;
+    opacity: 0.6;
+}
+</style>
