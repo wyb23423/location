@@ -30,17 +30,28 @@
     <table schema="pos" tableName="pos_camera" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
 		<generatedKey column="id" sqlStatement="MySql" identity="true"/>
     </table> -->
-    <table schema="pos" tableName="pos_map" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
+    <!-- <table schema="pos" tableName="pos_map" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
 		<generatedKey column="id" sqlStatement="MySql" identity="true"/>
     </table>
     <table schema="pos" tableName="pos_protocol" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
 		<generatedKey column="id" sqlStatement="MySql" identity="true"/>
-    </table>
+    </table> -->
 	<!-- <table schema="pos" tableName="pos_tag" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
 		<generatedKey column="id" sqlStatement="MySql" identity="true"/>
     </table>
     <table schema="pos" tableName="pos_zone" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
 		<generatedKey column="id" sqlStatement="MySql" identity="true"/>
     </table> -->
+    
+    <!-- <table schema="pos" tableName="pos_base_station" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
+		<generatedKey column="id" sqlStatement="MySql" identity="true"/>
+    </table>
+    <table schema="pos" tableName="pos_base_group" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
+    </table> -->
+    
+    <table schema="pos" tableName="pos_zone" enableCountByExample="true" enableDeleteByExample="true" enableSelectByExample="true"  enableUpdateByExample="true" >
+		<generatedKey column="id" sqlStatement="MySql" identity="true"/>
+    </table>
+    
   </context>
 </generatorConfiguration>
