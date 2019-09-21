@@ -22,19 +22,13 @@
                 :filters="filters.tagNo"
                 :filter-method="filterHandler"
             ></el-table-column>
-            <!-- <el-table-column
-                prop="baseNo"
-                label="基站号"
-                min-width="100"
-                :filters="filters.baseNo"
-                :filter-method="filterHandler"
-            ></el-table-column> -->
             <el-table-column
                 prop="alarmTime"
                 label="报警时间"
                 min-width="160"
                 :filters="filters.time"
                 :filter-method="filterHandler"
+                :formatter="formatter"
             ></el-table-column>
             <el-table-column
                 prop="alarmMsg"
@@ -59,6 +53,9 @@ export default class Notice extends Vue {
     private elNotify = new Map<IAlarm | string, ElNotificationComponent>();
     private notifyCount: number = 0;
 
+    private queue: IAlarm[] = [];
+    private timer?: number;
+
     public get filters() {
         const type = new Set();
         const tagNo = new Set();
@@ -81,14 +78,37 @@ export default class Notice extends Vue {
     }
 
     public created() {
-        this.$event.on(NOTIFY_KEY, this.notify.bind(this));
+        this.$event.on(NOTIFY_KEY, (v: IAlarm) => {
+            if (this.timer) {
+                clearTimeout(this.timer);
+            }
+            this.queue.push(v);
+
+            this.timer = setTimeout(() => {
+                let msg = this.queue.shift();
+                while (msg) {
+                    this.notify(msg);
+                    msg = this.queue.shift();
+                }
+            }, 200);
+        });
         this.$event.on(ALARM_DEAL, (v: IAlarm) => {
             const message = this.messages.find(m =>
                 Object.keys(m).every((k: keyof IAlarm) => m[k] === v[k])
             );
-
             message && this.reset(message);
+
+            const index = this.queue.findIndex(m =>
+                Object.keys(m).every((k: keyof IAlarm) => m[k] === v[k])
+            );
+            if (index > -1) {
+                this.queue.splice(index, 1);
+            }
         });
+    }
+
+    public formatter(r: any, c: any, v: number) {
+        return (<any>this.$options.filters).date(v);
     }
 
     public filterHandler(
@@ -124,9 +144,10 @@ export default class Notice extends Vue {
         if (v && this.notifyCount < NOTICE_MAX) {
             this.notifyCount++;
 
+            const format = (<any>this.$options.filters).date;
             const el = this.$notify.warning({
                 title: `标签${v.tagNo}异常`,
-                message: `${v.alarmTime}: ${v.alarmMsg}`,
+                message: `${format(v.alarmTime)}: ${v.alarmMsg}`,
                 duration: 0,
                 showClose: false,
                 customClass: 'notice-component',

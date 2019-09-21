@@ -56,7 +56,7 @@ export default class Main extends Vue {
 
         // fn();
 
-        // this.link();
+        this.link();
     }
 
     public destroyed() {
@@ -72,7 +72,12 @@ export default class Main extends Vue {
         }
 
         const ws = new WebSocket(`ws://${ip}:8081/sundries`);
-        ws.onmessage = console.log;
+        ws.onmessage = (e: MessageEvent) => {
+            const data: IAlarm = JSON.parse(e.data);
+            if (Date.now() - data.alarmTime <= 1000) {
+                this.$event.emit(NOTIFY_KEY, data);
+            }
+        };
     }
 }
 </script>
