@@ -26,36 +26,6 @@ export default class Main extends Vue {
     private timer?: number;
 
     public created() {
-        let errorCount: number = 0;
-        const fn = () => {
-            this.$http
-                .get('/api/alarm/getall', {
-                    pageSize: 99999999,
-                    currentPage: 1
-                })
-                .then(res => {
-                    errorCount = 0;
-
-                    res.pagedData.datas.forEach((v: IAlarm) => {
-                        if (Date.now() - v.alarmTime <= 1000) {
-                            this.$event.emit(NOTIFY_KEY, v);
-                        }
-                    });
-
-                    this.timer = setTimeout(fn, 1000);
-                })
-                .catch(e => {
-                    if (++errorCount >= 3) {
-                        sessionStorage.removeItem('login');
-                        return (location.href = '/login');
-                    }
-
-                    this.timer = setTimeout(fn, 300);
-                });
-        };
-
-        // fn();
-
         this.link();
     }
 
@@ -71,7 +41,7 @@ export default class Main extends Vue {
             return;
         }
 
-        const ws = new WebSocket(`ws://${ip}:8081/sundries`);
+        const ws = new WebSocket(`ws://${ip}/realtime/alarm`);
         ws.onmessage = (e: MessageEvent) => {
             const data: IAlarm = JSON.parse(e.data);
             if (Date.now() - data.alarmTime <= 1000) {

@@ -46,11 +46,11 @@ import GroupAdd from './GroupAdd.vue';
 export default class GroupList extends mixins(TableMixin) {
     public group: Record<string, any> | null = null;
     public colCfg = [
-        { prop: 'id', label: '组号', width: 140 },
-        { prop: 'min', label: '最小基站数', width: 140 },
-        { prop: 'size', label: '最大基站数', width: 140 },
+        { prop: 'groupCode', label: '组号', width: 140 },
+        { prop: 'minBaseSize', label: '最小基站数', width: 140 },
+        { prop: 'groupBaseSize', label: '最大基站数', width: 140 },
         { prop: 'description', label: '描述', width: 260 },
-        { prop: 'mapName', label: '所属地图', width: 140 }
+        { prop: 'mapId', label: '所属地图', width: 140 }
     ];
 
     public get op() {
@@ -61,26 +61,35 @@ export default class GroupList extends mixins(TableMixin) {
     }
 
     public del(row: IGroup) {
-        this.$confirm(`删除分组${row.id}`)
-            .then(() => console.log(row))
+        this.$confirm(`删除分组${row.groupCode}`)
+            .then(() =>
+                this.$http.post('/api/basegroup/deleteGroup', {
+                    groupCode: row.groupCode
+                })
+            )
+            .then(() => {
+                this.$message.success('删除成功');
+                this.refresh();
+            })
             .catch(console.log);
     }
 
     protected async fetch(page: number, pageSize: number) {
-        const data: IGroup[] = [];
-        for (let i = 0; i < pageSize; i++) {
-            data.push({
-                id: i + '',
-                size: 7,
-                min: 4,
-                algorithmType: 11,
-                description: 'this is description',
-                mapId: 1,
-                mapName: '办公室'
+        let data: any[] = [];
+        let count: number = 0;
+        try {
+            const res = await this.$http.get('/api/basegroup/getall', {
+                pageSize,
+                currentPage: page
             });
+
+            data = res.pagedData.datas;
+            count = res.pagedData.totalCount;
+        } catch (e) {
+            console.log(e);
         }
 
-        return { count: pageSize, data };
+        return { count, data };
     }
 }
 </script>

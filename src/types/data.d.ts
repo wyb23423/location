@@ -97,8 +97,9 @@ declare interface IBingdings extends DataBase {
 }
 
 declare interface IGroup extends DataBase<string> {
-    size: number; // 最大基站数
-    min: number; // 最小基站数
+    groupCode: string;
+    groupBaseSize: number; // 最大基站数
+    minBaseSize: number; // 最小基站数
     algorithmType: number; // 算法类型
     description: string;
     mapId: number;

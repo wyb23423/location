@@ -8,7 +8,7 @@
         <el-form-item
             v-if="showId"
             label="分组号"
-            prop="id"
+            prop="groupCode"
             required
             :rules="{
                 pattern: /^[0-9A-Fa-f]{1,4}$/,
@@ -16,20 +16,20 @@
                     'groupCode is not a hexadecimal string less than 4 in length'
             }"
         >
-            <el-input v-model="form.id"></el-input>
+            <el-input v-model="form.groupCode"></el-input>
         </el-form-item>
-        <el-form-item label="最大基站数" prop="size" required>
+        <el-form-item label="最大基站数" prop="groupBaseSize" required>
             <el-input-number
                 :min="0"
                 step-strictly
-                v-model="form.size"
+                v-model="form.groupBaseSize"
             ></el-input-number>
         </el-form-item>
-        <el-form-item label="最小基站数" prop="min" required>
+        <el-form-item label="最小基站数" prop="minBaseSize" required>
             <el-input-number
                 :min="0"
                 step-strictly
-                v-model="form.min"
+                v-model="form.minBaseSize"
             ></el-input-number>
         </el-form-item>
         <el-form-item label="算法类型" required>
@@ -45,7 +45,7 @@
             <app-select url="/api/map/getall" v-model="form.mapId"></app-select>
         </el-form-item>
         <el-form-item>
-            <el-button type="primary" @click="onSubmit">立即创建</el-button>
+            <el-button type="primary" @click="onSubmit">提交</el-button>
         </el-form-item>
     </el-form>
 </template>
@@ -93,8 +93,18 @@ export default class GroupAdd extends Vue {
 
         const data = { ...this.form };
         data.algorithmType = +this.algorithmType.join('');
-        data.id = data.id.padStart(4, '0');
-        console.log(data);
+        data.groupCode = data.groupCode.padStart(4, '0');
+
+        this.$http
+            .post(
+                `/api/basegroup/${this.showId ? 'addGroup' : 'updateGroup'}`,
+                data,
+                { 'Content-Type': 'application/json' }
+            )
+            .then(() =>
+                this.$message.success(this.showId ? '添加成功' : '更新成功')
+            )
+            .catch(console.log);
 
         this.$emit('input', data);
     }
