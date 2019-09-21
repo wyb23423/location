@@ -120,7 +120,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
     }
 
     protected bindEvents() {
-        this.mgr!.on('loadComplete', () => this.tagAnchor());
+        this.mgr!.on('loadComplete', this.tagAnchor.bind(this));
     }
 
     /**

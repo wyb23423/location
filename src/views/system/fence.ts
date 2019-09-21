@@ -147,13 +147,22 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
         }
     }
 
+    protected initData() {
+        this.getData(1, 10);
+    }
+
     protected async fetch(page: number, pageSize: number) {
+        if (this.mapId == null) {
+            return { count: 0, data: [] };
+        }
+
         let data: any[] = [];
         let count: number = 0;
         try {
             const res = await this.$http.get('/api/zone/getall', {
                 pageSize,
-                currentPage: page
+                currentPage: page,
+                mapId: this.mapId
             });
             data = res.pagedData.datas.map((v: IZone) => {
                 v.status = v.enable ? '开启' : '关闭';
