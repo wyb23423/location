@@ -82,18 +82,24 @@ export default class AdminAdd extends Vue {
         phone: '',
         workNo: ''
     };
-    public rules = {};
+    public rules = {
+        username: [
+            { min: 5, message: '用户名至少得5个字符啊', trigger: 'change' }
+        ],
+        password: [
+            { min: 6, max: 12, message: '密码必须6到12位', trigger: 'change' }
+        ]
+    };
 
     public created() {
         Object.keys(this.form).forEach(k => {
             if (k !== 'sex' && k !== 'level') {
-                const rules: any[] = [
-                    {
-                        required: true,
-                        message: '必填项不能为空',
-                        trigger: 'change'
-                    }
-                ];
+                const rules = (<any>this.rules)[k] || [];
+                rules.push({
+                    required: true,
+                    message: '必填项不能为空',
+                    trigger: 'change'
+                });
                 if (k === 'phone') {
                     rules.push({
                         pattern: /^1[3456789]\d{9}$/,
