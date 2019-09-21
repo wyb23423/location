@@ -4,7 +4,7 @@
 // 主题数据位置
 export const MAP_THEME_URL: string = '/data/theme';
 // 地图数据位置
-export const MAP_DATA_URL: string = '/data/huijinguangchang';
+export const MAP_DATA_URL: string = '/image';
 
 export const DEFAULT_WIDTH: number = 1600; // 屏幕默认宽度
 export const SX_WIDTH: number = 768; // 小屏宽度
