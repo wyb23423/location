@@ -158,9 +158,13 @@ export class PIXIMgr extends Stage {
         isMapCoor: boolean = false,
         gid?: number
     ): Promise<any> {
+        if (!name) {
+            return Promise.reject('no text');
+        }
+
         let newlist = {
-            x: coord.x,
-            y: coord.y
+            x: coord.x || coord.xaxis || 0,
+            y: coord.y || coord.yaxis || 0
         };
 
         // tslint:disable-next-line:no-conditional-assignment

@@ -152,9 +152,9 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
     }
 
     protected async fetch(page: number, pageSize: number) {
-        // if (this.mapId == null) {
-        //     return { count: 0, data: [] };
-        // }
+        if (this.mapId == null) {
+            return { count: 0, data: [] };
+        }
 
         let data: any[] = [];
         let count: number = 0;
@@ -162,7 +162,7 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
             const res = await this.$http.get('/api/zone/getall', {
                 pageSize,
                 currentPage: page,
-                // mapId: this.mapId
+                mapId: this.mapId
             });
             data = res.pagedData.datas.map((v: IZone) => {
                 v.status = v.enable ? '开启' : '关闭';

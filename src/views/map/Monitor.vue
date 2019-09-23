@@ -213,6 +213,15 @@ export default class Monitor extends mixins(
 
     protected afterMapCreated() {
         this.tools[1].display = !!this.mgr && this.mgr.has3D;
+
+        this.$http
+            .get('/api/zone/getall', {
+                currentPage: 1,
+                pageSize: 1_0000_0000,
+                mapId: this.mapId
+            })
+            .then(res => (this.zones = res.pagedData.datas))
+            .catch(() => console.log);
     }
 
     protected doCensus(tag: ITagInfo | string) {
