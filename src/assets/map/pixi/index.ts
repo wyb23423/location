@@ -23,7 +23,8 @@ export class PIXIMgr extends Stage {
      * 显示区域
      */
     public zoneOpen(data: IZone) {
-        const zones: Vector2[] = typeof data.position === 'string' ? JSON.parse(data.position) : data.position;
+        let zones = typeof data.position === 'string' ? JSON.parse(data.position) : data.position;
+        zones = zones.coordinates || zones;
         this.createPolygonMarker(zones, data.name);
         this.addTextMarker(zones[0], data.name);
     }
