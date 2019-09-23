@@ -15,20 +15,9 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
     public renderTags: Record<string, number> = {}; // 已经在地图上的标签, {tagNo: timer}
 
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
-    private zoneAll: IZone[] = []; // 所有区域
     private alarmTimes = new Map<string, number>();
-    private getZones?: () => void;
 
     public created() {
-        // 获取区域数据
-        this.$http.get('/api/zone/getall', {
-            currentPage: 1,
-            pageSize: 1_0000_0000
-        })
-            .then(res => this.zoneAll = res.pagedData.datas)
-            .then(() => this.getZones && this.getZones())
-            .catch(() => console.log);
-
         this.$event.on(MODIFY_TAG_ICON, (tagNo: string, img: string) => this.mgr && this.mgr.modifyImg(tagNo, img));
     }
 
@@ -106,9 +95,9 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
                 clearTimeout(timer);
 
                 this.$event.emit(ALARM_DEAL, {
-                    deviceId: tagNo,
-                    time: this.alarmTimes.get(tagNo),
-                    content: MISS_MSG,
+                    tagNo,
+                    alarmTime: this.alarmTimes.get(tagNo),
+                    alarmMsg: MISS_MSG,
                     type: 1
                 });
 
@@ -154,9 +143,9 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
         this.alarmTimes.set(tagNo, now);
         // 抛出 信号丢失 事件
         this.$event.emit(NOTIFY_KEY, {
-            deviceId: tagNo,
-            time: now,
-            content: MISS_MSG,
+            tagNo,
+            alarmTime: now,
+            alarmMsg: MISS_MSG,
             type: 1
         });
 
@@ -188,19 +177,8 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
         this.showPath = false;
 
         // 渲染基站
-        this.tagAnchor()
-            .then(data => {
-                this.getZones = () => Reflect.set(this, 'zones', this.filterZoneAll(data));
-                this.getZones();
-
-                Reflect.set(this, 'groupData', arr2obj(data, 'groupCode'));
-            });
+        this.tagAnchor().then(data => Reflect.set(this, 'groupData', arr2obj(data, 'groupCode')));
 
         this.afterMapCreated();
-    }
-
-    private filterZoneAll(data: IBaseStation[]) {
-        const ids = new Set(data.map(v => +v.zone));
-        return this.zoneAll.filter(v => ids.has(v.id));
     }
 }

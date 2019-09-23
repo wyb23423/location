@@ -5,7 +5,7 @@ import { createMap } from '@/assets/map';
 import { FengMapMgr } from '@/assets/map/fengmap';
 import MapSelect from '@/components/MapSelect.vue';
 import { PIXIMgr } from '@/assets/map/pixi';
-import { Watch, Ref } from 'vue-property-decorator';
+import { Ref } from 'vue-property-decorator';
 
 @Component({
     components: {
@@ -16,6 +16,7 @@ export default class MapMixin extends Vue {
     public mgr?: FengMapMgr | PIXIMgr;
     public showPath: boolean = false;
     public groups: string[] = []; // 当前地图关联组号
+    public mapId?: number;
 
     @Ref('map') protected readonly container?: HTMLElement;
 
@@ -24,7 +25,10 @@ export default class MapMixin extends Vue {
     }
 
     public async selectMap(data: IMap) {
-        data && (this.groups = <string[]>data.groupCode);
+        if (data) {
+            this.groups = <string[]>data.groupCode;
+            this.mapId = data.id;
+        }
         this.initData();
 
         if (data && this.container) {
@@ -127,7 +131,7 @@ export default class MapMixin extends Vue {
                     x: info.x,
                     y: info.y,
                     height: 1,
-                    url: info.icon,
+                    url: info.photo,
                     size: info.size || 48,
                     callback: (im: any) => {
                         if (!im.custom) {

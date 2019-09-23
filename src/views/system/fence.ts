@@ -147,13 +147,22 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
         }
     }
 
+    protected initData() {
+        this.getData(1, 10);
+    }
+
     protected async fetch(page: number, pageSize: number) {
+        if (this.mapId == null) {
+            return { count: 0, data: [] };
+        }
+
         let data: any[] = [];
         let count: number = 0;
         try {
             const res = await this.$http.get('/api/zone/getall', {
                 pageSize,
-                currentPage: page
+                currentPage: page,
+                mapId: this.mapId
             });
             data = res.pagedData.datas.map((v: IZone) => {
                 v.status = v.enable ? '开启' : '关闭';
@@ -197,7 +206,8 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
             position: JSON.stringify(this.points.map(v => this.mgr!.getCoordinate(v))),
             enable: this.form.open ? 1 : 0,
             createTime: now,
-            updateTime: now
+            updateTime: now,
+            mapId: this.mapId
         });
 
         return this.$http.post('/api/zone/addZone', data, { 'Content-Type': 'application/json' });
