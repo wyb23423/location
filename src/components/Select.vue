@@ -37,7 +37,7 @@ export default class Select extends Vue {
     @Prop() public readonly disabled?: boolean;
 
     @Prop({ default: () => false }) public readonly canEmpty?: boolean;
-
+    @Prop({ default: () => ({}) }) public readonly filters!: IJson;
     @Prop({ default: () => ({ id: 'id', name: 'name' }) })
     public readonly keys!: Option<string>;
 
@@ -48,7 +48,8 @@ export default class Select extends Vue {
         this.$http
             .get(this.url, {
                 pageSize: 1000000,
-                currentPage: 1
+                currentPage: 1,
+                ...this.filters
             })
             .then(res => {
                 this.options = res.pagedData.datas.map((v: any) => ({

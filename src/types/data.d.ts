@@ -60,7 +60,7 @@ declare interface ICamera extends DataBase {
 declare interface IMap extends DataBase {
     name: string;
     margin: string | number[][]; // 地图边界值[左下, 左上, 右上, 右下, [监控区域宽, 监控区域高]]
-    groupCode: string | string[]; // 关联的基站分组
+    baseGroupList: string[]; // 关联的基站分组
     filepath: string; // 地图文件。背景图或.fmap
 }
 
@@ -104,6 +104,7 @@ declare interface IGroup extends DataBase<string> {
     algorithmType: number; // 算法类型
     description: string;
     mapId: number;
+    mapName: string;
 }
 
 declare interface IAlarm extends IJson {

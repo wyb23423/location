@@ -50,7 +50,7 @@ export default class GroupList extends mixins(TableMixin) {
         { prop: 'minBaseSize', label: '最小基站数', width: 140 },
         { prop: 'groupBaseSize', label: '最大基站数', width: 140 },
         { prop: 'description', label: '描述', width: 260 },
-        { prop: 'mapId', label: '所属地图', width: 140 }
+        { prop: 'mapName', label: '所属地图', width: 140 }
     ];
 
     public get op() {
