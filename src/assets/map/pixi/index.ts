@@ -23,7 +23,8 @@ export class PIXIMgr extends Stage {
      * 显示区域
      */
     public zoneOpen(data: IZone) {
-        const zones: Vector2[] = typeof data.position === 'string' ? JSON.parse(data.position) : data.position;
+        let zones = typeof data.position === 'string' ? JSON.parse(data.position) : data.position;
+        zones = zones.coordinates || zones;
         this.createPolygonMarker(zones, data.name);
         this.addTextMarker(zones[0], data.name);
     }
@@ -109,7 +110,7 @@ export class PIXIMgr extends Stage {
                 return;
             }
 
-            img = img || getCustomInfo(v, 'info').icon;
+            img = img || getCustomInfo(v, 'info').photo;
             if (img) {
                 this.load(img)
                     .then(([texture]) => v.texture = texture)
@@ -158,9 +159,13 @@ export class PIXIMgr extends Stage {
         isMapCoor: boolean = false,
         gid?: number
     ): Promise<any> {
+        if (!name) {
+            return Promise.reject('no text');
+        }
+
         let newlist = {
-            x: coord.x,
-            y: coord.y
+            x: coord.x || coord.xaxis || 0,
+            y: coord.y || coord.yaxis || 0
         };
 
         // tslint:disable-next-line:no-conditional-assignment
@@ -306,7 +311,7 @@ export class PIXIMgr extends Stage {
             close: () => {
                 img.removeChild(triangle);
                 img.zIndex = custom.zIndex;
-                this.stage.sortChildren();
+                this.stage && this.stage.sortChildren();
 
                 if (text) {
                     img.removeChild(text);

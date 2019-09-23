@@ -111,7 +111,7 @@ export default class Header extends Vue {
             ['管理员设置', '/admin'],
             ['系统设置', '/system'],
             ['设备管理', '/base'],
-            ['标签管理', '/people'],
+            ['标签管理', '/tag'],
             ['实时监控', '/monitor'],
             ['报警信息', '/alarm'],
             ['数据图表', '/chart']

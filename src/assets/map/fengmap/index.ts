@@ -54,7 +54,8 @@ export class FengMapMgr extends CoordTransformer {
             return console.error('地图范围为空');
         }
 
-        const zones: Vector2[] = typeof data.position === 'string' ? JSON.parse(data.position) : data.position;
+        let zones = typeof data.position === 'string' ? JSON.parse(data.position) : data.position;
+        zones = zones.coordinates || zones;
         const height = this.createPolygonMarker(zones, data.name);
         this.addTextMarker({ ...zones[0], height }, data.name);
     }
@@ -79,6 +80,7 @@ export class FengMapMgr extends CoordTransformer {
 
                 const { x, y } = e.eventInfo.coord;
                 e.data = { global: this.map.coordMapToScreen(x, y) };
+                console.log(this.getCoordinate(e.eventInfo.coord));
             }
 
             callback(e);
@@ -113,7 +115,7 @@ export class FengMapMgr extends CoordTransformer {
 
     public modifyImg(name: string | number, img?: string) {
         this.imageMgr.find(name).forEach(v => {
-            img = img || getCustomInfo(v, 'info').icon;
+            img = img || getCustomInfo(v, 'info').photo;
             img && (v.url = img);
         });
     }
@@ -140,9 +142,13 @@ export class FengMapMgr extends CoordTransformer {
         isMapCoor: boolean = false,
         gid?: number
     ): Promise<any> {
+        if (!name) {
+            return Promise.reject('no text');
+        }
+
         let newlist: Vector23 | undefined = {
-            x: coord.x,
-            y: coord.y
+            x: coord.x || coord.xaxis || 0,
+            y: coord.y || coord.yaxis || 0
         };
 
         if (!isMapCoor) {

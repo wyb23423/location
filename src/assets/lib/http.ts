@@ -19,7 +19,7 @@ export function get(
         return Promise.reject(req);
     }
 
-    return doFetch(req, false);
+    return doFetch(req, true);
 }
 
 export function post(
@@ -35,7 +35,7 @@ export function post(
         return Promise.reject(req);
     }
 
-    return doFetch(req, true);
+    return doFetch(req, false);
 }
 
 function doFetch(req: RequestParams, isGet: boolean) {

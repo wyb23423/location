@@ -1,3 +1,4 @@
+import { BASE_URL } from '@/constant';
 
 /**
  * 轮询等待条件达成
@@ -56,6 +57,24 @@ export function randomColor(hasAlpha: boolean = false) {
 }
 
 /**
+ * 判断一个变量是否是某种类型
+ */
+export function isThisType(obj: any, type: string) {
+    type = type.replace(/^\w/, (w: string) => w.toLocaleUpperCase());
+
+    return Object.prototype.toString.call(obj) === `[object ${type}]`;
+}
+
+/**
+ * 创建可以返回递增数的函数
+ */
+export function incrementalFactory() {
+    let num: number = 0;
+
+    return () => num++;
+}
+
+/**
  * 将对象数据根据给定的key分组
  * @param isArr 对象的值是否是数组
  */
@@ -79,6 +98,37 @@ export function arr2obj(arr: IJson[], key: string, isArr: boolean = true) {
 export function none(a?: any, b?: any, c?: any, d?: any) {
     //
 }
+
+/**
+ * 计算文本宽度
+ */
+export const getTextWidth = (() => {
+    const w = new Map();
+
+    return (
+        text: string,
+        ctx: CanvasRenderingContext2D,
+        font: string = ''
+    ) => {
+        const key = text + font;
+        if (w.has(key)) {
+            return w.get(key);
+        }
+
+        if (font && ctx.font !== font) {
+            ctx.font = font;
+        }
+
+        const width: number = ctx.measureText(text).width;
+        if (w.size >= 500) {
+            w.clear();
+        }
+
+        w.set(key, width);
+
+        return width;
+    };
+})();
 
 /**
  * 将一个时间段转化为"dd:hh:mm:ss"的形式
@@ -120,14 +170,23 @@ export function encodeUtf8(text: string) {
     return new Uint16Array(text.length).map((el, idx) => text.charCodeAt(idx));
 }
 
-/**
- * 生成验证不超过某个长度16进制字符串的规则
- * @param length 最大长度
- * @param name key
- */
+export function getIp() {
+    let ip: string = location.hostname;
+    if (process.env.NODE_ENV !== 'production') {
+        const res = BASE_URL.match(/^http:\/\/([\w\d\.]+)(:\d+)?\/$/);
+        if (res) {
+            ip = res[1];
+        } else {
+            return console.error('域名解析失败');
+        }
+    }
+
+    return ip;
+}
+
 export function hexadecimalRuleFactory(length: number, name: string) {
     return {
-        pattern: new RegExp(`^[0-9A-Fa-f]{1,${length}}$`),
+        pattern: new RegExp(`^[0-9A-Fa-f]{1,${length}}$`), // /^[0-9A-Fa-f]{1,4}$/,
         message:
             `${name} is not a hexadecimal string less than ${length} in length`
     };

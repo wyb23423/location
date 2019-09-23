@@ -22,19 +22,19 @@ export default class PeopleIndex extends Vue {
             children: [
                 {
                     title: '常驻标签',
-                    to: '/people/list/1',
+                    to: '/tag/list/1',
                     icon: 'el-icon-user-solid'
                 },
                 {
                     title: '临时标签',
-                    to: '/people/list/2',
+                    to: '/tag/list/2',
                     icon: 'el-icon-s-custom'
                 }
             ]
         },
         {
             title: '标签添加',
-            to: '/people/add',
+            to: '/tag/add',
             icon: 'el-icon-document-add'
         }
     ];

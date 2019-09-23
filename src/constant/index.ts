@@ -20,7 +20,7 @@ export const ALL_PERMISSION = {
     camera: { put: true, delete: true, post: true, get: true }, // 摄像机
     protocol: { put: true, delete: true, post: true, get: true }, // 协议
     base: { put: true, delete: true, post: true, get: true }, // 设备(基站)
-    people: { put: true, delete: true, post: true, get: true }, // 人员(标签)
+    tag: { put: true, delete: true, post: true, get: true }, // 人员(标签)
     map: { put: true, delete: true, post: true, get: true }, // 地图(监控)
     alarm: { put: true, delete: true, post: true, get: true } // 报警信息
 };

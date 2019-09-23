@@ -26,7 +26,7 @@ export default class Permission extends Vue {
         'camera',
         'protocol',
         'base',
-        'people',
+        'tag',
         'map',
         'alarm'
     ];
@@ -77,7 +77,7 @@ export default class Permission extends Vue {
                 { label: '摄像机管理', id: 'camera' },
                 { label: '通信协议', id: 'protocol' },
                 { label: '设备管理', id: 'base' },
-                { label: '标签管理', id: 'people' },
+                { label: '标签管理', id: 'tag' },
                 { label: '地图管理', id: 'map' },
                 { label: '警报信息', id: 'alarm' }
             ]);
