@@ -167,7 +167,7 @@
 		    <artifactId>OneDim2SLocation</artifactId>  
 		    <version>1.0</version>  
 		    <scope>system</scope>  
-		    <systemPath>D:\Personal\inhouse\libs\arithmetic-1.0-SNAPSHOT.jar</systemPath>  
+		    <systemPath>D:\Workspace\inhouse\libs\arithmetic-1.0-SNAPSHOT.jar</systemPath>  
 		</dependency>
 		
 		
