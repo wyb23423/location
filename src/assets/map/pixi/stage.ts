@@ -57,7 +57,10 @@ export default class Stage extends MapEvent {
      * @param is2map 是否是定位坐标转为地图坐标
      */
     public getCoordinate(v: Vector23, is2map: boolean = false) {
-        v = { ...v };
+        const vector: any = { ...v };
+        vector.x = vector.x || vector.xaxis || 0;
+        vector.y = vector.y || vector.yaxis || 0;
+        vector.z = vector.z || vector.zaxis || 0;
 
         if (!this._locRange) {
             console.error('地图范围为空');
@@ -68,16 +71,15 @@ export default class Stage extends MapEvent {
             const scaleY = height / this._locRange.y;
 
             if (is2map) {
-                v.x *= scaleX;
-                v.y = height - v.y * scaleY;
+                vector.x *= scaleX;
+                vector.y = height - vector.y * scaleY;
             } else {
-                v.x /= scaleX;
-                v.y = (height - v.y) / scaleY;
+                vector.x /= scaleX;
+                vector.y = (height - vector.y) / scaleY;
             }
         }
 
-        v.z = v.z || 0;
-        return <Vector3>v;
+        return <Vector3>vector;
     }
 
     public parseCood(data: Vector23 | Vector23[]) {

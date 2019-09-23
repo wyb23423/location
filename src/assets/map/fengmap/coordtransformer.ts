@@ -148,13 +148,18 @@ export class CoordTransformer {
      * @param options.mapRange 映射地图范围
      */
     private _transform(loc: Vector23, options: TransformOptions) {
-        const offsetX = (loc.x - options.locOrigion.x) / options.locRange.x * options.mapRange.x;
-        const offsetY = (loc.y - options.locOrigion.y) / options.locRange.y * options.mapRange.y;
+        const vector: any = { ...loc };
+        vector.x = vector.x || vector.xaxis || 0;
+        vector.y = vector.y || vector.yaxis || 0;
+        vector.z = vector.z || vector.zaxis || null;
+
+        const offsetX = (vector.x - options.locOrigion.x) / options.locRange.x * options.mapRange.x;
+        const offsetY = (vector.y - options.locOrigion.y) / options.locRange.y * options.mapRange.y;
 
         return {
             x: options.mapOrigin.x + options.mapAxisX.x * offsetX + options.mapAxisY.x * offsetY,
             y: options.mapOrigin.y + options.mapAxisX.y * offsetX + options.mapAxisY.y * offsetY,
-            z: loc.z == null ? 1 : loc.z
+            z: vector.z == null ? 1 : vector.z
         };
     }
 
