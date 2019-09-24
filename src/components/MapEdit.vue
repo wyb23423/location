@@ -41,7 +41,7 @@
                 ></el-input-number>
             </el-form-item>
         </el-form-item>
-        <el-form-item label="关联分组" prop="groupCode" required>
+        <!-- <el-form-item label="关联分组" prop="groupCode" required>
             <el-select
                 v-model="form.groupCode"
                 multiple
@@ -54,7 +54,7 @@
                 :popper-class="$style.hidden"
             >
             </el-select>
-        </el-form-item>
+        </el-form-item> -->
 
         <el-form-item required label="地图">
             <el-upload
@@ -144,12 +144,8 @@ export default class MapEdit extends Vue {
                     return this.$message.warning('地图文件不能为空');
                 }
 
-                const data = {
-                    ...this.form,
-                    groupCode: this.form.groupCode.join(',')
-                };
-                this.$emit('update:data', data);
-                this.$emit('submit', data);
+                this.$emit('update:data', this.form);
+                this.$emit('submit', this.form);
             })
             .catch(console.log);
     }

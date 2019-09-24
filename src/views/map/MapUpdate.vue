@@ -60,7 +60,6 @@ export default class MapAdd extends Vue {
             maxY: margin[2][1],
             width: margin[4][0],
             height: margin[4][1],
-            groupCode: data.groupCode,
             [data.filepath.endsWith('.fmap')
                 ? 'filename'
                 : 'url']: data.filepath
@@ -104,9 +103,9 @@ export default class MapAdd extends Vue {
                 const { minX, maxX, minY, maxY } = data;
 
                 return this.$http.post({
-                    url: '/api/map/addMap',
+                    url: '/api/map/updateMap',
                     body: {
-                        ...this.map,
+                        id: this.map.id,
                         filepath: res.resultMap.mapUrl,
                         name: data.name,
                         updateTime: timestamp,
