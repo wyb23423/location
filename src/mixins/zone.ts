@@ -207,7 +207,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
         }
 
         if (this.mgr instanceof PIXIMgr) {
-            const p = this.mgr.stage.toLocal(new PIXI.Point(x, y));
+            const p = this.mgr.stage.toLocal(new PIXI.Point(x / 2, y / 2));
             return { ...p, z: 9 };
         }
 
