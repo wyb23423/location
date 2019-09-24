@@ -105,7 +105,7 @@ export default class MapAdd extends Vue {
                 return this.$http.post({
                     url: '/api/map/addMap',
                     body: {
-                        ...this.map,
+                        id: this.map.id,
                         filepath: res.resultMap.mapUrl,
                         name: data.name,
                         groupCode: JSON.stringify(data.groupCode),
