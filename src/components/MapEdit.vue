@@ -144,12 +144,8 @@ export default class MapEdit extends Vue {
                     return this.$message.warning('地图文件不能为空');
                 }
 
-                const data = {
-                    ...this.form,
-                    groupCode: this.form.groupCode.join(',')
-                };
-                this.$emit('update:data', data);
-                this.$emit('submit', data);
+                this.$emit('update:data', this.form);
+                this.$emit('submit', this.form);
             })
             .catch(console.log);
     }
