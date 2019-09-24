@@ -103,7 +103,7 @@ export default class MapAdd extends Vue {
                 const { minX, maxX, minY, maxY } = data;
 
                 return this.$http.post({
-                    url: '/api/map/addMap',
+                    url: '/api/map/updateMap',
                     body: {
                         id: this.map.id,
                         filepath: res.resultMap.mapUrl,
