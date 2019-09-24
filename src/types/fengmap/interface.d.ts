@@ -18,6 +18,7 @@ interface FMMapOptions {
     defaultViewMode?: fengmap.FMViewMode.MODE_2D | fengmap.FMViewMode.MODE_3D;
 
     preserveDrawingBuffer?: boolean;
+    useCompatibleOnLineCheck?: boolean;
 }
 
 interface PolygonOpt {
