@@ -122,10 +122,7 @@ export default class MapAdd extends Vue {
                     }
                 });
             })
-            .then(() => {
-                this.$message.success('修改成功');
-                (<MapEdit>this.$refs.form).reset();
-            })
+            .then(() => this.$message.success('修改成功'))
             .catch(console.log);
     }
 }

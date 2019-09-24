@@ -161,7 +161,7 @@ export default class MapEdit extends Vue {
 
     @Watch('data')
     public assignForm() {
-        Object.assign(this.form, this.data);
+        this.form = { ...this.data };
     }
 }
 </script>
