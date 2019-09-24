@@ -41,20 +41,6 @@
                 ></el-input-number>
             </el-form-item>
         </el-form-item>
-        <!-- <el-form-item label="关联分组" prop="groupCode" required>
-            <el-select
-                v-model="form.groupCode"
-                multiple
-                filterable
-                allow-create
-                clearable
-                default-first-option
-                placeholder="关联分组"
-                class="select_input"
-                :popper-class="$style.hidden"
-            >
-            </el-select>
-        </el-form-item> -->
 
         <el-form-item required label="地图">
             <el-upload
@@ -175,32 +161,6 @@ export default class MapEdit extends Vue {
 .inline {
     display: inline-block;
     vertical-align: middle;
-}
-
-.hidden {
-    display: none;
-}
-</style>
-
-<style lang="postcss">
-.select_input {
-    width: 50%;
-
-    & i.el-icon-arrow-up {
-        display: none;
-    }
-
-    & .el-tag,
-    & .el-select__tags-text {
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
-
-    & .el-select__tags-text {
-        max-width: calc(100% - 16px);
-        display: inline-block;
-        vertical-align: middle;
-    }
 }
 </style>
 
