@@ -42,7 +42,12 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { NOTICE_MAX, NOTIFY_KEY, ALARM_DEAL } from '../constant';
+import {
+    NOTICE_MAX,
+    NOTIFY_KEY,
+    ALARM_DEAL,
+    MODIFY_TAG_ICON
+} from '../constant';
 import { ElNotificationComponent } from 'element-ui/types/notification';
 import { ElTableColumn } from 'element-ui/types/table-column';
 
@@ -82,17 +87,19 @@ export default class Notice extends Vue {
             if (this.timer) {
                 clearTimeout(this.timer);
             }
-            this.queue.push(v);
 
-            this.timer = setTimeout(() => {
-                let msg = this.queue.shift();
-                while (msg) {
-                    this.notify(msg);
-                    msg = this.queue.shift();
-                }
-            }, 200);
+            if (v.tagNo) {
+                this.$event.emit(MODIFY_TAG_ICON, v.tagNo, '/images/error.png'); // 更换标签图片为异常图片
+            }
+
+            this.queue.push(v);
+            this.timer = setTimeout(this.show.bind(this), 300);
         });
         this.$event.on(ALARM_DEAL, (v: IAlarm) => {
+            if (v.tagNo) {
+                this.$event.emit(MODIFY_TAG_ICON, v.tagNo); // 恢复标签图片
+            }
+
             const message = this.messages.find(m =>
                 Object.keys(m).every((k: keyof IAlarm) => m[k] === v[k])
             );
@@ -177,6 +184,15 @@ export default class Notice extends Vue {
                 this.elNotify.set('more', more);
             }
         });
+    }
+
+    private show(): Promise<void> {
+        return new Promise(resolve => {
+            const msg = this.queue.shift();
+            msg && this.notify(msg);
+
+            setTimeout(resolve, 100);
+        }).then(this.show.bind(this));
     }
 }
 </script>

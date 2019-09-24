@@ -18,7 +18,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
     private alarmTimes = new Map<string, number>();
 
     public created() {
-        this.$event.on(MODIFY_TAG_ICON, (tagNo: string, img: string) => this.mgr && this.mgr.modifyImg(tagNo, img));
+        this.$event.on(MODIFY_TAG_ICON, (tagNo: string, img?: string) => this.mgr && this.mgr.modifyImg(tagNo, img));
     }
 
     public beforeDestroy() {
