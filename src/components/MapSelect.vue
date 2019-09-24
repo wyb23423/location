@@ -50,7 +50,12 @@ export default class MapSelect extends Vue {
                 currentPage: 1,
                 pageSize: 100000
             });
-            this.options = res.pagedData.datas;
+            this.options = res.pagedData.datas.map(v => {
+                v.margin = JSON.parse(v.margin);
+                v.groupCode = JSON.parse(v.groupCode);
+
+                return v;
+            });
         } catch (e) {
             if (e.status !== 404) {
                 return;
