@@ -226,7 +226,13 @@ export class RouteList {
 
     // 标签管理
     public tag() {
-        const routes: RouteConfig[] = [];
+        const routes: RouteConfig[] = [
+            {
+                path: 'tagzone',
+                name: 'tagzone',
+                component: () => import(/* webpackChunkName: "tag" */ '@/views/tag/TagZone.vue'),
+            }
+        ];
         let redirect = '';
         if (this.hasPermission('tag', 'get')) {
             routes.push({

@@ -1,5 +1,5 @@
 <template>
-    <el-form :model="form">
+    <el-form :model="form" style="padding: 5%">
         <el-form-item label="相关标签">
             <el-select
                 v-model="form.tagNo"
@@ -37,7 +37,9 @@
                 url="/api/zone/getall"
             ></app-select>
         </el-form-item>
-        <el-form-item label="离开区域"> </el-form-item>
+        <el-form-item>
+            <el-button type="success" @click="submit">立即提交</el-button>
+        </el-form-item>
     </el-form>
 </template>
 
@@ -92,6 +94,10 @@ export default class TagZone extends Vue {
     }
 
     public change() {
+        //
+    }
+
+    public submit() {
         //
     }
 }
