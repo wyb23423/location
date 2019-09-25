@@ -58,7 +58,6 @@ export default class Notice extends Vue {
     private elNotify = new Map<IAlarm | string, ElNotificationComponent>();
     private notifyCount: number = 0;
 
-    private queue: IAlarm[] = [];
     private timer?: number;
 
     public get filters() {
@@ -84,17 +83,13 @@ export default class Notice extends Vue {
 
     public created() {
         this.$event.on(NOTIFY_KEY, (v: IAlarm) => {
-            if (this.timer) {
-                clearTimeout(this.timer);
-            }
-
             if (v.tagNo) {
                 this.$event.emit(MODIFY_TAG_ICON, v.tagNo, '/images/error.png'); // 更换标签图片为异常图片
             }
 
-            this.queue.push(v);
-            this.timer = setTimeout(this.show.bind(this), 300);
+            this.notify(v);
         });
+
         this.$event.on(ALARM_DEAL, (v: IAlarm) => {
             if (v.tagNo) {
                 this.$event.emit(MODIFY_TAG_ICON, v.tagNo); // 恢复标签图片
@@ -104,13 +99,6 @@ export default class Notice extends Vue {
                 Object.keys(m).every((k: keyof IAlarm) => m[k] === v[k])
             );
             message && this.reset(message);
-
-            const index = this.queue.findIndex(m =>
-                Object.keys(m).every((k: keyof IAlarm) => m[k] === v[k])
-            );
-            if (index > -1) {
-                this.queue.splice(index, 1);
-            }
         });
     }
 
@@ -184,15 +172,6 @@ export default class Notice extends Vue {
                 this.elNotify.set('more', more);
             }
         });
-    }
-
-    private show(): Promise<void> {
-        return new Promise(resolve => {
-            const msg = this.queue.shift();
-            msg && this.notify(msg);
-
-            setTimeout(resolve, 100);
-        }).then(this.show.bind(this));
     }
 }
 </script>
