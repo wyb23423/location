@@ -49,21 +49,10 @@ export class WebSocketInit extends Vue {
         };
         // ======================================
 
-        // 两套后台建立websocket方式不同，通过配置确定(暂定)
-        const countConfig = JSON.parse(sessionStorage.getItem('config')!).SOCKET_COUNT;
-        if (countConfig === 'multiple') {
-            const t = Date.now();
-            this.ws = this.groups.map(k => {
-                const ws = new WebSocket(`ws://${ip}/realtime/position/${k}/${t}`);
-                ws.onmessage = handler;
-                return ws;
-            });
-        } else {
-            const ws = new WebSocket(`ws://${ip}/realtime/position`);
-            ws.onopen = () => ws.send(JSON.stringify(this.groups));
-            ws.onmessage = handler;
-            this.ws = [ws];
-        }
+        const ws = new WebSocket(`ws://${ip}/realtime/position`);
+        ws.onopen = () => ws.send(JSON.stringify(this.groups));
+        ws.onmessage = handler;
+        this.ws = [ws];
     }
 
     protected move(tag: ITagInfo) {

@@ -18,6 +18,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
     private zoneAll: IZone[] = []; // 所有区域
     private alarmTimes = new Map<string, number>();
     private getZones?: () => void;
+    private moveTime = 1 / JSON.parse(sessionStorage.getItem('config')!).SECOND_COUNT;
 
     public created() {
         // 获取区域数据
@@ -109,11 +110,11 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
                     tagNo,
                     alarmTime: this.alarmTimes.get(tagNo),
                     alarmMsg: MISS_MSG,
-                    type: 1
+                    type: 300
                 });
 
                 this.moveTo(
-                    tagNo, coord, 1,
+                    tagNo, coord, this.moveTime,
                     () => {
                         const p = this.pops.get(tagNo);
                         if (p && p.update) {
