@@ -8,7 +8,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { DEFAULT_WIDTH, SX_WIDTH, RESIZE } from './constant';
+import { DEFAULT_WIDTH, SX_WIDTH, RESIZE, NOTIFY_KEY } from './constant';
 import Notice from './components/Notice.vue';
 
 @Component({
@@ -32,6 +32,16 @@ export default class App extends Vue {
 
         window.addEventListener('resize', fn, false);
         fn();
+
+        setTimeout(() => {
+            for (let i = 0; i < 10000; i++) {
+                this.$event.emit(NOTIFY_KEY, {
+                    tagNo: '00001',
+                    alarmTime: Date.now(),
+                    alarmMsg: 'test' + i
+                });
+            }
+        }, 1000);
     }
 }
 </script>

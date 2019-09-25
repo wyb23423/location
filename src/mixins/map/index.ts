@@ -34,7 +34,7 @@ export default class MapMixin extends Vue {
         this.initData();
 
         if (data && this.container) {
-            this.mark = this.$loading({}); // 开启加载中的遮罩
+            this.mark = this.$loading({ customClass: 'loading-mark' }); // 开启加载中的遮罩
 
             try {
                 await loopAwait(() => !!(

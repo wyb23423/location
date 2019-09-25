@@ -483,3 +483,8 @@ input{
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.loading-mark {
+    z-index: 99999999 !important;
+    opacity: 0.6;
+}

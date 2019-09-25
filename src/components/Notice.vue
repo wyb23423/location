@@ -1,11 +1,11 @@
 <template>
-    <el-drawer title="报警列表" :visible.sync="drawer" size="50%">
+    <el-drawer title="报警列表" :visible.sync="drawer" :size="size">
         <el-table
-            :data="messages"
+            :data="list"
             style="padding: 0 10px"
             stripe
             size="mini"
-            max-height="666"
+            :max-height="maxHeight"
             @row-click="doDeal"
         >
             <el-table-column
@@ -36,6 +36,16 @@
                 min-width="255"
             ></el-table-column>
         </el-table>
+        <el-pagination
+            style="margin-top: 20px; text-align: right"
+            small
+            hide-on-single-page
+            layout="prev, pager, next"
+            :total="messages.length"
+            :page-size="50"
+            @current-change="page = $event"
+        >
+        </el-pagination>
     </el-drawer>
 </template>
 
@@ -46,19 +56,25 @@ import {
     NOTICE_MAX,
     NOTIFY_KEY,
     ALARM_DEAL,
-    MODIFY_TAG_ICON
+    MODIFY_TAG_ICON,
+    SX_WIDTH
 } from '../constant';
 import { ElNotificationComponent } from 'element-ui/types/notification';
 import { ElTableColumn } from 'element-ui/types/table-column';
+import { ElDrawer } from 'element-ui/types/drawer';
+import { Ref } from 'vue-property-decorator';
 
 @Component
 export default class Notice extends Vue {
     public drawer: boolean = false;
     public messages: IAlarm[] = [];
+    public page: number = 1;
+    public maxHeight: number = 666;
+    public size: string = '50%';
+
     private elNotify = new Map<IAlarm | string, ElNotificationComponent>();
     private notifyCount: number = 0;
-
-    private timer?: number;
+    private notifyPromise = Promise.resolve();
 
     public get filters() {
         const type = new Set();
@@ -72,13 +88,18 @@ export default class Notice extends Vue {
             baseNo.add(v.baseNo);
             time.add(v.alarmTime);
         });
+        const format = (<any>this.$options.filters).date;
 
         return {
             type: Array.from(type).map(v => ({ text: v, value: v })),
             tagNo: Array.from(tagNo).map(v => ({ text: v, value: v })),
             baseNo: Array.from(baseNo).map(v => ({ text: v, value: v })),
-            time: Array.from(time).map(v => ({ text: v, value: v }))
+            time: Array.from(time).map(v => ({ text: format(v), value: v }))
         };
+    }
+
+    public get list() {
+        return this.messages.slice((this.page - 1) * 50, this.page * 50);
     }
 
     public created() {
@@ -100,6 +121,13 @@ export default class Notice extends Vue {
             );
             message && this.reset(message);
         });
+    }
+
+    public mounted() {
+        this.maxHeight = document.body.offsetHeight - 150;
+        if (document.body.offsetWidth <= SX_WIDTH) {
+            this.size = '100%';
+        }
     }
 
     public formatter(r: any, c: any, v: number) {
@@ -135,27 +163,34 @@ export default class Notice extends Vue {
         }
     }
 
-    private notify(v: IAlarm) {
-        this.messages.push(v);
-
+    private async notify(v: IAlarm) {
         const oldCount: number = this.notifyCount;
-        if (this.notifyCount < NOTICE_MAX) {
-            this.notifyCount++;
+        if (v) {
+            this.messages.push(v);
+            if (this.notifyCount < NOTICE_MAX) {
+                this.notifyCount++;
 
-            const format = (<any>this.$options.filters).date;
-            const el = this.$notify.warning({
-                title: `标签${v.tagNo}异常`,
-                message: `${format(v.alarmTime)}: ${v.alarmMsg}`,
-                duration: 0,
-                showClose: false,
-                customClass: 'notice-component',
-                onClick: () => this.doDeal(v)
-            });
+                this.notifyPromise = this.notifyPromise
+                    .then(this.$nextTick)
+                    .then(() => {
+                        const format = (<any>this.$options.filters).date;
+                        const el = this.$notify.warning({
+                            title: `标签${v.tagNo}异常`,
+                            message: `${format(v.alarmTime)}: ${v.alarmMsg}`,
+                            duration: 0,
+                            showClose: false,
+                            customClass: 'notice-component',
+                            onClick: () => this.doDeal(v)
+                        });
 
-            this.elNotify.set(v, el);
+                        this.elNotify.set(v, el);
+                    });
+            }
         }
 
-        this.$nextTick(() => this.updateMore(oldCount));
+        this.notifyPromise = this.notifyPromise
+            .then(this.$nextTick)
+            .then(() => this.updateMore(oldCount));
     }
 
     private updateMore(oldCount: number) {
