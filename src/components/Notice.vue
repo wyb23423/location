@@ -63,6 +63,9 @@ import { ElNotificationComponent } from 'element-ui/types/notification';
 import { ElTableColumn } from 'element-ui/types/table-column';
 import { ElDrawer } from 'element-ui/types/drawer';
 import { Ref } from 'vue-property-decorator';
+import { getAndCreateStore } from '../assets/lib/localstore';
+
+export const errorStore = getAndCreateStore('ERROR_STORE');
 
 @Component
 export default class Notice extends Vue {
@@ -104,17 +107,37 @@ export default class Notice extends Vue {
 
     public created() {
         this.$event.on(NOTIFY_KEY, (v: IAlarm) => {
-            if (v.tagNo) {
-                this.$event.emit(MODIFY_TAG_ICON, v.tagNo, '/images/error.png'); // 更换标签图片为异常图片
-            }
+            errorStore
+                .getItem<number>(v.tagNo)
+                .then(count => errorStore.setItem(v.tagNo, ++count))
+                .catch(() => {
+                    errorStore.setItem(v.tagNo, 1);
+
+                    // 更换标签图片为异常图片;
+                    this.$event.emit(
+                        MODIFY_TAG_ICON,
+                        v.tagNo,
+                        '/images/error.png'
+                    );
+                });
 
             this.notify(v);
         });
 
         this.$event.on(ALARM_DEAL, (v: IAlarm) => {
-            if (v.tagNo) {
-                this.$event.emit(MODIFY_TAG_ICON, v.tagNo); // 恢复标签图片
-            }
+            errorStore
+                .getItem<number>(v.tagNo)
+                .then(count => {
+                    count--;
+
+                    if (!count) {
+                        this.$event.emit(MODIFY_TAG_ICON, v.tagNo);
+                        errorStore.removeItem(v.tagNo);
+                    } else {
+                        errorStore.setItem(v.tagNo, count);
+                    }
+                })
+                .catch(console.log);
 
             const message = this.messages.find(m =>
                 Object.keys(m).every((k: keyof IAlarm) => m[k] === v[k])
