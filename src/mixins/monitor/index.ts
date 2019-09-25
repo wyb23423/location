@@ -16,6 +16,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
     private alarmTimes = new Map<string, number>();
+    private moveTime = 1 / JSON.parse(sessionStorage.getItem('config')!).SECOND_COUNT;
 
     public created() {
         this.$event.on(MODIFY_TAG_ICON, (tagNo: string, img?: string) => this.mgr && this.mgr.modifyImg(tagNo, img));
@@ -102,7 +103,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
                 });
 
                 this.moveTo(
-                    tagNo, coord, 1,
+                    tagNo, coord, this.moveTime,
                     () => {
                         const p = this.pops.get(tagNo);
                         if (p && p.update) {
