@@ -6,6 +6,7 @@ import { FengMapMgr } from '@/assets/map/fengmap';
 import MapSelect from '@/components/MapSelect.vue';
 import { PIXIMgr } from '@/assets/map/pixi';
 import { Ref } from 'vue-property-decorator';
+import { ElLoadingComponent } from 'element-ui/types/loading';
 
 @Component({
     components: {
@@ -16,11 +17,16 @@ export default class MapMixin extends Vue {
     public mgr?: FengMapMgr | PIXIMgr;
     public showPath: boolean = false;
     public groups: string[] = []; // 当前地图关联组号
-
     @Ref('map') protected readonly container?: HTMLElement;
+
+    private mark?: ElLoadingComponent;
 
     public beforeDestroy() {
         this.dispose();
+
+        // 关闭遮罩
+        this.mark && this.mark.close();
+        this.mark = undefined;
     }
 
     public async selectMap(data: IMap) {
@@ -28,6 +34,8 @@ export default class MapMixin extends Vue {
         this.initData();
 
         if (data && this.container) {
+            this.mark = this.$loading({}); // 开启加载中的遮罩
+
             try {
                 await loopAwait(() => !!(
                     this.container && this.container.offsetWidth && this.container.offsetHeight
@@ -36,9 +44,18 @@ export default class MapMixin extends Vue {
                 this.dispose();
 
                 this.mgr = createMap(data, this.container);
+                // 加载完毕关闭遮罩
+                this.mgr!.on('loadComplete', () => {
+                    this.mark && this.mark.close();
+                    this.mark = undefined;
+                });
                 this.bindEvents(data);
             } catch (e) {
                 console.warn(e);
+
+                // 出错关闭遮罩
+                this.mark && this.mark.close();
+                this.mark = undefined;
             }
         }
     }

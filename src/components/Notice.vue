@@ -135,8 +135,11 @@ export default class Notice extends Vue {
         }
     }
 
-    private notify(v?: IAlarm) {
-        if (v && this.notifyCount < NOTICE_MAX) {
+    private notify(v: IAlarm) {
+        this.messages.push(v);
+
+        const oldCount: number = this.notifyCount;
+        if (this.notifyCount < NOTICE_MAX) {
             this.notifyCount++;
 
             const format = (<any>this.$options.filters).date;
@@ -152,15 +155,17 @@ export default class Notice extends Vue {
             this.elNotify.set(v, el);
         }
 
-        v && this.messages.push(v);
+        this.$nextTick(() => this.updateMore(oldCount));
+    }
 
-        this.$nextTick(() => {
-            let more = this.elNotify.get('more');
-            more && more.close();
+    private updateMore(oldCount: number) {
+        let more = this.elNotify.get('more');
 
-            const moreCount = this.messages.length - this.notifyCount;
+        const moreCount = this.messages.length - this.notifyCount;
+        if (moreCount > 0) {
+            if (!more || oldCount !== this.notifyCount) {
+                more && more.close();
 
-            if (moreCount > 0) {
                 more = this.$notify.info({
                     title: '更多',
                     message: `+${moreCount}`,
@@ -170,8 +175,12 @@ export default class Notice extends Vue {
                     onClick: () => (this.drawer = true)
                 });
                 this.elNotify.set('more', more);
+            } else {
+                more.$data.message = `+${moreCount}`;
             }
-        });
+        } else {
+            more && more.close();
+        }
     }
 }
 </script>
