@@ -49,8 +49,8 @@ import { Message } from 'element-ui';
 import Router from 'vue-router';
 import { State } from 'vuex-class/lib/bindings';
 import { initRouter } from '@/router';
-import { load } from '@/assets/lib/slow-loading';
 import { ElForm } from 'element-ui/types/form';
+import { load } from '@/assets/utils/download';
 
 interface LoginInfo {
     password: string;

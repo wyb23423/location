@@ -1,12 +1,13 @@
 /**
  * 发送请求
  */
+import { isThisType } from '../utils/util';
 import { Message } from 'element-ui';
 
 /**
  * 发送get请求
  */
-export function get(
+export async function get(
     url: string | RequestParams,
     params: any = {},
     headers: any = {},
@@ -19,10 +20,19 @@ export function get(
         return Promise.reject(req);
     }
 
-    return doFetch(req, true);
+    const init: RequestInit = {
+        headers: req.headers,
+        credentials: 'include',
+        method: 'GET'
+    };
+
+    controller = req.controller || new AbortController();
+    init.signal = controller.signal;
+
+    return parseRes(await fetch(req.url, init));
 }
 
-export function post(
+export async function post(
     url: string | RequestParams,
     params: any = {},
     headers: any = {},
@@ -35,26 +45,18 @@ export function post(
         return Promise.reject(req);
     }
 
-    return doFetch(req, false);
-}
-
-function doFetch(req: RequestParams, isGet: boolean) {
-    const method = !isGet ? 'POST' : 'GET';
     const init: RequestInit = {
         headers: req.headers,
-        body: !isGet ? req.params : void 0,
+        body: req.params,
         credentials: 'include',
-        method
+        method: 'POST'
     };
-    const controller = req.controller || new AbortController();
-    init.signal = controller.signal;
+    if (req.controller) {
+        init.signal = req.controller.signal;
+    }
 
-    const timeover = new Promise<Response>((resolve, reject) =>
-        setTimeout(reject, 60000, `request timeover ${method} ${req.url}`)
-    );
-    const request = fetch(req.url, init);
+    return parseRes(await fetch(req.url, init));
 
-    return Promise.race([request, timeover]).then(parseRes);
 }
 
 async function parseRes(res: Response) {
@@ -158,13 +160,4 @@ function json2FormData(parmas: any) {
     }
 
     return data;
-}
-
-/**
- * 判断一个变量是否是某种类型
- */
-function isThisType(obj: any, type: string) {
-    type = type.replace(/^\w/, (w: string) => w.toLocaleUpperCase());
-
-    return Object.prototype.toString.call(obj) === `[object ${type}]`;
 }

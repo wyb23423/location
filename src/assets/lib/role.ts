@@ -13,13 +13,12 @@ export class RouteList {
         if (user) {
             try {
                 this.roles = JSON.parse(JSON.parse(user).role);
-                this.roles.tag = this.roles.tag || this.roles.people;
             } catch (e) {
                 //
             }
         }
 
-        ['admin', 'system', 'base', 'tag', 'map', 'alarm'].forEach(v => {
+        ['admin', 'system', 'base', 'people', 'map', 'alarm'].forEach(v => {
             Reflect.get(this, v).call(this);
         });
     }
@@ -224,21 +223,15 @@ export class RouteList {
         }
     }
 
-    // 标签管理
-    public tag() {
-        const routes: RouteConfig[] = [
-            {
-                path: 'tagzone',
-                name: 'tagzone',
-                component: () => import(/* webpackChunkName: "tag" */ '@/views/tag/TagZone.vue'),
-            }
-        ];
+    // 人员管理
+    public people() {
+        const routes: RouteConfig[] = [];
         let redirect = '';
-        if (this.hasPermission('tag', 'get')) {
+        if (this.hasPermission('people', 'get')) {
             routes.push({
                 path: 'list/:type',
-                name: 'tag-list',
-                component: () => import(/* webpackChunkName: "tag" */ '@/views/tag/TagList.vue'),
+                name: 'people-list',
+                component: () => import(/* webpackChunkName: "people" */ '@/views/people/PeopleList.vue'),
                 props: (route: Route) => ({
                     type: route.params.type,
                     permission: {
@@ -247,21 +240,21 @@ export class RouteList {
                     }
                 })
             });
-            redirect = 'tag/list/1';
+            redirect = 'people/list/1';
         }
 
-        if (this.hasPermission('tag', 'post')) {
+        if (this.hasPermission('people', 'post')) {
             routes.push({
-                path: 'add', name: 'tag-add',
-                component: () => import(/* webpackChunkName: "tag" */ '@/views/tag/TagAdd.vue')
+                path: 'add', name: 'people-add',
+                component: () => import(/* webpackChunkName: "people" */ '@/views/people/PeopleAdd.vue')
             });
-            redirect = redirect || '/tag/add';
+            redirect = redirect || '/people/add';
         }
 
         if (routes.length) {
             this.routes.push({
-                path: 'tag', redirect, name: 'tag',
-                component: () => import(/* webpackChunkName: "tag" */ '@/views/tag/TagIndex.vue'),
+                path: 'people', redirect, name: 'people',
+                component: () => import(/* webpackChunkName: "people" */ '@/views/people/PeopleIndex.vue'),
                 children: routes
             });
         }
