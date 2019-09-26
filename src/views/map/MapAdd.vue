@@ -14,7 +14,7 @@
 <script lang="ts">
 import Component from 'vue-class-component';
 import Vue from 'vue';
-import MapEdit from '@/components/MapEdit.vue';
+import MapEdit, { MapForm } from '@/components/MapEdit.vue';
 
 @Component({
     components: {
@@ -22,25 +22,24 @@ import MapEdit from '@/components/MapEdit.vue';
     }
 })
 export default class MapAdd extends Vue {
-    public onSubmit(data: any) {
+    public onSubmit(data: MapForm) {
+        if (!data.map) {
+            return;
+        }
+
         this.$http
             .post('/api/map/upload/mapfile', {
                 file: data.map,
                 mapName: data.map.name.split('.')[0] || 'map'
             })
             .then((res: ResponseData) => {
-                const timestamp = Date.now();
                 const { minX, maxX, minY, maxY } = data;
 
                 return this.$http.post({
                     url: '/api/map/addMap',
                     body: {
-                        createTime: timestamp,
-                        createUser: 'null',
                         filepath: res.resultMap.mapUrl,
                         name: data.name,
-                        updateTime: timestamp,
-                        updateUser: 'null',
                         margin: JSON.stringify([
                             [minX, minY],
                             [minX, maxY],

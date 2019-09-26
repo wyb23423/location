@@ -85,7 +85,7 @@ export default class Login extends Vue {
         //             .then(res => res.json())
         //             .then((res: ResponseData) => {
         //                 if (res.code === 200) {
-        //                     sessionStorage.setItem('login', '1');
+        sessionStorage.setItem('login', '1');
 
         //                     const admin = res.pagedData
         //                         ? res.pagedData.datas[0]

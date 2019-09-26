@@ -58,17 +58,20 @@ router.beforeEach((to: Route, from: Route, next: any) => {
 Vue.filter('date', formatDate);
 
 // ==================================初始化
-initConfig()
-  .then(() => {
-    if (+(<string>sessionStorage.getItem('login'))) {
-      console.log('load router...');
-      initRouter();
-    }
+async function init() {
+  await initConfig();
 
-    console.log('app init...');
-    new Vue({
-      router,
-      store,
-      render: (h) => h(App),
-    }).$mount('#app');
-  });
+  if (+(<string>sessionStorage.getItem('login'))) {
+    console.log('load router...');
+    initRouter();
+  }
+
+  console.log('app init...');
+  new Vue({
+    router,
+    store,
+    render: (h) => h(App),
+  }).$mount('#app');
+}
+
+init();

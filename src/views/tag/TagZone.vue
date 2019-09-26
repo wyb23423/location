@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <h3>设置标签会触发报警的区域</h3>
-        <el-form :model="form" style="padding: 5%">
+    <div style="padding: 5%">
+        <h3 style="color: rgb(0, 150, 136)">标签触发报警的区域</h3>
+        <el-form :model="form">
             <el-form-item label="相关标签">
                 <el-select
                     v-model="form.tagNo"
@@ -65,8 +65,8 @@ export default class TagZone extends Vue {
 
     public form = {
         tagNo: '',
-        in: [],
-        out: []
+        in: <number[]>[],
+        out: <number[]>[]
     };
     public tagOptions: Array<Pick<ElOption, 'value' | 'label'>> = [];
 

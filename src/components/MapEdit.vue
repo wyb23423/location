@@ -41,20 +41,6 @@
                 ></el-input-number>
             </el-form-item>
         </el-form-item>
-        <el-form-item label="关联分组" prop="groupCode" required>
-            <el-select
-                v-model="form.groupCode"
-                multiple
-                filterable
-                allow-create
-                clearable
-                default-first-option
-                placeholder="关联分组"
-                class="select_input"
-                :popper-class="$style.hidden"
-            >
-            </el-select>
-        </el-form-item>
 
         <el-form-item required label="地图">
             <el-upload
@@ -88,51 +74,61 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Watch, Emit } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
+import { ElUploadInternalFileDetail } from 'element-ui/types/upload';
+
+export interface MapForm {
+    id: number;
+    name: string;
+    minX: number;
+    maxX: number;
+    minY: number;
+    maxY: number;
+    width: number;
+    height: number;
+    filename?: string;
+    url?: string;
+    map?: File | null;
+}
 
 @Component
 export default class MapEdit extends Vue {
-    @Prop({ default: () => ({}) }) public data!: IJson;
+    @Prop({ default: () => ({}) }) public data!: MapForm;
 
-    public form: IJson = {
+    public form = <MapForm>{
         url: '',
         filename: '',
         map: null,
-        name: '',
-        groupCode: []
+        name: ''
     };
 
-    public changeUpload: ((file: any) => void) | null = null; // 选择图片后回调
+    public changeUpload(file: ElUploadInternalFileDetail) {
+        if (
+            file.raw.type !== 'image/png' &&
+            file.raw.type !== 'image/jpeg' &&
+            !file.name.endsWith('.fmap')
+        ) {
+            return this.$message.error('只能上传jpg/png/fmag文件!');
+        }
 
-    public created() {
-        this.changeUpload = (file: any) => {
-            if (
-                file.raw.type !== 'image/png' &&
-                file.raw.type !== 'image/jpeg' &&
-                !file.name.endsWith('.fmap')
-            ) {
-                return this.$message.error('只能上传jpg/png/fmag文件!');
-            }
+        if (file.size / 1024 / 1024 > 5) {
+            return this.$message.error('上传文件大小不能超过 5MB!');
+        }
 
-            if (file.size / 1024 / 1024 > 5) {
-                return this.$message.error('上传文件大小不能超过 5MB!');
-            }
+        if (file.name.endsWith('.fmap')) {
+            this.form.url = '';
+            this.form.filename = file.name;
+        } else {
+            const reader = new FileReader();
+            reader.onload = (e: ProgressEvent) => {
+                this.form.filename = '';
+                // target.result 该属性表示目标对象的DataURL
+                this.form.url = <string>(<FileReader>e.target).result;
+            };
+            // 传入一个参数对象即可得到基于该参数对象的文本内容
+            reader.readAsDataURL(file.raw);
+        }
 
-            if (file.name.endsWith('.fmap')) {
-                this.form.url = '';
-                this.form.filename = file.name;
-            } else {
-                const reader = new FileReader();
-                reader.onload = (e: ProgressEvent) => {
-                    this.form.filename = '';
-                    // target.result 该属性表示目标对象的DataURL
-                    this.form.url = <string>(<FileReader>e.target).result;
-                };
-                // 传入一个参数对象即可得到基于该参数对象的文本内容
-                reader.readAsDataURL(file.raw);
-            }
-
-            this.form.map = file.raw;
-        };
+        this.form.map = file.raw;
     }
 
     public submit() {
@@ -144,12 +140,8 @@ export default class MapEdit extends Vue {
                     return this.$message.warning('地图文件不能为空');
                 }
 
-                const data = {
-                    ...this.form,
-                    groupCode: this.form.groupCode.join(',')
-                };
-                this.$emit('update:data', data);
-                this.$emit('submit', data);
+                this.$emit('update:data', this.form);
+                this.$emit('submit', this.form);
             })
             .catch(console.log);
     }
@@ -165,7 +157,7 @@ export default class MapEdit extends Vue {
 
     @Watch('data')
     public assignForm() {
-        Object.assign(this.form, this.data);
+        this.form = { ...this.data };
     }
 }
 </script>

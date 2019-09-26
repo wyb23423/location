@@ -33,7 +33,7 @@
 <script lang="ts">
 import Component from 'vue-class-component';
 import Vue from 'vue';
-import MapEdit from '@/components/MapEdit.vue';
+import MapEdit, { MapForm } from '@/components/MapEdit.vue';
 import MapSelect from '@/components/MapSelect.vue';
 import { Prop } from 'vue-property-decorator';
 
@@ -46,7 +46,7 @@ import { Prop } from 'vue-property-decorator';
 export default class MapAdd extends Vue {
     @Prop() public permission!: Permission;
 
-    public map: IJson = {};
+    public map: MapForm = Object.create(null);
 
     public selectMap(data: IMap) {
         const margin = <number[][]>data.margin;
@@ -60,7 +60,6 @@ export default class MapAdd extends Vue {
             maxY: margin[2][1],
             width: margin[4][0],
             height: margin[4][1],
-            groupCode: data.groupCode,
             [data.filepath.endsWith('.fmap')
                 ? 'filename'
                 : 'url']: data.filepath
@@ -83,7 +82,7 @@ export default class MapAdd extends Vue {
         }
     }
 
-    public onSubmit(data: IJson) {
+    public onSubmit(data: MapForm) {
         if (this.map.id == null) {
             return this.$message.error('未选择地图!');
         }
@@ -100,17 +99,14 @@ export default class MapAdd extends Vue {
                 return { resultMap: { mapUrl: data.filename || data.url } };
             })
             .then((res: { resultMap: { mapUrl: string } }) => {
-                const timestamp = Date.now();
                 const { minX, maxX, minY, maxY } = data;
 
                 return this.$http.post({
-                    url: '/api/map/addMap',
+                    url: '/api/map/updateMap',
                     body: {
-                        ...this.map,
+                        id: this.map.id,
                         filepath: res.resultMap.mapUrl,
                         name: data.name,
-                        updateTime: timestamp,
-                        updateUser: 'null',
                         margin: JSON.stringify([
                             [minX, minY],
                             [minX, maxY],
