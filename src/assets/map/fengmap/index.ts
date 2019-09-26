@@ -38,9 +38,7 @@ export class FengMapMgr extends CoordTransformer {
             key: APP_KEY,
             // 开发者申请应用名称
             appName: APP_NAME,
-
-            preserveDrawingBuffer: true,
-            useCompatibleOnLineCheck: true
+            preserveDrawingBuffer: true
         });
         this.map.openMapById(name);
         this.map.on('loadComplete', () => this.isLoaded = true);
@@ -117,7 +115,7 @@ export class FengMapMgr extends CoordTransformer {
 
     public modifyImg(name: string | number, img?: string) {
         this.imageMgr.find(name).forEach(v => {
-            img = img || getCustomInfo(v, 'info').photo;
+            img = img || getCustomInfo<ITag>(v, 'info').icon;
             img && (v.url = img);
         });
     }
@@ -139,7 +137,7 @@ export class FengMapMgr extends CoordTransformer {
     }
 
     public addTextMarker(
-        coord: Vector2 | any,
+        coord: Vector2 & IJson,
         name: string,
         isMapCoor: boolean = false,
         gid?: number

@@ -14,6 +14,7 @@ import VueCropper from 'vue-cropper';
 import * as PIXI from 'pixi.js';
 import { initConfig } from './constant';
 import Events from './assets/lib/events';
+import { formatDate } from './assets/lib/date';
 
 // ========================================全局变量及注入vue实例的属性
 (<any>window).PIXI = PIXI; // add code
@@ -53,45 +54,24 @@ router.beforeEach((to: Route, from: Route, next: any) => {
   }
 });
 
-
 // =============================================全局filter
-Vue.filter('date', (value: number, fmt: string = 'yyyy/MM/dd hh:mm:ss') => {
-  const date = new Date(value);
-
-  if (/(y+)/.test(fmt)) {
-    fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length));
-  }
-
-  const o = [
-    'M+', date.getMonth() + 1,
-    'd+', date.getDate(),
-    'h+', date.getHours(),
-    'm+', date.getMinutes(),
-    's+', date.getSeconds()
-  ];
-
-  for (let i = 0; i < o.length; i++) {
-    if (new RegExp(`(${o[i++]})`).test(fmt)) {
-      const str = o[i] + '';
-      fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? str : str.padStart(str.length, '0'));
-    }
-  }
-  return fmt;
-});
-
+Vue.filter('date', formatDate);
 
 // ==================================初始化
-initConfig()
-  .then(() => {
-    if (+(<string>sessionStorage.getItem('login'))) {
-      console.log('load router...');
-      initRouter();
-    }
+async function init() {
+  await initConfig();
 
-    console.log('app init...');
-    new Vue({
-      router,
-      store,
-      render: (h) => h(App),
-    }).$mount('#app');
-  });
+  if (+(<string>sessionStorage.getItem('login'))) {
+    console.log('load router...');
+    initRouter();
+  }
+
+  console.log('app init...');
+  new Vue({
+    router,
+    store,
+    render: (h) => h(App),
+  }).$mount('#app');
+}
+
+init();
