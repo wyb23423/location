@@ -4,6 +4,7 @@ import { WebSocketInit } from './websocket';
 import { arr2obj } from '@/assets/utils/util';
 import { LOSS_TIME, MODIFY_TAG_ICON, NOTIFY_KEY, MISS_MSG, ALARM_DEAL } from '@/constant';
 import Link from '../map/link';
+import { getCustomInfo } from '@/assets/map/common';
 
 interface Pop {
     close(immediately?: boolean): void | boolean;
@@ -34,11 +35,9 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
             const tags = this.mgr.find(key, !!isName);
 
             if (tags.length) {
-                tags.forEach(v => {
-                    const info = v.custom && v.custom.info ? v.custom.info : null;
-                    if (info) {
-                        this.pops.set(info.name, this.mgr!.addPopInfo(v));
-                    }
+                tags.forEach((v: any) => {
+                    const name = getCustomInfo<ITag>(v, 'info').name;
+                    name && this.pops.set(name, this.mgr!.addPopInfo(v));
                 });
             } else {
                 this.$message.info(`未找到标签${key}为${key}的标签`);
