@@ -1,11 +1,11 @@
 <template>
-    <el-drawer title="报警列表" :visible.sync="drawer" size="50%">
+    <el-drawer title="报警列表" :visible.sync="drawer" :size="size">
         <el-table
-            :data="messages"
+            :data="list"
             style="padding: 0 10px"
             stripe
             size="mini"
-            max-height="666"
+            :max-height="maxHeight"
             @row-click="doDeal"
         >
             <el-table-column
@@ -22,19 +22,13 @@
                 :filters="filters.tagNo"
                 :filter-method="filterHandler"
             ></el-table-column>
-            <!-- <el-table-column
-                prop="baseNo"
-                label="基站号"
-                min-width="100"
-                :filters="filters.baseNo"
-                :filter-method="filterHandler"
-            ></el-table-column> -->
             <el-table-column
                 prop="alarmTime"
                 label="报警时间"
                 min-width="160"
                 :filters="filters.time"
                 :filter-method="filterHandler"
+                :formatter="formatter"
             ></el-table-column>
             <el-table-column
                 prop="alarmMsg"
@@ -42,22 +36,48 @@
                 min-width="255"
             ></el-table-column>
         </el-table>
+        <el-pagination
+            style="margin-top: 20px; text-align: right"
+            small
+            hide-on-single-page
+            layout="prev, pager, next"
+            :total="messages.length"
+            :page-size="50"
+            @current-change="page = $event"
+        >
+        </el-pagination>
     </el-drawer>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { NOTICE_MAX, NOTIFY_KEY, ALARM_DEAL } from '../constant';
+import {
+    NOTICE_MAX,
+    NOTIFY_KEY,
+    ALARM_DEAL,
+    MODIFY_TAG_ICON,
+    SX_WIDTH
+} from '../constant';
 import { ElNotificationComponent } from 'element-ui/types/notification';
 import { ElTableColumn } from 'element-ui/types/table-column';
+import { ElDrawer } from 'element-ui/types/drawer';
+import { Ref } from 'vue-property-decorator';
+import { getAndCreateStore } from '../assets/lib/localstore';
+
+export const errorStore = getAndCreateStore('ERROR_STORE');
 
 @Component
 export default class Notice extends Vue {
     public drawer: boolean = false;
     public messages: IAlarm[] = [];
+    public page: number = 1;
+    public maxHeight: number = 666;
+    public size: string = '50%';
+
     private elNotify = new Map<IAlarm | string, ElNotificationComponent>();
     private notifyCount: number = 0;
+    private notifyPromise = Promise.resolve();
 
     public get filters() {
         const type = new Set();
@@ -71,24 +91,70 @@ export default class Notice extends Vue {
             baseNo.add(v.baseNo);
             time.add(v.alarmTime);
         });
+        const format = (<any>this.$options.filters).date;
 
         return {
             type: Array.from(type).map(v => ({ text: v, value: v })),
             tagNo: Array.from(tagNo).map(v => ({ text: v, value: v })),
             baseNo: Array.from(baseNo).map(v => ({ text: v, value: v })),
-            time: Array.from(time).map(v => ({ text: v, value: v }))
+            time: Array.from(time).map(v => ({ text: format(v), value: v }))
         };
     }
 
+    public get list() {
+        return this.messages.slice((this.page - 1) * 50, this.page * 50);
+    }
+
     public created() {
-        this.$event.on(NOTIFY_KEY, this.notify.bind(this));
+        this.$event.on(NOTIFY_KEY, (v: IAlarm) => {
+            errorStore
+                .getItem<number>(v.tagNo)
+                .then(count => errorStore.setItem(v.tagNo, ++count))
+                .catch(() => {
+                    errorStore.setItem(v.tagNo, 1);
+
+                    // 更换标签图片为异常图片;
+                    this.$event.emit(
+                        MODIFY_TAG_ICON,
+                        v.tagNo,
+                        '/images/error.png'
+                    );
+                });
+
+            this.notify(v);
+        });
+
         this.$event.on(ALARM_DEAL, (v: IAlarm) => {
+            errorStore
+                .getItem<number>(v.tagNo)
+                .then(count => {
+                    count--;
+
+                    if (!count) {
+                        this.$event.emit(MODIFY_TAG_ICON, v.tagNo);
+                        errorStore.removeItem(v.tagNo);
+                    } else {
+                        errorStore.setItem(v.tagNo, count);
+                    }
+                })
+                .catch(console.log);
+
             const message = this.messages.find(m =>
                 Object.keys(m).every((k: keyof IAlarm) => m[k] === v[k])
             );
-
             message && this.reset(message);
         });
+    }
+
+    public mounted() {
+        this.maxHeight = document.body.offsetHeight - 150;
+        if (document.body.offsetWidth <= SX_WIDTH) {
+            this.size = '100%';
+        }
+    }
+
+    public formatter(r: any, c: any, v: number) {
+        return (<any>this.$options.filters).date(v);
     }
 
     public filterHandler(
@@ -120,31 +186,44 @@ export default class Notice extends Vue {
         }
     }
 
-    private notify(v?: IAlarm) {
-        if (v && this.notifyCount < NOTICE_MAX) {
-            this.notifyCount++;
+    private async notify(v: IAlarm) {
+        const oldCount: number = this.notifyCount;
+        if (v) {
+            this.messages.push(v);
+            if (this.notifyCount < NOTICE_MAX) {
+                this.notifyCount++;
 
-            const el = this.$notify.warning({
-                title: `标签${v.deviceId}异常`,
-                message: `${v.content}: ${v.time}`,
-                duration: 0,
-                showClose: false,
-                customClass: 'notice-component',
-                onClick: () => this.doDeal(v)
-            });
+                this.notifyPromise = this.notifyPromise
+                    .then(this.$nextTick)
+                    .then(() => {
+                        const format = (<any>this.$options.filters).date;
+                        const el = this.$notify.warning({
+                            title: `标签${v.tagNo}异常`,
+                            message: `${format(v.alarmTime)}: ${v.alarmMsg}`,
+                            duration: 0,
+                            showClose: false,
+                            customClass: 'notice-component',
+                            onClick: () => this.doDeal(v)
+                        });
 
-            this.elNotify.set(v, el);
+                        this.elNotify.set(v, el);
+                    });
+            }
         }
 
-        v && this.messages.push(v);
+        this.notifyPromise = this.notifyPromise
+            .then(this.$nextTick)
+            .then(() => this.updateMore(oldCount));
+    }
 
-        this.$nextTick(() => {
-            let more = this.elNotify.get('more');
-            more && more.close();
+    private updateMore(oldCount: number) {
+        let more = this.elNotify.get('more');
 
-            const moreCount = this.messages.length - this.notifyCount;
+        const moreCount = this.messages.length - this.notifyCount;
+        if (moreCount > 0) {
+            if (!more || oldCount !== this.notifyCount) {
+                more && more.close();
 
-            if (moreCount > 0) {
                 more = this.$notify.info({
                     title: '更多',
                     message: `+${moreCount}`,
@@ -154,14 +233,15 @@ export default class Notice extends Vue {
                     onClick: () => (this.drawer = true)
                 });
                 this.elNotify.set('more', more);
+            } else {
+                more.$data.message = `+${moreCount}`;
             }
-        });
+        } else {
+            more && more.close();
+        }
     }
 }
 </script>
-
-<style lang="postcss" module>
-</style>
 
 <style lang="postcss">
 .notice-component {

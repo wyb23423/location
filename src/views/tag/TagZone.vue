@@ -1,46 +1,49 @@
 <template>
-    <el-form :model="form" style="padding: 5%">
-        <el-form-item label="相关标签">
-            <el-select
-                v-model="form.tagNo"
-                :disabled="isPlaying"
-                :loading="loading"
-                :remote-method="remoteMethod"
-                placeholder="请输入标签名"
-                @change="change"
-                style="min-width: 200px"
-                remote
-                filterable
-            >
-                <el-option
-                    v-for="item in tagOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+    <div>
+        <h3>设置标签会触发报警的区域</h3>
+        <el-form :model="form" style="padding: 5%">
+            <el-form-item label="相关标签">
+                <el-select
+                    v-model="form.tagNo"
+                    :disabled="isPlaying"
+                    :loading="loading"
+                    :remote-method="remoteMethod"
+                    placeholder="请输入标签名"
+                    @change="change"
+                    style="min-width: 200px"
+                    remote
+                    filterable
                 >
-                </el-option>
-            </el-select>
-        </el-form-item>
-        <el-form-item label="进入区域">
-            <app-select
-                multiple
-                v-model="form.in"
-                :filters="{ mode: zoneMode.in }"
-                url="/api/zone/getall"
-            ></app-select>
-        </el-form-item>
-        <el-form-item label="离开区域">
-            <app-select
-                multiple
-                v-model="form.out"
-                :filters="{ mode: zoneMode.out }"
-                url="/api/zone/getall"
-            ></app-select>
-        </el-form-item>
-        <el-form-item>
-            <el-button type="success" @click="submit">立即提交</el-button>
-        </el-form-item>
-    </el-form>
+                    <el-option
+                        v-for="item in tagOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                    >
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="进入区域">
+                <app-select
+                    multiple
+                    v-model="form.in"
+                    :filters="{ mode: zoneMode.in }"
+                    url="/api/zone/getall"
+                ></app-select>
+            </el-form-item>
+            <el-form-item label="离开区域">
+                <app-select
+                    multiple
+                    v-model="form.out"
+                    :filters="{ mode: zoneMode.out }"
+                    url="/api/zone/getall"
+                ></app-select>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="success" @click="submit">立即提交</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
 </template>
 
 <script lang="ts">

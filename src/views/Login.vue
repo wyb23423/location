@@ -72,47 +72,47 @@ export default class Login extends Vue {
     };
 
     public submit() {
-        const form = <ElForm>this.$refs.loginForm;
-        form.validate((valid: boolean) => {
-            if (valid) {
-                fetch('/api/admin/login', {
-                    body: JSON.stringify(this.form),
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                    .then(res => res.json())
-                    .then((res: ResponseData) => {
-                        if (res.code === 200) {
-                            sessionStorage.setItem('login', '1');
+        // const form = <ElForm>this.$refs.loginForm;
+        // form.validate((valid: boolean) => {
+        //     if (valid) {
+        //         fetch('/api/admin/login', {
+        //             body: JSON.stringify(this.form),
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json'
+        //             }
+        //         })
+        //             .then(res => res.json())
+        //             .then((res: ResponseData) => {
+        //                 if (res.code === 200) {
+        //                     sessionStorage.setItem('login', '1');
 
-                            const admin = res.pagedData
-                                ? res.pagedData.datas[0]
-                                : '';
+        //                     const admin = res.pagedData
+        //                         ? res.pagedData.datas[0]
+        //                         : '';
 
-                            return Promise.resolve(
-                                admin
-                                    ? JSON.stringify(admin.admin || admin)
-                                    : ''
-                            );
-                        } else {
-                            return Promise.reject({
-                                message: '账号或密码错误, 登陆失败!'
-                            });
-                        }
-                    })
-                    .then((user: string) => {
-                        user && sessionStorage.setItem('user', user);
-                        initRouter();
-                        load('/api/tag/getall', 'tagNo', 'tag');
+        //                     return Promise.resolve(
+        //                         admin
+        //                             ? JSON.stringify(admin.admin || admin)
+        //                             : ''
+        //                     );
+        //                 } else {
+        //                     return Promise.reject({
+        //                         message: '账号或密码错误, 登陆失败!'
+        //                     });
+        //                 }
+        //             })
+        //             .then((user: string) => {
+        //                 user && sessionStorage.setItem('user', user);
+        initRouter();
+        load('/api/tag/getall', 'tagNo', 'tag');
 
-                        this.$router.push('/');
-                    })
-                    .catch((e: any) => this.$message.error(e.message))
-                    .finally(() => form && form.resetFields());
-            }
-        });
+        this.$router.push('/');
+        //             })
+        //             .catch((e: any) => this.$message.error(e.message))
+        //             .finally(() => form && form.resetFields());
+        //     }
+        // });
     }
 
     public get isVaild() {

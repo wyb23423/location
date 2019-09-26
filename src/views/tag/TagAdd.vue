@@ -19,6 +19,18 @@
             <el-form-item label="标签名称：" prop="name" required>
                 <el-input v-model="form.name"></el-input>
             </el-form-item>
+            <el-form-item
+                label="标签高度："
+                prop="height"
+                required
+                :rules="{ type: 'number' }"
+            >
+                <el-input v-model.number="form.height">
+                    <template slot="append">
+                        cm
+                    </template>
+                </el-input>
+            </el-form-item>
             <el-form-item label="其他属性：">
                 <el-input
                     v-model="form.content"

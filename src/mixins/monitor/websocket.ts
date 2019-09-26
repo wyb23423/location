@@ -1,6 +1,5 @@
 import Vue from 'vue';
-import { arr2obj } from '@/assets/utils/util';
-import { BASE_URL } from '@/constant';
+import { arr2obj, getIp } from '@/assets/utils/util';
 import Component from 'vue-class-component';
 
 @Component
@@ -29,7 +28,7 @@ export class WebSocketInit extends Vue {
     protected initWebSocket() {
         this.closeWebSocket();
 
-        const ip = this.getIp();
+        const ip = getIp();
         if (!ip) {
             return;
         }
@@ -50,21 +49,10 @@ export class WebSocketInit extends Vue {
         };
         // ======================================
 
-        // 两套后台建立websocket方式不同，通过配置确定(暂定)
-        const countConfig = JSON.parse(sessionStorage.getItem('config')!).SOCKET_COUNT;
-        if (countConfig === 'multiple') {
-            const t = Date.now();
-            this.ws = this.groups.map(k => {
-                const ws = new WebSocket(`ws://${ip}/realtime/position/${k}/${t}`);
-                ws.onmessage = handler;
-                return ws;
-            });
-        } else {
-            const ws = new WebSocket(`ws://${ip}/realtime/position`);
-            ws.onopen = () => ws.send(JSON.stringify(this.groups));
-            ws.onmessage = handler;
-            this.ws = [ws];
-        }
+        const ws = new WebSocket(`ws://${ip}/realtime/position`);
+        ws.onopen = () => ws.send(JSON.stringify(this.groups));
+        ws.onmessage = handler;
+        this.ws = [ws];
     }
 
     protected move(tag: ITagInfo) {
@@ -80,19 +68,5 @@ export class WebSocketInit extends Vue {
         }
 
         return this;
-    }
-
-    private getIp() {
-        let ip: string = location.hostname;
-        if (process.env.NODE_ENV !== 'production') {
-            const res = BASE_URL.match(/^http:\/\/([\w\d\.]+)(:\d+)?\/$/);
-            if (res) {
-                ip = res[1];
-            } else {
-                return console.error('域名解析失败');
-            }
-        }
-
-        return ip;
     }
 }
