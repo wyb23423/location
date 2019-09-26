@@ -234,7 +234,7 @@ export default class Monitor extends mixins(
             this.censusTags.set(tag.sGroupNo, set);
         }
 
-        this.censusChange++;
+        this.censusChange = this.censusChange ? 0 : 1;
     }
 }
 
