@@ -7,12 +7,19 @@ import LineMgr from './line';
 import { randomNum } from '@/assets/utils/util';
 import 'pixi-action';
 import { getCustomInfo } from '../common';
+import { PIXIAnimation } from '@/types/pixi-action';
+
+interface ElAnimation {
+    moveTo?: PIXIAnimation | null;
+}
+
+type PIXIEL = (PIXI.Text | PIXI.Sprite | PIXI.Graphics) & { animation: ElAnimation | null };
 
 export class PIXIMgr extends Stage {
     public readonly has3D: boolean = false;
     public lineMgr!: LineMgr;
 
-    private els: Map<string | number, any[]> = new Map(); // 已添加到舞台上的元素
+    private els: Map<string | number, PIXIEL[]> = new Map(); // 已添加到舞台上的元素
 
     constructor(bg: string, dom: HTMLElement) {
         super(bg, dom);
@@ -50,20 +57,21 @@ export class PIXIMgr extends Stage {
             };
 
             this.stage.on(mapping[type] || type, (e: PIXI.interaction.InteractionEvent) => {
-                (<any>e).nodeType = fengmap.FMNodeType.ALL;
-
+                let nodeType = fengmap.FMNodeType.ALL;
                 const target = e.target;
                 if (
                     target instanceof PIXI.Sprite
-                    || (<any>target).custom && (<any>target).custom.nodeType === 'sprite'
+                    || getCustomInfo<string>(target, 'nodeType') === 'sprite'
                 ) {
-                    (<any>e).nodeType = fengmap.FMNodeType.IMAGE_MARKER;
+                    nodeType = fengmap.FMNodeType.IMAGE_MARKER;
                 } else if (target instanceof PIXI.Text) {
-                    (<any>e).nodeType = fengmap.FMNodeType.TEXT_MARKER;
+                    nodeType = fengmap.FMNodeType.TEXT_MARKER;
                 }
-                (<any>e).eventInfo = { coord: this.stage.toLocal(e.data.global) };
 
-                callback(e);
+                callback(Object.assign(e, {
+                    nodeType,
+                    eventInfo: { coord: this.stage.toLocal(e.data.global) }
+                }));
             });
         }
     }
@@ -110,7 +118,7 @@ export class PIXIMgr extends Stage {
                 return;
             }
 
-            img = img || getCustomInfo(v, 'info').photo;
+            img = img || getCustomInfo<ITag>(v, 'info').icon;
             if (img) {
                 this.load(img)
                     .then(([texture]) => v.texture = texture)
@@ -154,7 +162,7 @@ export class PIXIMgr extends Stage {
      * 添加文本
      */
     public addTextMarker(
-        coord: Vector2 | any,
+        coord: Vector2 & IJson,
         name: string,
         isMapCoor: boolean = false,
         gid?: number
@@ -332,12 +340,12 @@ export class PIXIMgr extends Stage {
         }
 
         if (isName) {
-            const result: any[][] = [];
-            this.els.forEach(v => result.push(
-                v.filter(m => m.custom && m.custom.info && m.custom.info.tagName === name))
+            const result: PIXIEL[] = [];
+            this.els.forEach(v =>
+                result.push(...v.filter(m => getCustomInfo<{ tagName: string }>(m, 'info').tagName === name))
             );
 
-            return result.flat();
+            return result;
         }
 
         return this.els.get(name) || [];

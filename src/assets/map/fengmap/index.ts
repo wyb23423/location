@@ -115,7 +115,7 @@ export class FengMapMgr extends CoordTransformer {
 
     public modifyImg(name: string | number, img?: string) {
         this.imageMgr.find(name).forEach(v => {
-            img = img || getCustomInfo(v, 'info').photo;
+            img = img || getCustomInfo<ITag>(v, 'info').icon;
             img && (v.url = img);
         });
     }
@@ -137,7 +137,7 @@ export class FengMapMgr extends CoordTransformer {
     }
 
     public addTextMarker(
-        coord: Vector2 | any,
+        coord: Vector2 & IJson,
         name: string,
         isMapCoor: boolean = false,
         gid?: number

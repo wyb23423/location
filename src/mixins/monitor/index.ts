@@ -98,22 +98,19 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
                     tagNo,
                     alarmTime: this.alarmTimes.get(tagNo),
                     alarmMsg: MISS_MSG,
-                    type: 1
+                    type: 300
                 });
 
-                this.moveTo(
-                    tagNo, coord, 1,
-                    () => {
-                        const p = this.pops.get(tagNo);
-                        if (p && p.update) {
-                            p.update() || this.pops.delete(tagNo);
-                        }
+                this.moveTo(tagNo, coord, 1, () => {
+                    const p = this.pops.get(tagNo);
+                    if (p && p.update) {
+                        p.update() || this.pops.delete(tagNo);
                     }
-                );
+                });
             } else {
-                let ids = [];
+                let ids: number[] = [];
                 try {
-                    ids = (<any>this.mgr.map).groupIDs;
+                    ids = (<any>this.mgr.map).groupIDs || [];
                 } catch (e) {
                     // 地图初始化未完成
                     return;
@@ -121,18 +118,18 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
                 // 第一次收到信号
                 const tagData: ITag = this.tagAll[tagNo];
-                this.addIcon(ids ? ids[0] : 0, {
-                    ...(tagData || {}),
+                this.addIcon(ids[0] || 0, {
+                    ...tagData,
+                    ...coord,
                     name: tagNo,
-                    tagName: tagData ? tagData.name : '未知标签',
-                    ...coord
+                    tagName: tagData.name,
                 });
             }
 
             // 长时间未收到信号, 将标签号推入信号丢失报警队列
             this.renderTags[tagNo] = setTimeout(this.miss.bind(this, tagNo), LOSS_TIME);
 
-            // 统计
+            // 统计(添加对应统计信息)
             this.doCensus(tag);
         }
     }
@@ -146,7 +143,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
             tagNo,
             alarmTime: now,
             alarmMsg: MISS_MSG,
-            type: 1
+            type: 300
         });
 
         if (this.mgr) {
@@ -154,7 +151,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
             this.mgr.show(tagNo, false); // 隐藏标签
             this.mgr.lineMgr.remove(tagNo); // 移除轨迹线
-            this.doCensus(tagNo); // 更新统计数据
+            this.doCensus(tagNo); // 更新统计数据(移除对应统计信息)
 
             // 移除信息框
             if (this.pops.has(tagNo)) {

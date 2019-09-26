@@ -172,31 +172,5 @@ export default class MapEdit extends Vue {
     display: inline-block;
     vertical-align: middle;
 }
-
-.hidden {
-    display: none;
-}
-</style>
-
-<style lang="postcss">
-.select_input {
-    width: 50%;
-
-    & i.el-icon-arrow-up {
-        display: none;
-    }
-
-    & .el-tag,
-    & .el-select__tags-text {
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
-
-    & .el-select__tags-text {
-        max-width: calc(100% - 16px);
-        display: inline-block;
-        vertical-align: middle;
-    }
-}
 </style>
 

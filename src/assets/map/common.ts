@@ -1,9 +1,14 @@
+
 /**
  * 获取元素的自定义属性
  */
-export function getCustomInfo(el: any, key: string) {
-    el.custom = el.custom || {};
-    el.custom[key] = el.custom[key] || {};
+export function getCustomInfo<K>(el: any, key: string): K | Record<string, undefined> {
+    if (el == null) {
+        return {};
+    }
+
+    el.custom = el.custom == null ? {} : el.custom;
+    el.custom[key] = el.custom[key] == null ? {} : el.custom[key];
 
     return el.custom[key];
 }

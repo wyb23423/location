@@ -126,7 +126,7 @@ export default class PeopleList extends mixins(TableMixin) {
             this.person.img !== this.oldData.img
         ) {
             const [p1, p2] = await this.avator.getImgUrl(this.person.name);
-            this.person.photo = p1.resultMap.photoUrl;
+            this.person.icon = p1.resultMap.photoUrl;
 
             if (this.person.img !== this.oldData.img) {
                 this.person.img = p2.resultMap.photoUrl;

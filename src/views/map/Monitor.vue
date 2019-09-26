@@ -121,6 +121,7 @@ export default class Monitor extends mixins(
 
     public censusChange: number = 0; // 用于触发响应（当前vue版本不支持Map及Set的数据响应）
     private censusTags = new Map<string, Set<string>>(); // 分组统计
+    private tagGroup = new Map<string, string>(); // tag-group映射
 
     @Ref('root') private readonly root!: HTMLDivElement;
 
@@ -226,12 +227,18 @@ export default class Monitor extends mixins(
 
     protected doCensus(tag: ITagInfo | string) {
         const tagNo = (<ITagInfo>tag).sTagNo || <string>tag;
-        this.censusTags.forEach(v => v.delete(tagNo));
+        const group = this.tagGroup.get(tagNo);
+        if (group) {
+            const set = this.censusTags.get(group);
+            set && set.delete(tagNo);
+        }
 
         if (typeof tag !== 'string') {
             const set = this.censusTags.get(tag.sGroupNo) || new Set();
             set.add(tagNo);
             this.censusTags.set(tag.sGroupNo, set);
+
+            this.tagGroup.set(tagNo, tag.sGroupNo);
         }
 
         this.censusChange = this.censusChange ? 0 : 1;
