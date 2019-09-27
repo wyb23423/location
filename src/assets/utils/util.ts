@@ -107,3 +107,22 @@ export function hexadecimalRuleFactory(length: number, name: string) {
             `${name} is not a hexadecimal string less than ${length} in length`
     };
 }
+
+/**
+ * base64转blob
+ */
+export function base642blob(base64: string) {
+    if (base64.startsWith('data:') && base64.includes('base64')) {
+        const arr = base64.split(',');
+        const mime = arr[0].match(/:(.*?);/)![1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime });
+    }
+
+    return new Blob();
+}

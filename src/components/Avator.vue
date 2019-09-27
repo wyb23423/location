@@ -7,7 +7,7 @@
                         [$style.avatar]: true,
                         [$style.selected]: imgIndex === 0
                     }"
-                    src="/images/P.png"
+                    :src="pImg"
                     fit="contain"
                     data-index="0"
                 ></el-image>
@@ -18,7 +18,7 @@
                         [$style.avatar]: true,
                         [$style.selected]: imgIndex === 1
                     }"
-                    src="/images/item.png"
+                    :src="itemImg"
                     fit="contain"
                     data-index="1"
                 ></el-image>
@@ -29,7 +29,7 @@
                         [$style.avatar]: true,
                         [$style.selected]: imgIndex === 2
                     }"
-                    :src="avatar || '/images/true.png'"
+                    :src="customUrl || '/images/true.png'"
                     fit="contain"
                     data-index="2"
                 >
@@ -70,6 +70,7 @@
                         :autoCrop="true"
                         :fixed="true"
                         :fixedNumber="[1, 1]"
+                        outputType="webp"
                         @realTime="realTime"
                         v-if="!!url"
                     ></VueCropper>
@@ -160,6 +161,8 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Model } from 'vue-property-decorator';
+import { ElUploadInternalFileDetail } from 'element-ui/types/upload';
+import { base642blob } from '../assets/utils/util';
 
 @Component
 export default class Avator extends Vue {
@@ -167,7 +170,6 @@ export default class Avator extends Vue {
 
     public url: string = ''; // 选择的图片
     public visible: boolean = false;
-    public changeUpload: ((file: any) => void) | null = null; // 选择图片后回调
 
     // 预览图父div大小
     public previewBox: { width: string; height: string } = {
@@ -176,38 +178,40 @@ export default class Avator extends Vue {
     };
     public preview: any = null; // 裁剪预览
     public imgIndex: number = 0;
+    public customUrl: string = '';
+
+    public pImg = '/images/P.png';
+    public itemImg = '/images/item.png';
 
     public created() {
-        this.changeUpload = (file: any) => {
-            if (
-                file.raw.type !== 'image/png' &&
-                file.raw.type !== 'image/jpeg'
-            ) {
-                return this.$message.error('只能上传jpg/png文件!');
-            }
-
-            if (file.size / 1024 / 1024 > 5) {
-                return this.$message.error('上传文件大小不能超过 5MB!');
-            }
-
-            const reader = new FileReader();
-            reader.onload = (e: ProgressEvent) => {
-                // target.result 该属性表示目标对象的DataURL
-                this.url = <string>(<FileReader>e.target).result;
-            };
-            // 传入一个参数对象即可得到基于该参数对象的文本内容
-            reader.readAsDataURL(file.raw);
-        };
-
         this.preview = {
-            url: this.avatar || '/images/true.png',
+            url: '/images/true.png',
             div: this.previewBox,
             w: 1024
         };
 
         if (this.avatar) {
-            this.imgIndex = 2;
+            if (this.avatar === this.itemImg) {
+                this.imgIndex = 1;
+            } else if (this.avatar !== this.pImg) {
+                this.imgIndex = 2;
+                this.preview.url = this.url = this.customUrl = this.avatar;
+            }
+        } else {
+            this.$emit('change', this.pImg);
         }
+    }
+
+    public changeUpload(file: ElUploadInternalFileDetail) {
+        if (file.raw.type !== 'image/png' && file.raw.type !== 'image/jpeg') {
+            return this.$message.error('只能上传jpg/png文件!');
+        }
+
+        if (file.size / 1024 / 1024 > 5) {
+            return this.$message.error('上传文件大小不能超过 5MB!');
+        }
+
+        this.url = URL.createObjectURL(file.raw);
     }
 
     public realTime(data: any) {
@@ -223,6 +227,7 @@ export default class Avator extends Vue {
         const cropper: any = this.$refs.cropper;
         if (cropper) {
             cropper.getCropData((data: string) => {
+                this.customUrl = data;
                 this.$emit('change', data);
                 this.$message.success('设置成功');
 
@@ -235,24 +240,29 @@ export default class Avator extends Vue {
     }
 
     public selectAvator(e: Event) {
-        const index = (<HTMLImageElement>e.target).dataset.index;
-        if (index) {
-            if (+index < 2) {
-                this.imgIndex = +index;
-            } else if (+index === 2) {
-                if (this.avatar) {
+        const index = +(<string>(<HTMLImageElement>e.target).dataset.index);
+
+        if (!isNaN(index) && index >= 0 && index <= 2) {
+            const oldIndex = this.imgIndex;
+
+            if (index < 2) {
+                this.imgIndex = index;
+            } else if (index === 2) {
+                if (this.customUrl) {
                     this.imgIndex = 2;
                 }
 
                 this.visible = true;
             }
+
+            if (oldIndex !== this.imgIndex) {
+                this.$emit('change', this.getUrl());
+            }
         }
     }
 
     public getImgUrl(name: string) {
-        const url = ['/images/P.png', '/images/item.png', this.avatar][
-            this.imgIndex
-        ];
+        const url = this.getUrl();
 
         const tagPhoto = this.getcanvas(url, name).then(c =>
             this.$http.post('/api/tag/upload/tagPhoto', {
@@ -276,7 +286,7 @@ export default class Avator extends Vue {
         });
         if (this.imgIndex > 1) {
             avatar = this.$http.post('/api/tag/upload/avatar', {
-                avatar: this.avatar
+                avatar: this.customUrl
             });
         }
 
@@ -317,6 +327,10 @@ export default class Avator extends Vue {
 
             img.onerror = reject;
         });
+    }
+
+    private getUrl() {
+        return [this.pImg, this.itemImg, this.customUrl][this.imgIndex];
     }
 }
 </script>
