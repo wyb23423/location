@@ -57,24 +57,6 @@ export function randomColor(hasAlpha: boolean = false) {
 }
 
 /**
- * 判断一个变量是否是某种类型
- */
-export function isThisType(obj: any, type: string) {
-    type = type.replace(/^\w/, (w: string) => w.toLocaleUpperCase());
-
-    return Object.prototype.toString.call(obj) === `[object ${type}]`;
-}
-
-/**
- * 创建可以返回递增数的函数
- */
-export function incrementalFactory() {
-    let num: number = 0;
-
-    return () => num++;
-}
-
-/**
  * 将对象数据根据给定的key分组
  * @param isArr 对象的值是否是数组
  */
@@ -97,72 +79,6 @@ export function arr2obj(arr: IJson[], key: string, isArr: boolean = true) {
  */
 export function none(a?: any, b?: any, c?: any, d?: any) {
     //
-}
-
-/**
- * 计算文本宽度
- */
-export const getTextWidth = (() => {
-    const w = new Map();
-
-    return (
-        text: string,
-        ctx: CanvasRenderingContext2D,
-        font: string = ''
-    ) => {
-        const key = text + font;
-        if (w.has(key)) {
-            return w.get(key);
-        }
-
-        if (font && ctx.font !== font) {
-            ctx.font = font;
-        }
-
-        const width: number = ctx.measureText(text).width;
-        if (w.size >= 500) {
-            w.clear();
-        }
-
-        w.set(key, width);
-
-        return width;
-    };
-})();
-
-/**
- * 将一个时间段转化为"dd:hh:mm:ss"的形式
- * @param range 时间范围
- * @param progress 需转化的时间占range的比例
- */
-export function formatTime(range: number, progress: number) {
-    if (!range) {
-        return '00:00';
-    }
-    let time = (range * progress) / 100;
-
-    const DAY_MS: number = 86400000;
-    const HOUR_MS: number = 3600000;
-    const MINUTE_MS: number = 60000;
-
-    const day = Math.floor(time / DAY_MS);
-    time = time % DAY_MS;
-
-    const hour = Math.floor(time / HOUR_MS);
-    time = time % HOUR_MS;
-
-    const minute = Math.floor(time / MINUTE_MS);
-    time = time % MINUTE_MS;
-
-    const tip: number[] = [minute, Math.round(time / 1000)];
-    if (hour > 0) {
-        tip.unshift(hour);
-    }
-    if (day > 0) {
-        tip.unshift(day, hour);
-    }
-
-    return tip.map((v, i) => (i ? v.toString().padStart(2, '0') : v)).join(':');
 }
 
 // 将字符转成utf-8编码
@@ -190,4 +106,23 @@ export function hexadecimalRuleFactory(length: number, name: string) {
         message:
             `${name} is not a hexadecimal string less than ${length} in length`
     };
+}
+
+/**
+ * base64转blob
+ */
+export function base642blob(base64: string) {
+    if (base64.startsWith('data:') && base64.includes('base64')) {
+        const arr = base64.split(',');
+        const mime = arr[0].match(/:(.*?);/)![1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime });
+    }
+
+    return new Blob();
 }

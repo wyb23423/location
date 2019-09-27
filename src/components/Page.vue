@@ -73,14 +73,14 @@ export default class Page extends Vue {
 .aside {
     position: absolute;
     top: 60px;
-    z-index: 9999;
+    z-index: 1000;
     transition: left 300ms ease-out;
 }
 .btn {
     position: absolute;
     transform: translateY(-50%);
     top: 50%;
-    z-index: 99999;
+    z-index: 10001;
     transition: left 300ms ease-out;
 }
 </style>

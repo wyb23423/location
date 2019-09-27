@@ -7,7 +7,6 @@ import Select from '../../components/Select.vue';
 import IpInput from '../../components/IpInput.vue';
 import { ElForm } from 'element-ui/types/form';
 import TableMixin from '../../mixins/table';
-import { incrementalFactory } from '../../assets/utils/util';
 
 const ICON_NAME = 'origin';
 
@@ -36,7 +35,7 @@ export default class BaseAdd extends mixins(MapMixin, TableMixin) {
         { prop: 'coordy', label: '相对原点y坐标', width: 160 }
     ];
 
-    private getNum = incrementalFactory();
+    private i = 0;
 
     public created() {
         [
@@ -80,7 +79,7 @@ export default class BaseAdd extends mixins(MapMixin, TableMixin) {
             }
 
             if (valid) {
-                this.bases.push({ ...this.form, flag: this.getNum() });
+                this.bases.push({ ...this.form, flag: this.i++ });
                 this.form = {
                     main: 0,
                     zone: null,

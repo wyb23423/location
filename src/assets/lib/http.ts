@@ -1,13 +1,12 @@
 /**
  * 发送请求
  */
-import { isThisType } from '../utils/util';
 import { Message } from 'element-ui';
 
 /**
  * 发送get请求
  */
-export async function get(
+export function get(
     url: string | RequestParams,
     params: any = {},
     headers: any = {},
@@ -20,19 +19,10 @@ export async function get(
         return Promise.reject(req);
     }
 
-    const init: RequestInit = {
-        headers: req.headers,
-        credentials: 'include',
-        method: 'GET'
-    };
-
-    controller = req.controller || new AbortController();
-    init.signal = controller.signal;
-
-    return parseRes(await fetch(req.url, init));
+    return doFetch(req, true);
 }
 
-export async function post(
+export function post(
     url: string | RequestParams,
     params: any = {},
     headers: any = {},
@@ -45,18 +35,28 @@ export async function post(
         return Promise.reject(req);
     }
 
+    return doFetch(req, false);
+}
+
+async function doFetch(req: RequestParams, isGet: boolean) {
+    const method = !isGet ? 'POST' : 'GET';
     const init: RequestInit = {
         headers: req.headers,
-        body: req.params,
+        body: !isGet ? req.params : void 0,
         credentials: 'include',
-        method: 'POST'
+        method
     };
-    if (req.controller) {
-        init.signal = req.controller.signal;
-    }
+    const controller = req.controller || new AbortController();
+    init.signal = controller.signal;
 
-    return parseRes(await fetch(req.url, init));
+    const res = await Promise.race([
+        new Promise<Response>((resolve, reject) =>
+            setTimeout(reject, 60000, `request timeover ${method} ${req.url}`)
+        ),
+        fetch(req.url, init)
+    ]);
 
+    return parseRes(res);
 }
 
 async function parseRes(res: Response) {
@@ -120,7 +120,7 @@ function parseArgs(
         }
 
         const start = url.includes('?') ? '&' : '?';
-        url = Object.entries(params).reduce((a, [k, v], i) => a + `${i ? '&' : start}${k}=${v}`, url);
+        url = Object.entries(params).reduce((a, [k, v], i) => `${a}${i ? '&' : start}${k}=${v}`, url);
     } else {
         const contentType = getHead(headers, 'Content-Type');
         if (!contentType) {
@@ -160,4 +160,13 @@ function json2FormData(parmas: any) {
     }
 
     return data;
+}
+
+/**
+ * 判断一个变量是否是某种类型
+ */
+function isThisType(obj: any, type: string) {
+    type = type.replace(/^\w/, (w: string) => w.toLocaleUpperCase());
+
+    return Object.prototype.toString.call(obj) === `[object ${type}]`;
 }

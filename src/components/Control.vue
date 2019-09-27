@@ -86,7 +86,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component, { mixins } from 'vue-class-component';
-import { formatTime } from '@/assets/utils/util';
+import { formatTime } from '@/assets/lib/date';
 import ControlMixin, { PositionItem } from '@/mixins/control';
 import { Prop } from 'vue-property-decorator';
 
