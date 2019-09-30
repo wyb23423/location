@@ -7,6 +7,8 @@ import MapSelect from '@/components/MapSelect.vue';
 import { PIXIMgr } from '@/assets/map/pixi';
 import { Ref } from 'vue-property-decorator';
 import { ElLoadingComponent } from 'element-ui/types/loading';
+import { errorStore } from '@/components/Notice.vue';
+import { ERROR_IMG } from '@/constant';
 
 @Component({
     components: {
@@ -20,6 +22,7 @@ export default class MapMixin extends Vue {
     public mapId?: number;
 
     @Ref('map') protected readonly container?: HTMLElement;
+    protected readonly ICON_TYPE = ICON_TYPE;
 
     private mark?: ElLoadingComponent;
 
@@ -134,7 +137,7 @@ export default class MapMixin extends Vue {
         }
     }
 
-    protected addIcon(gid: number, info: any, type: number = 1) {
+    protected async addIcon(gid: number, info: IconParms, type: ICON_TYPE = ICON_TYPE.TAG) {
         if (this.mgr) {
             const map = this.mgr.map;
             if (this.mgr instanceof FengMapMgr) {
@@ -146,9 +149,9 @@ export default class MapMixin extends Vue {
                     x: info.x,
                     y: info.y,
                     height: 1,
-                    url: info.icon,
+                    url: await this.getIcon(info, type),
                     size: info.size || 48,
-                    callback: (im: any) => {
+                    callback: (im: Sprite) => {
                         if (!im.custom) {
                             im.custom = {};
                         }
@@ -183,10 +186,10 @@ export default class MapMixin extends Vue {
                         y: v.coordy,
                         name: v.baseNo,
                         groupid: v.groupCode,
-                        photo: '/images/anchor.png',
+                        icon: '/images/anchor.png',
                         size: 32
                     },
-                    2
+                    ICON_TYPE.STATION
                 );
 
                 // 添加基站名
@@ -203,5 +206,41 @@ export default class MapMixin extends Vue {
             }
         }
     }
+
+    private async getIcon(info: IconParms, type: ICON_TYPE) {
+        switch (type) {
+            case ICON_TYPE.TAG: {
+                try {
+                    await errorStore.getItem((<ITag>info).id);
+
+                    return ERROR_IMG;
+                } catch (e) {
+                    //
+                }
+            }
+            default: return info.icon;
+        }
+    }
 }
 
+enum ICON_TYPE {
+    TAG = 1,
+    STATION = 2
+}
+
+type Sprite = (fengmap.FMImageMarker | PIXI.Sprite) & { custom?: Record<string, any> };
+interface BaseIconParams extends Vector2 {
+    name: string;
+    groupid: string;
+    icon: string;
+    size?: number;
+}
+interface TagIconParams extends ITag, Vector3 {
+    tagName: string;
+}
+interface CommonIconParams {
+    isMapCoor?: boolean;
+    callback?(im: Sprite): void;
+}
+
+type IconParms = (BaseIconParams | TagIconParams) & CommonIconParams;

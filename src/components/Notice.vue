@@ -57,7 +57,8 @@ import {
     NOTIFY_KEY,
     ALARM_DEAL,
     MODIFY_TAG_ICON,
-    SX_WIDTH
+    SX_WIDTH,
+    ERROR_IMG
 } from '../constant';
 import { ElNotificationComponent } from 'element-ui/types/notification';
 import { ElTableColumn } from 'element-ui/types/table-column';
@@ -114,11 +115,7 @@ export default class Notice extends Vue {
                     errorStore.setItem(v.tagNo, 1);
 
                     // 更换标签图片为异常图片;
-                    this.$event.emit(
-                        MODIFY_TAG_ICON,
-                        v.tagNo,
-                        '/images/error.png'
-                    );
+                    this.$event.emit(MODIFY_TAG_ICON, v.tagNo, ERROR_IMG);
                 });
 
             this.notify(v);
