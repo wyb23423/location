@@ -38,6 +38,7 @@ export class WebSocketInit extends Vue {
         let time: number = 0;
         const handler = (event: MessageEvent) => {
             const data: ITagInfo = JSON.parse(event.data);
+            console.log(data);
             if (this.tagAll[data.sTagNo]) {
                 datas.push(data);
                 if (Date.now() - time > 50 / 3) {

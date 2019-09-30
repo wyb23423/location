@@ -100,20 +100,10 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
                     type: 300
                 });
 
-<<<<<<< HEAD
                 this.moveTo(tagNo, coord, 1, () => {
                     const p = this.pops.get(tagNo);
                     if (p && p.update) {
                         p.update() || this.pops.delete(tagNo);
-=======
-                this.moveTo(
-                    tagNo, coord, this.moveTime,
-                    () => {
-                        const p = this.pops.get(tagNo);
-                        if (p && p.update) {
-                            p.update() || this.pops.delete(tagNo);
-                        }
->>>>>>> 6c50ac453ab642501b4e8fbaa525194b36ab109c
                     }
                 });
             } else {

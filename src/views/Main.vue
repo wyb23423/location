@@ -41,7 +41,7 @@ export default class Main extends Vue {
             return;
         }
 
-        const ws = new WebSocket(`ws://${ip}/realtime/alarm`);
+        const ws = new WebSocket(`ws://${ip}:8081/sundries`);
         ws.onmessage = (e: MessageEvent) => {
             const data: IAlarm = JSON.parse(e.data);
             if (Date.now() - data.alarmTime <= 1000) {
