@@ -106,8 +106,6 @@ export default class Notice extends Vue {
     }
 
     public created() {
-        this.messageStore.iterate<IAlarm, void>(this.notify.bind(this)); // 恢复报警状态
-
         this.$event.on(NOTIFY_KEY, (v: IAlarm) => {
             this.messageStore.setItem(this.itemToString(v), v);
 
@@ -138,6 +136,8 @@ export default class Notice extends Vue {
         if (document.body.offsetWidth <= SX_WIDTH) {
             this.size = '100%';
         }
+
+        this.messageStore.iterate<IAlarm, void>(this.notify.bind(this)); // 恢复报警状态
     }
 
     public formatter(r: any, c: any, v: number) {
