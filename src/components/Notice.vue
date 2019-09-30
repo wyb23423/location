@@ -125,24 +125,26 @@ export default class Notice extends Vue {
         });
 
         this.$event.on(ALARM_DEAL, (v: IAlarm) => {
-            errorStore
-                .getItem<number>(v.tagNo)
-                .then(count => {
-                    count--;
-
-                    if (!count) {
-                        this.$event.emit(MODIFY_TAG_ICON, v.tagNo);
-                        errorStore.removeItem(v.tagNo);
-                    } else {
-                        errorStore.setItem(v.tagNo, count);
-                    }
-                })
-                .catch(console.log);
-
             const message = this.messages.find(m =>
                 Object.keys(m).every((k: keyof IAlarm) => m[k] === v[k])
             );
-            message && this.reset(message);
+            if (message) {
+                this.reset(message);
+
+                errorStore
+                    .getItem<number>(v.tagNo)
+                    .then(count => {
+                        count--;
+
+                        if (count <= 0) {
+                            this.$event.emit(MODIFY_TAG_ICON, v.tagNo);
+                            errorStore.removeItem(v.tagNo);
+                        } else {
+                            errorStore.setItem(v.tagNo, count);
+                        }
+                    })
+                    .catch(console.log);
+            }
         });
     }
 
