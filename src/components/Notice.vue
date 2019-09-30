@@ -76,9 +76,10 @@ export default class Notice extends Vue {
     public maxHeight: number = 666;
     public size: string = '50%';
 
-    private elNotify = new Map<IAlarm | string, ElNotificationComponent>();
+    private elNotify = new Map<string | IAlarm, ElNotificationComponent>();
     private notifyCount: number = 0;
     private notifyPromise = Promise.resolve();
+    private messageStore = getAndCreateStore('MESSAGE');
 
     public get filters() {
         const type = new Set();
@@ -88,16 +89,14 @@ export default class Notice extends Vue {
 
         this.messages.forEach(v => {
             type.add(v.type);
-            tagNo.add(v.tagNo);
-            baseNo.add(v.baseNo);
-            time.add(v.alarmTime);
+            tagNo.add(v.deviceId);
+            time.add(v.time);
         });
         const format = (<any>this.$options.filters).date;
 
         return {
             type: Array.from(type).map(v => ({ text: v, value: v })),
             tagNo: Array.from(tagNo).map(v => ({ text: v, value: v })),
-            baseNo: Array.from(baseNo).map(v => ({ text: v, value: v })),
             time: Array.from(time).map(v => ({ text: format(v), value: v }))
         };
     }
@@ -107,15 +106,19 @@ export default class Notice extends Vue {
     }
 
     public created() {
+        this.messageStore.iterate<IAlarm, void>(this.notify.bind(this)); // 恢复报警状态
+
         this.$event.on(NOTIFY_KEY, (v: IAlarm) => {
+            this.messageStore.setItem(this.itemToString(v), v);
+
             errorStore
-                .getItem<number>(v.tagNo)
-                .then(count => errorStore.setItem(v.tagNo, ++count))
+                .getItem<number>(v.deviceId)
+                .then(count => errorStore.setItem(v.deviceId, ++count))
                 .catch(() => {
-                    errorStore.setItem(v.tagNo, 1);
+                    errorStore.setItem(v.deviceId, 1);
 
                     // 更换标签图片为异常图片;
-                    this.$event.emit(MODIFY_TAG_ICON, v.tagNo, ERROR_IMG);
+                    this.$event.emit(MODIFY_TAG_ICON, v.deviceId, ERROR_IMG);
                 });
 
             this.notify(v);
@@ -150,7 +153,7 @@ export default class Notice extends Vue {
     }
 
     public doDeal(v: IAlarm) {
-        this.$confirm(`异常${v.alarmMsg}已解决?`)
+        this.$confirm(`异常${v.content}已解决?`)
             .then(() => this.reset(v))
             .catch(console.log);
     }
@@ -167,19 +170,21 @@ export default class Notice extends Vue {
         if (index > -1) {
             this.messages.splice(index, 1);
             this.notify(this.messages.splice(this.notifyCount, 1)[0]);
+
+            this.messageStore.removeItem(this.itemToString(v));
         }
 
         if (v) {
             errorStore
-                .getItem<number>(v.tagNo)
+                .getItem<number>(v.deviceId)
                 .then(count => {
                     count--;
 
                     if (count <= 0) {
-                        this.$event.emit(MODIFY_TAG_ICON, v.tagNo);
-                        errorStore.removeItem(v.tagNo);
+                        this.$event.emit(MODIFY_TAG_ICON, v.deviceId);
+                        errorStore.removeItem(v.deviceId);
                     } else {
-                        errorStore.setItem(v.tagNo, count);
+                        errorStore.setItem(v.deviceId, count);
                     }
                 })
                 .catch(console.log);
@@ -198,8 +203,8 @@ export default class Notice extends Vue {
                     .then(() => {
                         const format = (<any>this.$options.filters).date;
                         const el = this.$notify.warning({
-                            title: `标签${v.tagNo}异常`,
-                            message: `${format(v.alarmTime)}: ${v.alarmMsg}`,
+                            title: `标签${v.deviceId}异常`,
+                            message: `${format(v.time)}: ${v.content}`,
                             duration: 0,
                             showClose: false,
                             customClass: 'notice-component',
@@ -239,6 +244,10 @@ export default class Notice extends Vue {
         } else {
             more && more.close();
         }
+    }
+
+    private itemToString(item: IAlarm) {
+        return [item.deviceId, item.type, item.time, item.content].join('$');
     }
 }
 </script>
