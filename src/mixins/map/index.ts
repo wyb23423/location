@@ -184,7 +184,7 @@ export default class MapMixin extends Vue {
                     {
                         x: v.coordx,
                         y: v.coordy,
-                        name: v.baseNo,
+                        name: v.id,
                         groupid: v.groupCode,
                         icon: '/images/anchor.png',
                         size: 32
@@ -201,7 +201,7 @@ export default class MapMixin extends Vue {
                         x: v.coordx,
                         y: v.coordy - 40
                     },
-                    v.baseNo + ''
+                    v.id
                 );
             }
         }
