@@ -25,7 +25,7 @@
                 <el-input-number
                     :step="100"
                     v-model="form.width"
-                    placeholder="宽(实际)"
+                    placeholder="宽(定位)"
                 ></el-input-number>
             </el-form-item>
             <el-form-item
@@ -37,7 +37,7 @@
                 <el-input-number
                     :step="100"
                     v-model="form.height"
-                    placeholder="高(实际)"
+                    placeholder="高(定位)"
                 ></el-input-number>
             </el-form-item>
         </el-form-item>
