@@ -152,12 +152,14 @@ export default class Notice extends Vue {
         return Reflect.get(row, Reflect.get(column, 'property')) === value;
     }
 
+    // 处理异常
     public doDeal(v: IAlarm) {
         this.$confirm(`异常${v.content}已解决?`)
             .then(() => this.reset(v))
             .catch(console.log);
     }
 
+    // 隐藏报警
     private reset(v: IAlarm) {
         const el = this.elNotify.get(v);
         if (el) {
@@ -189,6 +191,7 @@ export default class Notice extends Vue {
             .catch(console.log);
     }
 
+    // 显示报警
     private async notify(v: IAlarm) {
         const oldCount: number = this.notifyCount;
         if (v) {
@@ -219,6 +222,7 @@ export default class Notice extends Vue {
             .then(() => this.updateMore(oldCount));
     }
 
+    // 更新 “更多” 的显示
     private updateMore(oldCount: number) {
         let more = this.elNotify.get('more');
 
