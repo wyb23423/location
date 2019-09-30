@@ -125,11 +125,11 @@ export default class Notice extends Vue {
         });
 
         this.$event.on(ALARM_DEAL, (v: IAlarm) => {
-            const message = this.messages.find(m =>
-                Object.keys(m).every((k: keyof IAlarm) => m[k] === v[k])
+            const message = this.messages.find(
+                m => this.itemToString(m) === this.itemToString(v)
             );
 
-            this.reset(message!);
+            message && this.reset(message);
         });
     }
 
@@ -174,21 +174,19 @@ export default class Notice extends Vue {
             this.messageStore.removeItem(this.itemToString(v));
         }
 
-        if (v) {
-            errorStore
-                .getItem<number>(v.deviceId)
-                .then(count => {
-                    count--;
+        errorStore
+            .getItem<number>(v.deviceId)
+            .then(count => {
+                count--;
 
-                    if (count <= 0) {
-                        this.$event.emit(MODIFY_TAG_ICON, v.deviceId);
-                        errorStore.removeItem(v.deviceId);
-                    } else {
-                        errorStore.setItem(v.deviceId, count);
-                    }
-                })
-                .catch(console.log);
-        }
+                if (count <= 0) {
+                    this.$event.emit(MODIFY_TAG_ICON, v.deviceId);
+                    errorStore.removeItem(v.deviceId);
+                } else {
+                    errorStore.setItem(v.deviceId, count);
+                }
+            })
+            .catch(console.log);
     }
 
     private async notify(v: IAlarm) {
