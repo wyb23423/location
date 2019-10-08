@@ -22,7 +22,7 @@ export default class Permission extends Vue {
 
     private readonly oneLevels: string[] = [
         'admin',
-        'fence',
+        'zone',
         'camera',
         'protocol',
         'base',
@@ -74,7 +74,7 @@ export default class Permission extends Vue {
         if (node.level === 0) {
             return resolve([
                 { label: '管理员设置', id: 'admin' },
-                { label: '区域管理', id: 'fence' },
+                { label: '区域管理', id: 'zone' },
                 { label: '摄像机管理', id: 'camera' },
                 { label: '通信协议', id: 'protocol' },
                 { label: '设备管理', id: 'base' },
@@ -117,11 +117,10 @@ export default class Permission extends Vue {
             }
         });
 
+        permission.people = permission.tag;
+        delete permission.tag;
+
         return permission;
     }
 }
 </script>
-
-<style lang="postcss" module>
-</style>
-

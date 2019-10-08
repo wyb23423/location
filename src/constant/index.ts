@@ -17,7 +17,7 @@ export const ERROR_IMG: string = '/images/error.png'; // 标签异常时的图�
 // 全部权限
 export const ALL_PERMISSION = {
     admin: { put: true, delete: true, post: true, get: true }, // 管理员
-    fence: { put: true, delete: true, post: true, get: true }, // 区域(电子围栏)
+    zone: { put: true, delete: true, post: true, get: true }, // 区域(电子围栏)
     camera: { put: true, delete: true, post: true, get: true }, // 摄像机
     protocol: { put: true, delete: true, post: true, get: true }, // 协议
     base: { put: true, delete: true, post: true, get: true }, // 设备(基站)

@@ -24,7 +24,7 @@ interface RecordItem {
 export default class Main extends Vue {
     public activeNames: string[] = ['1', '2'];
     public cards: CardInfo[] = [
-        { icon: 'qy', title: '监控区域', num: 3, to: '/system/fence' },
+        { icon: 'qy', title: '监控区域', num: 3, to: '/system/zone' },
         { icon: 'adminbg', title: '管理人员', num: 3, to: '/admin/list' },
         { icon: 'ter', title: '监控人员', num: 3, to: '/people/list/1' },
         { icon: 'bj', title: '报警次数', num: 3, to: '/alarm' }

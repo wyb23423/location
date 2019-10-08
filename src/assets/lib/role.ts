@@ -63,7 +63,7 @@ export class RouteList {
 
     // 生成系统设置相关路由
     public system() {
-        const routes: RouteConfig[] = ['fence', 'camera', 'protocol', 'group'].map(k => {
+        const routes: RouteConfig[] = ['zone', 'camera', 'protocol', 'group'].map(k => {
             const func = Reflect.get(this, k);
             return func.call(this);
         }).flat();
@@ -84,18 +84,18 @@ export class RouteList {
         }
     }
     // 区域
-    public fence() {
-        const getPermission = this.hasPermission('fence', 'get');
-        const putPermission = this.hasPermission('fence', 'post');
+    public zone() {
+        const getPermission = this.hasPermission('zone', 'get');
+        const putPermission = this.hasPermission('zone', 'post');
         if (putPermission || getPermission) {
             return [{
-                path: 'fence',
-                name: 'fence',
-                component: () => import(/* webpackChunkName: "system" */ '@/views/system/Fence.vue'),
+                path: 'zone',
+                name: 'zone',
+                component: () => import(/* webpackChunkName: "system" */ '@/views/system/Zone.vue'),
                 props: {
                     permission: {
-                        delete: this.hasPermission('fence', 'delete'),
-                        put: this.hasPermission('fence', 'put'),
+                        delete: this.hasPermission('zone', 'delete'),
+                        put: this.hasPermission('zone', 'put'),
                         post: putPermission,
                         get: getPermission
                     }

@@ -11,7 +11,7 @@ import ZoneMixin from '@/mixins/zone';
         'zone-input': ZoneEidt
     }
 })
-export default class Fence extends mixins(TableMixin, ZoneMixin) {
+export default class Zone extends mixins(TableMixin, ZoneMixin) {
     public activeNames: string[] = ['info', 'add'];
     public zone: IZone | null = null; // 设置中的区域
 
