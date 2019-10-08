@@ -118,7 +118,6 @@ export default class Permission extends Vue {
         });
 
         permission.people = permission.tag;
-        delete permission.tag;
 
         return permission;
     }
