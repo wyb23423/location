@@ -43,7 +43,7 @@ export default class Select extends Vue {
     public readonly keys!: Option<string>;
 
     public options: Array<Option<any>> = [];
-    public currValue: number | string | Array<number | string> = 0;
+    public currValue: number | string | Array<number | string> = '';
 
     public get isMultiple() {
         return this.multiple == null || this.multiple === false ? false : true;
