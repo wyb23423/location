@@ -98,7 +98,9 @@ export default class AdminList extends mixins(TableMixin) {
     public del(row: IAdmin) {
         this.$confirm(`删除${row.name}?`)
             .then(() =>
-                this.$http.post('/api/admin/deleteAdmin', { id: row.id })
+                this.$http.post('/api/admin/deleteAdmin', {
+                    username: row.username
+                })
             )
             .then(() => {
                 this.$message.success('删除成功');
