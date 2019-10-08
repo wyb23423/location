@@ -44,17 +44,14 @@ export default class Permission extends Vue {
             console.error(e);
         }
 
+        role.tag = role.tag || role.people;
         this.oneLevels.forEach(k => {
             const permissions: string[] = [];
             ['put', 'delete', 'post', 'get'].forEach(r => {
-                let val = role[k];
-                if (k === 'tag' && !val) {
-                    val = role.people;
-                }
-
                 if (
-                    val &&
-                    (val[r] || (Array.isArray(val) && val.includes(r)))
+                    role[k] &&
+                    (role[k][r] ||
+                        (Array.isArray(role[k]) && role[k].includes(r)))
                 ) {
                     permissions.push(`${k}:${r}`);
                 }
