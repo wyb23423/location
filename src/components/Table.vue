@@ -15,6 +15,7 @@
                 :label="v.label"
                 :resizable="true"
                 :min-width="v.width == null ? undefined : v.width * scale"
+                :formatter="formatBoolean"
             >
             </el-table-column>
             <el-table-column
@@ -72,6 +73,8 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Emit } from 'vue-property-decorator';
 import { SX_WIDTH, DEFAULT_WIDTH } from '../constant';
+import { ElTable } from 'element-ui/types/table';
+import { ElTableColumn } from 'element-ui/types/table-column';
 
 export interface TableRowOperation {
     type: string | IJson;
@@ -99,10 +102,17 @@ export default class Table extends Vue {
 
     private timer?: any;
 
-    // public created() {
-    //     this.scaleRoot();
-    //     window.addEventListener('resize', this.scaleRoot.bind(this), false);
-    // }
+    public formatBoolean(
+        row: IBaseStation,
+        { property }: { property: keyof IBaseStation }
+    ) {
+        const val = row[property];
+        if (typeof val !== 'boolean') {
+            return val;
+        }
+
+        return val ? '是' : '否';
+    }
 
     public emit(name: string | IJson, row: any, index: number) {
         name = parseOpItem(name, index);

@@ -4,8 +4,8 @@
         filterable
         default-first-option
         @change="change"
-        :multiple="!!multiple"
-        :disabled="!!disabled"
+        :multiple="isMultiple"
+        :disabled="isDisabled"
         collapse-tags
     >
         <el-option label="--" :value="undefined" v-if="canEmpty"> </el-option>
@@ -22,7 +22,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { Emit, Prop } from 'vue-property-decorator';
+import { Emit, Prop, Model } from 'vue-property-decorator';
 
 interface Option<T> {
     id?: T;
@@ -31,8 +31,9 @@ interface Option<T> {
 
 @Component
 export default class Select extends Vue {
+    @Model('input') public readonly value!: any;
+
     @Prop() public readonly url!: string;
-    @Prop() public readonly value!: any;
     @Prop() public readonly multiple?: boolean;
     @Prop() public readonly disabled?: boolean;
 
@@ -42,9 +43,21 @@ export default class Select extends Vue {
     public readonly keys!: Option<string>;
 
     public options: Array<Option<any>> = [];
-    public currValue: any = null;
+    public currValue: number | string | Array<number | string> = 0;
+
+    public get isMultiple() {
+        return this.multiple == null || this.multiple === false ? false : true;
+    }
+
+    public get isDisabled() {
+        return this.disabled == null || this.disabled === false ? false : true;
+    }
 
     public created() {
+        if (this.isMultiple) {
+            this.currValue = [];
+        }
+
         this.$http
             .get(this.url, {
                 pageSize: 1000000,
@@ -58,9 +71,7 @@ export default class Select extends Vue {
                     data: v
                 }));
 
-                if (this.multiple) {
-                    this.currValue = [];
-                } else if (!this.canEmpty) {
+                if (!(this.currValue || this.canEmpty)) {
                     this.currValue =
                         this.value == null || this.value === ''
                             ? this.options[0].id
@@ -69,7 +80,7 @@ export default class Select extends Vue {
 
                 this.change(this.currValue);
             })
-            .catch(console.error);
+            .catch(console.log);
     }
 
     public change(id: string | number | Array<string | number>) {

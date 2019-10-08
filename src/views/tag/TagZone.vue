@@ -5,8 +5,6 @@
             <el-form-item label="相关标签">
                 <el-select
                     v-model="form.tagNo"
-                    :disabled="isPlaying"
-                    :loading="loading"
                     :remote-method="remoteMethod"
                     placeholder="请输入标签名"
                     @change="change"

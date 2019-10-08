@@ -8,8 +8,8 @@
             label-width="auto"
             style="width: 80%"
         >
-            <el-form-item label="用户名：" prop="userName">
-                <el-input v-model="form.userName"></el-input>
+            <el-form-item label="用户名：" prop="username">
+                <el-input v-model="form.username"></el-input>
                 <el-input class="hidden"></el-input>
             </el-form-item>
             <el-form-item label="登录密码：" prop="password">
@@ -64,7 +64,7 @@ import { Ref } from 'vue-property-decorator';
 export default class AdminAdd extends Vue {
     public form = {
         name: '',
-        userName: '',
+        username: '',
         password: '',
         sex: 1,
         department: '',

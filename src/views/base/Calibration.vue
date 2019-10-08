@@ -8,7 +8,7 @@
                 :total-count="totalCount"
                 :op="[{ type: 'primary', name: 'setting', desc: '配置校准值' }]"
                 :noPrint="true"
-                @setting="setting"
+                @setting="bases = $event.children"
                 @updateData="getData"
             ></app-table>
         </el-card>
@@ -42,13 +42,9 @@ export default class Calibration extends mixins(TableMixin) {
         { prop: 'count', label: '基站数量' }
     ];
 
-    public bases: any = null;
+    public bases: IBaseStation | null = null;
 
-    private allBase: any[] = [];
-
-    public setting(row: any) {
-        this.bases = row.children;
-    }
+    private allBase: IBaseStation[] = [];
 
     protected async fetch(page: number, pageSize: number) {
         let data: any[] = [];
@@ -75,7 +71,10 @@ export default class Calibration extends mixins(TableMixin) {
     }
 
     private toTree() {
-        const group: { [key: string]: any[] } = arr2obj(this.allBase, 'groupCode');
+        const group: { [key: string]: any[] } = arr2obj(
+            this.allBase,
+            'groupId'
+        );
 
         return Object.entries(group)
             .sort((a, b) => +a[0] - +b[0])

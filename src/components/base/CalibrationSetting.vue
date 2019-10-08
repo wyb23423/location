@@ -78,14 +78,14 @@
         <el-form :model="form" :class="$style['base-form']" inline ref="base">
             <el-form-item
                 v-for="v of tableData"
-                :key="v.baseNo"
-                :prop="v.baseNo"
+                :key="v.id"
+                :prop="v.id"
                 required
-                :label="`${v.baseNo}基站平均时间戳`"
+                :label="`${v.id}基站平均时间戳`"
                 :rules="{ type: 'number' }"
             >
                 <el-input
-                    v-model.number="form[v.baseNo]"
+                    v-model.number="form[v.id]"
                     prefix-icon="el-icon-timer"
                 ></el-input>
             </el-form-item>
@@ -116,8 +116,7 @@ export default class CalibrationSetting extends mixins(TableMixin) {
     };
 
     public colCfg: any[] = [
-        { prop: 'id', label: 'ID', sortable: true },
-        { prop: 'baseNo', label: '基站编号' },
+        { prop: 'id', label: '基站编号' },
         { prop: 'name', label: '基站名称' },
         { prop: 'main', label: '主基站' },
         { prop: 'ip', label: '基站IP' }
@@ -139,7 +138,7 @@ export default class CalibrationSetting extends mixins(TableMixin) {
                 };
                 const arr = this.tableData.map(v => {
                     const timeCorrectionValue: number = v.main
-                        ? major(mainVec, this.form, this.form[main.baseNo])
+                        ? major(mainVec, this.form, this.form[main.id])
                         : subordinate(
                               {
                                   x: v.coordx,
@@ -148,8 +147,8 @@ export default class CalibrationSetting extends mixins(TableMixin) {
                               },
                               this.form,
                               mainVec,
-                              this.form[main.baseNo],
-                              this.form[v.baseNo]
+                              this.form[main.id],
+                              this.form[v.id]
                           );
 
                     v.timeCorrectionValue = timeCorrectionValue + '';

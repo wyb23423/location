@@ -151,7 +151,7 @@ export default class AdminList extends mixins(TableMixin) {
         }
 
         user = <IAdmin>JSON.parse(user);
-        return admin.userName === user.userName;
+        return admin.username === user.username;
     }
 }
 </script>

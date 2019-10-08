@@ -1,6 +1,6 @@
 // ============================================数据库表
 declare interface IAdmin extends IJson {
-    userName: string;
+    username: string;
     name: string;
     password: string;
     sex: 0 | 1;
@@ -14,9 +14,9 @@ declare interface IBaseStation extends IJson {
     id: string;
     name: string;
     ip: string;
-    main: 0 | 1;
+    main: boolean;
     groupId: string;
-    mapId: string;
+    mapId: number;
     timeCorrectionValue: string; // 补偿值。多个用英文逗号隔开
     coordx: number;
     coordy: number;
