@@ -63,7 +63,12 @@ export default class AdminList extends mixins(TableMixin) {
     public colCfg: any[] = [
         { prop: 'username', label: '用户名', width: 140 },
         { prop: 'name', label: '管理员名称', width: 140 },
-        { prop: 'sexName', label: '性别', width: 120 },
+        {
+            prop: 'sex',
+            label: '性别',
+            width: 120,
+            formatter: val => (val ? '男' : '女')
+        },
         { prop: 'department', label: '部门', width: 160 },
         { prop: 'job', label: '职位', width: 140 },
         { prop: 'phone', label: '电话号码', width: 200 }
@@ -133,11 +138,8 @@ export default class AdminList extends mixins(TableMixin) {
                 pageSize,
                 currentPage: page
             });
-            data = res.pagedData.datas.map((v: any) => {
-                v.sexName = v.sex ? '男' : '女';
-                return v;
-            });
 
+            data = res.pagedData.datas;
             count = res.pagedData.totalCount;
         } catch (e) {
             console.log(e);

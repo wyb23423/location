@@ -15,7 +15,7 @@
                 :label="v.label"
                 :resizable="true"
                 :min-width="v.width == null ? undefined : v.width * scale"
-                :formatter="formatBoolean"
+                :formatter="format"
             >
             </el-table-column>
             <el-table-column
@@ -73,8 +73,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Emit } from 'vue-property-decorator';
 import { SX_WIDTH, DEFAULT_WIDTH } from '../constant';
-import { ElTable } from 'element-ui/types/table';
-import { ElTableColumn } from 'element-ui/types/table-column';
+import { ElTableColumn, TableColumn } from 'element-ui/types/table-column';
 
 export interface TableRowOperation {
     type: string | IJson;
@@ -101,17 +100,25 @@ export default class Table extends Vue {
     public scale: number = 1;
 
     private timer?: any;
+    private formatters = new Map<string, (cellValue: any) => any>();
 
-    public formatBoolean(
-        row: IBaseStation,
-        { property }: { property: keyof IBaseStation }
-    ) {
-        const val = row[property];
-        if (typeof val !== 'boolean') {
-            return val;
+    public created() {
+        this.colCfg.forEach(
+            v => v.formatter && this.formatters.set(v.prop, v.formatter)
+        );
+    }
+
+    public format(row: IBaseStation, column: TableColumn, cellValue: any) {
+        const formatter = this.formatters.get(column.property);
+        if (typeof formatter === 'function') {
+            return formatter(cellValue);
         }
 
-        return val ? '是' : '否';
+        if (typeof cellValue !== 'boolean') {
+            return cellValue;
+        }
+
+        return cellValue ? '是' : '否';
     }
 
     public emit(name: string | IJson, row: any, index: number) {

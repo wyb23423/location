@@ -153,7 +153,9 @@ export default class CalibrationSetting extends mixins(TableMixin) {
 
                     v.timeCorrectionValue = timeCorrectionValue + '';
 
-                    return this.$http.post('/api/base/updateBase', v);
+                    return this.$http.post('/api/base/updateBase', v, {
+                        'Content-Type': 'application/json'
+                    });
                 });
 
                 Promise.all(arr)
