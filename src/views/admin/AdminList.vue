@@ -67,7 +67,7 @@ export default class AdminList extends mixins(TableMixin) {
             prop: 'sex',
             label: '性别',
             width: 120,
-            formatter: val => (val ? '男' : '女')
+            formatter: (val: boolean) => (val ? '男' : '女')
         },
         { prop: 'department', label: '部门', width: 160 },
         { prop: 'job', label: '职位', width: 140 },
