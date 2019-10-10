@@ -120,15 +120,12 @@ export default class MapMixin extends Vue {
     // 获取并显示基站
     protected async tagAnchor() {
         try {
-            const res = await Promise.all(this.groups.map(v => {
-                return this.$http.get('/api/base/getall', {
-                    currentPage: 1,
-                    pageSize: 10000,
-                    groupCode: v
-                });
-            }));
+            const res = await this.$http.get('/api/base/getall', {
+                currentPage: 1,
+                pageSize: 10000,
+            });
 
-            const data: IBaseStation[] = res.map(v => v.pagedData.datas).flat();
+            const data: IBaseStation[] = res.pagedData.datas;
             this.createBases(data);
 
             return data;

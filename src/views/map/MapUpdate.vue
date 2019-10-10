@@ -99,7 +99,6 @@ export default class MapAdd extends Vue {
                 return { resultMap: { mapUrl: data.filename || data.url } };
             })
             .then((res: { resultMap: { mapUrl: string } }) => {
-                const timestamp = Date.now();
                 const { minX, maxX, minY, maxY } = data;
 
                 return this.$http.post({
@@ -108,8 +107,7 @@ export default class MapAdd extends Vue {
                         id: this.map.id,
                         filepath: res.resultMap.mapUrl,
                         name: data.name,
-                        updateTime: timestamp,
-                        updateUser: 'null',
+                        groupCode: JSON.stringify(data.groupCode),
                         margin: JSON.stringify([
                             [minX, minY],
                             [minX, maxY],

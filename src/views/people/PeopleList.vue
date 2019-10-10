@@ -139,8 +139,10 @@ export default class PeopleList extends mixins(TableMixin) {
 
         this.person.updateTime = Date.now();
         if (
-            this.person.name === this.oldData.name &&
-            this.person.name === this.oldData.avatar
+            !(
+                this.person.name === this.oldData.name &&
+                this.person.avatar === this.oldData.avatar
+            )
         ) {
             this.person.photo = (await this.avator.getImgUrl(
                 this.person.name

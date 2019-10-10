@@ -29,18 +29,14 @@ export default class MapAdd extends Vue {
                 mapName: data.map.name.split('.')[0] || 'map'
             })
             .then((res: ResponseData) => {
-                const timestamp = Date.now();
                 const { minX, maxX, minY, maxY } = data;
 
                 return this.$http.post({
                     url: '/api/map/addMap',
                     body: {
-                        createTime: timestamp,
-                        createUser: 'null',
                         filepath: res.resultMap.mapUrl,
                         name: data.name,
-                        updateTime: timestamp,
-                        updateUser: 'null',
+                        groupCode: JSON.stringify(data.groupCode),
                         margin: JSON.stringify([
                             [minX, minY],
                             [minX, maxY],

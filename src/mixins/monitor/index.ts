@@ -98,7 +98,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
                     tagNo,
                     alarmTime: this.alarmTimes.get(tagNo),
                     alarmMsg: MISS_MSG,
-                    type: 1
+                    type: 300
                 });
 
                 this.moveTo(

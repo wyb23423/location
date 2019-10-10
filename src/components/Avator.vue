@@ -211,6 +211,16 @@ export default class Avator extends Vue {
             return this.$message.error('上传文件大小不能超过 5MB!');
         }
 
+<<<<<<< HEAD
+=======
+        // const reader = new FileReader();
+        // reader.onload = (e: ProgressEvent) => {
+        //     // target.result 该属性表示目标对象的DataURL
+        //     this.url = <string>(<FileReader>e.target).result;
+        // };
+        // // 传入一个参数对象即可得到基于该参数对象的文本内容
+        // reader.readAsDataURL(file.raw);
+>>>>>>> b7d6aa1ae0e035de9aa890fc130a894d39e4c870
         this.url = URL.createObjectURL(file.raw);
     }
 
