@@ -86,16 +86,7 @@ export default class Login extends Vue {
                     .then((res: ResponseData) => {
                         if (res.code === 200) {
                             sessionStorage.setItem('login', '1');
-
-                            const admin = res.pagedData
-                                ? res.pagedData.datas[0]
-                                : '';
-
-                            return Promise.resolve(
-                                admin
-                                    ? JSON.stringify(admin.admin || admin)
-                                    : ''
-                            );
+                            return res.resultMap.admin;
                         } else {
                             return Promise.reject({
                                 message: '账号或密码错误, 登陆失败!'
