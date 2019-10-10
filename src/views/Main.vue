@@ -23,16 +23,8 @@ import { getIp } from '@/assets/utils/util';
     }
 })
 export default class Main extends Vue {
-    private timer?: number;
-
     public created() {
         this.link();
-    }
-
-    public destroyed() {
-        if (this.timer) {
-            clearTimeout(this.timer);
-        }
     }
 
     private link() {

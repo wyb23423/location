@@ -5,9 +5,11 @@
             style="padding: 0 10px"
             stripe
             size="mini"
+            ref="table"
             :max-height="maxHeight"
-            @row-click="doDeal"
+            @selection-change="selected = $event"
         >
+            <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column
                 prop="type"
                 label="报警类型"
@@ -16,14 +18,14 @@
                 :filter-method="filterHandler"
             ></el-table-column>
             <el-table-column
-                prop="tagNo"
+                prop="deviceId"
                 label="标签号"
                 min-width="100"
-                :filters="filters.tagNo"
+                :filters="filters.deviceId"
                 :filter-method="filterHandler"
             ></el-table-column>
             <el-table-column
-                prop="alarmTime"
+                prop="time"
                 label="报警时间"
                 min-width="160"
                 :filters="filters.time"
@@ -31,21 +33,29 @@
                 :formatter="formatter"
             ></el-table-column>
             <el-table-column
-                prop="alarmMsg"
+                prop="content"
                 label="报警信息"
                 min-width="255"
             ></el-table-column>
         </el-table>
-        <el-pagination
-            style="margin-top: 20px; text-align: right"
-            small
-            hide-on-single-page
-            layout="prev, pager, next"
-            :total="messages.length"
-            :page-size="50"
-            @current-change="page = $event"
-        >
-        </el-pagination>
+        <div class="flex-center" :class="$style.bottom">
+            <el-button
+                @click="doDeal()"
+                :disabled="!selected.length"
+                size="mini"
+            >
+                解决异常
+            </el-button>
+            <el-pagination
+                small
+                hide-on-single-page
+                layout="prev, pager, next"
+                :total="messages.length"
+                :page-size="50"
+                @current-change="page = $event"
+            >
+            </el-pagination>
+        </div>
     </el-drawer>
 </template>
 
@@ -65,6 +75,7 @@ import { ElTableColumn } from 'element-ui/types/table-column';
 import { ElDrawer } from 'element-ui/types/drawer';
 import { Ref } from 'vue-property-decorator';
 import { getAndCreateStore } from '../assets/lib/localstore';
+import { ElTable } from 'element-ui/types/table';
 
 export const errorStore = getAndCreateStore('ERROR_STORE');
 
@@ -75,28 +86,30 @@ export default class Notice extends Vue {
     public page: number = 1;
     public maxHeight: number = 666;
     public size: string = '50%';
+    public selected: IAlarm[] = [];
 
     private elNotify = new Map<string | IAlarm, ElNotificationComponent>();
     private notifyCount: number = 0;
     private notifyPromise = Promise.resolve();
     private messageStore = getAndCreateStore('MESSAGE');
 
+    @Ref('table') private readonly elTable!: ElTable;
+
     public get filters() {
         const type = new Set();
-        const tagNo = new Set();
-        const baseNo = new Set();
+        const deviceId = new Set();
         const time = new Set();
 
         this.messages.forEach(v => {
             type.add(v.type);
-            tagNo.add(v.deviceId);
+            deviceId.add(v.deviceId);
             time.add(v.time);
         });
         const format = (<any>this.$options.filters).date;
 
         return {
             type: Array.from(type).map(v => ({ text: v, value: v })),
-            tagNo: Array.from(tagNo).map(v => ({ text: v, value: v })),
+            deviceId: Array.from(deviceId).map(v => ({ text: v, value: v })),
             time: Array.from(time).map(v => ({ text: format(v), value: v }))
         };
     }
@@ -107,6 +120,7 @@ export default class Notice extends Vue {
 
     public created() {
         this.$event.on(NOTIFY_KEY, (v: IAlarm) => {
+            v = this.adapter(v);
             this.messageStore.setItem(this.itemToString(v), v);
 
             errorStore
@@ -123,6 +137,7 @@ export default class Notice extends Vue {
         });
 
         this.$event.on(ALARM_DEAL, (v: IAlarm) => {
+            v = this.adapter(v);
             const message = this.messages.find(
                 m => this.itemToString(m) === this.itemToString(v)
             );
@@ -153,9 +168,12 @@ export default class Notice extends Vue {
     }
 
     // 处理异常
-    public doDeal(v: IAlarm) {
-        this.$confirm(`异常${v.content}已解决?`)
-            .then(() => this.reset(v))
+    public doDeal() {
+        this.$confirm('选中异常已解决?')
+            .then(() => {
+                this.selected.forEach(this.reset.bind(this));
+                this.elTable.clearSelection();
+            })
             .catch(console.log);
     }
 
@@ -209,7 +227,11 @@ export default class Notice extends Vue {
                             duration: 0,
                             showClose: false,
                             customClass: 'notice-component',
-                            onClick: () => this.doDeal(v)
+                            onClick: () => {
+                                this.$confirm(`异常${v.content}已解决?`)
+                                    .then(() => this.reset(v))
+                                    .catch(console.log);
+                            }
                         });
 
                         this.elNotify.set(v, el);
@@ -251,10 +273,25 @@ export default class Notice extends Vue {
     private itemToString(item: IAlarm) {
         return [item.deviceId, item.type, item.time, item.content].join('$');
     }
+
+    private adapter(item: IAlarm) {
+        return {
+            id: item.id,
+            deviceId: item.deviceId || item.tagNo,
+            type: item.type,
+            time: item.time || item.alarmTime,
+            content: item.content || item.alarmMsg
+        };
+    }
 }
 </script>
 
 <style lang="postcss" module>
+.bottom {
+    justify-content: space-between !important;
+    margin-top: 20px;
+    padding-left: 10px;
+}
 </style>
 
 <style lang="postcss">

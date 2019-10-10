@@ -90,8 +90,8 @@ declare interface IAlarm extends IJson {
     id: number;
     deviceId: string;
     type: number;
-    content: number;
-    time: string;
+    content: string;
+    time: number;
 }
 
 declare interface IPosTag {
