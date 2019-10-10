@@ -5,9 +5,11 @@
             style="padding: 0 10px"
             stripe
             size="mini"
+            ref="table"
             :max-height="maxHeight"
-            @row-click="doDeal"
+            @selection-change="selected = $event"
         >
+            <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column
                 prop="type"
                 label="报警类型"
@@ -26,26 +28,30 @@
                 prop="alarmTime"
                 label="报警时间"
                 min-width="160"
-                :filters="filters.time"
+                :filters="filters.alarmTime"
                 :filter-method="filterHandler"
                 :formatter="formatter"
             ></el-table-column>
             <el-table-column
-                prop="alarmMsg"
+                prop="content"
                 label="报警信息"
                 min-width="255"
             ></el-table-column>
         </el-table>
-        <el-pagination
-            style="margin-top: 20px; text-align: right"
-            small
-            hide-on-single-page
-            layout="prev, pager, next"
-            :total="messages.length"
-            :page-size="50"
-            @current-change="page = $event"
-        >
-        </el-pagination>
+        <div class="flex-center" :class="$style.bottom">
+            <el-button @click="doDeal" :disabled="!selected.length" size="mini">
+                解决异常
+            </el-button>
+            <el-pagination
+                small
+                hide-on-single-page
+                layout="prev, pager, next"
+                :total="messages.length"
+                :page-size="50"
+                @current-change="page = $event"
+            >
+            </el-pagination>
+        </div>
     </el-drawer>
 </template>
 
@@ -57,13 +63,15 @@ import {
     NOTIFY_KEY,
     ALARM_DEAL,
     MODIFY_TAG_ICON,
-    SX_WIDTH
+    SX_WIDTH,
+    ERROR_IMG
 } from '../constant';
 import { ElNotificationComponent } from 'element-ui/types/notification';
 import { ElTableColumn } from 'element-ui/types/table-column';
 import { ElDrawer } from 'element-ui/types/drawer';
 import { Ref } from 'vue-property-decorator';
 import { getAndCreateStore } from '../assets/lib/localstore';
+import { ElTable } from 'element-ui/types/table';
 
 export const errorStore = getAndCreateStore('ERROR_STORE');
 
@@ -74,30 +82,34 @@ export default class Notice extends Vue {
     public page: number = 1;
     public maxHeight: number = 666;
     public size: string = '50%';
+    public selected: IAlarm[] = [];
 
-    private elNotify = new Map<IAlarm | string, ElNotificationComponent>();
+    private elNotify = new Map<string | IAlarm, ElNotificationComponent>();
     private notifyCount: number = 0;
     private notifyPromise = Promise.resolve();
+    private messageStore = getAndCreateStore('MESSAGE');
+
+    @Ref('table') private readonly elTable!: ElTable;
 
     public get filters() {
         const type = new Set();
         const tagNo = new Set();
-        const baseNo = new Set();
-        const time = new Set();
+        const alarmTime = new Set();
 
         this.messages.forEach(v => {
             type.add(v.type);
             tagNo.add(v.tagNo);
-            baseNo.add(v.baseNo);
-            time.add(v.alarmTime);
+            alarmTime.add(v.alarmTime);
         });
         const format = (<any>this.$options.filters).date;
 
         return {
             type: Array.from(type).map(v => ({ text: v, value: v })),
             tagNo: Array.from(tagNo).map(v => ({ text: v, value: v })),
-            baseNo: Array.from(baseNo).map(v => ({ text: v, value: v })),
-            time: Array.from(time).map(v => ({ text: format(v), value: v }))
+            alarmTime: Array.from(alarmTime).map(v => ({
+                text: format(v),
+                value: v
+            }))
         };
     }
 
@@ -107,6 +119,8 @@ export default class Notice extends Vue {
 
     public created() {
         this.$event.on(NOTIFY_KEY, (v: IAlarm) => {
+            this.messageStore.setItem(this.itemToString(v), v);
+
             errorStore
                 .getItem<number>(v.tagNo)
                 .then(count => errorStore.setItem(v.tagNo, ++count))
@@ -114,34 +128,17 @@ export default class Notice extends Vue {
                     errorStore.setItem(v.tagNo, 1);
 
                     // 更换标签图片为异常图片;
-                    this.$event.emit(
-                        MODIFY_TAG_ICON,
-                        v.tagNo,
-                        '/images/error.png'
-                    );
+                    this.$event.emit(MODIFY_TAG_ICON, v.tagNo, ERROR_IMG);
                 });
 
             this.notify(v);
         });
 
         this.$event.on(ALARM_DEAL, (v: IAlarm) => {
-            errorStore
-                .getItem<number>(v.tagNo)
-                .then(count => {
-                    count--;
-
-                    if (!count) {
-                        this.$event.emit(MODIFY_TAG_ICON, v.tagNo);
-                        errorStore.removeItem(v.tagNo);
-                    } else {
-                        errorStore.setItem(v.tagNo, count);
-                    }
-                })
-                .catch(console.log);
-
-            const message = this.messages.find(m =>
-                Object.keys(m).every((k: keyof IAlarm) => m[k] === v[k])
+            const message = this.messages.find(
+                m => this.itemToString(m) === this.itemToString(v)
             );
+
             message && this.reset(message);
         });
     }
@@ -151,6 +148,8 @@ export default class Notice extends Vue {
         if (document.body.offsetWidth <= SX_WIDTH) {
             this.size = '100%';
         }
+
+        this.messageStore.iterate<IAlarm, void>(this.notify.bind(this)); // 恢复报警状态
     }
 
     public formatter(r: any, c: any, v: number) {
@@ -165,12 +164,17 @@ export default class Notice extends Vue {
         return Reflect.get(row, Reflect.get(column, 'property')) === value;
     }
 
-    public doDeal(v: IAlarm) {
-        this.$confirm(`异常${v.alarmMsg}已解决?`)
-            .then(() => this.reset(v))
+    // 处理异常
+    public doDeal() {
+        this.$confirm('选中异常已解决?')
+            .then(() => {
+                this.selected.forEach(this.reset.bind(this));
+                this.elTable.clearSelection();
+            })
             .catch(console.log);
     }
 
+    // 隐藏报警
     private reset(v: IAlarm) {
         const el = this.elNotify.get(v);
         if (el) {
@@ -183,9 +187,26 @@ export default class Notice extends Vue {
         if (index > -1) {
             this.messages.splice(index, 1);
             this.notify(this.messages.splice(this.notifyCount, 1)[0]);
+
+            this.messageStore.removeItem(this.itemToString(v));
         }
+
+        errorStore
+            .getItem<number>(v.tagNo)
+            .then(count => {
+                count--;
+
+                if (count <= 0) {
+                    this.$event.emit(MODIFY_TAG_ICON, v.tagNo);
+                    errorStore.removeItem(v.tagNo);
+                } else {
+                    errorStore.setItem(v.tagNo, count);
+                }
+            })
+            .catch(console.log);
     }
 
+    // 显示报警
     private async notify(v: IAlarm) {
         const oldCount: number = this.notifyCount;
         if (v) {
@@ -203,7 +224,11 @@ export default class Notice extends Vue {
                             duration: 0,
                             showClose: false,
                             customClass: 'notice-component',
-                            onClick: () => this.doDeal(v)
+                            onClick: () => {
+                                this.$confirm(`异常${v.alarmMsg}已解决?`)
+                                    .then(() => this.reset(v))
+                                    .catch(console.log);
+                            }
                         });
 
                         this.elNotify.set(v, el);
@@ -216,6 +241,7 @@ export default class Notice extends Vue {
             .then(() => this.updateMore(oldCount));
     }
 
+    // 更新 “更多” 的显示
     private updateMore(oldCount: number) {
         let more = this.elNotify.get('more');
 
@@ -240,10 +266,19 @@ export default class Notice extends Vue {
             more && more.close();
         }
     }
+
+    private itemToString(item: IAlarm) {
+        return [item.tagNo, item.type, item.alarmTime, item.alarmMsg].join('$');
+    }
 }
 </script>
 
 <style lang="postcss" module>
+.bottom {
+    justify-content: space-between !important;
+    margin-top: 20px;
+    padding-left: 10px;
+}
 </style>
 
 <style lang="postcss">

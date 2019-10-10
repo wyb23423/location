@@ -42,12 +42,12 @@ export default class Main extends Vue {
         }
 
         const ws = new WebSocket(`ws://${ip}/realtime/alarm`);
-        ws.onmessage = (e: MessageEvent) => {
+        ws.onmessage = (msg: MessageEvent) => {
             let data: Omit<IAlarm, 'id'>;
             try {
-                data = JSON.parse(e.data);
+                data = JSON.parse(msg.data);
             } catch (e) {
-                const arr = e.data.split('$');
+                const arr = msg.data.split('$');
                 data = {
                     baseNo: arr[0],
                     tagNo: arr[1],
