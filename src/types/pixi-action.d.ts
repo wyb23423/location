@@ -2,7 +2,7 @@
  * pixi-action类型声明
  */
 
-import { Sprite, utils } from 'pixi.js';
+import { Container, utils } from 'pixi.js';
 
 declare module 'pixi.js' {
     export const actionManager: ActionManager;
@@ -10,14 +10,14 @@ declare module 'pixi.js' {
 }
 
 interface ActionManager {
-    actions: { [is: string]: Animation };
+    actions: { [is: string]: PIXIAnimation };
 
     update(delta?: number): void;
-    runAction(sprite: Sprite, action: Action): Animation;
-    cancelAction(animation: Animation): void;
+    runAction(sprite: Container, action: Action): PIXIAnimation;
+    cancelAction(animation: PIXIAnimation): void;
 }
 
-interface ActionModule {
+declare interface ActionModule {
     MoveTo: ActionConstructor<BaseAction>;
     MoveBy: ActionConstructor<BaseAction>;
     ScaleTo: ActionConstructor<BaseAction>;
@@ -42,17 +42,16 @@ interface ActionModule {
     CallFunc: ActionConstructor<CallFuncAction>;
 }
 
-interface Animation extends utils.EventEmitter {
+declare interface PIXIAnimation extends utils.EventEmitter {
     isEnded(): boolean;
     update(delta: number, deltaMS: number): void;
 }
-type AnimationConstructor = new (sprite: Sprite, action: Action) => Animation;
-declare const Animation: AnimationConstructor;
+declare const PIXIAnimation: new (sprite: Container, action: Action) => PIXIAnimation;
 
 interface Action {
     time: number;
     reset(): void;
-    update(sprite: Sprite, delta: number, deltaMS: number): boolean;
+    update(sprite: Container, delta: number, deltaMS: number): boolean;
 }
 
 interface BaseAction extends Action {
