@@ -73,44 +73,34 @@ export default class Login extends Vue {
 
     public submit() {
         const form = <ElForm>this.$refs.loginForm;
-        form.validate((valid: boolean) => {
+        form.validate(async (valid: boolean) => {
             if (valid) {
-                fetch('/api/admin/login', {
-                    body: JSON.stringify(this.form),
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                    .then(res => res.json())
-                    .then((res: ResponseData) => {
-                        if (res.code === 200) {
-                            sessionStorage.setItem('login', '1');
-
-                            const admin = res.pagedData
-                                ? res.pagedData.datas[0]
-                                : '';
-
-                            return Promise.resolve(
-                                admin
-                                    ? JSON.stringify(admin.admin || admin)
-                                    : ''
-                            );
-                        } else {
-                            return Promise.reject({
-                                message: '账号或密码错误, 登陆失败!'
-                            });
+                try {
+                    const res = await this.$http.post({
+                        url: '/api/admin/login',
+                        body: this.form,
+                        headers: {
+                            'Content-Type': 'application/json'
                         }
-                    })
-                    .then((user: string) => {
-                        user && sessionStorage.setItem('user', user);
-                        initRouter();
-                        load('/api/tag/getall', 'tagNo', 'tag');
+                    });
 
-                        this.$router.push('/');
-                    })
-                    .catch((e: any) => this.$message.error(e.message))
-                    .finally(() => form && form.resetFields());
+                    // =======================设置登录信息
+                    sessionStorage.setItem('login', '1');
+                    sessionStorage.setItem(
+                        'user',
+                        JSON.stringify(res.pagedData.datas[0].admin)
+                    );
+                    // =====================================
+
+                    initRouter(); // 加载路由
+                    load('/api/tag/getall', 'tagNo', 'tag'); // 慢加载标签数据
+
+                    this.$router.push('/');
+                } catch (e) {
+                    //
+                }
+
+                form && form.resetFields();
             }
         });
     }

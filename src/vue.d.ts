@@ -11,14 +11,15 @@ declare module 'vue/types/vue' {
 
 type HTTPMethod = (
     url: string | RequestParams,
-    params?: any,
-    headers?: any,
+    params?: Record<string, string | Blob | number>,
+    headers?: Record<string, any> | Headers,
     controller?: AbortController
 ) => Promise<ResponseData>;
 
 interface HTTP {
     get: HTTPMethod;
     post: HTTPMethod;
+    isTimeover: boolean;
 }
 
 interface VueWorker {

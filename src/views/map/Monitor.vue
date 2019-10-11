@@ -219,7 +219,7 @@ export default class Monitor extends mixins(
             .get('/api/zone/getall', {
                 currentPage: 1,
                 pageSize: 1_0000_0000,
-                mapId: this.mapId
+                mapId: <number>this.mapId
             })
             .then(res => (this.zones = res.pagedData.datas))
             .catch(() => console.log);

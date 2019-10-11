@@ -122,9 +122,13 @@ export default class AdminList extends mixins(TableMixin) {
                     role: JSON.stringify(this.elPermission.parse())
                 });
 
-                return this.$http.post('/api/admin/updateAdmin', this.admin, {
-                    'Content-Type': 'application/json'
-                });
+                return this.$http.post(
+                    '/api/admin/updateAdmin',
+                    <IAdmin>this.admin,
+                    {
+                        'Content-Type': 'application/json'
+                    }
+                );
             })
             .then(() => this.$message.success('修改管理员信息成功'))
             .catch(console.log);

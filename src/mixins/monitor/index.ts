@@ -120,6 +120,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
             // 长时间未收到信号, 将标签号推入信号丢失队列
             this.renderTags[tagNo] = setTimeout(this.miss.bind(this, tagNo), LOSS_TIME);
+            // this.alarmTimes.set(tagNo, Date.now());
 
             // 统计(添加对应统计信息)
             this.doCensus(tag);

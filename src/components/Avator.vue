@@ -265,13 +265,20 @@ export default class Avator extends Vue {
         const url = this.getUrl();
         const tagPhoto = this.getcanvas(url, name)
             .then(
-                c => new Promise(resolve => c.toBlob(resolve, 'image/png', 1))
+                c =>
+                    new Promise<Blob | null>(resolve =>
+                        c.toBlob(resolve, 'image/png', 1)
+                    )
             )
-            .then(photo =>
-                this.$http.post('/api/tag/upload/tagPhoto', {
+            .then(photo => {
+                if (!photo) {
+                    return Promise.reject('获取头像数据失败');
+                }
+
+                return this.$http.post('/api/tag/upload/tagPhoto', {
                     tagPhoto: photo
-                })
-            );
+                });
+            });
 
         let avatar = Promise.resolve<ResponseData>({
             code: 200,

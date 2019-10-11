@@ -15,7 +15,7 @@ import Component from 'vue-class-component';
 import Header from '../components/Header.vue';
 import { Prop } from 'vue-property-decorator';
 import { NOTIFY_KEY } from '@/constant';
-import { getIp } from '@/assets/utils/util';
+import { getIp, getConfig } from '@/assets/utils/util';
 
 @Component({
     components: {
