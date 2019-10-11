@@ -69,8 +69,8 @@ declare interface IZone extends IJson {
     enable: 0 | 1; // 是否启用
     mapId: number;
     mode: number; // 区域类型
-    groupNo1: string;
-    groupNo2: string;
+    groupId1: string;
+    groupId2: string;
 }
 
 declare interface IBingdings extends IJson {

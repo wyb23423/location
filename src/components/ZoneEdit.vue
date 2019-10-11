@@ -26,28 +26,28 @@
             required
             v-if="zone.mode === zoneMode.group"
         >
-            <el-select v-model="zone.groupNo1">
+            <el-select v-model="zone.groupId1">
                 <el-option v-for="v of groups" :key="v" :value="v"></el-option>
             </el-select>
         </el-form-item>
         <template v-if="zone.mode === zoneMode.switch">
             <el-form-item label="基站分组1" required>
-                <el-select v-model="zone.groupNo1">
+                <el-select v-model="zone.groupId1">
                     <el-option
                         v-for="v of groups"
                         :key="v"
                         :value="v"
-                        :disabled="v === zone.groupNo2"
+                        :disabled="v === zone.groupId2"
                     ></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="基站分组2" required>
-                <el-select v-model="zone.groupNo2">
+                <el-select v-model="zone.groupId2">
                     <el-option
                         v-for="v of groups"
                         :key="v"
                         :value="v"
-                        :disabled="v === zone.groupNo1"
+                        :disabled="v === zone.groupId1"
                     ></el-option>
                 </el-select>
             </el-form-item>
