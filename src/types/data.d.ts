@@ -146,3 +146,14 @@ declare interface ITagInfo {
     sTagNo: string;
     time?: string;
 }
+
+declare interface Configuration {
+    APP_KEY: string;
+    APP_NAME: string;
+    SECOND_COUNT: number;
+    PROXY_TARGET: string;
+    websoket: {
+        position: string;
+        sundries: string;
+    };
+}

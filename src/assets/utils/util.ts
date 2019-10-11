@@ -126,3 +126,25 @@ export function base642blob(base64: string) {
 
     return new Blob();
 }
+
+export function getConfig<T>(key: string, defaultValue: T) {
+    const config = sessionStorage.getItem('config');
+
+    if (!config) {
+        console.error('配置不存在');
+        return defaultValue;
+    }
+
+    let res = JSON.parse(config);
+    const keys = [];
+    for (const k of key.split('.')) {
+        keys.push(k);
+        res = res[k];
+        if (res == null) {
+            console.warn(`config.${keys.join('.')} is ${res === undefined ? 'undefined' : 'null'}`);
+            return defaultValue;
+        }
+    }
+
+    return <T>res;
+}

@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { arr2obj, getIp } from '@/assets/utils/util';
+import { arr2obj, getIp, getConfig } from '@/assets/utils/util';
 import Component from 'vue-class-component';
 
 @Component
@@ -41,8 +41,8 @@ export class WebSocketInit extends Vue {
             }
         };
         // ======================================
-
-        const ws = new WebSocket(`ws://${ip}/realtime/position`);
+        const wsUrl = getConfig<string>('websoket.position', 'ws://#{ip}/realtime/position');
+        const ws = new WebSocket(wsUrl.replace('#{ip}', ip));
         ws.onopen = () => ws.send(JSON.stringify(this.groups));
         ws.onmessage = handler;
         this.ws = [ws];
