@@ -10,6 +10,7 @@ export default class HTTP {
     private params?: string | FormData;
     private headers: Record<string, any> | Headers = {};
     private controller!: AbortController;
+    private retryCount: number = 0;
 
     constructor(
         private showMessage: boolean = true,
@@ -24,7 +25,9 @@ export default class HTTP {
         headers: Record<string, any> | Headers = {},
         controller?: AbortController
     ): Promise<ResponseData> {
+        this.retryCount = 0;
         this.parseArgs(url, true, params, headers, controller);
+
         return this.doFetch('GET');
     }
 
@@ -34,7 +37,9 @@ export default class HTTP {
         headers: Record<string, any> | Headers = {},
         controller?: AbortController
     ): Promise<ResponseData> {
+        this.retryCount = 0;
         this.parseArgs(url, false, params, headers, controller);
+
         return this.doFetch('POST');
     }
 
@@ -44,17 +49,17 @@ export default class HTTP {
     public timeout(method: 'POST' | 'GET') {
         this.isTimeover = false;
 
-        return new Promise<Response>((resolve, reject) =>
-            setTimeout(() => {
-                if (this.retry) {
-                    MessageBox.confirm('请求服务器超时, 是否重试?')
-                        .then(this.doFetch.bind(this, method))
-                        .catch(console.log);
-                }
-                this.isTimeover = true;
-                reject(`request timeover ${method} ${this.url}`);
-            }, 60000)
-        );
+        setTimeout(() => {
+            if (this.retry && this.retryCount++ <= 5) {
+                MessageBox.confirm('请求服务器超时, 是否重试?')
+                    .then(this.doFetch.bind(this, method))
+                    .catch(console.log);
+            }
+
+            this.isTimeover = true;
+            console.error(`request timeover ${method} ${this.url}`);
+            this.controller.abort();
+        }, 60000);
     }
 
     // 解析请求参数
@@ -100,8 +105,8 @@ export default class HTTP {
             signal: this.controller.signal
         };
 
-        const res = await Promise.race([this.timeout(method), fetch(this.url, init)]);
-        return this.parseRes(res);
+        this.timeout(method);
+        return this.parseRes(await fetch(this.url, init));
     }
 
     // 解析响应

@@ -159,7 +159,7 @@ export default class ControlMixin extends Vue {
     // 存储数据
     private async savePosition(index: number, data: ITagInfo[]) {
         try {
-            return await localforage.getItem<PositionItem>(index + '');
+            await localforage.getItem<PositionItem>(index + '');
         } catch (e) {
             const fragment: Fragment = {};
             const offset = new Date().getTimezoneOffset() * 60000;
@@ -174,7 +174,8 @@ export default class ControlMixin extends Vue {
                     });
                 }
             });
-            return localforage.setItem(index + '', fragment);
+
+            localforage.setItem(index + '', fragment);
         }
     }
 }
