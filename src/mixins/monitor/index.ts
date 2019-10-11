@@ -16,7 +16,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
     private zoneAll: IZone[] = []; // 所有区域
-    private alarmTimes = new Map<string, number>();
+    // private alarmTimes = new Map<string, number>();
     private getZones?: () => void;
     private moveTime = 1 / JSON.parse(sessionStorage.getItem('config')!).SECOND_COUNT;
 
@@ -106,12 +106,12 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
             if (timer) {
                 clearTimeout(timer);
 
-                this.$event.emit(ALARM_DEAL, {
-                    tagNo,
-                    alarmTime: this.alarmTimes.get(tagNo),
-                    alarmMsg: MISS_MSG,
-                    type: 300
-                });
+                // this.$event.emit(ALARM_DEAL, {
+                //     tagNo,
+                //     alarmTime: this.alarmTimes.get(tagNo),
+                //     alarmMsg: MISS_MSG,
+                //     type: 300
+                // });
 
                 this.moveTo(
                     tagNo, coord, this.moveTime,
@@ -143,6 +143,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
             // 长时间未收到信号, 将标签号推入信号丢失报警队列
             this.renderTags[tagNo] = setTimeout(this.miss.bind(this, tagNo), LOSS_TIME);
+            // this.alarmTimes.set(tagNo, Date.now());
 
             // 统计
             this.doCensus(tag);
@@ -151,15 +152,16 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
     // 信号丢失报警循环
     private miss(tagNo: string) {
-        const now = Date.now();
-        this.alarmTimes.set(tagNo, now);
+        // const now = Date.now();
+        // console.log(now - (this.alarmTimes.get(tagNo) || 0));
+        // this.alarmTimes.set(tagNo, now);
         // 抛出 信号丢失 事件
-        this.$event.emit(NOTIFY_KEY, {
-            tagNo,
-            alarmTime: now,
-            alarmMsg: MISS_MSG,
-            type: 1
-        });
+        // this.$event.emit(NOTIFY_KEY, {
+        //     tagNo,
+        //     alarmTime: now,
+        //     alarmMsg: MISS_MSG,
+        //     type: 1
+        // });
 
         if (this.mgr) {
             this.renderTags[tagNo] = -1; // 标记标签已丢失

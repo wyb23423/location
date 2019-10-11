@@ -34,17 +34,10 @@ export class WebSocketInit extends Vue {
         }
 
         // ==============================收到标签信息后的处理
-        const datas: any[] = [];
-        let time: number = 0;
         const handler = (event: MessageEvent) => {
             const data: ITagInfo = JSON.parse(event.data);
             if (this.tagAll[data.sTagNo]) {
-                datas.push(data);
-                if (Date.now() - time > 50 / 3) {
-                    datas.forEach(v => this.move(v));
-                    datas.length = 0;
-                    time = Date.now();
-                }
+                this.move(data);
             }
         };
         // ======================================
