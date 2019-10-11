@@ -97,7 +97,7 @@ export default class Login extends Vue {
 
                     this.$router.push('/');
                 } catch (e) {
-                    console.log(e);
+                    //
                 }
 
                 form && form.resetFields();
