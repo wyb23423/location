@@ -2,7 +2,7 @@ import Component, { mixins } from 'vue-class-component';
 import MapMixin from '../map';
 import { WebSocketInit } from './websocket';
 import { arr2obj, getConfig } from '@/assets/utils/util';
-import { LOSS_TIME, MODIFY_TAG_ICON } from '@/constant';
+import { LOSS_TIME, MODIFY_TAG_ICON, MISS } from '@/constant';
 import Link from '../map/link';
 import { getCustomInfo } from '@/assets/map/common';
 
@@ -120,7 +120,6 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
             // 长时间未收到信号, 将标签号推入信号丢失队列
             this.renderTags[tagNo] = setTimeout(this.miss.bind(this, tagNo), LOSS_TIME);
-            // this.alarmTimes.set(tagNo, Date.now());
 
             // 统计(添加对应统计信息)
             this.doCensus(tag);
@@ -129,6 +128,8 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
     // 信号丢失报警循环
     private miss(tagNo: string) {
+        this.$event.emit(MISS, tagNo);
+
         if (this.mgr) {
             this.renderTags[tagNo] = -1; // 标记标签已丢失
 

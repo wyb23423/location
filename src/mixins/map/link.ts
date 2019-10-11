@@ -5,16 +5,14 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { FengMapMgr } from '@/assets/map/fengmap';
 import { PIXIMgr } from '@/assets/map/pixi';
-import { NOTIFY_KEY, MISS_MSG } from '@/constant';
+import { MISS } from '@/constant';
 
 @Component
 export default class Link extends Vue {
     public mgr?: FengMapMgr | PIXIMgr;
 
-    private bindings = new Map<string, number[]>();
-    private points = new Map<number, Record<string, Vector3>>(); // 记录的坐标点
-
-    private missHandler?: (data: IAlarm) => void;
+    private bindings = new Map<string, number[]>(); // 用于记录标签属于哪些绑定组 <标签号, 绑定组号>
+    private points = new Map<number, Record<string, Vector3>>(); // 记录的坐标点 <绑定组号, 各标签坐标>
 
     public created() {
         // TODO 从服务器获取数据
@@ -35,16 +33,11 @@ export default class Link extends Vue {
         this.normalize(testData);
 
         // 绑定信号丢失时移除关联线的处理函数
-        this.missHandler = (data: IAlarm) => {
-            if (data.alarmMsg === MISS_MSG) {
-                this.link(data.tagNo);
-            }
-        };
-        this.$event.on(NOTIFY_KEY, this.missHandler);
+        this.$event.on(MISS, this.link.bind(this));
     }
 
     public destroyed() {
-        this.missHandler && this.$event.off(NOTIFY_KEY, this.missHandler);
+        this.$event.off(MISS);
     }
 
     protected link(tagNo: string, coords?: Vector3) {

@@ -45,9 +45,6 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { Message } from 'element-ui';
-import Router from 'vue-router';
-import { State } from 'vuex-class/lib/bindings';
 import { initRouter } from '@/router';
 import { ElForm } from 'element-ui/types/form';
 import { load } from '@/assets/utils/download';
