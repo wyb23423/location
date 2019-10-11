@@ -16,7 +16,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
     public renderTags: Record<string, number> = {}; // 已经在地图上的标签, {tagNo: timer}
 
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
-    private alarmTimes = new Map<string, number>();
+    // private alarmTimes = new Map<string, number>();
 
     public created() {
         this.$event.on(MODIFY_TAG_ICON, (tagNo: string, img: string) => this.mgr && this.mgr.modifyImg(tagNo, img));
@@ -127,7 +127,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
             // 长时间未收到信号, 将标签号推入信号丢失报警队列
             this.renderTags[tagNo] = setTimeout(this.miss.bind(this, tagNo), LOSS_TIME);
-            this.alarmTimes.set(tagNo, Date.now());
+            // this.alarmTimes.set(tagNo, Date.now());
 
             // 统计(添加对应统计信息)
             this.doCensus(tag);
@@ -136,9 +136,9 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
     // 信号丢失报警循环
     private miss(tagNo: string) {
-        const now = Date.now();
-        console.log(tagNo, now - (this.alarmTimes.get(tagNo) || 0));
-        this.alarmTimes.set(tagNo, now);
+        // const now = Date.now();
+        // console.log(tagNo, now - (this.alarmTimes.get(tagNo) || 0));
+        // this.alarmTimes.set(tagNo, now);
         // 抛出 信号丢失 事件
         // this.$event.emit(NOTIFY_KEY, {
         //     tagNo,
