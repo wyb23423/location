@@ -11,7 +11,6 @@ export default class HTTP {
     private headers: Record<string, any> | Headers = {};
     private controller!: AbortController;
     private retryCount: number = 0;
-    private timer: number = 0;
 
     constructor(
         private showMessage: boolean = true,
@@ -44,21 +43,26 @@ export default class HTTP {
         return this.doFetch('POST');
     }
 
+    protected timeoutCall(method: 'POST' | 'GET') {
+        if (this.retry && this.retryCount++ <= 5) {
+            MessageBox.confirm('请求服务器超时, 是否重试?')
+                .then(this.doFetch.bind(this, method))
+                .catch(console.log);
+        }
+
+        console.error(`request timeover ${method} ${this.url}`);
+    }
+
     /**
      * 请求超时的处理函数
      */
-    public timeout(method: 'POST' | 'GET') {
+    private timeout(method: 'POST' | 'GET') {
         this.isTimeover = false;
 
-        this.timer = setTimeout(() => {
-            if (this.retry && this.retryCount++ <= 5) {
-                MessageBox.confirm('请求服务器超时, 是否重试?')
-                    .then(this.doFetch.bind(this, method))
-                    .catch(console.log);
-            }
+        return setTimeout(() => {
+            this.timeoutCall(method);
 
             this.isTimeover = true;
-            console.error(`request timeover ${method} ${this.url}`);
             this.controller.abort();
         }, 60000);
     }
@@ -106,10 +110,10 @@ export default class HTTP {
             signal: this.controller.signal
         };
 
-        this.timeout(method);
+        const timer = this.timeout(method);
 
         return fetch(this.url, init)
-            .finally(() => this.timer && clearTimeout(this.timer))
+            .finally(() => clearTimeout(timer))
             .then(this.parseRes.bind(this));
     }
 
