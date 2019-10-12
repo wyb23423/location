@@ -43,7 +43,7 @@ export default class HTTP {
         return this.doFetch('POST');
     }
 
-    protected timeoutCall(method: 'POST' | 'GET') {
+    public timeoutCall(method: 'POST' | 'GET') {
         if (this.retry && this.retryCount++ <= 5) {
             MessageBox.confirm('请求服务器超时, 是否重试?')
                 .then(this.doFetch.bind(this, method))
