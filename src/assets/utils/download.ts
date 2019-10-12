@@ -45,9 +45,6 @@ export function load(url: string, key: string, name: string) {
                 isEnd = currentPage++ * 1000 >= data.totalCount;
             } catch (e) {
                 errorCount++;
-                if (http.isTimeover) {
-                    console.error(e);
-                }
             }
 
             if (errorCount >= 10) {

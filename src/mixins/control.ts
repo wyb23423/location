@@ -137,6 +137,7 @@ export default class ControlMixin extends Vue {
     // 请求数据
     private fetch(start: number, end: number, controller?: AbortController) {
         const offset = new Date().getTimezoneOffset() * 60000;
+
         return this.$http
             .post({
                 url: '/api/tag/queryTagHistory',

@@ -3,75 +3,76 @@
  */
 import { Message, MessageBox } from 'element-ui';
 
+interface HTTPConfig {
+    showMessage: boolean;
+    retry: boolean;
+    timeoutTime: number;
+    maxRetryCount: number;
+}
+type RequestConfig = Omit<RequestParams, 'body' | 'data' | 'params'> & { params?: string | FormData } & HTTPConfig;
+
 export default class HTTP {
-    public isTimeover: boolean = false;
 
-    private url: string = '';
-    private params?: string | FormData;
-    private headers: Record<string, any> | Headers = {};
-    private controller!: AbortController;
-    private retryCount: number = 0;
-
+    /**
+     * 项目请求模块
+     * 以下配置可在发送请求前设置, 设置后在下次设置前都会是设置的值
+     * 对已发送出的请求, 配置值是其发送时的值
+     *
+     * @param showMessage // 是否显示弹出后端返回的错误信息。默认: true
+     * @param retry // 是否超时重试。默认: true
+     * @param timeoutTime // 使用的超时时间, 单位毫秒。默认: 60000
+     * @param maxRetryCount // 超时重试的最大次数。默认: 5
+     */
     constructor(
-        private showMessage: boolean = true,
-        private retry: boolean = true
+        public showMessage: boolean = true,
+        public retry: boolean = true,
+        public timeoutTime: number = 60000,
+        public maxRetryCount: number = 5
     ) {
         //
     }
 
     public get(
         url: string | RequestParams,
-        params: Record<string, Blob | string | number> = {},
+        params: Record<string, any> = {},
         headers: Record<string, any> | Headers = {},
         controller?: AbortController
     ): Promise<ResponseData> {
-        this.retryCount = 0;
-        this.parseArgs(url, true, params, headers, controller);
-
-        return this.doFetch('GET');
+        const req = this.parseArgs(url, true, params, headers, controller);
+        return this.doFetch(req, 'GET', 0);
     }
 
     public post(
         url: string | RequestParams,
-        params: Record<string, Blob | string | number> = {},
+        params: Record<string, any> = {},
         headers: Record<string, any> | Headers = {},
         controller?: AbortController
     ): Promise<ResponseData> {
-        this.retryCount = 0;
-        this.parseArgs(url, false, params, headers, controller);
-
-        return this.doFetch('POST');
-    }
-
-    public timeoutCall(method: 'POST' | 'GET') {
-        if (this.retry && this.retryCount++ <= 5) {
-            MessageBox.confirm('请求服务器超时, 是否重试?')
-                .then(this.doFetch.bind(this, method))
-                .catch(console.log);
-        }
-
-        console.error(`request timeover ${method} ${this.url}`);
+        const req = this.parseArgs(url, false, params, headers, controller);
+        return this.doFetch(req, 'POST', 0);
     }
 
     /**
-     * 请求超时的处理函数
+     * 超时回调
+     * @param req 请求相关数据
+     * @param method 请求方法
+     * @param retryCount 已重试次数
      */
-    private timeout(method: 'POST' | 'GET') {
-        this.isTimeover = false;
+    public timeout(req: RequestConfig, method: 'POST' | 'GET', retryCount: number) {
+        if (this.retry && retryCount++ <= this.maxRetryCount) {
+            MessageBox.confirm('请求服务器超时, 是否重试?')
+                .then(this.doFetch.bind(this, req, method, retryCount))
+                .catch(console.log);
+        }
 
-        return setTimeout(() => {
-            this.timeoutCall(method);
-
-            this.isTimeover = true;
-            this.controller.abort();
-        }, 60000);
+        console.error(`request timeover ${method} ${req.url}`);
     }
 
     // 解析请求参数
     private parseArgs(
         url: string | RequestParams,
         isGet: boolean,
-        params: Record<string, Blob | string | number>,
+        params: Record<string, any>,
         headers: Record<string, any> | Headers,
         controller?: AbortController
     ) {
@@ -82,37 +83,43 @@ export default class HTTP {
             url = url.url;
         }
 
+        let reqBody: string | FormData | undefined = void 0;
         if (isGet) {
             const start = url.includes('?') ? '&' : '?';
             url = Object.entries(params).reduce((a, [k, v], i) => `${a}${i ? '&' : start}${k}=${v}`, url);
-            this.params = void 0;
         } else {
             const contentType = this.getHead(headers, 'Content-Type');
             if (contentType && contentType.includes('application/json')) {
-                this.params = JSON.stringify(params);
+                reqBody = JSON.stringify(params);
             } else {
-                this.params = this.json2FormData(params);
+                reqBody = this.json2FormData(params);
             }
         }
 
-        this.url = url;
-        this.headers = headers;
-        this.controller = controller || new AbortController();
+        return {
+            ...this,
+            url, headers, controller,
+            params: reqBody
+        };
     }
 
     // 发送请求
-    private doFetch(method: 'POST' | 'GET') {
+    private doFetch(req: RequestConfig, method: 'POST' | 'GET', retryCount: number) {
+        req.controller = req.controller || new AbortController();
         const init: RequestInit = {
             method,
-            headers: this.headers,
-            body: this.params,
+            headers: req.headers,
+            body: req.params,
             credentials: 'include',
-            signal: this.controller.signal
+            signal: req.controller.signal
         };
 
-        const timer = this.timeout(method);
+        const timer = setTimeout(() => {
+            this.timeout(req, method, retryCount);
+            req.controller && req.controller.abort();
+        }, this.timeoutTime);
 
-        return fetch(this.url, init)
+        return fetch(req.url, init)
             .finally(() => clearTimeout(timer))
             .then(this.parseRes.bind(this));
     }
@@ -165,14 +172,14 @@ export default class HTTP {
         return headers[name];
     }
 
-    private json2FormData(parmas: Record<string, Blob | string | number>) {
+    private json2FormData(parmas: Record<string, any>) {
         if (parmas instanceof FormData) {
             return parmas;
         }
 
         const data = new FormData();
         for (const [k, v] of Object.entries(parmas)) {
-            data.append(k, typeof v === 'number' ? v + '' : v);
+            data.append(k, v instanceof Blob ? v : v + '');
         }
 
         return data;

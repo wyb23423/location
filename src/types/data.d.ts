@@ -107,13 +107,14 @@ declare interface IJson {
     [x: string]: any;
 }
 
+
 // 请求参数
 declare interface RequestParams {
     url: string;
-    params?: any;
-    body?: any;
-    data?: any;
-    headers?: any;
+    params?: Record<string, any>;
+    body?: Record<string, any>;
+    data?: Record<string, any>;
+    headers?: Record<string, any> | Headers;
     controller?: AbortController; // 用于中止请求
 }
 // 响应数据
