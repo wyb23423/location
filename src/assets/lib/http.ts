@@ -11,6 +11,7 @@ export default class HTTP {
     private headers: Record<string, any> | Headers = {};
     private controller!: AbortController;
     private retryCount: number = 0;
+    private timer: number = 0;
 
     constructor(
         private showMessage: boolean = true,
@@ -49,7 +50,7 @@ export default class HTTP {
     public timeout(method: 'POST' | 'GET') {
         this.isTimeover = false;
 
-        setTimeout(() => {
+        this.timer = setTimeout(() => {
             if (this.retry && this.retryCount++ <= 5) {
                 MessageBox.confirm('请求服务器超时, 是否重试?')
                     .then(this.doFetch.bind(this, method))
@@ -96,17 +97,20 @@ export default class HTTP {
     }
 
     // 发送请求
-    private async doFetch(method: 'POST' | 'GET') {
+    private doFetch(method: 'POST' | 'GET') {
         const init: RequestInit = {
+            method,
             headers: this.headers,
             body: this.params,
             credentials: 'include',
-            method,
             signal: this.controller.signal
         };
 
         this.timeout(method);
-        return this.parseRes(await fetch(this.url, init));
+
+        return fetch(this.url, init)
+            .finally(() => this.timer && clearTimeout(this.timer))
+            .then(this.parseRes.bind(this));
     }
 
     // 解析响应

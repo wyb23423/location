@@ -53,6 +53,7 @@ export default class Link extends Vue {
                         continue;
                     }
 
+                    // 大于两个点, 将第一个点加入数组最后形成闭环
                     if (p.length > 2) {
                         p.push(p[0]);
                     }
