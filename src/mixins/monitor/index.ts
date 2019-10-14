@@ -50,11 +50,8 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
         this.mgr!.on('mapClickNode', (event: FMMapClickEvent) => {
             if (this.mgr) {
-                if (
-                    event.nodeType === fengmap.FMNodeType.IMAGE_MARKER
-                    && event.target.custom && event.target.custom.info.tagNo
-                ) {
-                    const tagNo = event.target.custom.info.tagNo;
+                const tagNo = getCustomInfo<ITag>(event.target, 'info').id;
+                if (event.nodeType === fengmap.FMNodeType.IMAGE_MARKER && tagNo) {
                     if (!this.pops.has(tagNo)) {
                         this.pops.set(tagNo, this.mgr.addPopInfo(<any>event.target));
                     }
