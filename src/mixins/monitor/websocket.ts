@@ -16,7 +16,7 @@ export class WebSocketInit extends Vue {
             currentPage: 1,
             pageSize: 1_0000_0000
         })
-            .then(res => this.tagAll = arr2obj(res.pagedData.datas, 'tagNo', false))
+            .then(res => this.tagAll = arr2obj(res.pagedData.datas, 'id', false))
             .catch(() => console.log);
     }
 
