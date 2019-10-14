@@ -3,6 +3,7 @@
  */
 
 import { none } from '@/assets/utils/util';
+import { getCustomInfo } from '../common';
 
 export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr<T> {
     private layers: Map<string, fengmap.FMMarkerLayer<T>> = new Map();
@@ -73,7 +74,7 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
         if (isName) {
             const result: T[][] = [];
             this.markers.forEach(v => result.push(
-                v.filter(m => m.custom && m.custom.info && m.custom.info.tagName === name))
+                v.filter(m => getCustomInfo<{ tagName: string }>(m, 'info').tagName === name))
             );
 
             return result.flat();
