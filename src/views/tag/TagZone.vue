@@ -33,8 +33,9 @@
                     type="success"
                     @click="submit"
                     :disabled="!(this.form.tagId && this.form.zoneIds.length)"
+                    :icon="isUpdate ? 'el-icon-refresh' : 'el-icon-plus'"
                 >
-                    立即提交
+                    {{ isUpdate ? '更新' : '添加' }}
                 </el-button>
                 <el-button
                     type="danger"
@@ -91,6 +92,7 @@ export default class TagZone extends Vue {
         });
     }
 
+    // 远程搜索标签数据
     public remoteMethod(key: string) {
         this.timer && clearTimeout(this.timer);
         if (!key) {
@@ -100,24 +102,28 @@ export default class TagZone extends Vue {
         this.timer = setTimeout(this.fetchTag.bind(this, key), 500);
     }
 
+    // 选中的标签变化
     public async change() {
         this.isUpdate = !!(await this.fetchTagZone(this.form.tagId));
         this.$http.showMessage = true;
     }
 
+    // 更新/添加
     @Async()
     public async submit() {
         const path = this.isUpdate ? 'updateTagZone' : 'addTagZone';
         await this.$http.post('/api/tagZone/' + path, this.form);
-        this.success('操作成功');
+        this.success(this.isUpdate ? '更新成功' : '添加成功');
     }
 
+    // 删除
     @Async()
     public async remove() {
         await this.$http.post('/api/tagZone/deleteTagZone', this.form);
         this.success('删除成功');
     }
 
+    // 操作成功回调
     private success(msg: string) {
         this.$message.success(msg);
         this.form = {
@@ -126,6 +132,7 @@ export default class TagZone extends Vue {
         };
     }
 
+    // 获取标签数据
     @Async()
     private async fetchTag(key: string) {
         const res = await this.$http.get('/api/tag/getall', {
@@ -140,6 +147,7 @@ export default class TagZone extends Vue {
         }));
     }
 
+    // 获取tagZone数据
     @Async()
     private async fetchTagZone(tagId: string) {
         this.$http.showMessage = false;
