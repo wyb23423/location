@@ -6,7 +6,7 @@ export function none(a?: any, b?: any, c?: any, d?: any) {
 }
 
 /**
- * 优雅处理async/awiat的错误
+ * 处理async/awiat的错误
  * 通过函数返回相同结构数据
  */
 export async function awaitWrap<T, U = any>(promise: Promise<T>) {
@@ -19,7 +19,7 @@ export async function awaitWrap<T, U = any>(promise: Promise<T>) {
 }
 
 /**
- * 优雅处理async/awiat的错误
+ * 处理async/awiat的错误
  * 通过装饰器捕获错误, 适用于类方法可用一个try/catch整个包起来的情况
  * @param errorCall 错误处理函数
  */
