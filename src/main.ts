@@ -15,6 +15,7 @@ import * as PIXI from 'pixi.js';
 import { initConfig } from './constant';
 import Events from './assets/lib/events';
 import { formatDate } from './assets/lib/date';
+import { awaitWrap } from './assets/utils/util';
 
 // ========================================全局变量及注入vue实例的属性
 (<any>window).PIXI = PIXI; // add code
@@ -24,6 +25,7 @@ Vue.use(VueCropper).use(ElementUI).use(VueWorker);
 
 const http = Vue.prototype.$http = new HTTP();
 Vue.prototype.$event = new Events();
+Vue.prototype.$async = awaitWrap;
 Vue.config.productionTip = false;
 
 // ====================================全局路由守卫

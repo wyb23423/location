@@ -11,7 +11,7 @@ declare module 'vue/types/vue' {
 
 type HTTPMethod = (
     url: string | RequestParams,
-    params?: Record<string, string | Blob | number>,
+    params?: Record<string, any>,
     headers?: Record<string, any> | Headers,
     controller?: AbortController
 ) => Promise<ResponseData>;
@@ -20,6 +20,10 @@ interface HTTP {
     get: HTTPMethod;
     post: HTTPMethod;
     isTimeover: boolean;
+    showMessage: boolean;
+    retry: boolean;
+    timeoutTime: number;
+    maxRetryCount: number;
 }
 
 interface VueWorker {

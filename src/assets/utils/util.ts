@@ -1,28 +1,6 @@
 import { BASE_URL } from '@/constant';
 
-/**
- * 轮询等待条件达成
- * @param condition 等待的条件
- * @param timeout 超时时间
- */
-export function loopAwait(
-    condition: () => boolean,
-    timeout: number = 1000
-): Promise<void> {
-    const start: number = Date.now();
-
-    const loop = (resolve: () => void, reject: (reason?: any) => void) => {
-        if (condition()) {
-            resolve();
-        } else if (Date.now() - start > timeout) {
-            reject('timeout');
-        } else {
-            requestAnimationFrame(() => loop(resolve, reject));
-        }
-    };
-
-    return new Promise(loop);
-}
+export * from './await';
 
 /**
  * 获取一定范围内的随机数
@@ -72,13 +50,6 @@ export function arr2obj(arr: IJson[], key: string, isArr: boolean = true) {
     });
 
     return group;
-}
-
-/**
- * 空函数
- */
-export function none(a?: any, b?: any, c?: any, d?: any) {
-    //
 }
 
 // 将字符转成utf-8编码

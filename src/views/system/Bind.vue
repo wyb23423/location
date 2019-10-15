@@ -116,11 +116,11 @@ export default class Bind extends Vue {
             .get('/api/tag/getall', {
                 pageSize: 100,
                 currentPage: 1,
-                tagNo: this.keyWord[index]
+                id: this.keyWord[index]
             })
             .then((res: ResponseData<ITag>) => {
                 const data = res.pagedData.datas.map(v => ({
-                    key: v.tagNo,
+                    key: v.id,
                     label: v.name,
                     disabled: false
                 }));
@@ -177,7 +177,7 @@ export default class Bind extends Vue {
     private assignBindings(data: TransferData[], index: number) {
         const more: TransferData[] = [];
         (<string[]>this.bindings[index].tags).forEach(id => {
-            if (!data.some(v => v.key === v)) {
+            if (!data.some(v => v.key === id)) {
                 more.push({
                     key: id,
                     label: '标签' + id,
