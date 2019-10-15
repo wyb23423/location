@@ -113,13 +113,17 @@ export default class TagZone extends Vue {
     public async submit() {
         const path = this.isUpdate ? 'updateTagZone' : 'addTagZone';
         await this.$http.post('/api/tagZone/' + path, this.form);
+
         this.success(this.isUpdate ? '更新成功' : '添加成功');
     }
 
     // 删除
     @Async()
     public async remove() {
-        await this.$http.post('/api/tagZone/deleteTagZone', this.form);
+        await this.$http.post('/api/tagZone/deleteTagZone', {
+            tagId: this.form.tagId
+        });
+
         this.success('删除成功');
     }
 
