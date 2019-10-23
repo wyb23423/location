@@ -10,7 +10,6 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { RESIZE } from './constant';
 import Notice from './components/Notice.vue';
-import { Arrest } from './assets/utils/util';
 
 @Component({
     components: {
