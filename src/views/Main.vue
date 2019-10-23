@@ -52,10 +52,11 @@ export default class Main extends Vue {
                     baseNo: arr[0],
                     tagNo: arr[1],
                     type: +arr[2],
-                    alarmTime: +arr[3],
+                    alarmTime: +new Date(arr[3]).getTime(),
                     alarmMsg: arr[4]
                 };
             }
+
             if (Date.now() - data.alarmTime <= 1000) {
                 this.$event.emit(NOTIFY_KEY, data);
             }
