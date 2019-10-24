@@ -3,6 +3,10 @@
     "APP_NAME": "hunjingguanchang",
     "SECOND_COUNT": 1,
     "PROXY_TARGET": "http://192.168.1.174:8080/",
+    "adjust": {
+        "x": 0,
+        "y": 0
+    },
     "websoket": {
         "position": "ws://#{ip}/realtime/position",
         "sundries": "ws://#{ip}:8081/sundries"

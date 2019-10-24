@@ -22,7 +22,7 @@
             <el-input-number
                 :min="0"
                 step-strictly
-                v-model="form.minBaseSize"
+                v-model="form.size"
             ></el-input-number>
         </el-form-item>
         <el-form-item label="最小基站数" prop="min" required>

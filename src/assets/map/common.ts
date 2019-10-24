@@ -1,4 +1,11 @@
 
+interface VectorAxis {
+    xaxis: number;
+    yaxis: number;
+    zaxis: number;
+}
+
+
 /**
  * 获取元素的自定义属性
  */
@@ -26,3 +33,12 @@ export const DEFAULT_HEATMAP_CONFIG = {
     max: 100,
     radius: 20
 };
+
+export function adaptationVector(v: Vector23 | VectorAxis): Vector3 {
+    const vector: any = { ...v };
+    vector.x = vector.x || vector.xaxis || 0;
+    vector.y = vector.y || vector.yaxis || 0;
+    vector.z = vector.z || vector.zaxis || null;
+
+    return vector;
+}

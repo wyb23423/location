@@ -1,3 +1,6 @@
+import { getConfig } from '@/assets/utils/util';
+import { adaptationVector } from '../common';
+
 /**
  * 将实际坐标与地图坐标相互转化
  */
@@ -11,6 +14,14 @@ interface TransformOptions {
 }
 
 export class CoordTransformer {
+
+    public set locRange(data: Vector2) {
+        if (!this._locRange) {
+            this._locRange = data;
+        } else {
+            console.error('地图范围只能设置一次');
+        }
+    }
     public static getVectorLen(v: Vector23) {
         if (v.z == null) {
             v.z = 0;
@@ -29,14 +40,6 @@ export class CoordTransformer {
     private mapAxisY: Vector2 = { x: 0, y: 0 }; // y轴单位向量
 
     private isInit: boolean = true; // 是否未计算过定位坐标转地图坐标时需要的参数
-
-    public set locRange(data: Vector2) {
-        if (!this._locRange) {
-            this._locRange = data;
-        } else {
-            console.error('地图范围只能设置一次');
-        }
-    }
 
     public parseCood(data: Vector23 | Vector23[]) {
         if (this._locRange && this.margin) {
@@ -96,14 +99,22 @@ export class CoordTransformer {
             }
         }
 
-        return this._transform(loc, {
-            mapOrigin: this.margin![0],
-            mapAxisX: this.mapAxisX,
-            mapAxisY: this.mapAxisY,
-            mapRange: this.mapRange,
-            locRange: <Vector2>this._locRange,
-            locOrigion: this.locOrigion
-        });
+        const { x, y } = getConfig('adjust', { x: 0, y: 0 });
+        loc = adaptationVector(loc);
+        loc.x += x;
+        loc.y += y;
+
+        return this._transform(
+            loc,
+            {
+                mapOrigin: this.margin![0],
+                mapAxisX: this.mapAxisX,
+                mapAxisY: this.mapAxisY,
+                mapRange: this.mapRange,
+                locRange: <Vector2>this._locRange,
+                locOrigion: this.locOrigion
+            }
+        );
     }
 
     /**
@@ -128,14 +139,22 @@ export class CoordTransformer {
             { x: locRange.x, y: 0 }
         ]);
 
-        return this._transform(v, {
-            mapOrigin: { x: 0, y: 0 },
-            locRange: _this.mapRange,
-            locOrigion: this.margin![0],
-            mapAxisX: tmp!.mapAxisX,
-            mapAxisY: tmp!.mapAxisY,
-            mapRange: tmp!.mapRange,
-        });
+        const result = this._transform(
+            adaptationVector(v),
+            {
+                mapOrigin: { x: 0, y: 0 },
+                locRange: _this.mapRange,
+                locOrigion: this.margin![0],
+                mapAxisX: tmp!.mapAxisX,
+                mapAxisY: tmp!.mapAxisY,
+                mapRange: tmp!.mapRange
+            }
+        );
+        const { x, y } = getConfig('adjust', { x: 0, y: 0 });
+        result.x -= x;
+        result.y -= y;
+
+        return result;
     }
 
     /**
@@ -147,19 +166,16 @@ export class CoordTransformer {
      * @param options.locRange 原始地图范围
      * @param options.mapRange 映射地图范围
      */
-    private _transform(loc: Vector23, options: TransformOptions) {
-        const vector: any = { ...loc };
-        vector.x = vector.x || vector.xaxis || 0;
-        vector.y = vector.y || vector.yaxis || 0;
-        vector.z = vector.z || vector.zaxis || null;
+    private _transform({ x, y, z }: Vector23, options: TransformOptions) {
+        const { mapOrigin, mapAxisX, mapAxisY, locOrigion, locRange, mapRange } = options;
 
-        const offsetX = (vector.x - options.locOrigion.x) / options.locRange.x * options.mapRange.x;
-        const offsetY = (vector.y - options.locOrigion.y) / options.locRange.y * options.mapRange.y;
+        const offsetX = (x - locOrigion.x) / locRange.x * mapRange.x;
+        const offsetY = (y - locOrigion.y) / locRange.y * mapRange.y;
 
         return {
-            x: options.mapOrigin.x + options.mapAxisX.x * offsetX + options.mapAxisY.x * offsetY,
-            y: options.mapOrigin.y + options.mapAxisX.y * offsetX + options.mapAxisY.y * offsetY,
-            z: vector.z == null ? 1 : vector.z
+            x: mapOrigin.x + mapAxisX.x * offsetX + mapAxisY.x * offsetY,
+            y: mapOrigin.y + mapAxisX.y * offsetX + mapAxisY.y * offsetY,
+            z: z == null ? 1 : z
         };
     }
 
