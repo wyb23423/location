@@ -62,25 +62,32 @@ export default class GroupList extends mixins(TableMixin) {
 
     public del(row: IGroup) {
         this.$confirm(`删除分组${row.id}`)
-            .then(() => console.log(row))
+            .then(() =>
+                this.$http.post('/api/group/deleteGroup', { groupCode: row.id })
+            )
+            .then(() => {
+                this.$message.success('删除成功');
+                this.refresh();
+            })
             .catch(console.log);
     }
 
     protected async fetch(page: number, pageSize: number) {
-        const data: IGroup[] = [];
-        for (let i = 0; i < pageSize; i++) {
-            data.push({
-                id: i + '',
-                size: 7,
-                min: 4,
-                algorithmType: 11,
-                description: 'this is description',
-                mapId: 1,
-                mapName: '办公室'
+        let data: any[] = [];
+        let count: number = 0;
+        try {
+            const res = await this.$http.get('/api/group/getall', {
+                pageSize,
+                currentPage: page
             });
+
+            data = res.pagedData.datas;
+            count = res.pagedData.totalCount;
+        } catch (e) {
+            console.log(e);
         }
 
-        return { count: pageSize, data };
+        return { count, data };
     }
 }
 </script>

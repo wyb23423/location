@@ -22,7 +22,7 @@
             <el-input-number
                 :min="0"
                 step-strictly
-                v-model="form.size"
+                v-model="form.minBaseSize"
             ></el-input-number>
         </el-form-item>
         <el-form-item label="最小基站数" prop="min" required>
@@ -45,7 +45,7 @@
             <app-select url="/api/map/getall" v-model="form.mapId"></app-select>
         </el-form-item>
         <el-form-item>
-            <el-button type="primary" @click="onSubmit">立即创建</el-button>
+            <el-button type="primary" @click="onSubmit">提交</el-button>
         </el-form-item>
     </el-form>
 </template>
@@ -94,7 +94,22 @@ export default class GroupAdd extends Vue {
         const data = { ...this.form };
         data.algorithmType = +this.algorithmType.join('');
         data.id = data.id.padStart(4, '0');
-        console.log(data);
+
+        this.$http
+            .post(
+                `/api/group/${this.showId ? 'addGroup' : 'updateGroup'}`,
+                data,
+                { 'Content-Type': 'application/json' }
+            )
+            .then(() => {
+                if (this.showId) {
+                    this.$message.success('添加成功');
+                    this.elForm.resetFields();
+                } else {
+                    this.$message.success('更新成功');
+                }
+            })
+            .catch(console.log);
 
         this.$emit('input', data);
     }
