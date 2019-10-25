@@ -17,7 +17,7 @@
                         :show-all-levels="false"
                     ></el-cascader>
                 </el-form-item>
-                <el-form-item label="选择标签：" prop="tagNo" required>
+                <el-form-item label="选择标签：" prop="tagNo">
                     <tag-select @change="form.tagNo = $event"></tag-select>
                 </el-form-item>
                 <el-form-item label="选择协议：" prop="protocol" required>

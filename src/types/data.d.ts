@@ -1,5 +1,5 @@
 // ============================================数据库表
-declare interface IAdmin extends IJson {
+declare interface IAdmin {
     username: string;
     name: string;
     password: string;
@@ -10,7 +10,7 @@ declare interface IAdmin extends IJson {
     role: string; // 权限
 }
 
-declare interface IBaseStation extends IJson {
+declare interface IBaseStation {
     id: string;
     name: string;
     ip: string;
@@ -27,7 +27,7 @@ declare interface IBaseStation extends IJson {
     owner: string; // 安装负责人
 }
 
-declare interface ICamera extends IJson {
+declare interface ICamera {
     ip: string;
     name: string;
     port: number; // 设备端口号
@@ -37,7 +37,7 @@ declare interface ICamera extends IJson {
     windowSplit: string; // 窗口分割数
 }
 
-declare interface IMap extends IJson {
+declare interface IMap {
     id: number;
     name: string;
     margin: string | number[][]; // 地图边界值[左下, 左上, 右上, 右下, [监控区域宽, 监控区域高]]
@@ -45,14 +45,14 @@ declare interface IMap extends IJson {
     groupIds: string[]; // 关联的基站分组
 }
 
-declare interface IProtocol extends IJson {
+declare interface IProtocol {
     name: string;
     effect: string; // 协议作用
     content: string; // 协议内容。一个协议命令串
     port: number; // 协议对应的端口。现为 50000 或 60000
 }
 
-declare interface ITag extends IJson {
+declare interface ITag {
     id: string;
     name: string;
     type: 1 | 2; // 标签类型。1——常驻，2——临时
@@ -61,7 +61,7 @@ declare interface ITag extends IJson {
     content: string;
 }
 
-declare interface IZone extends IJson {
+declare interface IZone {
     id: number;
     name: string;
     position: string | TPosition; // 区域边界点
@@ -72,11 +72,12 @@ declare interface IZone extends IJson {
     groupId2: string;
 }
 
-declare interface IBingdings extends IJson {
+declare interface IBingdings {
+    id: number;
     tags: string | string[];
 }
 
-declare interface IGroup extends IJson {
+declare interface IGroup {
     id: string;
     size: number; // 最大基站数
     min: number; // 最小基站数
@@ -85,7 +86,7 @@ declare interface IGroup extends IJson {
     mapId: number;
 }
 
-declare interface IAlarm extends IJson {
+declare interface IAlarm {
     id: number;
     deviceId: string;
     type: number;

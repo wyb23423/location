@@ -3,11 +3,12 @@
  */
 import * as PIXI from 'pixi.js';
 import Stage from './stage';
-import LineMgr from './line';
+import LineMgr from './marker/line';
 import { randomNum } from '@/assets/utils/util';
 import 'pixi-action';
 import { getCustomInfo } from '../common';
 import { PIXIAnimation } from '@/types/pixi-action';
+import { PopInfo } from './marker/pop';
 
 interface ElAnimation {
     moveTo?: PIXIAnimation | null;
@@ -284,56 +285,18 @@ export class PIXIMgr extends Stage {
 
     // 为标签添加信息添加弹窗
     public addPopInfo(img: PIXI.Sprite) {
-        const triangle = new PIXI.Graphics();
-        triangle.beginFill(0xffffff, 1); // 填充色
-        triangle.lineStyle(2, 0xcccccc, 1); // 边框
-        triangle.drawPolygon([
-            0, 0,
-            10, -10,
-            120, -10,
-            120, -120,
-            -120, -120,
-            -120, -10,
-            -10, -10
-        ]);
+        const pop = new PopInfo(img);
+        const zIndex = img.zIndex;
 
-        triangle.position.y = -45;
-        triangle.alpha = 0.7;
-        img.addChild(triangle);
-
-        let text: PIXI.Text;
-        const custom = (<any>img).custom;
-        let info: { tagName: string; name: string };
-        if (custom && custom.info) {
-            info = custom.info;
-            text = new PIXI.Text(`名字: ${info.tagName}\n编号: ${info.name}\n心率: --`, { fontSize: 24 });
-            text.anchor.y = 0.5;
-            text.position.set(-75, -105);
-            text.alpha = 0.8;
-            img.addChild(text);
-
-            custom.zIndex = img.zIndex;
-            img.zIndex = Math.max(99, img.zIndex);
-            this.stage.sortChildren();
-        }
+        img.zIndex = Math.max(99, img.zIndex);
+        pop.info && this.stage.sortChildren();
 
         return {
-            update: (iHeartRate: number) => {
-                if (!text) {
-                    return false;
-                }
-
-                text.text = `名字: ${info.tagName}\n编号: ${info.name}\n心率: ${iHeartRate}`;
-                return true;
-            },
+            update: pop.update.bind(pop),
             close: () => {
-                img.removeChild(triangle);
-                img.zIndex = custom.zIndex;
+                pop.close(img);
+                img.zIndex = zIndex;
                 this.stage && this.stage.sortChildren();
-
-                if (text) {
-                    img.removeChild(text);
-                }
 
                 return true;
             }

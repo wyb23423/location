@@ -37,10 +37,10 @@ export default class Main extends Vue {
     public created() {
         this.$http.get('/api/alarm/getall?pageSize=20&currentPage=1')
             .then(res => {
-                this.records = res.pagedData.datas.map<RecordItem>((v: IAlarm) => ({
+                this.records = res.pagedData.datas.map((v: IAlarm) => ({
                     type: 'warning',
-                    content: v.alarmMsg,
-                    timestamp: v.alarmTime
+                    content: v.content,
+                    timestamp: v.time
                 }));
             })
             .catch(console.log);

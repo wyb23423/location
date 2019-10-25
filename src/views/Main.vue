@@ -38,8 +38,8 @@ export default class Main extends Vue {
         );
         const ws = new WebSocket(wsUrl.replace('#{ip}', ip));
         ws.onmessage = (e: MessageEvent) => {
-            const data: IAlarm = JSON.parse(e.data);
-            if (Date.now() - data.alarmTime <= 1000) {
+            const data: IAlarm & { alarmTime?: number } = JSON.parse(e.data);
+            if (Date.now() - (data.alarmTime || data.time) <= 1000) {
                 this.$event.emit(NOTIFY_KEY, data);
             }
         };

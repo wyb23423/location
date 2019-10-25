@@ -120,7 +120,6 @@ export default class PeopleList extends mixins(TableMixin) {
             return;
         }
 
-        this.person.updateTime = Date.now();
         if (
             this.person.name !== this.oldData.name ||
             this.person.img !== this.oldData.img

@@ -54,7 +54,7 @@ export default class Zone extends mixins(TableMixin) {
         return {
             count: this.zones.length,
             data: list.map(v => {
-                const tmp: IZone = { ...v };
+                const tmp = <IZone & { status: '开启' | '关闭' }>{ ...v };
                 tmp.status = v.enable ? '开启' : '关闭';
                 tmp.position =
                     typeof v.position === 'string'

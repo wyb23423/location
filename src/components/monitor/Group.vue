@@ -33,7 +33,7 @@ export default class Group extends mixins(TableMixin) {
         if (this.$parent) {
             const mgr: FengMapMgr | PIXIMgr = Reflect.get(this.$parent, 'mgr');
             if (mgr) {
-                row.children.forEach(v => mgr.show(v.baseNo));
+                row.children.forEach(v => mgr.show(v.id));
             }
         }
     }

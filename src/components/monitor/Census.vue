@@ -69,7 +69,7 @@ export default class Census extends Vue {
     @Watch('value')
     public getInfo() {
         if (this.zones && this.censusTags) {
-            const zone = this.zones.find(v => v.base_no_1 === this.value);
+            const zone = this.zones.find(v => v.groupId1 === this.value);
             if (zone) {
                 this.$http
                     .get('/api/tag/getall', {
@@ -80,7 +80,7 @@ export default class Census extends Vue {
                     .then(res => {
                         const list = (<ITag[]>res.pagedData.datas).filter(v =>
                             (this.censusTags.get(this.value) || new Set()).has(
-                                v.tagNo
+                                v.id
                             )
                         );
 

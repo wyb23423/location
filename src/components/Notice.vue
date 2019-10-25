@@ -275,14 +275,31 @@ export default class Notice extends Vue {
     }
 
     private adapter(item: IAlarm) {
+        const {
+            id,
+            deviceId,
+            type,
+            time,
+            content,
+            tagNo,
+            alarmTime,
+            alarmMsg
+        } = <IAlarm & OldAlarm>item;
+
         return {
-            id: item.id,
-            deviceId: item.deviceId || item.tagNo,
-            type: item.type,
-            time: item.time || item.alarmTime,
-            content: item.content || item.alarmMsg
+            id,
+            type,
+            deviceId: deviceId || tagNo,
+            time: time || alarmTime,
+            content: content || alarmMsg
         };
     }
+}
+
+interface OldAlarm {
+    tagNo: string;
+    alarmTime: number;
+    alarmMsg: string;
 }
 </script>
 
