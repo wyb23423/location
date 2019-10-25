@@ -52,7 +52,7 @@ import { State } from 'vuex-class/lib/bindings';
 import Vue from 'vue';
 import { ElForm } from 'element-ui/types/form';
 import { ElInput } from 'element-ui/types/input';
-import IpInput from '../../../components/IpInput.vue';
+import IpInput from '../../../components/form/IpInput.vue';
 
 @Component({
     components: {

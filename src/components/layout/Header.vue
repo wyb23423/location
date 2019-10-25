@@ -31,13 +31,6 @@
                 </el-submenu>
             </el-menu>
         </el-col>
-        <!-- <el-col :span="2" :class="$style['hidden-xs-only']">
-            <i
-                class="el-icon-s-custom"
-                style="color: rgba(255, 255, 255, 0.7)"
-            ></i>
-            <router-link to="/" :class="$style.link">个人中心</router-link>
-        </el-col> -->
         <el-col :offset="1" :span="2" :class="$style['hidden-xs-only']">
             <span :class="$style.link" @click="loginout">退出</span>
         </el-col>
@@ -75,7 +68,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Watch } from 'vue-property-decorator';
 import Router from 'vue-router';
-import { SX_WIDTH } from '../constant';
+import { SX_WIDTH } from '@/constant';
 
 @Component
 export default class Header extends Vue {

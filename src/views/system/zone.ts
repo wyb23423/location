@@ -1,7 +1,7 @@
 
 import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
-import ZoneEidt from '@/components/ZoneEdit.vue';
+import ZoneEidt from '@/components/edit/ZoneEdit.vue';
 import { State } from 'vuex-class';
 import { ZoneMode } from '@/store';
 import ZoneMixin from '@/mixins/zone';

@@ -50,7 +50,7 @@
 import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
 import { TableRowOperation } from '@/components/Table.vue';
-import Permission from '@/components/Permission.vue';
+import Permission from '@/components/form/Permission.vue';
 import { ElForm } from 'element-ui/types/form';
 import { Ref } from 'vue-property-decorator';
 

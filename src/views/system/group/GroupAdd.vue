@@ -55,7 +55,7 @@ import Vue from 'vue';
 import { Ref, Prop, Watch, Component } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
 import { CascaderOption } from 'element-ui/types/cascader';
-import Select from '@/components/Select.vue';
+import Select from '@/components/form/Select.vue';
 
 @Component({
     components: {

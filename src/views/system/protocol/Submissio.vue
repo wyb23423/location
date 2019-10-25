@@ -46,7 +46,7 @@
 import Component from 'vue-class-component';
 import Vue from 'vue';
 import { ElForm } from 'element-ui/types/form';
-import TagSelect from '@/components/TagSelect.vue';
+import TagSelect from '@/components/form/TagSelect.vue';
 import { Async } from '@/assets/utils/util';
 import { Ref } from 'vue-property-decorator';
 

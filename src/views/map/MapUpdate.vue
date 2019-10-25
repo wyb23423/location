@@ -33,8 +33,8 @@
 <script lang="ts">
 import Component from 'vue-class-component';
 import Vue from 'vue';
-import MapEdit, { MapForm } from '@/components/MapEdit.vue';
-import MapSelect from '@/components/MapSelect.vue';
+import MapEdit, { MapForm } from '@/components/edit/MapEdit.vue';
+import MapSelect from '@/components/form/MapSelect.vue';
 import { Prop } from 'vue-property-decorator';
 
 @Component({

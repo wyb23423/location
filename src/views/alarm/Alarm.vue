@@ -24,9 +24,8 @@
 
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
-
 import TableMixin from '../../mixins/table';
-import Page from '@/components/Page.vue';
+import Page from '@/components/layout/Page.vue';
 
 @Component({
     components: {

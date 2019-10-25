@@ -14,7 +14,7 @@
 <script lang="ts">
 import Component from 'vue-class-component';
 import Vue from 'vue';
-import MapEdit, { MapForm } from '@/components/MapEdit.vue';
+import MapEdit, { MapForm } from '@/components/edit/MapEdit.vue';
 
 @Component({
     components: {

@@ -46,7 +46,7 @@ import { ElSelect } from 'element-ui/types/select';
 import { ElOption } from 'element-ui/types/option';
 import { Async } from '@/assets/utils/await';
 import { TransferData } from 'element-ui/types/transfer';
-import TagSelect from '@/components/TagSelect.vue';
+import TagSelect from '@/components/form/TagSelect.vue';
 
 @Component({
     components: {

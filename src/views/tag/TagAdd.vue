@@ -55,7 +55,7 @@
 import Vue from 'vue';
 import { Ref, Component } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
-import Select from '../../components/Select.vue';
+import Select from '../../components/form/Select.vue';
 import Avator from '../../components/Avator.vue';
 
 @Component({

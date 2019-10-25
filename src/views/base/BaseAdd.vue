@@ -89,7 +89,7 @@
 
 <script lang="ts">
 import Component from 'vue-class-component';
-import IpInput from '../../components/IpInput.vue';
+import IpInput from '../../components/form/IpInput.vue';
 import { ElForm } from 'element-ui/types/form';
 import Vue from 'vue';
 import { hexadecimalRuleFactory } from '@/assets/utils/util';

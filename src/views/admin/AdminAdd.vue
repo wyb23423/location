@@ -53,7 +53,7 @@
 import Component from 'vue-class-component';
 import Vue from 'vue';
 import { ElForm } from 'element-ui/types/form';
-import Permission from '@/components/Permission.vue';
+import Permission from '@/components/form/Permission.vue';
 import { Ref } from 'vue-property-decorator';
 
 @Component({
