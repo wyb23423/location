@@ -103,7 +103,7 @@ export default class PeopleAdd extends Vue {
     }
 
     public reset() {
-        (<ElForm>this.$refs.form).resetFields();
+        this.elForm.resetFields();
         this.form.img = this.form.content = '';
     }
 }

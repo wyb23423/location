@@ -291,7 +291,7 @@ export default class Avator extends Vue {
             },
             success: true,
             resultMap: {
-                avatarUrl: url
+                photoUrl: url
             }
         });
         if (this.imgIndex > 1) {
