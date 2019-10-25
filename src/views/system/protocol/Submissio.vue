@@ -119,10 +119,10 @@ export default class Submissio extends Vue {
 
         this.base.length = 0;
         const group: { [key: string]: SelOption[] } = {};
-        res.pagedData.datas.forEach((v: any) => {
-            (group[v.groupCode] || (group[v.groupCode] = [])).push({
+        res.pagedData.datas.forEach((v: IBaseStation) => {
+            (group[v.groupId] || (group[v.groupId] = [])).push({
                 value: v.ip,
-                label: `${v.name}: ${v.baseNo}; ${v.main ? '主' : '从'}基站`
+                label: `${v.name}: ${v.id}; ${v.main ? '主' : '从'}基站`
             });
         });
 
