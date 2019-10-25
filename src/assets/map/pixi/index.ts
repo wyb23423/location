@@ -303,8 +303,10 @@ export class PIXIMgr extends Stage {
 
         let text: PIXI.Text;
         const custom = (<any>img).custom;
+        let info: { tagName: string; name: string };
         if (custom && custom.info) {
-            text = new PIXI.Text(`名字: ${custom.info.tagName}\n\n编号: ${custom.info.tagNo}`, { fontSize: 24 });
+            info = custom.info;
+            text = new PIXI.Text(`名字: ${info.tagName}\n编号: ${info.name}\n心率: --`, { fontSize: 24 });
             text.anchor.y = 0.5;
             text.position.set(-75, -105);
             text.alpha = 0.8;
@@ -316,6 +318,14 @@ export class PIXIMgr extends Stage {
         }
 
         return {
+            update: (iHeartRate: number) => {
+                if (!text) {
+                    return false;
+                }
+
+                text.text = `名字: ${info.tagName}\n编号: ${info.name}\n心率: ${iHeartRate}`;
+                return true;
+            },
             close: () => {
                 img.removeChild(triangle);
                 img.zIndex = custom.zIndex;

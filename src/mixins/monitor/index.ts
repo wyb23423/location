@@ -8,7 +8,7 @@ import { getCustomInfo } from '@/assets/map/common';
 
 interface Pop {
     close(immediately?: boolean): void | boolean;
-    update?(): boolean;
+    update(iHeartRate: number): boolean;
 }
 
 @Component
@@ -57,9 +57,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
                     }
                 } else {
                     for (const [k, p] of this.pops.entries()) {
-                        if (p.close()) {
-                            this.pops.delete(k);
-                        }
+                        p.close() && this.pops.delete(k);
                     }
                 }
             }
@@ -93,7 +91,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
                 this.moveTo(tagNo, coord, this.moveTime, () => {
                     const p = this.pops.get(tagNo);
                     if (p && p.update) {
-                        p.update() || this.pops.delete(tagNo);
+                        p.update(tag.iHeartRate) || this.pops.delete(tagNo);
                     }
                 });
             } else {

@@ -53,7 +53,7 @@
             </el-button>
         </div>
 
-        <transition name="el-zoom-in-bottom">
+        <!-- <transition name="el-zoom-in-bottom">
             <Census
                 v-if="tools[4].active"
                 @close="tools[4].active = false"
@@ -61,7 +61,7 @@
                 :censusTags="census"
                 :censusChange="censusChange"
             ></Census>
-        </transition>
+        </transition> -->
 
         <transition name="el-fade-in-linear">
             <Group :group="groupData" v-if="tools[3].active"></Group>
@@ -226,22 +226,19 @@ export default class Monitor extends mixins(
     }
 
     protected doCensus(tag: ITagInfo | string) {
-        const tagNo = (<ITagInfo>tag).sTagNo || <string>tag;
-        const group = this.tagGroup.get(tagNo);
-        if (group) {
-            const set = this.censusTags.get(group);
-            set && set.delete(tagNo);
-        }
-
-        if (typeof tag !== 'string') {
-            const set = this.censusTags.get(tag.sGroupNo) || new Set();
-            set.add(tagNo);
-            this.censusTags.set(tag.sGroupNo, set);
-
-            this.tagGroup.set(tagNo, tag.sGroupNo);
-        }
-
-        this.censusChange = this.censusChange ? 0 : 1;
+        // const tagNo = (<ITagInfo>tag).sTagNo || <string>tag;
+        // const group = this.tagGroup.get(tagNo);
+        // if (group) {
+        //     const set = this.censusTags.get(group);
+        //     set && set.delete(tagNo);
+        // }
+        // if (typeof tag !== 'string') {
+        //     const set = this.censusTags.get(tag.sGroupNo) || new Set();
+        //     set.add(tagNo);
+        //     this.censusTags.set(tag.sGroupNo, set);
+        //     this.tagGroup.set(tagNo, tag.sGroupNo);
+        // }
+        // this.censusChange = this.censusChange ? 0 : 1;
     }
 }
 

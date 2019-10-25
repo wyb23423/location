@@ -259,16 +259,19 @@ export class FengMapMgr extends CoordTransformer {
     // 为标签添加信息添加弹窗
     public addPopInfo(marker: fengmap.FMImageMarker) {
         let pop: fengmap.FMPopInfoWindow;
+        let tagNo: string;
         if (marker.custom && marker.custom.info) {
             const info = marker.custom.info;
+            tagNo = info.name;
             pop = new fengmap.FMPopInfoWindow(
                 this.map,
                 {
                     width: 180,
-                    height: 60,
+                    height: 80,
                     content: `<div>
                                 <div>名字: ${info.tagName}</div>
-                                <div>编号: ${info.tagNo}</div>
+                                <div>编号: ${tagNo}</div>
+                                <div id="${tagNo}">心率: --</div>
                             </div>`
                 },
                 marker
@@ -276,11 +279,16 @@ export class FengMapMgr extends CoordTransformer {
         }
 
         const createTime = Date.now();
+        let el: HTMLDivElement;
 
         return {
-            update: () => {
+            update: (iHeartRate: number) => {
                 try {
-                    this.map && this.map.updatePopPosition(pop);
+                    if (this.map && pop) {
+                        this.map.updatePopPosition(pop);
+                        el = el || document.getElementById(tagNo);
+                        el && (el.innerText = `心率: ${iHeartRate}`);
+                    }
                 } catch (e) {
                     return false;
                 }

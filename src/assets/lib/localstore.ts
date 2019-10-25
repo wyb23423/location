@@ -42,16 +42,13 @@ export function getAndCreateStore(name: string): LocalForage {
     const store = new Proxy(obj, {
         get(t: LocalForage, k: keyof LocalForage) {
             if (k === 'getItem') {
-                return <T>(key: string): Promise<T> => localforageGetItem<T>(key, store);
+                return <T>(key: string): Promise<T> => localforageGetItem<T>(key, t);
             }
 
             const val = t[k];
             return typeof val === 'function' ? val.bind(t) : val;
         }
     });
-    store.getItem = <T>(key: string): Promise<T> => {
-        return localforageGetItem<T>(key, store);
-    };
     stores.set(name, store);
 
     return store;

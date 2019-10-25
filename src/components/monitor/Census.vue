@@ -54,31 +54,21 @@ export default class Census extends Vue {
     @Prop() public readonly censusChange!: number;
 
     public value: string = '';
-    public allCount: number = 0; // 当前地图拥有的标签数
     public info: any = null;
 
-    public created() {
-        const tags = this.zones.map(v =>
-            this.$http.get('/api/tag/getall', {
-                currentPage: 1,
-                pageSize: 1_0000_0000,
-                zone: this.value
-            })
-        );
+    // 当前地图拥有的标签数
+    public get allCount() {
+        if (!this.censusTags) {
+            return 0;
+        }
 
-        this.allCount = Array.from(this.censusTags.values())
-            .map(v => [...v])
-            .flat().length;
+        return Array.from(this.censusTags.values()).flatMap(Array.from).length;
     }
 
     @Watch('censusChange')
     @Watch('value')
     public getInfo() {
         if (this.zones && this.censusTags) {
-            this.allCount = Array.from(this.censusTags.values())
-                .map(v => [...v])
-                .flat().length;
-
             const zone = this.zones.find(v => v.base_no_1 === this.value);
             if (zone) {
                 this.$http

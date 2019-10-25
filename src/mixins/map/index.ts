@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { loopAwait } from '@/assets/utils/util';
+import { loopAwait, Async } from '@/assets/utils/util';
 import { createMap } from '@/assets/map';
 import { FengMapMgr } from '@/assets/map/fengmap';
 import MapSelect from '@/components/MapSelect.vue';
@@ -121,20 +121,17 @@ export default class MapMixin extends Vue {
     }
 
     // 获取并显示基站
+    @Async(() => [])
     protected async tagAnchor() {
-        try {
-            const res = await this.$http.get('/api/base/getall', {
-                currentPage: 1,
-                pageSize: 10000,
-            });
+        const res = await this.$http.get('/api/base/getall', {
+            currentPage: 1,
+            pageSize: 10000,
+        });
 
-            const data: IBaseStation[] = res.pagedData.datas;
-            this.createBases(data);
+        const data: IBaseStation[] = res.pagedData.datas;
+        this.createBases(data);
 
-            return data;
-        } catch (e) {
-            return [];
-        }
+        return data;
     }
 
     protected async addIcon(gid: number, info: IconParms, type: ICON_TYPE = ICON_TYPE.TAG) {
