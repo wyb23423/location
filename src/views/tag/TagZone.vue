@@ -3,23 +3,10 @@
         <h3 style="color: rgb(0, 150, 136)">标签触发报警的区域</h3>
         <el-form :model="form" label-width="auto">
             <el-form-item label="相关标签">
-                <el-select
-                    v-model="form.tagId"
-                    :remote-method="remoteMethod"
-                    placeholder="请输入标签名"
-                    @change="change"
+                <tag-select
                     style="min-width: 200px"
-                    remote
-                    filterable
-                >
-                    <el-option
-                        v-for="item in tagOptions"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                    >
-                    </el-option>
-                </el-select>
+                    @change="change"
+                ></tag-select>
             </el-form-item>
             <el-form-item label="区域">
                 <el-transfer
@@ -59,8 +46,13 @@ import { ElSelect } from 'element-ui/types/select';
 import { ElOption } from 'element-ui/types/option';
 import { Async } from '@/assets/utils/await';
 import { TransferData } from 'element-ui/types/transfer';
+import TagSelect from '@/components/TagSelect.vue';
 
-@Component
+@Component({
+    components: {
+        'tag-select': TagSelect
+    }
+})
 export default class TagZone extends Vue {
     @State public zoneMode!: ZoneMode;
 
@@ -71,8 +63,6 @@ export default class TagZone extends Vue {
     public tagOptions: Array<Pick<ElOption, 'value' | 'label'>> = [];
     public isUpdate: boolean = false;
     public zones: TransferData[] = [];
-
-    private timer?: number;
 
     @Async()
     public async created() {
@@ -92,18 +82,9 @@ export default class TagZone extends Vue {
         });
     }
 
-    // 远程搜索标签数据
-    public remoteMethod(key: string) {
-        this.timer && clearTimeout(this.timer);
-        if (!key) {
-            return (this.tagOptions.length = 0);
-        }
-
-        this.timer = setTimeout(this.fetchTag.bind(this, key), 500);
-    }
-
     // 选中的标签变化
-    public async change() {
+    public async change(value: string) {
+        this.form.tagId = value;
         this.isUpdate = !!(await this.fetchTagZone(this.form.tagId));
         this.$http.showMessage = true;
     }
@@ -134,21 +115,6 @@ export default class TagZone extends Vue {
             tagId: '',
             zoneIds: []
         };
-    }
-
-    // 获取标签数据
-    @Async()
-    private async fetchTag(key: string) {
-        const res = await this.$http.get('/api/tag/getall', {
-            pageSize: 100,
-            currentPage: 1,
-            name: key
-        });
-
-        this.tagOptions = res.pagedData.datas.map((v: ITag) => ({
-            label: v.name,
-            value: v.id
-        }));
     }
 
     // 获取tagZone数据

@@ -18,34 +18,18 @@
                     ></el-cascader>
                 </el-form-item>
                 <el-form-item label="选择标签：" prop="tagNo" required>
-                    <el-select v-model="form.tagNo" filterable>
-                        <el-option
-                            v-for="(item, i) in tags"
-                            :key="i"
-                            :label="item.label"
-                            :value="item.value"
-                        >
-                        </el-option>
-                    </el-select>
+                    <tag-select @change="form.tagNo = $event"></tag-select>
                 </el-form-item>
                 <el-form-item label="选择协议：" prop="protocol" required>
                     <el-select v-model="form.protocol" filterable>
                         <el-option
-                            v-for="(item, i) in protocols"
-                            :key="i"
-                            :label="item.label"
-                            :value="item.value"
+                            v-for="item of protocols"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.content"
                         >
                         </el-option>
                     </el-select>
-                </el-form-item>
-                <el-form-item label="端口号：">
-                    <el-radio v-model="form.port" :label="50000">
-                        50000端口
-                    </el-radio>
-                    <el-radio v-model="form.port" :label="60000">
-                        60000端口
-                    </el-radio>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="success" @click="onSubmit">
@@ -62,6 +46,9 @@
 import Component from 'vue-class-component';
 import Vue from 'vue';
 import { ElForm } from 'element-ui/types/form';
+import TagSelect from '@/components/TagSelect.vue';
+import { Async } from '@/assets/utils/util';
+import { Ref } from 'vue-property-decorator';
 
 interface SelOption {
     value?: any;
@@ -69,100 +56,58 @@ interface SelOption {
     children?: SelOption[];
 }
 
-@Component
+@Component({
+    components: {
+        'tag-select': TagSelect
+    }
+})
 export default class Submissio extends Vue {
-    public form: any = {};
+    public form: any = {
+        base: [],
+        port: 60000,
+        protocol: '',
+        tagNo: ''
+    };
 
     public base: SelOption[] = [];
-    public tags: SelOption[] = [];
-    public protocols: SelOption[] = [];
+    public protocols: IProtocol[] = [];
+
+    @Ref('form') private readonly elForm!: ElForm;
 
     public created() {
-        this.init();
-        this.getData();
+        this.getBase();
+        this.getProtocol();
     }
 
-    public onSubmit() {
-        const form = <ElForm>this.$refs.form;
-        form.validate((valid: boolean) => {
-            if (valid) {
-                const now = Date.now();
+    @Async()
+    public async onSubmit() {
+        const { err, value } = await this.$async(this.elForm.validate());
+        if (err) {
+            return;
+        }
 
-                const data: IJson = {
-                    ip: this.form.base[1],
-                    port: this.form.port,
-                    tagNo: this.form.tagNo,
-                    protocol: this.form.protocol
-                    // + this.form.tagNo.padStart(8, '0')
-                };
-
-                this.$http
-                    .post('/api/protocol/sendProtocol', data)
-                    .then((res: ResponseData) => {
-                        this.$message.success(res.message);
-                        this.reset();
-                    })
-                    .catch(console.log);
-            }
+        const res = await this.$http.post('/api/protocol/sendProtocol', {
+            ...this.form,
+            ip: this.form.base[1]
         });
+
+        this.reset().$message.success(res.message);
     }
     public reset() {
-        (<ElForm>this.$refs.form).resetFields();
-        this.init();
+        this.elForm.resetFields();
+        return this;
     }
 
-    private init() {
-        this.form = {
-            base: [],
-            port: 50000,
-            protocol: '',
-            tagNo: ''
-        };
-    }
+    @Async()
+    private async getBase() {
+        const res = await this.$http.get('/api/base/getall', {
+            pageSize: 10000000,
+            currentPage: 1
+        });
 
-    private getData() {
-        // 基站
-        this.$http
-            .get('/api/base/getall', {
-                pageSize: 10000000,
-                currentPage: 1
-            })
-            .then(this.toTree.bind(this))
-            .catch(console.error);
-        // 标签
-        this.$http
-            .get('/api/tag/getall', {
-                pageSize: 10000000,
-                currentPage: 1
-            })
-            .then((res: ResponseData) =>
-                res.pagedData.datas.map((v: any) => ({
-                    value: v.tagNo,
-                    label: `${v.name}: ${v.tagNo}`
-                }))
-            )
-            .then((tags: SelOption[]) => (this.tags = tags))
-            .catch(console.error);
-        // 协议
-        this.$http
-            .get('/api/protocol/getall', {
-                pageSize: 10000000,
-                currentPage: 1
-            })
-            .then((res: ResponseData) => {
-                this.protocols = res.pagedData.datas.map((v: any) => ({
-                    value: v.content,
-                    label: v.name
-                }));
-            })
-            .catch(console.error);
-    }
-
-    private toTree(base: ResponseData) {
         this.base.length = 0;
-
         const group: { [key: string]: SelOption[] } = {};
-        base.pagedData.datas.forEach((v: any) => {
+        res.pagedData.datas.forEach((v: any) => {
             (group[v.groupCode] || (group[v.groupCode] = [])).push({
                 value: v.ip,
                 label: `${v.name}: ${v.baseNo}; ${v.main ? '主' : '从'}基站`
@@ -175,6 +120,14 @@ export default class Submissio extends Vue {
                 children: v
             });
         }
+    }
+
+    @Async()
+    private async getProtocol() {
+        this.protocols = (await this.$http.get('/api/protocol/getall', {
+            pageSize: 10000000,
+            currentPage: 1
+        })).pagedData.datas;
     }
 }
 </script>
