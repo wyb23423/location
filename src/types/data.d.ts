@@ -42,8 +42,7 @@ declare interface IMap extends IJson {
     name: string;
     margin: string | number[][]; // 地图边界值[左下, 左上, 右上, 右下, [监控区域宽, 监控区域高]]
     filepath: string; // 地图文件。背景图或.fmap
-
-    groupCode: string | string[]; // 关联的基站分组
+    groupIds: string[]; // 关联的基站分组
 }
 
 declare interface IProtocol extends IJson {

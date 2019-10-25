@@ -36,7 +36,7 @@ export default class MapMixin extends Vue {
 
     public async selectMap(data: IMap) {
         if (data) {
-            this.groups = <string[]>data.groupCode;
+            this.groups = data.groupIds;
             this.mapId = data.id;
         }
         this.initData();
