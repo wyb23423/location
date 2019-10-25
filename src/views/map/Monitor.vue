@@ -47,24 +47,24 @@
                 :type="v.active ? 'primary' : ''"
                 :class="$style['tool-item']"
                 @click.stop="swithDisplay(i)"
-                v-show="v.display"
+                v-show="v.display && i !== 3"
             >
                 {{ v.name }}
             </el-button>
         </div>
 
-        <!-- <transition name="el-zoom-in-bottom">
+        <transition name="el-zoom-in-bottom">
             <Census
                 v-if="tools[4].active"
                 @close="tools[4].active = false"
                 :zones="zones | filterZone(zoneMode.group)"
-                :censusTags="census"
+                :censusTags="censusTags"
                 :censusChange="censusChange"
             ></Census>
-        </transition> -->
+        </transition>
 
         <transition name="el-fade-in-linear">
-            <!-- <Group :group="groupData" v-if="tools[3].active"></Group> -->
+            <Group :group="groupData" v-if="tools[3].active"></Group>
             <Zone
                 style="opacity: 0.7"
                 :zones="zones"
@@ -129,14 +129,14 @@ export default class Monitor extends mixins(
 
     @Ref('root') private readonly root!: HTMLDivElement;
 
-    public get census() {
-        // ===========================触发响应
-        const x = this.censusChange;
-        console.log(x);
-        // =============================
+    // public get census() {
+    //     // ===========================触发响应
+    //     const x = this.censusChange;
+    //     console.log(x);
+    //     // =============================
 
-        return this.censusTags;
-    }
+    //     return this.censusTags;
+    // }
 
     public created() {
         this.on(RESIZE, () => {
@@ -230,19 +230,19 @@ export default class Monitor extends mixins(
     }
 
     protected doCensus(tag: ITagInfo | string) {
-        // const tagNo = (<ITagInfo>tag).sTagNo || <string>tag;
-        // const group = this.tagGroup.get(tagNo);
-        // if (group) {
-        //     const set = this.censusTags.get(group);
-        //     set && set.delete(tagNo);
-        // }
-        // if (typeof tag !== 'string') {
-        //     const set = this.censusTags.get(tag.sGroupNo) || new Set();
-        //     set.add(tagNo);
-        //     this.censusTags.set(tag.sGroupNo, set);
-        //     this.tagGroup.set(tagNo, tag.sGroupNo);
-        // }
-        // this.censusChange = this.censusChange ? 0 : 1;
+        const tagNo = (<ITagInfo>tag).sTagNo || <string>tag;
+        const group = this.tagGroup.get(tagNo);
+        if (group) {
+            const set = this.censusTags.get(group);
+            set && set.delete(tagNo);
+        }
+        if (typeof tag !== 'string') {
+            const set = this.censusTags.get(tag.sGroupNo) || new Set();
+            set.add(tagNo);
+            this.censusTags.set(tag.sGroupNo, set);
+            this.tagGroup.set(tagNo, tag.sGroupNo);
+        }
+        this.censusChange = this.censusChange ? 0 : 1;
     }
 }
 
