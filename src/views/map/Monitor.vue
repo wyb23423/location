@@ -64,8 +64,12 @@
         </transition> -->
 
         <transition name="el-fade-in-linear">
-            <Group :group="groupData" v-if="tools[3].active"></Group>
-            <Zone :zones="zones" v-if="tools[2].active"></Zone>
+            <!-- <Group :group="groupData" v-if="tools[3].active"></Group> -->
+            <Zone
+                style="opacity: 0.7"
+                :zones="zones"
+                v-if="tools[2].active"
+            ></Zone>
         </transition>
     </div>
 </template>

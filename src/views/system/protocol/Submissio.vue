@@ -1,14 +1,14 @@
 <template>
     <div style="padding: 5%; height: 100%">
         <el-card class="card">
-            <div :class="$style.alert">协议下发 请选择</div>
+            <div :class="$style.alert">参数设置 请选择</div>
             <el-form
                 :model="form"
                 label-width="auto"
                 style="width: 80%"
                 ref="form"
             >
-                <el-form-item label="选择基站：" prop="base" required>
+                <el-form-item label="基站：" prop="base" required>
                     <el-cascader
                         v-model="form.base"
                         :options="base"
@@ -17,19 +17,26 @@
                         :show-all-levels="false"
                     ></el-cascader>
                 </el-form-item>
-                <el-form-item label="选择标签：" prop="tagNo">
+                <el-form-item label="标签：" prop="tagNo">
                     <tag-select @change="form.tagNo = $event"></tag-select>
                 </el-form-item>
-                <el-form-item label="选择协议：" prop="protocol" required>
-                    <el-select v-model="form.protocol" filterable>
+                <el-form-item label="设置内容：" prop="protocol" required>
+                    <el-select
+                        v-model="form.protocol"
+                        @change="selProtocol"
+                        filterable
+                    >
                         <el-option
                             v-for="item of protocols"
-                            :key="item.id"
+                            :key="item.content"
                             :label="item.name"
                             :value="item.content"
                         >
                         </el-option>
                     </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <p v-show="!!effect">{{ effect }}</p>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="success" @click="onSubmit">
@@ -71,6 +78,7 @@ export default class Submissio extends Vue {
 
     public base: SelOption[] = [];
     public protocols: IProtocol[] = [];
+    public effect: string = '';
 
     @Ref('form') private readonly elForm!: ElForm;
 
@@ -96,6 +104,10 @@ export default class Submissio extends Vue {
     public reset() {
         this.elForm.resetFields();
         return this;
+    }
+    public selProtocol(content: string) {
+        const protocol = this.protocols.find(v => v.content === content);
+        this.effect = protocol ? protocol.effect : '';
     }
 
     @Async()
