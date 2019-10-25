@@ -34,7 +34,7 @@ export default class Main extends Vue {
         }
         const wsUrl = getConfig<string>(
             'websoket.sundries',
-            'ws://#{ip}:8081/sundries'
+            'ws://#{ip}/alarm'
         );
         const ws = new WebSocket(wsUrl.replace('#{ip}', ip));
         ws.onmessage = (msg: MessageEvent) => {

@@ -8,7 +8,7 @@
         "y": 0
     },
     "websoket": {
-        "position": "ws://#{ip}:8082/realtime/position",
-        "sundries": "ws://#{ip}:8081/sundries"
+        "position": "ws://#{ip}/realtime/position",
+        "sundries": "ws://#{ip}/alarm"
     }
 }
