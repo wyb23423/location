@@ -15,7 +15,7 @@ import Component from 'vue-class-component';
 import Header from '../components/Header.vue';
 import { Prop } from 'vue-property-decorator';
 import { NOTIFY_KEY } from '@/constant';
-import { getIp } from '@/assets/utils/util';
+import { getIp, getConfig } from '@/assets/utils/util';
 
 @Component({
     components: {
@@ -23,16 +23,8 @@ import { getIp } from '@/assets/utils/util';
     }
 })
 export default class Main extends Vue {
-    private timer?: number;
-
     public created() {
         this.link();
-    }
-
-    public destroyed() {
-        if (this.timer) {
-            clearTimeout(this.timer);
-        }
     }
 
     private link() {
@@ -40,8 +32,11 @@ export default class Main extends Vue {
         if (!ip) {
             return;
         }
-
-        const ws = new WebSocket(`ws://${ip}/realtime/alarm`);
+        const wsUrl = getConfig<string>(
+            'websoket.sundries',
+            'ws://#{ip}:8081/sundries'
+        );
+        const ws = new WebSocket(wsUrl.replace('#{ip}', ip));
         ws.onmessage = (msg: MessageEvent) => {
             let data: Omit<IAlarm, 'id'>;
             try {

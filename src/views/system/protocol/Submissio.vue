@@ -17,7 +17,7 @@
                         :show-all-levels="false"
                     ></el-cascader>
                 </el-form-item>
-                <!-- <el-form-item label="选择标签：" prop="tagNo" required>
+                <el-form-item label="选择标签：" prop="tagNo" required>
                     <el-select v-model="form.tagNo" filterable>
                         <el-option
                             v-for="(item, i) in tags"
@@ -27,7 +27,7 @@
                         >
                         </el-option>
                     </el-select>
-                </el-form-item> -->
+                </el-form-item>
                 <el-form-item label="选择协议：" prop="protocol" required>
                     <el-select v-model="form.protocol" filterable>
                         <el-option
@@ -91,7 +91,7 @@ export default class Submissio extends Vue {
                 const data: IJson = {
                     ip: this.form.base[1],
                     port: this.form.port,
-                    // tagNo: this.form.tagNo,
+                    tagNo: this.form.tagNo,
                     protocol: this.form.protocol
                     // + this.form.tagNo.padStart(8, '0')
                 };

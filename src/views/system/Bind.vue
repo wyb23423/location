@@ -91,6 +91,7 @@ import Vue from 'vue';
 import { TransferData } from 'element-ui/types/transfer';
 import Component from 'vue-class-component';
 import { State } from 'vuex-class/lib/bindings';
+import { Async } from '@/assets/utils/util';
 
 @Component
 export default class Bind extends Vue {
@@ -111,24 +112,25 @@ export default class Bind extends Vue {
         this.initData();
     }
 
-    public getSource(index: number) {
-        return this.$http
-            .get('/api/tag/getall', {
+    @Async()
+    public async getSource(index: number) {
+        const res: ResponseData<ITag> = await this.$http.get(
+            '/api/tag/getall',
+            {
                 pageSize: 100,
                 currentPage: 1,
                 tagNo: this.keyWord[index]
-            })
-            .then((res: ResponseData<ITag>) => {
-                const data = res.pagedData.datas.map(v => ({
-                    key: v.tagNo,
-                    label: v.name,
-                    disabled: false
-                }));
-                this.assignBindings(data, index);
+            }
+        );
 
-                return true;
-            })
-            .catch(console.log);
+        const data = res.pagedData.datas.map(v => ({
+            key: v.tagNo,
+            label: v.name,
+            disabled: false
+        }));
+        this.assignBindings(data, index);
+
+        return true;
     }
 
     public doAdd(index: number) {

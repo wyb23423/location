@@ -182,7 +182,7 @@ export default class PeopleList extends mixins(TableMixin) {
                 })
             ]);
 
-            data = res.pagedData.datas.map((v: ITag) => {
+            data = res.pagedData.datas.map((v: ITag & { zoneName: string }) => {
                 const zone = zones.pagedData.datas.find(
                     (z: any) => +z.id === +v.zone
                 );
