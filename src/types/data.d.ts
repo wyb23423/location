@@ -1,6 +1,6 @@
 
 
-interface DataBase<T = number> extends IJson {
+interface DataBase<T = number> {
     id: T;
     createUser?: string;
     createTime?: string | number;

@@ -1,172 +1,199 @@
 /**
  * 发送请求
  */
-import { Message } from 'element-ui';
+import { Message, MessageBox } from 'element-ui';
 
-/**
- * 发送get请求
- */
-export function get(
-    url: string | RequestParams,
-    params: any = {},
-    headers: any = {},
-    controller?: AbortController
-): Promise<ResponseData> {
-    const req = parseArgs(url, true, params, headers, controller);
-    if (typeof req === 'string') {
-        console.error(req);
+interface HTTPConfig {
+    showMessage: boolean;
+    retry: boolean;
+    timeoutTime: number;
+    maxRetryCount: number;
+}
+type RequestConfig = Omit<RequestParams, 'body' | 'data' | 'params'> & { params?: string | FormData } & HTTPConfig;
 
-        return Promise.reject(req);
+export default class HTTP {
+
+    /**
+     * 项目请求模块
+     * 以下配置可在发送请求前设置, 设置后在下次设置前都会是设置的值
+     * 对已发送出的请求, 配置值是其发送时的值
+     *
+     * @param showMessage // 是否显示弹出后端返回的错误信息。默认: true
+     * @param retry // 是否超时重试。默认: true
+     * @param timeoutTime // 使用的超时时间, 单位毫秒。默认: 60000
+     * @param maxRetryCount // 超时重试的最大次数。默认: 5
+     */
+    constructor(
+        public showMessage: boolean = true,
+        public retry: boolean = true,
+        public timeoutTime: number = 60000,
+        public maxRetryCount: number = 5
+    ) {
+        //
     }
 
-    return doFetch(req, true);
-}
-
-export function post(
-    url: string | RequestParams,
-    params: any = {},
-    headers: any = {},
-    controller?: AbortController
-): Promise<ResponseData> {
-    const req = parseArgs(url, false, params, headers, controller);
-    if (typeof req === 'string') {
-        console.error(req);
-
-        return Promise.reject(req);
+    public get(
+        url: string | RequestParams,
+        params: Record<string, any> = {},
+        headers: Record<string, any> | Headers = {},
+        controller?: AbortController
+    ): Promise<ResponseData> {
+        const req = this.parseArgs(url, true, params, headers, controller);
+        return this.doFetch(req, 'GET', 0);
     }
 
-    return doFetch(req, false);
-}
+    public post(
+        url: string | RequestParams,
+        params: Record<string, any> = {},
+        headers: Record<string, any> | Headers = {},
+        controller?: AbortController
+    ): Promise<ResponseData> {
+        const req = this.parseArgs(url, false, params, headers, controller);
+        return this.doFetch(req, 'POST', 0);
+    }
 
-async function doFetch(req: RequestParams, isGet: boolean) {
-    const method = !isGet ? 'POST' : 'GET';
-    const init: RequestInit = {
-        headers: req.headers,
-        body: !isGet ? req.params : void 0,
-        credentials: 'include',
-        method
-    };
-    const controller = req.controller || new AbortController();
-    init.signal = controller.signal;
+    /**
+     * 超时回调
+     * @param req 请求相关数据
+     * @param method 请求方法
+     * @param retryCount 已重试次数
+     */
+    public timeout(req: RequestConfig, method: 'POST' | 'GET', retryCount: number) {
+        if (this.retry && retryCount++ <= this.maxRetryCount) {
+            MessageBox.confirm('请求服务器超时, 是否重试?')
+                .then(this.doFetch.bind(this, req, method, retryCount))
+                .catch(console.log);
+        }
 
-    const res = await Promise.race([
-        new Promise<Response>((resolve, reject) =>
-            setTimeout(reject, 60000, `request timeover ${method} ${req.url}`)
-        ),
-        fetch(req.url, init)
-    ]);
+        console.error(`request timeover ${method} ${req.url}`);
+    }
 
-    return parseRes(res);
-}
+    // 解析请求参数
+    private parseArgs(
+        url: string | RequestParams,
+        isGet: boolean,
+        params: Record<string, any>,
+        headers: Record<string, any> | Headers,
+        controller?: AbortController
+    ) {
+        if (typeof url !== 'string') {
+            params = url.body || url.data || url.params || {};
+            headers = url.headers || {};
+            controller = url.controller;
+            url = url.url;
+        }
 
-async function parseRes(res: Response) {
-    if (isSuccess(res.status)) {
-        const data: ResponseData = await res.json();
-        const codeSuccess = isSuccess(data.code);
-        if (codeSuccess && data.success) {
-            data.pagedData = data.pagedData || {
-                pageSize: 0,
-                currentPage: 1,
-                datas: [],
-                totalCount: 0
-            };
-            data.pagedData.datas = data.pagedData.datas || [];
+        let reqBody: string | FormData | undefined = void 0;
+        if (isGet) {
+            const start = url.includes('?') ? '&' : '?';
+            let isFirst = true;
+            url = Object.entries(params).reduce((a, [k, v]) => {
+                if (v != null && v !== '') {
+                    a = `${a}${isFirst ? start : '&'}${k}=${v}`;
+                    isFirst = false;
+                }
 
-            return data;
+                return a;
+            }, url);
         } else {
-            if (!codeSuccess) {
-                Message.error({
-                    message: data.message,
-                    showClose: true
-                });
+            const contentType = this.getHead(headers, 'Content-Type');
+            if (contentType && contentType.includes('application/json')) {
+                reqBody = JSON.stringify(params);
             } else {
-                console.error(data.message);
-            }
-
-            return Promise.reject(data);
-        }
-    } else {
-        console.error(`${res.status}: ${res.statusText}`);
-
-        return Promise.reject(res);
-    }
-}
-
-function parseArgs(
-    url: string | RequestParams,
-    isGet: boolean,
-    params: any = {},
-    headers: any = {},
-    controller?: AbortController
-) {
-    if (typeof url !== 'string') {
-        if (!isThisType(url, 'object')) {
-            return '参数类型错误';
-        }
-
-        params = url.body || url.data || url.params || {};
-        headers = url.headers || {};
-        controller = url.controller;
-        url = url.url;
-    }
-
-    if (!(headers instanceof Headers || isThisType(headers, 'object'))) {
-        return '请求头必须为Headers对象或纯对象';
-    }
-
-    if (isGet) {
-        if (!isThisType(params, 'object')) {
-            return '请求参数必须为纯对象';
-        }
-
-        const start = url.includes('?') ? '&' : '?';
-        url = Object.entries(params).reduce((a, [k, v], i) => `${a}${i ? '&' : start}${k}=${v}`, url);
-    } else {
-        const contentType = getHead(headers, 'Content-Type');
-        if (!contentType) {
-            params = json2FormData(params);
-        } else if (contentType.includes('application/json')) {
-            if (isThisType(params, 'object')) {
-                params = JSON.stringify(params);
+                reqBody = this.json2FormData(params);
             }
         }
+
+        return {
+            ...this,
+            url, headers, controller,
+            params: reqBody
+        };
     }
 
+    // 发送请求
+    private doFetch(req: RequestConfig, method: 'POST' | 'GET', retryCount: number) {
+        req.controller = req.controller || new AbortController();
+        const init: RequestInit = {
+            method,
+            headers: req.headers,
+            body: req.params,
+            credentials: 'include',
+            signal: req.controller.signal
+        };
 
-    return { url, params, headers, controller };
-}
+        const timer = setTimeout(() => {
+            this.timeout(req, method, retryCount);
+            req.controller && req.controller.abort();
+        }, this.timeoutTime);
 
-function isSuccess(status: number) {
-    return status >= 200 && status < 300;
-}
-
-
-function getHead(headers: any, name: string) {
-    if (headers instanceof Headers) {
-        return headers.get(name);
+        return fetch(req.url, init)
+            .finally(() => clearTimeout(timer))
+            .then(this.parseRes.bind(this));
     }
 
-    return headers[name];
-}
+    // 解析响应
+    private async parseRes(res: Response) {
+        if (this.isSuccess(res.status)) {
+            let data: ResponseData;
+            try {
+                data = await res.json();
+            } catch (e) {
+                console.log(await res.text());
+                return Promise.reject(e);
+            }
 
-function json2FormData(parmas: any) {
-    if (parmas instanceof FormData) {
-        return parmas;
+            const codeSuccess = this.isSuccess(data.code);
+            if (codeSuccess && data.success) {
+                data.pagedData = data.pagedData || {
+                    pageSize: 0,
+                    currentPage: 1,
+                    datas: [],
+                    totalCount: 0
+                };
+                data.pagedData.datas = data.pagedData.datas || [];
+
+                return data;
+            } else {
+                if (!codeSuccess && this.showMessage) {
+                    Message.error({
+                        message: data.message,
+                        showClose: true
+                    });
+                } else {
+                    console.error(data.message);
+                }
+
+                return Promise.reject(data);
+            }
+        } else {
+            console.error(`${res.status}: ${res.statusText}`);
+            return Promise.reject(res);
+        }
     }
 
-    const data = new FormData();
-    for (const [k, v] of Object.entries(parmas)) {
-        data.append(k, <Blob | string>v);
+    private getHead(headers: any, name: string) {
+        if (headers instanceof Headers) {
+            return headers.get(name);
+        }
+
+        return headers[name];
     }
 
-    return data;
-}
+    private json2FormData(parmas: Record<string, any>) {
+        if (parmas instanceof FormData) {
+            return parmas;
+        }
 
-/**
- * 判断一个变量是否是某种类型
- */
-function isThisType(obj: any, type: string) {
-    type = type.replace(/^\w/, (w: string) => w.toLocaleUpperCase());
+        const data = new FormData();
+        for (const [k, v] of Object.entries(parmas)) {
+            data.append(k, v instanceof Blob ? v : v + '');
+        }
 
-    return Object.prototype.toString.call(obj) === `[object ${type}]`;
+        return data;
+    }
+
+    private isSuccess(status: number) {
+        return status >= 200 && status < 300;
+    }
 }

@@ -1,14 +1,14 @@
 import Component, { mixins } from 'vue-class-component';
 import MapMixin from '../map';
 import { WebSocketInit } from './websocket';
-import { arr2obj } from '@/assets/utils/util';
-import { LOSS_TIME, MODIFY_TAG_ICON, NOTIFY_KEY, MISS_MSG, ALARM_DEAL } from '@/constant';
+import { arr2obj, getConfig } from '@/assets/utils/util';
+import { LOSS_TIME, MODIFY_TAG_ICON, MISS } from '@/constant';
 import Link from '../map/link';
 import { getCustomInfo } from '@/assets/map/common';
 
 interface Pop {
     close(immediately?: boolean): void | boolean;
-    update?(): boolean;
+    update(iHeartRate: number): boolean;
 }
 
 @Component
@@ -16,11 +16,10 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
     public renderTags: Record<string, number> = {}; // 已经在地图上的标签, {tagNo: timer}
 
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
-    private alarmTimes = new Map<string, number>();
-    private moveTime = 1 / JSON.parse(sessionStorage.getItem('config')!).SECOND_COUNT;
+    private readonly moveTime = 1 / getConfig<number>('SECOND_COUNT', 1);
 
     public created() {
-        this.$event.on(MODIFY_TAG_ICON, (tagNo: string, img?: string) => this.mgr && this.mgr.modifyImg(tagNo, img));
+        this.$event.on(MODIFY_TAG_ICON, (tagNo: string, img: string) => this.mgr && this.mgr.modifyImg(tagNo, img));
     }
 
     public beforeDestroy() {
@@ -51,19 +50,14 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
         this.mgr!.on('mapClickNode', (event: FMMapClickEvent) => {
             if (this.mgr) {
-                if (
-                    event.nodeType === fengmap.FMNodeType.IMAGE_MARKER
-                    && event.target.custom && event.target.custom.info.tagNo
-                ) {
-                    const tagNo = event.target.custom.info.tagNo;
+                const tagNo = getCustomInfo<ITag>(event.target, 'info').tagNo;
+                if (event.nodeType === fengmap.FMNodeType.IMAGE_MARKER && tagNo) {
                     if (!this.pops.has(tagNo)) {
                         this.pops.set(tagNo, this.mgr.addPopInfo(<any>event.target));
                     }
                 } else {
                     for (const [k, p] of this.pops.entries()) {
-                        if (p.close()) {
-                            this.pops.delete(k);
-                        }
+                        p.close() && this.pops.delete(k);
                     }
                 }
             }
@@ -94,26 +88,16 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
             if (timer) {
                 clearTimeout(timer);
 
-                // this.$event.emit(ALARM_DEAL, {
-                //     tagNo,
-                //     alarmTime: this.alarmTimes.get(tagNo),
-                //     alarmMsg: MISS_MSG,
-                //     type: 300
-                // });
-
-                this.moveTo(
-                    tagNo, coord, this.moveTime,
-                    () => {
-                        const p = this.pops.get(tagNo);
-                        if (p && p.update) {
-                            p.update() || this.pops.delete(tagNo);
-                        }
+                this.moveTo(tagNo, coord, this.moveTime, () => {
+                    const p = this.pops.get(tagNo);
+                    if (p && p.update) {
+                        p.update(tag.iHeartRate) || this.pops.delete(tagNo);
                     }
-                );
+                });
             } else {
-                let ids = [];
+                let ids: number[] = [];
                 try {
-                    ids = (<any>this.mgr.map).groupIDs;
+                    ids = (<any>this.mgr.map).groupIDs || [];
                 } catch (e) {
                     // 地图初始化未完成
                     return;
@@ -121,41 +105,32 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
                 // 第一次收到信号
                 const tagData: ITag = this.tagAll[tagNo];
-                this.addIcon(ids ? ids[0] : 0, {
-                    ...(tagData || {}),
+                this.addIcon(ids[0] || 0, {
+                    ...tagData,
+                    ...coord,
                     name: tagNo,
-                    tagName: tagData ? tagData.name : '未知标签',
-                    ...coord
+                    tagName: tagData.name
                 });
             }
 
-            // 长时间未收到信号, 将标签号推入信号丢失报警队列
+            // 长时间未收到信号, 将标签号推入信号丢失队列
             this.renderTags[tagNo] = setTimeout(this.miss.bind(this, tagNo), LOSS_TIME);
-            this.alarmTimes.set(tagNo, Date.now());
-            // 统计
+
+            // 统计(添加对应统计信息)
             this.doCensus(tag);
         }
     }
 
     // 信号丢失报警循环
     private miss(tagNo: string) {
-        const now = Date.now();
-        console.log(tagNo, now - (this.alarmTimes.get(tagNo) || 0));
-        this.alarmTimes.set(tagNo, now);
-        // 抛出 信号丢失 事件
-        // this.$event.emit(NOTIFY_KEY, {
-        //     tagNo,
-        //     alarmTime: now,
-        //     alarmMsg: MISS_MSG,
-        //     type: 1
-        // });
+        this.$event.emit(MISS, tagNo);
 
         if (this.mgr) {
             this.renderTags[tagNo] = -1; // 标记标签已丢失
 
             this.mgr.show(tagNo, false); // 隐藏标签
             this.mgr.lineMgr.remove(tagNo); // 移除轨迹线
-            this.doCensus(tagNo); // 更新统计数据
+            this.doCensus(tagNo); // 更新统计数据(移除对应统计信息)
 
             // 移除信息框
             if (this.pops.has(tagNo)) {

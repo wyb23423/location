@@ -1,28 +1,6 @@
 import { BASE_URL } from '@/constant';
 
-/**
- * 轮询等待条件达成
- * @param condition 等待的条件
- * @param timeout 超时时间
- */
-export function loopAwait(
-    condition: () => boolean,
-    timeout: number = 1000
-): Promise<void> {
-    const start: number = Date.now();
-
-    const loop = (resolve: () => void, reject: (reason?: any) => void) => {
-        if (condition()) {
-            resolve();
-        } else if (Date.now() - start > timeout) {
-            reject('timeout');
-        } else {
-            requestAnimationFrame(() => loop(resolve, reject));
-        }
-    };
-
-    return new Promise(loop);
-}
+export * from './await';
 
 /**
  * 获取一定范围内的随机数
@@ -74,13 +52,6 @@ export function arr2obj(arr: IJson[], key: string, isArr: boolean = true) {
     return group;
 }
 
-/**
- * 空函数
- */
-export function none(a?: any, b?: any, c?: any, d?: any) {
-    //
-}
-
 // 将字符转成utf-8编码
 export function encodeUtf8(text: string) {
     return new Uint16Array(text.length).map((el, idx) => text.charCodeAt(idx));
@@ -125,4 +96,26 @@ export function base642blob(base64: string) {
     }
 
     return new Blob();
+}
+
+export function getConfig<T>(key: string, defaultValue: T) {
+    const config = sessionStorage.getItem('config');
+
+    if (!config) {
+        console.error('配置不存在');
+        return defaultValue;
+    }
+
+    let res = JSON.parse(config);
+    const keys = [];
+    for (const k of key.split('.')) {
+        keys.push(k);
+        res = res[k];
+        if (res == null) {
+            console.warn(`config.${keys.join('.')} is ${res === undefined ? 'undefined' : 'null'}`);
+            return defaultValue;
+        }
+    }
+
+    return <T>res;
 }

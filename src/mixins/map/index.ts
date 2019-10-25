@@ -1,12 +1,14 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { loopAwait } from '@/assets/utils/util';
+import { loopAwait, Async } from '@/assets/utils/util';
 import { createMap } from '@/assets/map';
 import { FengMapMgr } from '@/assets/map/fengmap';
 import MapSelect from '@/components/MapSelect.vue';
 import { PIXIMgr } from '@/assets/map/pixi';
 import { Ref } from 'vue-property-decorator';
 import { ElLoadingComponent } from 'element-ui/types/loading';
+import { errorStore } from '@/components/Notice.vue';
+import { ERROR_IMG } from '@/constant';
 
 @Component({
     components: {
@@ -20,6 +22,7 @@ export default class MapMixin extends Vue {
     public mapId?: number;
 
     @Ref('map') protected readonly container?: HTMLElement;
+    protected readonly ICON_TYPE = ICON_TYPE;
 
     private mark?: ElLoadingComponent;
 
@@ -33,7 +36,7 @@ export default class MapMixin extends Vue {
 
     public async selectMap(data: IMap) {
         if (data) {
-            this.groups = data.baseGroupList;
+            this.groups = <string[]>data.baseGroupList;
             this.mapId = data.id;
         }
         this.initData();
@@ -118,23 +121,20 @@ export default class MapMixin extends Vue {
     }
 
     // 获取并显示基站
+    @Async(() => [])
     protected async tagAnchor() {
-        try {
-            const res = await this.$http.get('/api/base/getall', {
-                currentPage: 1,
-                pageSize: 10000,
-            });
+        const res = await this.$http.get('/api/base/getall', {
+            currentPage: 1,
+            pageSize: 10000,
+        });
 
-            const data: IBaseStation[] = res.pagedData.datas;
-            this.createBases(data);
+        const data: IBaseStation[] = res.pagedData.datas;
+        this.createBases(data);
 
-            return data;
-        } catch (e) {
-            return [];
-        }
+        return data;
     }
 
-    protected addIcon(gid: number, info: any, type: number = 1) {
+    protected async addIcon(gid: number, info: IconParms, type: ICON_TYPE = ICON_TYPE.TAG) {
         if (this.mgr) {
             const map = this.mgr.map;
             if (this.mgr instanceof FengMapMgr) {
@@ -146,9 +146,9 @@ export default class MapMixin extends Vue {
                     x: info.x,
                     y: info.y,
                     height: 1,
-                    url: info.photo,
+                    url: await this.getIcon(<TagIconParams>info, type),
                     size: info.size || 48,
-                    callback: (im: any) => {
+                    callback: (im: Sprite) => {
                         if (!im.custom) {
                             im.custom = {};
                         }
@@ -183,10 +183,10 @@ export default class MapMixin extends Vue {
                         y: v.coordy,
                         name: v.baseNo,
                         groupid: v.groupCode,
-                        photo: '/images/anchor.png',
+                        icon: '/images/anchor.png',
                         size: 32
                     },
-                    2
+                    ICON_TYPE.STATION
                 );
 
                 // 添加基站名
@@ -198,10 +198,46 @@ export default class MapMixin extends Vue {
                         x: v.coordx,
                         y: v.coordy - 40
                     },
-                    v.baseNo + ''
+                    v.baseNo
                 );
             }
         }
     }
+
+    private async getIcon(info: TagIconParams, type: ICON_TYPE) {
+        switch (type) {
+            case ICON_TYPE.TAG: {
+                try {
+                    await errorStore.getItem(info.tagNo);
+
+                    return ERROR_IMG;
+                } catch (e) {
+                    //
+                }
+            }
+            default: return info.photo;
+        }
+    }
 }
 
+enum ICON_TYPE {
+    TAG = 1,
+    STATION = 2
+}
+
+type Sprite = (fengmap.FMImageMarker | PIXI.Sprite) & { custom?: Record<string, any> };
+interface BaseIconParams extends Vector2 {
+    name: string;
+    groupid: string;
+    icon: string;
+}
+interface TagIconParams extends ITag, Vector3 {
+    tagName: string;
+}
+interface CommonIconParams {
+    size?: number;
+    isMapCoor?: boolean;
+    callback?(im: Sprite): void;
+}
+
+type IconParms = (BaseIconParams | TagIconParams) & CommonIconParams;

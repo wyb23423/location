@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { arr2obj, getIp } from '@/assets/utils/util';
+import { arr2obj, getIp, getConfig } from '@/assets/utils/util';
 import Component from 'vue-class-component';
 
 @Component
@@ -34,22 +34,16 @@ export class WebSocketInit extends Vue {
         }
 
         // ==============================收到标签信息后的处理
-        const datas: any[] = [];
-        let time: number = 0;
         const handler = (event: MessageEvent) => {
             const data: ITagInfo = JSON.parse(event.data);
             if (this.tagAll[data.sTagNo]) {
-                datas.push(data);
-                if (Date.now() - time > 50 / 3) {
-                    datas.forEach(v => this.move(v));
-                    datas.length = 0;
-                    time = Date.now();
-                }
+                this.move(data);
             }
         };
         // ======================================
+        const wsUrl = getConfig<string>('websoket.position', 'ws://#{ip}/realtime/position');
         this.ws = this.groups.map(k => {
-            const ws = new WebSocket(`ws://${ip}/realtime/position/${k}`);
+            const ws = new WebSocket(`${wsUrl}/${k}`);
             ws.onmessage = handler;
             return ws;
         });
