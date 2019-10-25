@@ -65,7 +65,7 @@ export default class MapSelect extends Vue {
             this.options = [
                 {
                     id: 1,
-                    groupCode: ['0001', '0002'],
+                    groupIds: ['0001', '0002'],
                     name: '办公室',
                     filepath: '/image/huijinguangchang.fmap',
                     margin: [
@@ -79,7 +79,7 @@ export default class MapSelect extends Vue {
                 {
                     id: 2,
                     name: '办公室-pixi',
-                    groupCode: ['0001', '0002'],
+                    groupIds: ['0001', '0002'],
                     filepath: '/images/5ad8909aeff13.png',
                     margin: [
                         [-275, 47],
