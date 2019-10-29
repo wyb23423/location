@@ -47,7 +47,7 @@
                 :type="v.active ? 'primary' : ''"
                 :class="$style['tool-item']"
                 @click.stop="swithDisplay(i)"
-                v-show="v.display"
+                v-show="v.display && i !== 3"
             >
                 {{ v.name }}
             </el-button>
@@ -64,8 +64,12 @@
         </transition>
 
         <transition name="el-fade-in-linear">
-            <Group :group="groupData" v-if="tools[3].active"></Group>
-            <Zone :zones="zones" v-if="tools[2].active"></Zone>
+            <!-- <Group :group="groupData" v-if="tools[3].active"></Group> -->
+            <Zone
+                style="opacity: 0.7"
+                :zones="zones"
+                v-if="tools[2].active"
+            ></Zone>
         </transition>
     </div>
 </template>
@@ -84,6 +88,7 @@ import { State } from 'vuex-class/lib/bindings';
 import { Ref, Watch } from 'vue-property-decorator';
 import { PIXIMgr } from '@/assets/map/pixi';
 import { RESIZE } from '@/constant';
+import { Async } from '../../assets/utils/util';
 
 @Component({
     components: {
@@ -121,7 +126,8 @@ export default class Monitor extends mixins(
 
     public censusChange: number = 0; // 用于触发响应（当前vue版本不支持Map及Set的数据响应）
     private censusTags = new Map<string, Set<string>>(); // 分组统计
-    private time?: number; // 用于统计刷新节流
+    private tagGroup = new Map<string, string>(); // tag-group映射
+    private time?: number; // 统计刷新时间戳
 
     @Ref('root') private readonly root!: HTMLDivElement;
 
@@ -212,33 +218,44 @@ export default class Monitor extends mixins(
         }
     }
 
-    protected afterMapCreated() {
+    @Async()
+    protected async afterMapCreated() {
         this.tools[1].display = !!this.mgr && this.mgr.has3D;
 
-        this.$http
-            .get('/api/zone/getall', {
-                currentPage: 1,
-                pageSize: 1_0000_0000,
-                mapId: this.mapId
-            })
-            .then(res => (this.zones = res.pagedData.datas))
-            .catch(() => console.log);
+        this.zones = (await this.$http.get('/api/zone/getall', {
+            currentPage: 1,
+            pageSize: 1_0000_0000,
+            mapId: <number>this.mapId
+        })).pagedData.datas;
     }
 
     protected doCensus(tag: ITagInfo | string) {
         const tagNo = (<ITagInfo>tag).sTagNo || <string>tag;
-        this.censusTags.forEach(v => v.delete(tagNo));
+        const group = this.tagGroup.get(tagNo);
+
+        let hasUpdate = false; // 是否有更新
+        if (group) {
+            const set = this.censusTags.get(group);
+            hasUpdate = !!(set && set.delete(tagNo));
+        }
 
         if (typeof tag !== 'string') {
             const set = this.censusTags.get(tag.sGroupNo) || new Set();
+            const oldSize = set.size;
             set.add(tagNo);
+
+            hasUpdate = hasUpdate || oldSize !== set.size;
             this.censusTags.set(tag.sGroupNo, set);
+            this.tagGroup.set(tagNo, tag.sGroupNo);
         }
+
+        // if (hasUpdate) {
         const now = Date.now();
-        if(!this.time || now - this.time >= 200) {
+        if (!this.time || now - this.time >= 1000) {
             this.censusChange = this.censusChange ? 0 : 1;
+            this.time = now;
         }
-        this.time = now;
+        // }
     }
 }
 

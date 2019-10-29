@@ -58,26 +58,14 @@ export default class Census extends Vue {
     public info: any = null;
 
     public created() {
-        const tags = this.zones.map(v =>
-            this.$http.get('/api/tag/getall', {
-                currentPage: 1,
-                pageSize: 1_0000_0000,
-                zone: this.value
-            })
-        );
-
-        this.allCount = Array.from(this.censusTags.values())
-            .map(v => [...v])
-            .flat().length;
+        this.allCount = this.getAllCount();
     }
 
     @Watch('censusChange')
     @Watch('value')
     public getInfo() {
         if (this.zones && this.censusTags) {
-            this.allCount = Array.from(this.censusTags.values())
-                .map(v => [...v])
-                .flat().length;
+            this.allCount = this.getAllCount();
 
             const zone = this.zones.find(v => v.baseNo1 === this.value);
             if (zone) {
@@ -106,6 +94,10 @@ export default class Census extends Vue {
 
             this.info = null;
         }
+    }
+
+    private getAllCount() {
+        return Array.from(this.censusTags.values()).flatMap(v => [...v]).length;
     }
 }
 </script>
