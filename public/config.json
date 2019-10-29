@@ -9,6 +9,6 @@
     },
     "websoket": {
         "position": "ws://#{ip}/realtime/position",
-        "sundries": "ws://#{ip}/alarm"
+        "sundries": "ws://#{ip}/realtime/alarm"
     }
 }
