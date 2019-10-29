@@ -79,7 +79,7 @@ export default class Census extends Vue {
                 .map(v => [...v])
                 .flat().length;
 
-            const zone = this.zones.find(v => v.base_no_1 === this.value);
+            const zone = this.zones.find(v => v.baseNo1 === this.value);
             if (zone) {
                 this.$http
                     .get('/api/tag/getall', {

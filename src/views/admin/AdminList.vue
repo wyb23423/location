@@ -118,7 +118,7 @@ export default class AdminList extends mixins(TableMixin) {
                 });
 
                 this.$http
-                    .post('/api/admin/updateAdmin', this.admin, {
+                    .post('/api/admin/updateAdmin', this.admin!, {
                         'Content-Type': 'application/json'
                     })
                     .then(() => this.$message.success('修改管理员信息成功'))

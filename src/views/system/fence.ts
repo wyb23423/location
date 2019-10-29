@@ -13,7 +13,7 @@ import ZoneMixin from '@/mixins/zone';
 })
 export default class Fence extends mixins(TableMixin, ZoneMixin) {
     public activeNames: string[] = ['info', 'add'];
-    public zone: IZone | null = null; // 设置中的区域
+    public zone: ZoneData | null = null; // 设置中的区域
 
     // ===================================table
     public colCfg: any[] = [
@@ -164,7 +164,7 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
                 currentPage: page,
                 mapId: this.mapId
             });
-            data = res.pagedData.datas.map((v: IZone) => {
+            data = res.pagedData.datas.map((v: ZoneData) => {
                 v.status = v.enable ? '开启' : '关闭';
                 v.position = JSON.parse(<string>v.position);
                 v.open = !!v.enable;
@@ -226,3 +226,5 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
         return this;
     }
 }
+
+type ZoneData = IZone & {status: string; open: boolean;};

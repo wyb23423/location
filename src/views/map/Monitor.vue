@@ -121,6 +121,7 @@ export default class Monitor extends mixins(
 
     public censusChange: number = 0; // 用于触发响应（当前vue版本不支持Map及Set的数据响应）
     private censusTags = new Map<string, Set<string>>(); // 分组统计
+    private time?: number; // 用于统计刷新节流
 
     @Ref('root') private readonly root!: HTMLDivElement;
 
@@ -233,8 +234,11 @@ export default class Monitor extends mixins(
             set.add(tagNo);
             this.censusTags.set(tag.sGroupNo, set);
         }
-
-        this.censusChange = this.censusChange ? 0 : 1;
+        const now = Date.now();
+        if(!this.time || now - this.time >= 200) {
+            this.censusChange = this.censusChange ? 0 : 1;
+        }
+        this.time = now;
     }
 }
 
