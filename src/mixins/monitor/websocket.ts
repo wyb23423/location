@@ -42,11 +42,15 @@ export class WebSocketInit extends Vue {
         };
         // ======================================
         const wsUrl = getConfig<string>('websoket.position', 'ws://#{ip}/realtime/position');
-        this.ws = this.groups.map(k => {
-            const ws = new WebSocket(`${wsUrl.replace('#{ip}', ip)}/${k}`);
-            ws.onmessage = handler;
-            return ws;
-        });
+        const ws = new WebSocket(`${wsUrl.replace('#{ip}', ip)}/${this.groups.join(',')}`);
+        ws.onmessage = handler;
+        this.ws = [ws];
+
+        // this.ws = this.groups.map(k => {
+        //     const ws = new WebSocket(`${wsUrl.replace('#{ip}', ip)}/${k}`);
+        //     ws.onmessage = handler;
+        //     return ws;
+        // });
     }
 
     protected move(tag: ITagInfo) {
