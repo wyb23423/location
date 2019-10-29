@@ -253,8 +253,8 @@ export default class Monitor extends mixins(
             const now = Date.now();
             if (!this.time || now - this.time >= 1000) {
                 this.censusChange = this.censusChange ? 0 : 1;
+                this.time = now;
             }
-            this.time = now;
         }
     }
 }
