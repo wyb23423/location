@@ -31,7 +31,8 @@
                 <div v-show="!!info" style="border-bottom: 1px solid #ccc;">
                     <span>{{ (info || {}).name }}标签数量: </span>
                     <span>
-                        {{ (info || {}).true }}/{{ (info || {}).should }}
+                        {{ (info || {}).true }}
+                        <!-- /{{ (info || {}).should }} -->
                     </span>
                 </div>
                 <div v-show="!info && this.value !== ''">
@@ -69,27 +70,32 @@ export default class Census extends Vue {
 
             const zone = this.zones.find(v => v.baseNo1 === this.value);
             if (zone) {
-                this.$http
-                    .get('/api/tag/getall', {
-                        currentPage: 1,
-                        pageSize: 1_0000_0000,
-                        zone: zone.id
-                    })
-                    .then(res => {
-                        const list = (<ITag[]>res.pagedData.datas).filter(v =>
-                            (this.censusTags.get(this.value) || new Set()).has(
-                                v.tagNo
-                            )
-                        );
+                // this.$http
+                //     .get('/api/tag/getall', {
+                //         currentPage: 1,
+                //         pageSize: 1_0000_0000,
+                //         zone: zone.id
+                //     })
+                //     .then(res => {
+                //         const list = (<ITag[]>res.pagedData.datas).filter(v =>
+                //             (this.censusTags.get(this.value) || new Set()).has(
+                //                 v.tagNo
+                //             )
+                //         );
 
-                        this.info = {
-                            name:
-                                zone.name +
-                                (zone.name.endsWith('区域') ? '' : '区域'),
-                            true: list.length,
-                            should: res.pagedData.datas.length
-                        };
-                    });
+                //         this.info = {
+                //             name:
+                //                 zone.name +
+                //                 (zone.name.endsWith('区域') ? '' : '区域'),
+                //             true: list.length,
+                //             should: res.pagedData.datas.length
+                //         };
+                //     });
+                this.info = {
+                    name:
+                        zone.name + (zone.name.endsWith('区域') ? '' : '区域'),
+                    true: (this.censusTags.get(this.value) || new Set()).size
+                };
             }
 
             this.info = null;

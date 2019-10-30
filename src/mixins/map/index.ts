@@ -215,7 +215,7 @@ export default class MapMixin extends Vue {
                     //
                 }
             }
-            default: return info.photo;
+            default: return info.photo || (<any>info).icon;
         }
     }
 }

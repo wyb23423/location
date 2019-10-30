@@ -57,7 +57,7 @@
             <Census
                 v-if="tools[4].active"
                 @close="tools[4].active = false"
-                :zones="zones | filterZone(zoneMode.group)"
+                :zones="zones"
                 :censusTags="census"
                 :censusChange="censusChange"
             ></Census>
@@ -95,11 +95,6 @@ import { Async } from '../../assets/utils/util';
         Zone,
         Group,
         Census
-    },
-    filters: {
-        filterZone(zones: IZone[], mode: number) {
-            return zones.filter(v => v.mode === mode);
-        }
     }
 })
 export default class Monitor extends mixins(
@@ -222,11 +217,13 @@ export default class Monitor extends mixins(
     protected async afterMapCreated() {
         this.tools[1].display = !!this.mgr && this.mgr.has3D;
 
-        this.zones = (await this.$http.get('/api/zone/getall', {
+        const res = (await this.$http.get('/api/zone/getall', {
             currentPage: 1,
             pageSize: 1_0000_0000,
             mapId: <number>this.mapId
         })).pagedData.datas;
+
+        this.zones = res.filter(v => v.mode === this.zoneMode.group);
     }
 
     protected doCensus(tag: ITagInfo | string) {

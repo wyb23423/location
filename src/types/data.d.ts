@@ -10,19 +10,6 @@ interface DataBase<T = number> {
 
 // ============================================数据库表
 
-declare interface IAdmin extends DataBase {
-    adminName: string;
-    userName: string;
-    password: string;
-    sex: 0 | 1;
-    department: string;
-    job: string;
-    level: string;
-    phone: string;
-    workNo: string; // 工号
-    role: string; // 权限
-}
-
 declare interface IBaseStation extends DataBase {
     baseNo: string;
     groupCode: string;
@@ -45,6 +32,19 @@ declare interface IBaseStation extends DataBase {
     work: 0 | 1; // 是否工作
     loseRate: number; // 掉帧率
     alarm: number; // 报警次数
+}
+
+declare interface IAdmin extends DataBase {
+    adminName: string;
+    userName: string;
+    password: string;
+    sex: 0 | 1;
+    department: string;
+    job: string;
+    level: string;
+    phone: string;
+    workNo: string; // 工号
+    role: string; // 权限
 }
 
 declare interface ICamera extends DataBase {
@@ -91,6 +91,7 @@ declare interface IZone extends DataBase {
     baseNo1: string;
     baseNo2: string;
     threshold: number;
+    mapId: number;
 }
 
 declare interface IBingdings extends DataBase {
