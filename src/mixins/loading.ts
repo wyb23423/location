@@ -1,6 +1,8 @@
 import { LoadingServiceOptions, ElLoadingComponent } from 'element-ui/types/loading';
 import Vue from 'vue';
+import Component from 'vue-class-component';
 
+@Component
 export class Loading extends Vue {
     private timer?: number;
     private marker?: ElLoadingComponent;

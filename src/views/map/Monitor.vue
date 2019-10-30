@@ -222,11 +222,14 @@ export default class Monitor extends mixins(
     protected async afterMapCreated() {
         this.tools[1].display = !!this.mgr && this.mgr.has3D;
 
-        this.zones = (await this.$http.get('/api/zone/getall', {
+        const res = await this.$http.get('/api/zone/getall', {
             currentPage: 1,
-            pageSize: 1_0000_0000,
-            mapId: <number>this.mapId
-        })).pagedData.datas;
+            pageSize: 1_0000_0000
+        });
+        this.zones = res.pagedData.datas.filter(
+            (v: IZone) =>
+                v.mapId === this.mapId && v.mode === this.zoneMode.group
+        );
     }
 
     protected doCensus(tag: ITagInfo | string) {
