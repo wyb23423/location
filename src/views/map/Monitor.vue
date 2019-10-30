@@ -47,7 +47,7 @@
                 :type="v.active ? 'primary' : ''"
                 :class="$style['tool-item']"
                 @click.stop="swithDisplay(i)"
-                v-show="v.display"
+                v-show="v.display && i !== 3"
             >
                 {{ v.name }}
             </el-button>
@@ -57,7 +57,7 @@
             <Census
                 v-if="tools[4].active"
                 @close="tools[4].active = false"
-                :zones="zones | filterZone(zoneMode.group)"
+                :zones="zones"
                 :censusTags="census"
                 :censusChange="censusChange"
             ></Census>
@@ -95,11 +95,6 @@ import { Async } from '../../assets/utils/util';
         Zone,
         Group,
         Census
-    },
-    filters: {
-        filterZone(zones: IZone[], mode: number) {
-            return zones.filter(v => v.mode === mode);
-        }
     }
 })
 export default class Monitor extends mixins(
