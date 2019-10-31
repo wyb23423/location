@@ -174,13 +174,20 @@ export default class Notice extends Vue {
     }
 
     // 处理异常
-    public doDeal() {
-        this.$confirm('选中异常已解决?')
-            .then(() => {
-                this.selected.forEach(this.reset.bind(this));
+    @Async()
+    public async doDeal() {
+        await this.$confirm('选中异常已解决?');
+
+        const deal = async () => {
+            const item = this.selected.shift();
+            if (item) {
+                await this.reset(item);
+                deal();
+            } else {
                 this.elTable.clearSelection();
-            })
-            .catch(console.log);
+            }
+        };
+        deal();
     }
 
     // 隐藏报警
@@ -200,7 +207,7 @@ export default class Notice extends Vue {
             this.messageStore.removeItem(this.itemToString(v));
         }
 
-        errorStore
+        return errorStore
             .getItem<number>(v.deviceId)
             .then(count => {
                 count--;
