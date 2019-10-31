@@ -152,7 +152,12 @@ export default class Notice extends Vue {
             this.size = '100%';
         }
 
-        this.messageStore.iterate<IAlarm, void>(this.notify.bind(this)); // 恢复报警状态
+        // 恢复报警状态
+        // 通过在 iteratorCallback 回调函数中返回一个非 undefined 的值能提前退出 iterate。
+        // iteratorCallback 的返回值即作为整个迭代的结果，将被传入 successCallback。
+        this.messageStore.iterate<IAlarm, void>(v => {
+            this.notify(v);
+        });
     }
 
     public formatter(r: any, c: any, v: number) {
