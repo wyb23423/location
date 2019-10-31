@@ -68,7 +68,8 @@ import {
     ALARM_DEAL,
     MODIFY_TAG_ICON,
     SX_WIDTH,
-    ERROR_IMG
+    ERROR_IMG,
+    RECOVERY
 } from '../constant';
 import { ElNotificationComponent } from 'element-ui/types/notification';
 import { ElTableColumn } from 'element-ui/types/table-column';
@@ -76,6 +77,7 @@ import { ElDrawer } from 'element-ui/types/drawer';
 import { Ref } from 'vue-property-decorator';
 import { getAndCreateStore } from '../assets/lib/localstore';
 import { ElTable } from 'element-ui/types/table';
+import { Async, loopAwait } from '@/assets/utils/await';
 
 export const errorStore = getAndCreateStore('ERROR_STORE');
 
@@ -147,16 +149,15 @@ export default class Notice extends Vue {
     }
 
     public mounted() {
-        this.maxHeight = document.body.offsetHeight - 150;
-        if (document.body.offsetWidth <= SX_WIDTH) {
-            this.size = '100%';
-        }
+        this.setSize();
 
-        // 恢复报警状态
-        // 通过在 iteratorCallback 回调函数中返回一个非 undefined 的值能提前退出 iterate。
-        // iteratorCallback 的返回值即作为整个迭代的结果，将被传入 successCallback。
-        this.messageStore.iterate<IAlarm, void>(v => {
-            this.notify(v);
+        this.$event.on(RECOVERY, () => {
+            // 恢复报警状态
+            // 通过在 iteratorCallback 回调函数中返回一个非 undefined 的值能提前退出 iterate。
+            // iteratorCallback 的返回值即作为整个迭代的结果，将被传入 successCallback。
+            this.messageStore.iterate<IAlarm, void>(v => {
+                this.notify(v);
+            });
         });
     }
 
@@ -298,6 +299,18 @@ export default class Notice extends Vue {
             time: time || alarmTime,
             content: content || alarmMsg
         };
+    }
+
+    @Async()
+    private async setSize() {
+        await loopAwait(
+            () => !!(document.body.offsetHeight && document.body.offsetWidth)
+        );
+
+        this.maxHeight = document.body.offsetHeight - 150;
+        if (document.body.offsetWidth <= SX_WIDTH) {
+            this.size = '100%';
+        }
     }
 }
 
