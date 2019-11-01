@@ -23,7 +23,7 @@ export default class MapMixin extends Loading {
     @Ref('map') protected readonly container?: HTMLElement;
     protected readonly ICON_TYPE = ICON_TYPE;
 
-    private twinkleTime?: number;
+    private twinkleTimer = new Map<string, number>();
 
     public beforeDestroy() {
         this.dispose();
@@ -57,10 +57,12 @@ export default class MapMixin extends Loading {
         }
 
         this.mgr.stopMoveTo(tagNo);
-        const now = Date.now();
-        if (!this.twinkleTime || now - this.twinkleTime >= 300) {
-            this.mgr.show(tagNo);
-            this.twinkleTime = now;
+        if (!this.twinkleTimer.has(tagNo)) {
+            const loop = () => {
+                this.mgr && this.mgr.show(tagNo);
+                this.twinkleTimer.set(tagNo, setTimeout(loop, 200));
+            };
+            loop();
         }
     }
 
@@ -145,6 +147,12 @@ export default class MapMixin extends Loading {
     }
 
     private beforeMove(tagNo: string) {
+        const timer = this.twinkleTimer.get(tagNo);
+        if (timer) {
+            clearTimeout(timer);
+            this.twinkleTimer.delete(tagNo);
+        }
+
         if (this.mgr) {
             this.mgr.show(tagNo, true);
 
