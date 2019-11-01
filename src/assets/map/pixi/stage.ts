@@ -3,6 +3,8 @@
  */
 
 import { MapEvent } from './event';
+import { adaptationVector } from '../common';
+import { getConfig } from '@/assets/utils/util';
 
 export default class Stage extends MapEvent {
     public map!: PIXI.Renderer;
@@ -57,10 +59,7 @@ export default class Stage extends MapEvent {
      * @param is2map 是否是定位坐标转为地图坐标
      */
     public getCoordinate(v: Vector23, is2map: boolean = false) {
-        const vector: any = { ...v };
-        vector.x = vector.x || vector.xaxis || 0;
-        vector.y = vector.y || vector.yaxis || 0;
-        vector.z = vector.z || vector.zaxis || 0;
+        const vector = adaptationVector(v);
 
         if (!this._locRange) {
             console.error('地图范围为空');
@@ -70,12 +69,14 @@ export default class Stage extends MapEvent {
             const scaleX = (<any>this.stage)._width / this._locRange.x;
             const scaleY = height / this._locRange.y;
 
+            const { x, y } = getConfig('adjust', { x: 0, y: 0 });
+
             if (is2map) {
-                vector.x *= scaleX;
-                vector.y = height - vector.y * scaleY;
+                vector.x = (vector.x + x) * scaleX;
+                vector.y = height - (vector.y + y) * scaleY;
             } else {
-                vector.x /= scaleX;
-                vector.y = (height - vector.y) / scaleY;
+                vector.x = vector.x / scaleX - x;
+                vector.y = (height - vector.y) / scaleY - y;
             }
         }
 

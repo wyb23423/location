@@ -4,6 +4,7 @@
 
 import { randomNum, randomColor } from '@/assets/utils/util';
 import { BaseMarkerMgr } from './base';
+import { getCustomInfo } from '../common';
 
 export class PolygonMgr extends BaseMarkerMgr<fengmap.FMPolygonMarker> {
     public add(coords: Vector2[], name: string | number, style: IJson = {}) {
@@ -58,6 +59,22 @@ export class ImageMgr extends BaseMarkerMgr<fengmap.FMImageMarker> {
                 im, name || JSON.stringify(coord),
                 'imageMarker', style.gid
             );
+        });
+    }
+
+    public jump(name?: string | number, opt?: JumpOptions) {
+        this.find(name).forEach(v => {
+            if (!getCustomInfo(v, 'isJump')) {
+                v.jump(opt);
+                v.custom.isJump = true;
+            }
+        });
+    }
+
+    public stopJump(name?: string | number) {
+        this.find(name).forEach(v => {
+            v.stopJump();
+            (v.custom || (v.custom = {})).isJump = false;
         });
     }
 }
@@ -167,6 +184,59 @@ export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
             }
         } else {
             // console.warn(`标识为${name}的线未找到`);
+        }
+    }
+}
+
+export class PopInfo {
+    private pop?: fengmap.FMPopInfoWindow;
+    private tagNo?: string;
+    private el: HTMLElement | null = null;
+
+    private createTime: number = 0;
+
+    constructor(map: fengmap.FMMap, marker: fengmap.FMImageMarker) {
+        if (marker.custom && marker.custom.info) {
+            const info = marker.custom.info;
+            const tagNo = this.tagNo = info.name;
+            this.pop = new fengmap.FMPopInfoWindow(map, {
+                width: 180,
+                height: 80,
+                content: `<div>
+                                <div>名字: ${info.tagName}</div>
+                                <div>编号: ${tagNo}</div>
+                                <div id="${tagNo}">心率: --</div>
+                            </div>`
+            }, marker);
+        }
+
+        this.createTime = Date.now();
+    }
+
+    public update(map: fengmap.FMMap, iHeartRate: number) {
+        try {
+            if (map && this.pop && this.tagNo) {
+                map.updatePopPosition(this.pop);
+                this.el = this.el || document.getElementById(this.tagNo);
+                this.el && (this.el.innerText = `心率: ${iHeartRate}`);
+            }
+        } catch (e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public close(immediately?: boolean) {
+        if (this.pop && (immediately || Date.now() - this.createTime >= 200)) {
+            try {
+                this.el = null;
+                this.pop.close();
+            } catch (e) {
+                //
+            }
+
+            return true;
         }
     }
 }

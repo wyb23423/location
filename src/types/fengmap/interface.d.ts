@@ -18,7 +18,6 @@ interface FMMapOptions {
     defaultViewMode?: fengmap.FMViewMode.MODE_2D | fengmap.FMViewMode.MODE_3D;
 
     preserveDrawingBuffer?: boolean;
-    useCompatibleOnLineCheck?: boolean;
 }
 
 interface PolygonOpt {
@@ -80,6 +79,13 @@ interface MoveOptions extends Vector2 {
     // tslint:disable-next-line:ban-types
     callback?: Function;
     update?: (v: Vector2) => void;
+}
+
+interface JumpOptions {
+    height?: number;
+    times?: number;
+    duration?: number;
+    delay?: number;
 }
 
 

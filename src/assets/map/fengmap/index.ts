@@ -3,17 +3,17 @@
  */
 import { MAP_THEME_URL, APP_KEY, APP_NAME, MAP_DATA_URL } from '@/constant';
 import { CoordTransformer } from './coordtransformer';
-import { PolygonMgr, TextMgr, ImageMgr, LineMgr } from './marker';
+import { PolygonMgr, TextMgr, ImageMgr, LineMgr, PopInfo } from './marker';
 import { getCustomInfo } from '../common';
 
 export class FengMapMgr extends CoordTransformer {
     public readonly has3D: boolean = true;
     public map!: fengmap.FMMap;
-    public lineMgr!: LineMgr;
 
-    private polygonMgr!: PolygonMgr;
-    private textMgr!: TextMgr;
-    private imageMgr!: ImageMgr;
+    public lineMgr!: LineMgr;
+    public polygonMgr!: PolygonMgr;
+    public textMgr!: TextMgr;
+    public imageMgr!: ImageMgr;
 
     private isLoaded: boolean = false;
 
@@ -258,54 +258,11 @@ export class FengMapMgr extends CoordTransformer {
 
     // 为标签添加信息添加弹窗
     public addPopInfo(marker: fengmap.FMImageMarker) {
-        let pop: fengmap.FMPopInfoWindow;
-        let tagNo: string;
-        if (marker.custom && marker.custom.info) {
-            const info = marker.custom.info;
-            tagNo = info.name;
-            pop = new fengmap.FMPopInfoWindow(
-                this.map,
-                {
-                    width: 180,
-                    height: 80,
-                    content: `<div>
-                                <div>名字: ${info.tagName}</div>
-                                <div>编号: ${tagNo}</div>
-                                <div id="${tagNo}">心率: --</div>
-                            </div>`
-                },
-                marker
-            );
-        }
-
-        const createTime = Date.now();
-        let el: HTMLDivElement;
+        const pop = new PopInfo(this.map, marker);
 
         return {
-            update: (iHeartRate: number) => {
-                try {
-                    if (this.map && pop) {
-                        this.map.updatePopPosition(pop);
-                        el = el || document.getElementById(tagNo);
-                        el && (el.innerText = `心率: ${iHeartRate}`);
-                    }
-                } catch (e) {
-                    return false;
-                }
-
-                return true;
-            },
-            close: (immediately?: boolean) => {
-                if (pop && (immediately || Date.now() - createTime >= 200)) {
-                    try {
-                        pop.close();
-                    } catch (e) {
-                        //
-                    }
-
-                    return true;
-                }
-            }
+            update: (iHeartRate: number) => pop.update(this.map, iHeartRate),
+            close: pop.close.bind(pop)
         };
     }
 

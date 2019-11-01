@@ -149,9 +149,7 @@ export default class Notice extends Vue {
             })
             .on(RECOVERY, () =>
                 // 恢复报警状态
-                this.messageStore.iterate<IAlarm, void>(v => {
-                    this.notify(v);
-                })
+                this.messageStore.iterate<IAlarm, void>(this.notify.bind(this))
             );
     }
 
@@ -176,22 +174,31 @@ export default class Notice extends Vue {
     public async doDeal() {
         await this.$confirm('选中异常已解决?');
 
-        const deal = async () => {
-            const item = this.selected.shift();
-            if (item) {
-                await this.reset(item);
-                deal();
-            } else {
-                this.elTable.clearSelection();
-            }
-        };
+        const count = this.selected.reduce(
+            (a, v) => {
+                this.reset(v, true);
 
-        deal();
+                if (!a[v.deviceId]) {
+                    a[v.deviceId] = 1;
+                } else {
+                    a[v.deviceId]++;
+                }
+
+                return a;
+            },
+            <Record<string, number>>{}
+        );
+
+        Object.entries(count).forEach(([id, c]) => this.reduceError(id, c));
+        this.notify(this.messages.splice(this.notifyCount, 1)[0]);
+
+        this.elTable.clearSelection();
+        this.selected.length = 0;
     }
 
     // 隐藏报警
     @Async()
-    private async reset(v: IAlarm) {
+    private reset(v: IAlarm, isMultiple?: boolean) {
         const el = this.elNotify.get(v);
         if (el) {
             el.close();
@@ -202,22 +209,17 @@ export default class Notice extends Vue {
         const index = this.messages.indexOf(v);
         if (index > -1) {
             this.messages.splice(index, 1);
-            await this.notify(this.messages.splice(this.notifyCount, 1)[0]);
+            isMultiple ||
+                this.notify(this.messages.splice(this.notifyCount, 1)[0]);
 
             this.messageStore.removeItem(this.itemToString(v));
         }
 
-        const count = (await errorStore.getItem<number>(v.tagNo)) - 1;
-        if (count <= 0) {
-            this.$event.emit(MODIFY_TAG_ICON, v.tagNo);
-            errorStore.removeItem(v.tagNo);
-        } else {
-            errorStore.setItem(v.tagNo, count);
-        }
+        this.reduceError(v.tagNo, 1);
     }
 
     // 显示报警
-    private async notify(v: IAlarm) {
+    private notify(v: IAlarm) {
         const oldCount: number = this.notifyCount;
         if (v) {
             this.messages.push(v);
@@ -246,9 +248,9 @@ export default class Notice extends Vue {
             }
         }
 
-        return (this.notifyPromise = this.notifyPromise
+        this.notifyPromise = this.notifyPromise
             .then(this.$nextTick)
-            .then(() => this.updateMore(oldCount)));
+            .then(() => this.updateMore(oldCount));
     }
 
     // 更新 “更多” 的显示
@@ -291,6 +293,23 @@ export default class Notice extends Vue {
         if (document.body.offsetWidth <= SX_WIDTH) {
             this.size = '100%';
         }
+    }
+
+    // 清除报警记录
+    private reduceError(deviceId: string, reduce: number) {
+        errorStore
+            .getItem<number>(deviceId)
+            .then(count => {
+                count -= reduce;
+
+                if (count <= 0) {
+                    this.$event.emit(MODIFY_TAG_ICON, deviceId);
+                    errorStore.removeItem(deviceId);
+                } else {
+                    errorStore.setItem(deviceId, count);
+                }
+            })
+            .catch(console.log);
     }
 }
 </script>

@@ -72,53 +72,48 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
     }
 
     // 获取标签位置信息后的处理函数
-    protected move(tag: ITagInfo) {
+    protected doMonitor(tag: ITagInfo) {
         if (!this.mgr) {
             return console.log('获取地图失败!!');
         }
 
         const tagNo = tag.sTagNo;
-        if (tag.position.every(v => +v >= 0)) {
-            const timer = this.renderTags[tagNo];
-            const coord: Vector3 = {
-                x: +tag.position[0],
-                y: +tag.position[1],
-                z: 1
-            };
-            if (timer) {
-                clearTimeout(timer);
+        const timer = this.renderTags[tagNo];
+        const coord: Vector3 = {
+            x: +tag.position[0],
+            y: +tag.position[1],
+            z: 1
+        };
 
-                this.moveTo(tagNo, coord, this.moveTime, () => {
-                    const p = this.pops.get(tagNo);
-                    if (p && p.update) {
-                        p.update(tag.iHeartRate) || this.pops.delete(tagNo);
-                    }
-                });
-            } else {
-                let ids: number[] = [];
-                try {
-                    ids = (<any>this.mgr.map).groupIDs || [];
-                } catch (e) {
-                    // 地图初始化未完成
-                    return;
+        if (timer) {
+            clearTimeout(timer);
+
+            const update = () => {
+                const p = this.pops.get(tagNo);
+                if (p && p.update) {
+                    p.update(tag.iHeartRate) || this.pops.delete(tagNo);
                 }
+            };
 
-                // 第一次收到信号
-                const tagData: ITag = this.tagAll[tagNo];
-                this.addIcon(ids[0] || 0, {
-                    ...tagData,
-                    ...coord,
-                    name: tagNo,
-                    tagName: tagData.name
-                });
+            if (+tag.position[0] >= 1000) {
+                this.exitAnimation(tagNo);
+                update();
+            } else {
+                this.moveTo(tagNo, coord, this.moveTime, update);
             }
 
+        } else {
+            this.addTag(tagNo, coord);
+            this.renderTags[tagNo] = 1;
+        }
+
+        if (!tag.static) {
             // 长时间未收到信号, 将标签号推入信号丢失队列
             this.renderTags[tagNo] = setTimeout(this.miss.bind(this, tagNo), LOSS_TIME);
-
-            // 统计(添加对应统计信息)
-            this.doCensus(tag);
         }
+
+        // 统计(添加对应统计信息)
+        this.doCensus(tag);
     }
 
     // 信号丢失报警循环
@@ -156,5 +151,24 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
         this.tagAnchor().then(data => Reflect.set(this, 'groupData', arr2obj(data, 'groupCode')));
 
         this.afterMapCreated();
+    }
+
+    private addTag(tagNo: string, coord: Vector3) {
+        let ids: number[] = [];
+        try {
+            ids = (<any>this.mgr!.map).groupIDs || [];
+        } catch (e) {
+            // 地图初始化未完成
+            return;
+        }
+
+        // 第一次收到信号
+        const tagData: ITag = this.tagAll[tagNo];
+        this.addIcon(ids[0] || 0, {
+            ...tagData,
+            ...coord,
+            name: tagNo,
+            tagName: tagData.name,
+        });
     }
 }
