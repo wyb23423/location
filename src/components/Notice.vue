@@ -39,12 +39,8 @@
             ></el-table-column>
         </el-table>
         <div class="flex-center" :class="$style.bottom">
-            <el-button
-                @click="doDeal()"
-                :disabled="!selected.length"
-                size="mini"
-            >
-                解决异常
+            <el-button @click="doDeal" :disabled="!selected.length" size="mini">
+                清除异常
             </el-button>
             <el-pagination
                 small
@@ -162,6 +158,16 @@ export default class Notice extends Vue {
 
     public mounted() {
         this.setSize();
+
+        for (let i = 0; i < 20; i++) {
+            this.$event.emit(NOTIFY_KEY, {
+                id: i,
+                deviceId: '00000' + i,
+                type: 1,
+                content: 'this is demo',
+                time: Date.now()
+            });
+        }
     }
 
     public formatter(r: any, c: any, v: number) {
@@ -181,28 +187,20 @@ export default class Notice extends Vue {
     public async doDeal() {
         await this.$confirm('选中异常已解决?');
 
-        const count: Record<string, number> = {};
+        const count = this.selected.reduce(
+            (a, v) => {
+                this.reset(v, true);
 
-        this.selected.forEach(v => {
-            const el = this.elNotify.get(v);
-            if (el) {
-                el.close();
-                this.notifyCount--;
-                this.elNotify.delete(v);
-            }
+                if (!a[v.deviceId]) {
+                    a[v.deviceId] = 1;
+                } else {
+                    a[v.deviceId]++;
+                }
 
-            const index = this.messages.indexOf(v);
-            if (index > -1) {
-                this.messages.splice(index, 1);
-                this.messageStore.removeItem(this.itemToString(v));
-            }
-
-            if (!count[v.deviceId]) {
-                count[v.deviceId] = 1;
-            } else {
-                count[v.deviceId]++;
-            }
-        });
+                return a;
+            },
+            <Record<string, number>>{}
+        );
 
         Object.entries(count).forEach(([id, c]) => this.reduceError(id, c));
         this.notify(this.messages.splice(this.notifyCount, 1)[0]);
@@ -212,7 +210,7 @@ export default class Notice extends Vue {
     }
 
     // 隐藏报警
-    private reset(v: IAlarm) {
+    private reset(v: IAlarm, isMultiple?: boolean) {
         const el = this.elNotify.get(v);
         if (el) {
             el.close();
@@ -223,7 +221,8 @@ export default class Notice extends Vue {
         const index = this.messages.indexOf(v);
         if (index > -1) {
             this.messages.splice(index, 1);
-            this.notify(this.messages.splice(this.notifyCount, 1)[0]);
+            isMultiple ||
+                this.notify(this.messages.splice(this.notifyCount, 1)[0]);
             this.messageStore.removeItem(this.itemToString(v));
         }
 
@@ -328,7 +327,7 @@ export default class Notice extends Vue {
         }
     }
 
-    // 从报警记录中清除reduce次
+    // 清除报警记录
     private reduceError(deviceId: string, reduce: number) {
         errorStore
             .getItem<number>(deviceId)
