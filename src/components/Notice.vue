@@ -198,11 +198,8 @@ export default class Notice extends Vue {
             NOTICE_MAX - this.notifyCount
         );
         arr.forEach(this.notify.bind(this));
-
         // message里已经没有信息了
-        if (!arr.length) {
-            this.updateMore(-1);
-        }
+        arr.length || this.updateMore(0);
 
         this.elTable.clearSelection();
         this.selected.length = 0;
