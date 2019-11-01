@@ -28,14 +28,14 @@
                 <div style="border-bottom: 1px solid #ccc; margin-bottom: 5px">
                     当前地图标签数量: {{ allCount }}
                 </div>
-                <div v-show="!!info" style="border-bottom: 1px solid #ccc;">
+                <div v-show="!!info" style="margin-top: 10px">
                     <span>{{ (info || {}).name }}标签数量: </span>
                     <span>
                         {{ (info || {}).true }}
                         <!-- /{{ (info || {}).should }} -->
                     </span>
                 </div>
-                <div v-show="!info && this.value !== ''">
+                <div v-show="!info && value !== ''">
                     <i class="el-icon-loading" style="font-size: 24px"></i>
                 </div>
             </div>
@@ -91,11 +91,11 @@ export default class Census extends Vue {
                 //             should: res.pagedData.datas.length
                 //         };
                 //     });
-                this.info = {
+                return (this.info = {
                     name:
                         zone.name + (zone.name.endsWith('区域') ? '' : '区域'),
                     true: (this.censusTags.get(this.value) || new Set()).size
-                };
+                });
             }
 
             this.info = null;
