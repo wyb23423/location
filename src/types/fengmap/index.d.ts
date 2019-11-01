@@ -102,7 +102,7 @@ declare namespace fengmap {
         public url: string;
         public avoid(value: boolean): void;
         public stopJump(): void;
-        public jump(opt?: JumpOptions): void;
+        public jump(opt: JumpOptions): void;
     }
 
     class FMSegment {

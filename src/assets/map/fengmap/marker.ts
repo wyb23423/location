@@ -63,9 +63,17 @@ export class ImageMgr extends BaseMarkerMgr<fengmap.FMImageMarker> {
     }
 
     public jump(name?: string | number, opt?: JumpOptions) {
+        opt = Object.assign(<JumpOptions>{
+            height: 2,
+            times: 0,
+            duration: 1,
+            delay: 0
+        }, opt || {});
+
         this.find(name).forEach(v => {
             if (getCustomInfo(v, 'isJump') !== true) {
-                v.jump(opt);
+                console.log(v);
+                v.jump(opt!);
                 v.custom.isJump = true;
             }
         });

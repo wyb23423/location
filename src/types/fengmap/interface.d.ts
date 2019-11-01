@@ -82,10 +82,10 @@ interface MoveOptions extends Vector2 {
 }
 
 interface JumpOptions {
-    height?: number;
+    height: number;
     times?: number;
-    duration?: number;
-    delay?: number;
+    duration: number;
+    delay: number;
 }
 
 

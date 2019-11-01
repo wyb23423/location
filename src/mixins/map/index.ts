@@ -23,6 +23,8 @@ export default class MapMixin extends Loading {
     @Ref('map') protected readonly container?: HTMLElement;
     protected readonly ICON_TYPE = ICON_TYPE;
 
+    private twinkleTime?: number;
+
     public beforeDestroy() {
         this.dispose();
         // 关闭遮罩
@@ -55,10 +57,10 @@ export default class MapMixin extends Loading {
         }
 
         this.mgr.stopMoveTo(tagNo);
-        if (this.mgr instanceof FengMapMgr) {
-            this.mgr.imageMgr.jump(tagNo);
-        } else if (this.mgr instanceof PIXIMgr) {
-            this.mgr.twinkle(tagNo);
+        const now = Date.now();
+        if (!this.twinkleTime || now - this.twinkleTime >= 300) {
+            this.mgr.show(tagNo);
+            this.twinkleTime = now;
         }
     }
 
@@ -68,12 +70,6 @@ export default class MapMixin extends Loading {
         return new Promise(resolve => {
             if (!this.mgr) {
                 return resolve();
-            }
-
-            if (this.mgr instanceof FengMapMgr) {
-                this.mgr.imageMgr.stopMoveTo(tagNo);
-            } else if (this.mgr instanceof PIXIMgr) {
-                this.mgr.stopAnimation('twinkle', tagNo);
             }
 
             const points: Vector3[] = [];
