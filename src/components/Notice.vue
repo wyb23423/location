@@ -222,7 +222,7 @@ export default class Notice extends Vue {
             this.messageStore.removeItem(this.itemToString(v));
         }
 
-        this.reduceError(v.deviceId, 1);
+        isMultiple || this.reduceError(v.deviceId, 1);
     }
 
     // 显示报警
