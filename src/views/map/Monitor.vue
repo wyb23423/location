@@ -57,7 +57,7 @@
             <Census
                 v-if="tools[4].active"
                 @close="tools[4].active = false"
-                :zones="zones"
+                :zones="zones | mode(zoneMode.group)"
                 :censusTags="census"
                 :censusChange="censusChange"
             ></Census>
@@ -66,7 +66,7 @@
         <transition name="el-fade-in-linear">
             <Group :group="groupData" v-if="tools[3].active"></Group>
             <Zone
-                style="opacity: 0.7"
+                style="opacity: 0.85"
                 :zones="zones"
                 v-if="tools[2].active"
             ></Zone>
@@ -95,6 +95,11 @@ import { Async } from '../../assets/utils/util';
         Zone,
         Group,
         Census
+    },
+    filters: {
+        mode(datas: IZone[], mode: number) {
+            return datas.filter(v => v.mode === mode);
+        }
     }
 })
 export default class Monitor extends mixins(
@@ -222,8 +227,7 @@ export default class Monitor extends mixins(
             pageSize: 1_0000_0000
         });
         this.zones = res.pagedData.datas.filter(
-            (v: IZone) =>
-                v.mapId === this.mapId && v.mode === this.zoneMode.group
+            (v: IZone) => v.mapId === this.mapId
         );
     }
 
