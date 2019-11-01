@@ -111,6 +111,8 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
                     name: tagNo,
                     tagName: tagData.name,
                 });
+
+                this.renderTags[tagNo] = 1;
             }
 
             if (!tag.static) {
