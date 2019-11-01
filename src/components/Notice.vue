@@ -190,7 +190,16 @@ export default class Notice extends Vue {
         );
 
         Object.entries(count).forEach(([id, c]) => this.reduceError(id, c));
-        this.notify(this.messages.splice(this.notifyCount, 1)[0]);
+
+        // 更新外层的显示
+        const arr = this.messages.splice(
+            this.notifyCount,
+            NOTICE_MAX - this.notifyCount
+        );
+        arr.forEach(this.notify.bind(this));
+        if (!arr.length) {
+            this.updateMore(-1);
+        }
 
         this.elTable.clearSelection();
         this.selected.length = 0;
