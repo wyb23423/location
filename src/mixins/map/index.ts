@@ -44,6 +44,9 @@ export default class MapMixin extends Loading {
     }
 
     protected dispose() {
+        this.twinkleTimer.forEach(clearTimeout);
+        this.twinkleTimer.clear();
+
         if (this.mgr) {
             this.mgr.dispose();
             this.mgr = undefined;
