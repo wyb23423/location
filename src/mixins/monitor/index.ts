@@ -95,12 +95,12 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
                 }
             };
 
-            // if (+tag.position[2] >= 1000) {
-            this.exitAnimation(tagNo);
-            update();
-            // } else {
-            //     this.moveTo(tagNo, coord, this.moveTime, update);
-            // }
+            if (+tag.position[2] >= 1000) {
+                this.exitAnimation(tagNo);
+                update();
+            } else {
+                this.moveTo(tagNo, coord, this.moveTime, update);
+            }
 
         } else {
             this.addTag(tagNo, coord);
