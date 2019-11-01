@@ -39,8 +39,12 @@
             ></el-table-column>
         </el-table>
         <div class="flex-center" :class="$style.bottom">
-            <el-button @click="doDeal" :disabled="!selected.length" size="mini">
-                解决异常
+            <el-button
+                @click="doDeal()"
+                :disabled="!selected.length"
+                size="mini"
+            >
+                清除异常
             </el-button>
             <el-pagination
                 small
@@ -64,7 +68,8 @@ import {
     ALARM_DEAL,
     MODIFY_TAG_ICON,
     SX_WIDTH,
-    ERROR_IMG
+    ERROR_IMG,
+    RECOVERY
 } from '../constant';
 import { ElNotificationComponent } from 'element-ui/types/notification';
 import { ElTableColumn } from 'element-ui/types/table-column';
@@ -72,6 +77,7 @@ import { ElDrawer } from 'element-ui/types/drawer';
 import { Ref } from 'vue-property-decorator';
 import { getAndCreateStore } from '../assets/lib/localstore';
 import { ElTable } from 'element-ui/types/table';
+import { Async, loopAwait } from '@/assets/utils/util';
 
 export const errorStore = getAndCreateStore('ERROR_STORE');
 
@@ -118,38 +124,39 @@ export default class Notice extends Vue {
     }
 
     public created() {
-        this.$event.on(NOTIFY_KEY, (v: IAlarm) => {
-            this.messageStore.setItem(this.itemToString(v), v);
+        this.$event
+            .on(NOTIFY_KEY, (v: IAlarm) => {
+                this.messageStore.setItem(this.itemToString(v), v);
 
-            errorStore
-                .getItem<number>(v.tagNo)
-                .then(count => errorStore.setItem(v.tagNo, ++count))
-                .catch(() => {
-                    errorStore.setItem(v.tagNo, 1);
+                errorStore
+                    .getItem<number>(v.tagNo)
+                    .then(count => errorStore.setItem(v.tagNo, ++count))
+                    .catch(() => {
+                        errorStore.setItem(v.tagNo, 1);
 
-                    // 更换标签图片为异常图片;
-                    this.$event.emit(MODIFY_TAG_ICON, v.tagNo, ERROR_IMG);
-                });
+                        // 更换标签图片为异常图片;
+                        this.$event.emit(MODIFY_TAG_ICON, v.tagNo, ERROR_IMG);
+                    });
 
-            this.notify(v);
-        });
+                this.notify(v);
+            })
+            .on(ALARM_DEAL, (v: IAlarm) => {
+                const message = this.messages.find(
+                    m => this.itemToString(m) === this.itemToString(v)
+                );
 
-        this.$event.on(ALARM_DEAL, (v: IAlarm) => {
-            const message = this.messages.find(
-                m => this.itemToString(m) === this.itemToString(v)
+                message && this.reset(message);
+            })
+            .on(RECOVERY, () =>
+                // 恢复报警状态
+                this.messageStore.iterate<IAlarm, void>(v => {
+                    this.notify(v);
+                })
             );
-
-            message && this.reset(message);
-        });
     }
 
     public mounted() {
-        this.maxHeight = document.body.offsetHeight - 150;
-        if (document.body.offsetWidth <= SX_WIDTH) {
-            this.size = '100%';
-        }
-
-        this.messageStore.iterate<IAlarm, void>(this.notify.bind(this)); // 恢复报警状态
+        this.setSize();
     }
 
     public formatter(r: any, c: any, v: number) {
@@ -165,17 +172,26 @@ export default class Notice extends Vue {
     }
 
     // 处理异常
-    public doDeal() {
-        this.$confirm('选中异常已解决?')
-            .then(() => {
-                this.selected.forEach(this.reset.bind(this));
+    @Async()
+    public async doDeal() {
+        await this.$confirm('选中异常已解决?');
+
+        const deal = async () => {
+            const item = this.selected.shift();
+            if (item) {
+                await this.reset(item);
+                deal();
+            } else {
                 this.elTable.clearSelection();
-            })
-            .catch(console.log);
+            }
+        };
+
+        deal();
     }
 
     // 隐藏报警
-    private reset(v: IAlarm) {
+    @Async()
+    private async reset(v: IAlarm) {
         const el = this.elNotify.get(v);
         if (el) {
             el.close();
@@ -186,24 +202,18 @@ export default class Notice extends Vue {
         const index = this.messages.indexOf(v);
         if (index > -1) {
             this.messages.splice(index, 1);
-            this.notify(this.messages.splice(this.notifyCount, 1)[0]);
+            await this.notify(this.messages.splice(this.notifyCount, 1)[0]);
 
             this.messageStore.removeItem(this.itemToString(v));
         }
 
-        errorStore
-            .getItem<number>(v.tagNo)
-            .then(count => {
-                count--;
-
-                if (count <= 0) {
-                    this.$event.emit(MODIFY_TAG_ICON, v.tagNo);
-                    errorStore.removeItem(v.tagNo);
-                } else {
-                    errorStore.setItem(v.tagNo, count);
-                }
-            })
-            .catch(console.log);
+        const count = (await errorStore.getItem<number>(v.tagNo)) - 1;
+        if (count <= 0) {
+            this.$event.emit(MODIFY_TAG_ICON, v.tagNo);
+            errorStore.removeItem(v.tagNo);
+        } else {
+            errorStore.setItem(v.tagNo, count);
+        }
     }
 
     // 显示报警
@@ -236,9 +246,9 @@ export default class Notice extends Vue {
             }
         }
 
-        this.notifyPromise = this.notifyPromise
+        return (this.notifyPromise = this.notifyPromise
             .then(this.$nextTick)
-            .then(() => this.updateMore(oldCount));
+            .then(() => this.updateMore(oldCount)));
     }
 
     // 更新 “更多” 的显示
@@ -269,6 +279,18 @@ export default class Notice extends Vue {
 
     private itemToString(item: IAlarm) {
         return [item.tagNo, item.type, item.alarmTime, item.alarmMsg].join('$');
+    }
+
+    @Async()
+    private async setSize() {
+        await loopAwait(
+            () => !!(document.body.offsetWidth && document.body.offsetHeight)
+        );
+
+        this.maxHeight = document.body.offsetHeight - 150;
+        if (document.body.offsetWidth <= SX_WIDTH) {
+            this.size = '100%';
+        }
     }
 }
 </script>

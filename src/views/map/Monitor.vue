@@ -246,13 +246,13 @@ export default class Monitor extends mixins(
             this.tagGroup.set(tagNo, tag.sGroupNo);
         }
 
-        // if (hasUpdate) {
-        const now = Date.now();
-        if (!this.time || now - this.time >= 1000) {
-            this.censusChange = this.censusChange ? 0 : 1;
-            this.time = now;
+        if (hasUpdate) {
+            const now = Date.now();
+            if (!this.time || now - this.time >= 1000) {
+                this.censusChange = this.censusChange ? 0 : 1;
+                this.time = now;
+            }
         }
-        // }
     }
 }
 

@@ -14,7 +14,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import Header from '../components/Header.vue';
 import { Prop } from 'vue-property-decorator';
-import { NOTIFY_KEY } from '@/constant';
+import { NOTIFY_KEY, RECOVERY } from '@/constant';
 import { getIp, getConfig } from '@/assets/utils/util';
 
 @Component({
@@ -25,6 +25,7 @@ import { getIp, getConfig } from '@/assets/utils/util';
 export default class Main extends Vue {
     public created() {
         this.link();
+        this.$event.emit(RECOVERY);
     }
 
     private link() {
