@@ -74,7 +74,7 @@ import {
 import { ElNotificationComponent } from 'element-ui/types/notification';
 import { ElTableColumn } from 'element-ui/types/table-column';
 import { ElDrawer } from 'element-ui/types/drawer';
-import { Ref } from 'vue-property-decorator';
+import { Ref, Watch } from 'vue-property-decorator';
 import { getAndCreateStore } from '../assets/lib/localstore';
 import { ElTable } from 'element-ui/types/table';
 import { Async, loopAwait } from '@/assets/utils/await';
@@ -181,20 +181,38 @@ export default class Notice extends Vue {
     public async doDeal() {
         await this.$confirm('选中异常已解决?');
 
-        const deal = async () => {
-            const item = this.selected.shift();
-            if (item) {
-                await this.reset(item);
-                deal();
-            } else {
-                this.elTable.clearSelection();
+        const count: Record<string, number> = {};
+
+        this.selected.forEach(v => {
+            const el = this.elNotify.get(v);
+            if (el) {
+                el.close();
+                this.notifyCount--;
+                this.elNotify.delete(v);
             }
-        };
-        deal();
+
+            const index = this.messages.indexOf(v);
+            if (index > -1) {
+                this.messages.splice(index, 1);
+                this.messageStore.removeItem(this.itemToString(v));
+            }
+
+            if (!count[v.deviceId]) {
+                count[v.deviceId] = 1;
+            } else {
+                count[v.deviceId]++;
+            }
+        });
+
+        Object.entries(count).forEach(([id, c]) => this.reduceError(id, c));
+        this.notify(this.messages.splice(this.notifyCount, 1)[0]);
+
+        this.elTable.clearSelection();
+        this.selected.length = 0;
     }
 
     // 隐藏报警
-    private async reset(v: IAlarm) {
+    private reset(v: IAlarm) {
         const el = this.elNotify.get(v);
         if (el) {
             el.close();
@@ -205,28 +223,15 @@ export default class Notice extends Vue {
         const index = this.messages.indexOf(v);
         if (index > -1) {
             this.messages.splice(index, 1);
-            await this.notify(this.messages.splice(this.notifyCount, 1)[0]);
-
+            this.notify(this.messages.splice(this.notifyCount, 1)[0]);
             this.messageStore.removeItem(this.itemToString(v));
         }
 
-        return errorStore
-            .getItem<number>(v.deviceId)
-            .then(count => {
-                count--;
-
-                if (count <= 0) {
-                    this.$event.emit(MODIFY_TAG_ICON, v.deviceId);
-                    errorStore.removeItem(v.deviceId);
-                } else {
-                    errorStore.setItem(v.deviceId, count);
-                }
-            })
-            .catch(console.log);
+        this.reduceError(v.deviceId, 1);
     }
 
     // 显示报警
-    private async notify(v: IAlarm) {
+    private notify(v: IAlarm) {
         const oldCount: number = this.notifyCount;
         if (v) {
             this.messages.push(v);
@@ -255,9 +260,9 @@ export default class Notice extends Vue {
             }
         }
 
-        return (this.notifyPromise = this.notifyPromise
+        this.notifyPromise = this.notifyPromise
             .then(this.$nextTick)
-            .then(() => this.updateMore(oldCount)));
+            .then(() => this.updateMore(oldCount));
     }
 
     // 更新 “更多” 的显示
@@ -321,6 +326,23 @@ export default class Notice extends Vue {
         if (document.body.offsetWidth <= SX_WIDTH) {
             this.size = '100%';
         }
+    }
+
+    // 从报警记录中清除reduce次
+    private reduceError(deviceId: string, reduce: number) {
+        errorStore
+            .getItem<number>(deviceId)
+            .then(count => {
+                count -= reduce;
+
+                if (count <= 0) {
+                    this.$event.emit(MODIFY_TAG_ICON, deviceId);
+                    errorStore.removeItem(deviceId);
+                } else {
+                    errorStore.setItem(deviceId, count);
+                }
+            })
+            .catch(console.log);
     }
 }
 

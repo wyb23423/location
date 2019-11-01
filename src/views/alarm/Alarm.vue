@@ -2,10 +2,6 @@
     <app-page :tabs="tabs" :hasRouter="false">
         <div style="padding: 5%; height: 100%">
             <el-card class="card" ref="table">
-                <el-button type="mini" style="margin-bottom: 10px">
-                    类型筛选
-                </el-button>
-
                 <app-table
                     :max-height="maxHeight"
                     :table-data="tableData"
@@ -52,13 +48,6 @@ export default class Alarm extends mixins(TableMixin) {
             formatter: (<any>this.$options.filters).date
         },
         { prop: 'content', label: '报警信息', width: 240 }
-    ];
-
-    // TODO
-    public alarms = [
-        { value: 1, label: '非法侵入' },
-        { value: 2, label: '非法逃离' },
-        { value: 3, label: '低电量' }
     ];
 
     public del(row: IAlarm) {
