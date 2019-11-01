@@ -145,7 +145,7 @@ declare interface ITagInfo {
     iHeartRate: number;
     position: string[];
     sTagNo: string;
-    isStatic: boolean;
+    static: boolean;
     time?: string;
 }
 

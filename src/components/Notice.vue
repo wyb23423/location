@@ -121,44 +121,47 @@ export default class Notice extends Vue {
     }
 
     public created() {
-        this.$event.on(NOTIFY_KEY, (v: IAlarm) => {
-            v = this.adapter(v);
-            this.messageStore.setItem(this.itemToString(v), v);
+        this.$event
+            .on(NOTIFY_KEY, (v: IAlarm) => {
+                v = this.adapter(v);
+                this.messageStore.setItem(this.itemToString(v), v);
 
-            errorStore
-                .getItem<number>(v.deviceId)
-                .then(count => errorStore.setItem(v.deviceId, ++count))
-                .catch(() => {
-                    errorStore.setItem(v.deviceId, 1);
+                errorStore
+                    .getItem<number>(v.deviceId)
+                    .then(count => errorStore.setItem(v.deviceId, ++count))
+                    .catch(() => {
+                        errorStore.setItem(v.deviceId, 1);
 
-                    // 更换标签图片为异常图片;
-                    this.$event.emit(MODIFY_TAG_ICON, v.deviceId, ERROR_IMG);
+                        // 更换标签图片为异常图片;
+                        this.$event.emit(
+                            MODIFY_TAG_ICON,
+                            v.deviceId,
+                            ERROR_IMG
+                        );
+                    });
+
+                this.notify(v);
+            })
+            .on(ALARM_DEAL, (v: IAlarm) => {
+                v = this.adapter(v);
+                const message = this.messages.find(
+                    m => this.itemToString(m) === this.itemToString(v)
+                );
+
+                message && this.reset(message);
+            })
+            .on(RECOVERY, () => {
+                // 恢复报警状态
+                // 通过在 iteratorCallback 回调函数中返回一个非 undefined 的值能提前退出 iterate。
+                // iteratorCallback 的返回值即作为整个迭代的结果，将被传入 successCallback。
+                this.messageStore.iterate<IAlarm, void>(v => {
+                    this.notify(v);
                 });
-
-            this.notify(v);
-        });
-
-        this.$event.on(ALARM_DEAL, (v: IAlarm) => {
-            v = this.adapter(v);
-            const message = this.messages.find(
-                m => this.itemToString(m) === this.itemToString(v)
-            );
-
-            message && this.reset(message);
-        });
+            });
     }
 
     public mounted() {
         this.setSize();
-
-        this.$event.on(RECOVERY, () => {
-            // 恢复报警状态
-            // 通过在 iteratorCallback 回调函数中返回一个非 undefined 的值能提前退出 iterate。
-            // iteratorCallback 的返回值即作为整个迭代的结果，将被传入 successCallback。
-            this.messageStore.iterate<IAlarm, void>(v => {
-                this.notify(v);
-            });
-        });
     }
 
     public formatter(r: any, c: any, v: number) {
@@ -191,7 +194,7 @@ export default class Notice extends Vue {
     }
 
     // 隐藏报警
-    private reset(v: IAlarm) {
+    private async reset(v: IAlarm) {
         const el = this.elNotify.get(v);
         if (el) {
             el.close();
@@ -202,7 +205,7 @@ export default class Notice extends Vue {
         const index = this.messages.indexOf(v);
         if (index > -1) {
             this.messages.splice(index, 1);
-            this.notify(this.messages.splice(this.notifyCount, 1)[0]);
+            await this.notify(this.messages.splice(this.notifyCount, 1)[0]);
 
             this.messageStore.removeItem(this.itemToString(v));
         }
@@ -252,9 +255,9 @@ export default class Notice extends Vue {
             }
         }
 
-        this.notifyPromise = this.notifyPromise
+        return (this.notifyPromise = this.notifyPromise
             .then(this.$nextTick)
-            .then(() => this.updateMore(oldCount));
+            .then(() => this.updateMore(oldCount)));
     }
 
     // 更新 “更多” 的显示
