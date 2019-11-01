@@ -23,7 +23,7 @@ export class Animation {
         return (item: PIXIEL) => this.add(item, 'moveTo', action, update, callback);
     }
 
-    public createTwinkle(count: number = Infinity, time: number = 1) {
+    public createTwinkle(count: number = Infinity, time: number = 0.3) {
         const action = new PIXI.action.Blink(count, time);
         return (item: PIXIEL) => this.add(item, 'twinkle', action);
     }
