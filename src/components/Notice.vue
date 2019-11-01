@@ -197,9 +197,7 @@ export default class Notice extends Vue {
             NOTICE_MAX - this.notifyCount
         );
         arr.forEach(this.notify.bind(this));
-        if (!arr.length) {
-            this.updateMore(-1);
-        }
+        arr.length || this.updateMore(0);
 
         this.elTable.clearSelection();
         this.selected.length = 0;
@@ -224,7 +222,7 @@ export default class Notice extends Vue {
             this.messageStore.removeItem(this.itemToString(v));
         }
 
-        this.reduceError(v.tagNo, 1);
+        isMultiple || this.reduceError(v.tagNo, 1);
     }
 
     // 显示报警
