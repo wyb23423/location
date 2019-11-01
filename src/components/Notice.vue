@@ -156,16 +156,6 @@ export default class Notice extends Vue {
 
     public mounted() {
         this.setSize();
-
-        for (let i = 0; i < 100; i++) {
-            this.$event.emit(NOTIFY_KEY, {
-                id: i,
-                deviceId: '00000' + i,
-                type: 1,
-                content: 'this is demo',
-                time: Date.now()
-            });
-        }
     }
 
     public formatter(r: any, c: any, v: number) {
