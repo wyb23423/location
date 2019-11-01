@@ -48,10 +48,18 @@ declare interface PIXIAnimation extends utils.EventEmitter {
 }
 declare const PIXIAnimation: new (sprite: Container, action: Action) => PIXIAnimation;
 
-interface Action {
+declare interface Action {
     time: number;
     reset(): void;
     update(sprite: Container, delta: number, deltaMS: number): boolean;
+}
+
+interface ActionConstructor<T extends Action> {
+    new(argA: number, argB?: number, argC?: number): T;
+    new(action: Action, time: number): RepeatAction;
+    new(actions: Action[]): SequenceSpawnAction;
+    // tslint:disable-next-line:ban-types
+    new(func: Function): CallFuncAction;
 }
 
 interface BaseAction extends Action {
@@ -87,14 +95,3 @@ interface CallFuncAction extends Action {
     // tslint:disable-next-line:ban-types
     func: Function;
 }
-
-interface ActionConstructor<T> {
-    new(argA: number, argB?: number, argC?: number): T;
-    new(action: Action, time: number): RepeatAction;
-    new(actions: Action[]): SequenceSpawnAction;
-    // tslint:disable-next-line:ban-types
-    new(func: Function): CallFuncAction;
-}
-
-
-

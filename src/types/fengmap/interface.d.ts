@@ -81,6 +81,13 @@ interface MoveOptions extends Vector2 {
     update?: (v: Vector2) => void;
 }
 
+interface JumpOptions {
+    height?: number;
+    times?: number;
+    duration?: number;
+    delay?: number;
+}
+
 
 interface PopInfoMapCoord extends Vector2 {
     grounpID: number;

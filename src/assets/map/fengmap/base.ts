@@ -20,6 +20,11 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
     public remove(name?: string | number) {
         this.find(name).forEach(v => {
             v.stopMoveTo && v.stopMoveTo();
+
+            if (v instanceof fengmap.FMImageMarker) {
+                v.stopJump();
+            }
+
             const layer = this.findLayerByMarker(v);
             layer && layer.removeMarker(v);
         });

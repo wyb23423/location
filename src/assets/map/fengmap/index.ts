@@ -9,11 +9,11 @@ import { getCustomInfo } from '../common';
 export class FengMapMgr extends CoordTransformer {
     public readonly has3D: boolean = true;
     public map!: fengmap.FMMap;
-    public lineMgr!: LineMgr;
 
-    private polygonMgr!: PolygonMgr;
-    private textMgr!: TextMgr;
-    private imageMgr!: ImageMgr;
+    public lineMgr!: LineMgr;
+    public polygonMgr!: PolygonMgr;
+    public textMgr!: TextMgr;
+    public imageMgr!: ImageMgr;
 
     private isLoaded: boolean = false;
 

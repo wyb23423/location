@@ -36,8 +36,8 @@ export class WebSocketInit extends Vue {
         // ==============================收到标签信息后的处理
         const handler = (event: MessageEvent) => {
             const data: ITagInfo = JSON.parse(event.data);
-            if (this.tagAll[data.sTagNo]) {
-                this.move(data);
+            if (this.tagAll[data.sTagNo] && data.position.every(v => +v >= 0)) {
+                this.doMonitor(data);
             }
         };
         // ======================================
@@ -48,7 +48,7 @@ export class WebSocketInit extends Vue {
         this.ws = [ws];
     }
 
-    protected move(tag: ITagInfo) {
+    protected doMonitor(tag: ITagInfo) {
         //
     }
 

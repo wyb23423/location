@@ -48,12 +48,32 @@ export default class MapMixin extends Loading {
         }
     }
 
+    // 存在性检测的动画
+    protected exitAnimation(tagNo: string) {
+        if (!this.mgr) {
+            return;
+        }
+
+        this.mgr.stopMoveTo(tagNo);
+        if (this.mgr instanceof FengMapMgr) {
+            this.mgr.imageMgr.jump(tagNo);
+        } else if (this.mgr instanceof PIXIMgr) {
+            this.mgr.twinkle(tagNo);
+        }
+    }
+
     protected moveTo(tagNo: string, coord: Vector3, time: number, update?: () => void) {
         this.beforeMove(tagNo);
 
         return new Promise(resolve => {
             if (!this.mgr) {
                 return resolve();
+            }
+
+            if (this.mgr instanceof FengMapMgr) {
+                this.mgr.imageMgr.stopMoveTo(tagNo);
+            } else if (this.mgr instanceof PIXIMgr) {
+                this.mgr.stopAnimation('twinkle', tagNo);
             }
 
             const points: Vector3[] = [];

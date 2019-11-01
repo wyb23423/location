@@ -4,6 +4,7 @@
 
 import { randomNum, randomColor } from '@/assets/utils/util';
 import { BaseMarkerMgr } from './base';
+import { getCustomInfo } from '../common';
 
 export class PolygonMgr extends BaseMarkerMgr<fengmap.FMPolygonMarker> {
     public add(coords: Vector2[], name: string | number, style: IJson = {}) {
@@ -58,6 +59,22 @@ export class ImageMgr extends BaseMarkerMgr<fengmap.FMImageMarker> {
                 im, name || JSON.stringify(coord),
                 'imageMarker', style.gid
             );
+        });
+    }
+
+    public jump(name?: string | number, opt?: JumpOptions) {
+        this.find(name).forEach(v => {
+            if (!getCustomInfo(v, 'isJump')) {
+                v.jump(opt);
+                v.custom.isJump = true;
+            }
+        });
+    }
+
+    public stopJump(name?: string | number) {
+        this.find(name).forEach(v => {
+            v.stopJump();
+            (v.custom || (v.custom = {})).isJump = false;
         });
     }
 }
