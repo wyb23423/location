@@ -45,7 +45,12 @@ export default class Alarm extends mixins(TableMixin) {
         { prop: 'id', label: '报警ID', sortable: true, width: 140 },
         { prop: 'deviceId', label: '设备编号', width: 160 },
         { prop: 'type', label: '报警类型', sortable: true, width: 140 },
-        { prop: 'time', label: '时间', width: 200 },
+        {
+            prop: 'time',
+            label: '时间',
+            width: 200,
+            formatter: (<any>this.$options.filters).date
+        },
         { prop: 'content', label: '报警信息', width: 240 }
     ];
 

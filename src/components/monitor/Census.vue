@@ -17,7 +17,7 @@
                             v-for="item in zones"
                             :key="item.id"
                             :label="item.name"
-                            :value="item.base_no_1"
+                            :value="item.groupId1"
                         >
                         </el-option>
                     </el-select>
@@ -28,14 +28,15 @@
                 <div style="border-bottom: 1px solid #ccc; margin-bottom: 5px">
                     当前地图标签数量: {{ allCount }}
                 </div>
-                <div v-show="!!info" style="border-bottom: 1px solid #ccc;">
+                <div v-show="!!info" style="margin-top: 10px">
                     <span>{{ (info || {}).name }}标签数量: </span>
                     <span>
                         {{ (info || {}).true }}
                         <!-- /{{ (info || {}).should }} -->
                     </span>
                 </div>
-                <div v-show="!info && this.value !== ''">
+                <div v-show="!info && value !== ''">
+                    {{ JSON.stringify(info || { a: 1 }) }} {{ value }}
                     <i class="el-icon-loading" style="font-size: 24px"></i>
                 </div>
             </div>
@@ -63,7 +64,8 @@ export default class Census extends Vue {
             return 0;
         }
 
-        return Array.from(this.censusTags.values()).flatMap(Array.from).length;
+        return Array.from(this.censusTags.values()).flatMap(v => Array.from(v))
+            .length;
     }
 
     @Watch('censusChange')
@@ -94,12 +96,12 @@ export default class Census extends Vue {
                 //         };
                 //     });
 
-                this.info = {
+                return (this.info = {
                     name: `${zone.name}${
                         zone.name.endsWith('区域') ? '' : '区域'
                     }`,
                     true: (this.censusTags.get(this.value) || new Set()).size
-                };
+                });
             }
 
             this.info = null;
