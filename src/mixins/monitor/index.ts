@@ -95,7 +95,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
                 }
             };
 
-            if (+tag.position[0] >= 1000) {
+            if (+tag.position[2] >= 1000) {
                 this.exitAnimation(tagNo);
                 update();
             } else {

@@ -47,6 +47,18 @@ declare interface IAdmin extends DataBase {
     role: string; // 权限
 }
 
+declare interface ITag extends DataBase {
+    name: string;
+    tagNo: string;
+    type: 1 | 2; // 标签类型。1——常驻，2——临时
+    avatar: string; // 头像
+    photo: string; // 图标
+    zone: string;
+    reason: string; // 临时添加原因
+    locked: 0 | 1;
+    properties: string;
+}
+
 declare interface ICamera extends DataBase {
     ip: string;
     name: string;
@@ -69,18 +81,6 @@ declare interface IProtocol extends DataBase {
     effect: string; // 协议作用
     content: string; // 协议内容。一个协议命令串
     port: number; // 协议对应的端口。现为 50000 或 60000
-}
-
-declare interface ITag extends DataBase {
-    name: string;
-    tagNo: string;
-    type: 1 | 2; // 标签类型。1——常驻，2——临时
-    avatar: string; // 头像
-    photo: string; // 图标
-    zone: string;
-    reason: string; // 临时添加原因
-    locked: 0 | 1;
-    properties: string;
 }
 
 declare interface IZone extends DataBase {
