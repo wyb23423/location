@@ -209,7 +209,7 @@ export default class History extends mixins(MapMixin) {
                         tagNo
                     );
                 } catch (e) {
-                    return this.loading();
+                    return this.showLoading();
                 }
             }
         }
@@ -261,11 +261,11 @@ export default class History extends mixins(MapMixin) {
                 return this.points;
             })
             .then(points => (this.points = points))
-            .catch(this.loading.bind(this));
+            .catch(this.showLoading.bind(this));
     }
 
     // 数据加载中...
-    private loading() {
+    private showLoading() {
         this.isLoading = true;
         this.control.pause();
 
