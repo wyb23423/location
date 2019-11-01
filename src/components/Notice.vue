@@ -150,16 +150,14 @@ export default class Notice extends Vue {
                 // 恢复报警状态
                 // 通过在 iteratorCallback 回调函数中返回一个非 undefined 的值能提前退出 iterate。
                 // iteratorCallback 的返回值即作为整个迭代的结果，将被传入 successCallback。
-                this.messageStore.iterate<IAlarm, void>(v => {
-                    this.notify(v);
-                });
+                this.messageStore.iterate<IAlarm, void>(this.notify.bind(this));
             });
     }
 
     public mounted() {
         this.setSize();
 
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 100; i++) {
             this.$event.emit(NOTIFY_KEY, {
                 id: i,
                 deviceId: '00000' + i,
@@ -203,7 +201,18 @@ export default class Notice extends Vue {
         );
 
         Object.entries(count).forEach(([id, c]) => this.reduceError(id, c));
-        this.notify(this.messages.splice(this.notifyCount, 1)[0]);
+
+        // 需要从更多里添加到外面的报警
+        const arr = this.messages.splice(
+            this.notifyCount,
+            NOTICE_MAX - this.notifyCount
+        );
+        arr.forEach(this.notify.bind(this));
+
+        // message里已经没有信息了
+        if (!arr.length) {
+            this.updateMore(-1);
+        }
 
         this.elTable.clearSelection();
         this.selected.length = 0;
