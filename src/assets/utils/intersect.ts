@@ -6,11 +6,14 @@ export default function segmentsIntersect(a1: Vector3, a2: Vector3, b1: Vector3,
     const t2 = cross(a1, a2, b2);
     const t3 = cross(b1, b2, a1);
     const t4 = cross(b1, b2, a2);
-    if (((t1 * t2) > 0) || ((t3 * t4) > 0)) {    // 一条线段的两个端点在另一条线段的同侧，不相交。（可能需要额外处理以防止乘法溢出，视具体情况而定。）
+    if (((t1 * t2) > 0) || ((t3 * t4) > 0)) {
+        // 一条线段的两个端点在另一条线段的同侧，不相交。（可能需要额外处理以防止乘法溢出，视具体情况而定。）
         return { isCollinear: false, result: false };
-    } else if (t1 === 0 && t2 === 0) {             // 两条线段共线，利用快速排斥实验进一步判断。此时必有 t3 == 0 && t4 == 0。
+    } else if (t1 === 0 && t2 === 0) {
+        // 两条线段共线，利用快速排斥实验进一步判断。此时必有 t3 == 0 && t4 == 0。
         return { isCollinear: true, result: rectsIntersect(a1, a2, b1, b2) };
-    } else {                                    // 其它情况，两条线段相交。
+    } else {
+        // 其它情况，两条线段相交。
         return { isCollinear: false, result: true };
     }
 }

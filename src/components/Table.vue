@@ -14,7 +14,7 @@
                 :prop="v.prop"
                 :label="v.label"
                 :resizable="true"
-                :min-width="v.width == null ? undefined : v.width * scale"
+                :min-width="v.width == null ? undefined : v.width"
                 :formatter="format"
             >
             </el-table-column>
@@ -22,7 +22,7 @@
                 label="操作"
                 :resizable="true"
                 v-if="op && op.length"
-                :min-width="opWidth == null ? undefined : opWidth * scale"
+                :min-width="opWidth == null ? undefined : opWidth"
             >
                 <template slot-scope="scope">
                     <div class="flex-center">
@@ -71,7 +71,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { Prop, Emit } from 'vue-property-decorator';
+import { Prop } from 'vue-property-decorator';
 import { SX_WIDTH, DEFAULT_WIDTH } from '../constant';
 import { ElTableColumn, TableColumn } from 'element-ui/types/table-column';
 
@@ -97,7 +97,6 @@ export default class Table extends Vue {
 
     public pageSize: number = 10;
     public page: number = 1;
-    public scale: number = 1;
 
     private timer?: any;
     private formatters = new Map<string, (cellValue: any) => any>();
@@ -138,14 +137,6 @@ export default class Table extends Vue {
             () => this.$emit('updateData', this.page, this.pageSize),
             200
         );
-    }
-
-    private scaleRoot() {
-        if (document.body.clientWidth <= SX_WIDTH) {
-            this.scale = SX_WIDTH / DEFAULT_WIDTH;
-        } else {
-            this.scale = 1;
-        }
     }
 }
 
