@@ -2,7 +2,7 @@ import Component from 'vue-class-component';
 import { loopAwait, Async } from '@/assets/utils/util';
 import { createMap } from '@/assets/map';
 import { FengMapMgr } from '@/assets/map/fengmap';
-import MapSelect from '@/components/form/MapSelect.vue';
+import MapSelect from '@/components/MapSelect.vue';
 import { PIXIMgr } from '@/assets/map/pixi';
 import { Ref } from 'vue-property-decorator';
 import { errorStore } from '@/components/Notice.vue';
