@@ -64,7 +64,7 @@ declare interface ITag {
 declare interface IZone {
     id: number;
     name: string;
-    position: string | TPosition; // 区域边界点
+    position: string | VectorAxis[]; // 区域边界点
     enable: 0 | 1; // 是否启用
     mapId: number;
     mode: number; // 区域类型
@@ -102,6 +102,11 @@ declare interface IPosTag {
 
 // ==========================================
 declare type TPosition = [Vector2, Vector2, Vector2, Vector2];
+declare interface VectorAxis {
+    xaxis: number;
+    yaxis: number;
+    zaxis: number;
+}
 
 declare interface IJson {
     [x: string]: any;

@@ -31,13 +31,13 @@
                             size="mini"
                             :key="i"
                             :v-show="!scope.row.hidden"
-                            :type="v.type | parse(scope.$index)"
+                            :type="v.type | parse(scope.row)"
                             :disabled="
                                 v.isDisable ? v.isDisable(scope.row) : false
                             "
                             @click="emit(v.name, scope.row, scope.$index)"
                         >
-                            {{ v.desc | parse(scope.$index) }}
+                            {{ v.desc | parse(scope.row) }}
                         </el-button>
                     </div>
                 </template>
@@ -121,7 +121,7 @@ export default class Table extends Vue {
     }
 
     public emit(name: string | IJson, row: any, index: number) {
-        name = parseOpItem(name, index);
+        name = parseOpItem(name, row);
         this.$emit(name, row, index);
     }
 
@@ -141,12 +141,15 @@ export default class Table extends Vue {
 }
 
 // 处理表格操作按钮
-function parseOpItem(item: string | IJson, index: number): string {
+function parseOpItem(
+    item: string | Record<string | number, string>,
+    row: { id: string | number }
+): string {
     if (typeof item === 'string') {
         return item;
     }
 
-    return item[index] || item.default || '404';
+    return item[row.id] || item.default || '404';
 }
 </script>
 

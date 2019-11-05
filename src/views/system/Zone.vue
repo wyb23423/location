@@ -29,12 +29,12 @@
                 <el-button
                     size="mini"
                     icon="el-icon-check"
-                    @click="ok"
+                    @click="surePositionSetting"
                 ></el-button>
                 <el-button
                     size="mini"
                     icon="el-icon-close"
-                    @click="cancel"
+                    @click="cancelPositionSetting"
                 ></el-button>
             </div>
         </div>
@@ -60,7 +60,7 @@
                     :isSmall="true"
                     @updateData="getData"
                     @del="del"
-                    @setting="zone = $event"
+                    @setting="openSetting"
                     @display="display"
                     :class="$style.table"
                 ></app-table>
@@ -72,7 +72,7 @@
             >
                 <zone-input
                     v-model="form"
-                    form-height="calc(100vh - 500px)"
+                    form-height="calc(100vh - 560px)"
                     :groups="groups"
                 >
                     <el-form-item label="区域顶点">
@@ -85,27 +85,33 @@
                         </el-button>
                     </el-form-item>
                 </zone-input>
-                <el-button
-                    @click="onSubmit"
-                    type="success"
-                    :class="$style.submit"
-                >
+                <el-button @click="put" type="success" :class="$style.submit">
                     提交
                 </el-button>
             </el-collapse-item>
         </el-collapse>
 
-        <template v-if="!!zone">
+        <template v-if="isSetting">
             <el-dialog
                 title="更改区域信息"
-                :visible="!!zone"
+                :visible="true"
                 :modal-append-to-body="false"
-                @close="zone = null"
+                @close="cancelSetting"
             >
-                <zone-input v-model="zone" :groups="groups"> </zone-input>
+                <zone-input v-model="zone" :groups="groups">
+                    <el-form-item label="区域顶点">
+                        <el-button
+                            size="mini"
+                            type="primary"
+                            @click="enterSettingMode"
+                        >
+                            设置
+                        </el-button>
+                    </el-form-item>
+                </zone-input>
 
                 <template slot="footer">
-                    <el-button @click="zone = null">取 消</el-button>
+                    <el-button @click="cancelSetting">取 消</el-button>
                     <el-button @click="update" type="primary">确 定</el-button>
                 </template>
             </el-dialog>

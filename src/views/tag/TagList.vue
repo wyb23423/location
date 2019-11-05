@@ -138,7 +138,7 @@ export default class PeopleList extends mixins(TableMixin) {
             })
             .then(() => {
                 this.$message.success('修改成功');
-                this.refresh();
+                this.refresh(false);
             })
             .catch(console.log);
     }

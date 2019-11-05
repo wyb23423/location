@@ -100,7 +100,7 @@ export class ElsMgr extends Stage {
         gid?: number,
         isMapCoor: boolean = true
     ): Vector3 {
-        let p = { x: opt.x, y: opt.y, z: 0 };
+        let p = { x: opt.x, y: opt.y, z: opt.z || 0 };
 
         if (!isMapCoor) {
             p = this.getCoordinate(p, true) || p;

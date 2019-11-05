@@ -1,10 +1,4 @@
 
-interface VectorAxis {
-    xaxis: number;
-    yaxis: number;
-    zaxis: number;
-}
-
 
 /**
  * 获取元素的自定义属性
