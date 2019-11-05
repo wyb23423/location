@@ -97,7 +97,7 @@ export class FengMapMgr extends CoordTransformer {
         let p: Vector3 | undefined = {
             x: opt.x,
             y: opt.y,
-            z: group.groupHeight + this.map.layerLocalHeight || 0
+            z: opt.z || group.groupHeight + this.map.layerLocalHeight || 0
         };
 
         if (!isMapCoor) {

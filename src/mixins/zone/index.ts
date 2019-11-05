@@ -3,10 +3,12 @@
  * 地图操作
  */
 import Component, { mixins } from 'vue-class-component';
-import MapMixin from './map';
+import MapMixin from '../map';
 import { FengMapMgr } from '@/assets/map/fengmap';
 import { PIXIMgr } from '@/assets/map/pixi';
 import segmentsIntersect from '@/assets/utils/intersect';
+import { Async } from '@/assets/utils/util';
+import { adaptationVector } from '@/assets/map/common';
 
 @Component
 export default class ZoneMixin extends mixins(MapMixin) {
@@ -23,7 +25,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
     public points: Vector3[] = []; // 当前绘制的点
     public popPoints: Vector3[] = []; // 绘制后弹出的点
 
-    private isClose: boolean = false; // 是否存在闭合路径
+    protected isClose: boolean = false; // 是否存在闭合路径
 
     public move(e: PointerEvent) {
         if (!(this.mgr && this.points.length && this.container)) {
@@ -56,7 +58,10 @@ export default class ZoneMixin extends mixins(MapMixin) {
 
         // ============================判断是否存在相交，有则忽略当前点
         if (this.hasIntersection(p)) {
-            return;
+            return this.$message.warning({
+                message: '地图区域不能存在交叉线!!',
+                duration: 500
+            });
         }
 
         this._addPoint(p);
@@ -77,7 +82,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
         if (p) {
             this.popPoints.push(p);
             if (this.mgr) {
-                this.mgr.remove(JSON.stringify({ x: p.x, y: p.y }));
+                this.mgr.remove(JSON.stringify(p));
                 this.rePaint();
             }
         }
@@ -91,22 +96,32 @@ export default class ZoneMixin extends mixins(MapMixin) {
 
     // 清除图形
     public cancel() {
-        this.$confirm('清除当前图形并退出绘制模式?')
+        return this.$confirm('清除当前图形并退出绘制模式?')
             .then(() => {
                 this.remove();
                 this.isDrawing = false;
+
+                return true;
             })
             .catch(console.log);
     }
 
     // 确定图形并退出绘制模式
-    public ok() {
-        this.isClose = true;
-        this.rePaint();
-        this.mgr && this.mgr.appendLine(ZoneMixin.LINE_NAME, [this.points[0]], true);
+    @Async()
+    public async ok(needConfirm: boolean) {
+        const len = this.points.length;
+        if (len < 3 && needConfirm) {
+            await this.$confirm('当前设置的点数量少于3, 是否退出坐标设置?');
+        }
 
-        if (this.hasIntersection(this.points[0])) {
-            return this.$message.warning('当前图形存在相交线段，请重新设置');
+        this.isClose = len > 2;
+        this.rePaint();
+        if (this.mgr && len > 2) {
+            this.mgr.appendLine(ZoneMixin.LINE_NAME, [this.points[0]], true);
+
+            if (this.hasIntersection(this.points[0])) {
+                return this.$message.warning('当前图形存在相交线段，请重新设置');
+            }
         }
 
         this.isDrawing = false;
@@ -120,7 +135,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
     }
 
     protected bindEvents() {
-        this.mgr!.on('loadComplete', this.tagAnchor.bind(this));
+        this.mgr!.on('loadComplete', () => this.tagAnchor());
     }
 
     /**
@@ -128,12 +143,33 @@ export default class ZoneMixin extends mixins(MapMixin) {
      */
     protected remove() {
         if (this.mgr) {
-            this.points.forEach(v => this.mgr!.remove(JSON.stringify({ x: v.x, y: v.y })));
-            this.mgr.lineMgr.remove();
+            this.points.forEach(v => this.mgr!.remove(JSON.stringify(v)));
+            this.mgr.lineMgr.remove(ZoneMixin.LINE_NAME);
         }
         this.points.length = 0;
 
         return this;
+    }
+
+    protected drawIcon(p: Vector23, isMapCoor: boolean = true) {
+        if (!this.mgr) {
+            return;
+        }
+
+        const { x, y } = adaptationVector(p);
+        this.points.push(
+            this.mgr.addImage(
+                {
+                    x, y, z: 9,
+                    url: '/images/blueImageMarker.png',
+                    size: 32,
+                    height: 2
+                },
+                undefined,
+                undefined,
+                isMapCoor
+            )
+        );
     }
 
     // 将点的标注及线段添加到地图上
@@ -142,20 +178,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
             return;
         }
 
-        this.points.push({
-            ...this.mgr.addImage(
-                {
-                    x: p.x,
-                    y: p.y,
-                    url: '/images/blueImageMarker.png',
-                    size: 32,
-                    height: 2
-                },
-                JSON.stringify({ x: p.x, y: p.y })
-            ),
-            z: 9
-        });
-
+        this.drawIcon(p);
         if (this.points.length > 1) {
             if (this.mgr.lineMgr.find(ZoneMixin.LINE_NAME).length) {
                 this.mgr.appendLine(ZoneMixin.LINE_NAME, [{ ...p, z: 9 }], true);
@@ -207,8 +230,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
         }
 
         if (this.mgr instanceof PIXIMgr) {
-            const stage = this.mgr.stage;
-            const p = stage.toLocal(new PIXI.Point(x / 2, y / 2));
+            const p = this.mgr.stage.toLocal(new PIXI.Point(x / 2, y / 2));
             return { ...p, z: 9 };
         }
 

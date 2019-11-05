@@ -1,19 +1,17 @@
 
 import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
-import ZoneEidt from '@/components/ZoneEdit.vue';
-import { State } from 'vuex-class';
-import { ZoneMode } from '@/store';
-import ZoneMixin from '@/mixins/zone';
+import ZoneEidt from '@/components/edit/ZoneEdit.vue';
+import { Setting, ZoneData } from '@/mixins/zone/setting';
+import { Async } from '@/assets/utils/util';
 
 @Component({
     components: {
         'zone-input': ZoneEidt
     }
 })
-export default class Fence extends mixins(TableMixin, ZoneMixin) {
+export default class Zone extends mixins(Setting, TableMixin) {
     public activeNames: string[] = ['info', 'add'];
-    public zone: ZoneData | null = null; // 设置中的区域
 
     // ===================================table
     public colCfg: any[] = [
@@ -36,7 +34,6 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
         open: true
     };
     // ====================================
-    @State private readonly zoneMode!: ZoneMode;
 
     public created() {
         if (this.permission.delete) {
@@ -52,17 +49,11 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
     /**
      * 删除区域
      */
+    @Async()
     public async del(row: IZone, index: number) {
-        try {
-            await this.$confirm(`确认删除区域${row.name}?`, '确认删除');
-            await this.$http.post('/api/zone/deleteZone', { id: row.id });
-        } catch (e) {
-            return console.log(e);
-        }
-
-        this.refresh()
-            .display(row, index, true)
-            .$message.success('删除成功');
+        await this.$confirm(`确认删除区域${row.name}?`, '确认删除');
+        await this.$http.post('/api/zone/deleteZone', { id: row.id });
+        this.refresh().display(row, index, true).$message.success('删除成功');
     }
     /**
      * 切换区域显示
@@ -71,20 +62,20 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
         const i = this.operation.findIndex(v => v.name === 'display');
         if (i > -1) {
             const op = this.operation[i];
-            if (op.type[index] || isDel) {
-                op.type[index] = undefined;
+            if (op.type[row.id] || isDel) {
+                op.type[row.id] = undefined;
 
                 if (this.mgr) {
                     this.mgr.remove(row.name);
                 }
             } else {
-                op.type[index] = 'success';
+                op.type[row.id] = 'success';
 
                 if (this.mgr) {
                     this.mgr.zoneOpen(row);
                 }
             }
-            op.desc[index] = op.desc[index] || isDel ? undefined : '隐藏';
+            op.desc[row.id] = op.desc[row.id] || isDel ? undefined : '隐藏';
 
             this.$set(this.operation, i, op);
         }
@@ -92,60 +83,24 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
         return this;
     }
 
-    // 添加区域
-    public onSubmit() {
-        if (!this.form.name) {
-            return this.$message.error('区域名称不能为空');
+    // 确认并添加区域
+    @Async()
+    public async put() {
+        if (this.isVaild(this.form.name, this.form.mode) !== true) {
+            return;
         }
 
-        const pointsCount = this.points.length;
-        if (pointsCount < 3) {
-            return this.$message.warning('区域坐标最少设置3个');
+        await this.$confirm('请确定当前区域范围', '提示', { type: 'info' });
+        const data = this.assignZone(this.form);
+        if (!data) {
+            return;
         }
+        await this.$http
+            .post('/api/zone/addZone', data, { 'Content-Type': 'application/json' });
 
-        if (this.form.mode === this.zoneMode.switch && pointsCount !== 4) {
-            return this.$message.warning('切换区域坐标必须为4个');
-        }
-
-        this.put();
+        this.remove().resetForm().refresh(false).$message.success('添加成功');
     }
 
-    // 更新区域数据
-    public async update() {
-        if (this.zone) {
-            if (!this.zone.name) {
-                return this.$message.error('区域名称不能为空');
-            }
-
-            if (this.zone.mode === this.zoneMode.switch) {
-                const pointsCount = this.zone.position.length;
-                if (pointsCount < 4) {
-                    return this.$message.warning('此区域坐标数少于4, 不能设置为切换区域');
-                }
-
-                if (pointsCount > 4) {
-                    try {
-                        await this.$confirm(`此区域坐标数为${pointsCount}, 将删除最后的${pointsCount - 4}个坐标点`);
-                        this.zone.position = <TPosition>this.zone.position.slice(0, 4);
-                    } catch (e) {
-                        return;
-                    }
-                }
-            }
-
-            const data: IZone = {
-                ...this.zone,
-                position: JSON.stringify(this.zone.position),
-                updateTime: Date.now(),
-                enable: this.zone.open ? 1 : 0
-            };
-
-            this.$http
-                .post('/api/zone/updateZone', data, { 'Content-Type': 'application/json' })
-                .then(() => this.refresh().$message.success('修改区域信息成功'))
-                .catch(console.log);
-        }
-    }
 
     protected initData() {
         this.getData(1, 10);
@@ -181,38 +136,6 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
         return { count, data };
     }
 
-    // 确认并添加区域
-    private put() {
-        this.$confirm('请确定当前区域范围', '提示', { type: 'info' })
-            .then(this.submitAddZone.bind(this))
-            .then(() =>
-                this.remove()
-                    .resetForm()
-                    .refresh()
-                    .$message.success('添加成功')
-            )
-            .catch(console.log);
-    }
-
-    // 组织并提交数据(添加数据)
-    private submitAddZone(): Promise<ResponseData> {
-        const now = Date.now();
-        if (!this.mgr) {
-            this.$message.error('地图不存在, 提交失败!');
-            return Promise.reject('地图不存在');
-        }
-
-        const data: IZone = Object.assign({}, this.form, {
-            position: JSON.stringify(this.points.map(v => this.mgr!.getCoordinate(v))),
-            enable: this.form.open ? 1 : 0,
-            createTime: now,
-            updateTime: now,
-            mapId: this.mapId
-        });
-
-        return this.$http.post('/api/zone/addZone', data, { 'Content-Type': 'application/json' });
-    }
-
     /**
      * 重置表单数据
      */
@@ -227,4 +150,4 @@ export default class Fence extends mixins(TableMixin, ZoneMixin) {
     }
 }
 
-type ZoneData = IZone & {status: string; open: boolean;};
+

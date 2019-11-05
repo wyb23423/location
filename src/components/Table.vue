@@ -14,14 +14,14 @@
                 :prop="v.prop"
                 :label="v.label"
                 :resizable="true"
-                :min-width="v.width == null ? undefined : v.width * scale"
+                :min-width="v.width == null ? undefined : v.width"
             >
             </el-table-column>
             <el-table-column
                 label="操作"
                 :resizable="true"
                 v-if="op && op.length"
-                :min-width="opWidth == null ? undefined : opWidth * scale"
+                :min-width="opWidth == null ? undefined : opWidth"
             >
                 <template slot-scope="scope">
                     <div class="flex-center">
@@ -30,13 +30,13 @@
                             size="mini"
                             :key="i"
                             :v-show="!scope.row.hidden"
-                            :type="v.type | parse(scope.$index)"
+                            :type="v.type | parse(scope.row)"
                             :disabled="
                                 v.isDisable ? v.isDisable(scope.row) : false
                             "
                             @click="emit(v.name, scope.row, scope.$index)"
                         >
-                            {{ v.desc | parse(scope.$index) }}
+                            {{ v.desc | parse(scope.row) }}
                         </el-button>
                     </div>
                 </template>
@@ -95,17 +95,11 @@ export default class Table extends Vue {
 
     public pageSize: number = 10;
     public page: number = 1;
-    public scale: number = 1;
 
     private timer?: any;
 
-    // public created() {
-    //     this.scaleRoot();
-    //     window.addEventListener('resize', this.scaleRoot.bind(this), false);
-    // }
-
     public emit(name: string | IJson, row: any, index: number) {
-        name = parseOpItem(name, index);
+        name = parseOpItem(name, row);
         this.$emit(name, row, index);
     }
 
@@ -122,23 +116,18 @@ export default class Table extends Vue {
             200
         );
     }
-
-    private scaleRoot() {
-        if (document.body.clientWidth <= SX_WIDTH) {
-            this.scale = SX_WIDTH / DEFAULT_WIDTH;
-        } else {
-            this.scale = 1;
-        }
-    }
 }
 
 // 处理表格操作按钮
-function parseOpItem(item: string | IJson, index: number): string {
+function parseOpItem(
+    item: string | Record<string | number, string>,
+    obj: { id: string | number }
+): string {
     if (typeof item === 'string') {
         return item;
     }
 
-    return item[index] || item.default || '404';
+    return item[obj.id] || item.default || '404';
 }
 </script>
 

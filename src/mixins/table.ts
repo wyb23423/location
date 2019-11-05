@@ -62,11 +62,15 @@ export default class TableMixin extends Vue {
      * 刷新列表
      * @param page 页数
      */
-    protected refresh(page?: number) {
+    protected refresh(isRemove: boolean = true, page?: number) {
         if (page == null) {
-            page = this.tableData.length > 1
-                ? this.page
-                : this.page - 1;
+            if (isRemove) {
+                page = this.tableData.length > 1
+                    ? this.page
+                    : this.page - 1;
+            } else {
+                page = this.page;
+            }
         }
 
         this.getData(Math.max(1, page), this.pageSize);
