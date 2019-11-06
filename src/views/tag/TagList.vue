@@ -1,5 +1,5 @@
 <template>
-    <div style="padding: 5%; height: 100%">
+    <div style="padding: 5%; height: 100%" v-if="!person">
         <el-card class="card" ref="table">
             <app-table
                 :max-height="maxHeight"
@@ -14,41 +14,26 @@
                 @toExcel="toExcel"
             ></app-table>
         </el-card>
+    </div>
+    <div v-else :class="$style.info">
+        <el-page-header
+            @back="person = null"
+            style="margin-bottom: 20px"
+        ></el-page-header>
 
-        <template v-if="!!person">
-            <el-dialog
-                title="更改标签信息"
-                :visible="!!person"
-                :modal-append-to-body="false"
-                @close="person = null"
-            >
-                <el-form :model="person" label-width="auto">
-                    <el-form-item label="头像：">
-                        <app-avator
-                            v-model="person.img"
-                            ref="avator"
-                        ></app-avator>
-                    </el-form-item>
-                    <el-form-item label="名称" required prop="name">
-                        <el-input
-                            v-model="person.name"
-                            style="width: 80%"
-                        ></el-input>
-                    </el-form-item>
-                    <el-form-item label="属性">
-                        <el-input
-                            v-model="person.content"
-                            placeholder="性别: 女, 部门: 研发"
-                        ></el-input>
-                    </el-form-item>
-                </el-form>
-
-                <template slot="footer">
-                    <el-button @click="person = null">取 消</el-button>
-                    <el-button @click="submit" type="primary">确 定</el-button>
-                </template>
-            </el-dialog>
-        </template>
+        <el-tabs v-model="activeTab" type="border-card">
+            <el-tab-pane label="信息设置" name="info">
+                <tag-add
+                    :form="person"
+                    :update="true"
+                    ref="editForm"
+                    @submit="submit"
+                ></tag-add>
+            </el-tab-pane>
+            <el-tab-pane label="参数配置" name="parameter">
+                <tag-config :tag-no="person.id"></tag-config>
+            </el-tab-pane>
+        </el-tabs>
     </div>
 </template>
 
@@ -57,17 +42,21 @@ import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
 import { Prop, Watch, Ref } from 'vue-property-decorator';
 import { Route } from 'vue-router';
-import Avator from '@/components/Avator.vue';
+import TagAdd from './TagAdd.vue';
+import { Async } from '../../assets/utils/util';
+import TagConfig from '../../components/edit/TagConfig.vue';
 
 @Component({
     components: {
-        'app-avator': Avator
+        'tag-add': TagAdd,
+        'tag-config': TagConfig
     }
 })
-export default class PeopleList extends mixins(TableMixin) {
+export default class TagList extends mixins(TableMixin) {
     @Prop() public type!: number;
     @Prop() public permission!: Permission;
 
+    public activeTab: string = 'info';
     public person: ITag | null = null;
     public colCfg: any[] = [
         { prop: 'id', label: '编号', width: 120 },
@@ -75,7 +64,8 @@ export default class PeopleList extends mixins(TableMixin) {
         { prop: 'content', label: '属性', width: 200 }
     ];
 
-    @Ref('avator') private readonly avator!: Avator;
+    @Ref('editForm') private readonly editForm!: TagAdd;
+
     private oldData?: ITag; // 用于比较是否需要重新上传图片
 
     public get op() {
@@ -90,57 +80,36 @@ export default class PeopleList extends mixins(TableMixin) {
         return op;
     }
 
-    public del(row: ITag) {
-        this.$confirm(`删除标签${row.name}?`)
-            .then(() => this.$http.post('/api/tag/deleteTag', { id: row.id }))
-            .then(() => {
-                this.$message.success('删除成功');
-                this.refresh();
-            })
-            .catch(console.log);
+    @Async()
+    public async del(row: ITag) {
+        await this.$confirm(`删除标签${row.name}?`);
+        await this.$http.post('/api/tag/deleteTag', { id: row.id });
+        this.refresh().$message.success('删除成功');
     }
 
     public setting(row: any) {
-        this.person = row;
+        this.person = { ...row };
         this.oldData = { ...row };
     }
 
-    public async submit() {
-        if (!(this.person && this.oldData)) {
-            return;
-        }
+    @Async()
+    public async submit(data: ITag) {
+        await this.$confirm('确认修改?');
 
-        if (!this.person.name) {
-            return this.$message.warning('name is required!');
-        }
+        const { name, img } = this.oldData!;
+        if (data.name !== name || data.img !== img) {
+            const [p1, p2] = await this.editForm.avator.getImgUrl(data.name);
+            data.icon = p1.resultMap.photoUrl;
 
-        try {
-            await this.$confirm('确认修改?');
-        } catch (e) {
-            return;
-        }
-
-        if (
-            this.person.name !== this.oldData.name ||
-            this.person.img !== this.oldData.img
-        ) {
-            const [p1, p2] = await this.avator.getImgUrl(this.person.name);
-            this.person.icon = p1.resultMap.photoUrl;
-
-            if (this.person.img !== this.oldData.img) {
-                this.person.img = p2.resultMap.photoUrl;
+            if (data.img !== img) {
+                data.img = p2.resultMap.photoUrl;
             }
         }
 
-        this.$http
-            .post('/api/tag/updateTag', this.person, {
-                'Content-Type': 'application/json'
-            })
-            .then(() => {
-                this.$message.success('修改成功');
-                this.refresh(false);
-            })
-            .catch(console.log);
+        await this.$http.post('/api/tag/updateTag', data, {
+            'Content-Type': 'application/json'
+        });
+        this.refresh(false).$message.success('修改成功');
     }
 
     protected async fetch(page: number, pageSize: number) {
@@ -170,3 +139,10 @@ export default class PeopleList extends mixins(TableMixin) {
 }
 </script>
 
+<style lang="postcss" module>
+.info {
+    height: 100%;
+    padding: 3%;
+    padding-bottom: 0;
+}
+</style>

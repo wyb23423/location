@@ -44,8 +44,12 @@
                 </el-radio-group>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="onSubmit">立即创建</el-button>
-                <el-button @click="reset">重置</el-button>
+                <el-button
+                    type="primary"
+                    @click="update ? onUpdate() : onPut()"
+                >
+                    立即提交
+                </el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -53,10 +57,11 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { Ref, Component } from 'vue-property-decorator';
+import { Ref, Component, Model, Prop } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
 import Select from '../../components/form/Select.vue';
 import Avator from '../../components/Avator.vue';
+import { Async } from '@/assets/utils/util';
 
 @Component({
     components: {
@@ -64,47 +69,54 @@ import Avator from '../../components/Avator.vue';
         'app-avator': Avator
     }
 })
-export default class PeopleAdd extends Vue {
-    public form: any = {
-        type: 1,
-        img: '',
-        content: ''
-    };
+export default class TagAdd extends Vue {
+    @Prop({
+        default: () => ({
+            type: 1,
+            img: '',
+            content: ''
+        })
+    })
+    public form!: ITag;
+    @Prop({ default: () => false }) public readonly update!: boolean;
 
+    @Ref('avator') public readonly avator!: Avator;
     @Ref('form') private readonly elForm!: ElForm;
-    @Ref('avator') private readonly avator!: Avator;
 
-    public onSubmit() {
-        this.elForm
-            .validate()
-            .then(() => this.avator.getImgUrl(this.form.name))
-            .then(([res1, res2]) => {
-                const now = Date.now();
-                const data = Object.assign(
-                    {
-                        createTime: now,
-                        updateTime: now,
-                        locked: true,
-                        icon: res1.resultMap.photoUrl
-                    },
-                    this.form
-                );
-                data.img = res2.resultMap.photoUrl;
+    // 添加
+    @Async()
+    public async onPut() {
+        await this.elForm.validate();
 
-                return this.$http.post('/api/tag/addTag', data, {
-                    'Content-Type': 'application/json'
-                });
-            })
-            .then(() => {
-                this.$message.success('添加成功');
-                this.reset();
-            })
-            .catch(console.log);
+        const [res1, res2] = await this.avator.getImgUrl(this.form.name);
+        await this.$http.post({
+            url: '/api/tag/addTag',
+            body: {
+                ...this.form,
+                img: res2.resultMap.photoUrl,
+                icon: res1.resultMap.photoUrl,
+                locked: true
+            },
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        this.reset().$message.success('添加成功');
+    }
+
+    // 更新
+    @Async()
+    public async onUpdate() {
+        await this.elForm.validate();
+        this.$emit('submit', this.form);
     }
 
     public reset() {
         this.elForm.resetFields();
         this.form.img = this.form.content = '';
+
+        return this;
     }
 }
 </script>
