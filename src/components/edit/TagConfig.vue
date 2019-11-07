@@ -40,7 +40,7 @@ export default class TagConfig extends Vue {
 
     public form = {
         heartRate: 0x70,
-        channel: 1
+        channel: 0x01
     };
 
     public submit() {
