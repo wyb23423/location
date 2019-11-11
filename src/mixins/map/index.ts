@@ -5,7 +5,7 @@ import { FengMapMgr } from '@/assets/map/fengmap';
 import MapSelect from '@/components/form/MapSelect.vue';
 import { PIXIMgr } from '@/assets/map/pixi';
 import { Ref } from 'vue-property-decorator';
-import { errorStore } from '@/components/Notice.vue';
+import { errorStore } from '@/components/notice/init';
 import { ERROR_IMG } from '@/constant';
 import { Loading } from '../loading';
 

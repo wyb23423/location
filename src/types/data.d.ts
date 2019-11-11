@@ -144,7 +144,7 @@ declare interface Permission {
 }
 
 declare interface ITagInfo {
-    sGroupNo: string;
+    groupNo: string;
     iBbattery: number;
     alarm: string;
     iHeartRate: number;

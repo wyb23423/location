@@ -20,14 +20,14 @@
                         <el-option :value="1" label="标签名"></el-option>
                     </el-select>
                 </el-input>
-                <el-button
+                <!-- <el-button
                     :icon="
                         isFullScreen
                             ? 'el-icon-ali-tuichuquanping'
                             : 'el-icon-full-screen'
                     "
                     @click="fullScreen"
-                ></el-button>
+                ></el-button> -->
             </div>
         </div>
         <el-switch
@@ -58,7 +58,7 @@
                 v-if="tools[4].active"
                 @close="tools[4].active = false"
                 :zones="zones | mode(zoneMode.group)"
-                :censusTags="census"
+                :censusTags="censusTags"
                 :censusChange="censusChange"
             ></Census>
         </transition>
@@ -124,30 +124,21 @@ export default class Monitor extends mixins(
     public findTarget: string = ''; // 查询标签的标签号
     public isName: number = 0; // 是否通过标签名查询标签
 
-    public censusChange: number = 0; // 用于触发响应（当前vue版本不支持Map及Set的数据响应）
     private censusTags = new Map<string, Set<string>>(); // 分组统计
     private tagGroup = new Map<string, string>(); // tag-group映射
     private time?: number; // 统计刷新时间戳
 
     @Ref('root') private readonly root!: HTMLDivElement;
 
-    public get census() {
-        // ===========================触发响应
-        const x = this.censusChange;
-        console.log(x);
-        // =============================
-
-        return this.censusTags;
-    }
-
     public created() {
         this.on(RESIZE, () => {
             this.isFullScreen = !!document.fullscreenElement;
 
-            if (this.container && this.mgr instanceof PIXIMgr) {
+            const container = this.container;
+            if (container && this.mgr instanceof PIXIMgr) {
                 this.mgr.map.resize(
-                    this.container.offsetWidth,
-                    this.container.offsetHeight
+                    container.offsetWidth,
+                    container.offsetHeight
                 );
             }
         });
@@ -235,28 +226,18 @@ export default class Monitor extends mixins(
         const tagNo = (<ITagInfo>tag).sTagNo || <string>tag;
         const group = this.tagGroup.get(tagNo);
 
-        let hasUpdate = false; // 是否有更新
         if (group) {
             const set = this.censusTags.get(group);
-            hasUpdate = !!(set && set.delete(tagNo));
+            set && set.delete(tagNo);
         }
 
         if (typeof tag !== 'string') {
-            const set = this.censusTags.get(tag.sGroupNo) || new Set();
+            const set = this.censusTags.get(tag.groupNo) || new Set();
             const oldSize = set.size;
             set.add(tagNo);
 
-            hasUpdate = hasUpdate || oldSize !== set.size;
-            this.censusTags.set(tag.sGroupNo, set);
-            this.tagGroup.set(tagNo, tag.sGroupNo);
-        }
-
-        if (hasUpdate) {
-            const now = Date.now();
-            if (!this.time || now - this.time >= 1000) {
-                this.censusChange = this.censusChange ? 0 : 1;
-                this.time = now;
-            }
+            this.censusTags.set(tag.groupNo, set);
+            this.tagGroup.set(tagNo, tag.groupNo);
         }
     }
 }

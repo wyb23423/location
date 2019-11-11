@@ -9,7 +9,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { RESIZE } from './constant';
-import Notice from './components/Notice.vue';
+import Notice from './components/notice/Notice.vue';
 
 @Component({
     components: {
