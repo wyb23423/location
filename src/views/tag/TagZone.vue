@@ -13,6 +13,7 @@
                     v-model="form.zoneIds"
                     :data="zones"
                     :titles="['区域列表', '已选择']"
+                    class="tag-zone-transfer"
                 ></el-transfer>
             </el-form-item>
             <el-form-item>
@@ -129,3 +130,9 @@ export default class TagZone extends Vue {
     }
 }
 </script>
+
+<style lang="postcss">
+.tag-zone-transfer .el-transfer-panel__item {
+    display: block !important;
+}
+</style>
