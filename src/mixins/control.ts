@@ -9,7 +9,7 @@ import localforage from '@/assets/lib/localforage';
 
 export interface PositionItem extends Vector3 {
     time: number;
-    group: string;
+    group: string; // 用于判断标签是否在当前地图
 }
 export interface Fragment { [x: string]: PositionItem[]; }
 
@@ -171,7 +171,7 @@ export default class ControlMixin extends Vue {
                         y: +v.position[2],
                         z: +v.position[3] || 0,
                         time: new Date((<string>v.time)).getTime() + offset,
-                        group: v.sGroupNo
+                        group: v.groupNo
                     });
                 }
             });
