@@ -1,5 +1,5 @@
 <template>
-    <div style="padding: 5%; height: 100%">
+    <div style="padding: 5%; height: 100%" v-if="!person">
         <el-card class="card" ref="table">
             <app-table
                 :max-height="maxHeight"
@@ -14,55 +14,26 @@
                 @toExcel="toExcel"
             ></app-table>
         </el-card>
+    </div>
+    <div v-else :class="$style.info">
+        <el-page-header
+            @back="person = null"
+            style="margin-bottom: 20px"
+        ></el-page-header>
 
-        <template v-if="!!person">
-            <el-dialog
-                title="更改标签信息"
-                :visible="!!person"
-                :modal-append-to-body="false"
-                @close="person = null"
-            >
-                <el-form :model="person" label-width="auto">
-                    <el-form-item label="头像：">
-                        <app-avator
-                            v-model="person.avatar"
-                            ref="avator"
-                        ></app-avator>
-                    </el-form-item>
-                    <el-form-item label="名称" required prop="name">
-                        <el-input
-                            v-model="person.name"
-                            style="width: 80%"
-                        ></el-input>
-                    </el-form-item>
-                    <el-form-item label="区域">
-                        <el-select v-model="person.zone">
-                            <el-option
-                                :value="undefined"
-                                label="--"
-                            ></el-option>
-                            <el-option
-                                v-for="v of zones.pagedData.datas"
-                                :key="v.id"
-                                :value="v.id + ''"
-                                :label="v.name"
-                            ></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="属性">
-                        <el-input
-                            v-model="person.properties"
-                            placeholder="性别: 女, 部门: 研发"
-                        ></el-input>
-                    </el-form-item>
-                </el-form>
-
-                <template slot="footer">
-                    <el-button @click="person = null">取 消</el-button>
-                    <el-button @click="submit" type="primary">确 定</el-button>
-                </template>
-            </el-dialog>
-        </template>
+        <el-tabs v-model="activeTab" type="border-card">
+            <el-tab-pane label="信息设置" name="info">
+                <tag-add
+                    :form="person"
+                    :update="true"
+                    ref="editForm"
+                    @submit="submit"
+                ></tag-add>
+            </el-tab-pane>
+            <el-tab-pane label="参数配置" name="parameter">
+                <tag-config :tag-no="person.id"></tag-config>
+            </el-tab-pane>
+        </el-tabs>
     </div>
 </template>
 
@@ -71,17 +42,21 @@ import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
 import { Prop, Watch, Ref } from 'vue-property-decorator';
 import { Route } from 'vue-router';
-import Avator from '@/components/Avator.vue';
+import PeopleAdd from './PeopleAdd.vue';
+import { Async } from '@/assets/utils/util';
+import TagConfig from '@/components/edit/TagConfig.vue';
 
 @Component({
     components: {
-        'app-avator': Avator
+        'tag-add': PeopleAdd,
+        'tag-config': TagConfig
     }
 })
 export default class PeopleList extends mixins(TableMixin) {
     @Prop() public type!: number;
     @Prop() public permission!: Permission;
 
+    public activeTab: string = 'info';
     public person: ITag | null = null;
     public colCfg: any[] = [
         { prop: 'id', label: 'ID', sortable: true, width: 100 },
@@ -90,9 +65,8 @@ export default class PeopleList extends mixins(TableMixin) {
         { prop: 'zoneName', label: '区域', width: 120 },
         { prop: 'properties', label: '属性', width: 200 }
     ];
-    public zones?: ResponseData;
 
-    @Ref('avator') private readonly avator!: Avator;
+    @Ref('editForm') private readonly editForm!: PeopleAdd;
     private oldData?: ITag; // 用于比较是否需要重新上传图片
 
     public get op() {
@@ -117,47 +91,29 @@ export default class PeopleList extends mixins(TableMixin) {
             .catch(console.log);
     }
 
-    public setting(row: any) {
-        this.person = row;
+    public setting(row: ITag) {
+        this.person = { ...row };
         this.oldData = { ...row };
     }
 
-    public async submit() {
-        if (!(this.person && this.oldData)) {
-            return;
+    @Async()
+    public async submit(data: ITag) {
+        await this.$confirm('确认修改?');
+
+        const { name, avatar } = this.oldData!;
+        if (data.name !== name || data.avatar !== avatar) {
+            const [p1, p2] = await this.editForm.avator.getImgUrl(data.name);
+            data.photo = p1.resultMap.photoUrl;
+
+            if (data.avatar !== avatar) {
+                data.avatar = p2.resultMap.avatarUrl;
+            }
         }
 
-        if (!this.person.name) {
-            return this.$message.warning('name is required!');
-        }
-
-        try {
-            await this.$confirm('确认修改?');
-        } catch (e) {
-            return;
-        }
-
-        this.person.updateTime = Date.now();
-        if (
-            !(
-                this.person.name === this.oldData.name &&
-                this.person.avatar === this.oldData.avatar
-            )
-        ) {
-            this.person.photo = (await this.avator.getImgUrl(
-                this.person.name
-            ))[0].resultMap.photoUrl;
-        }
-
-        this.$http
-            .post('/api/tag/updateTag', this.person, {
-                'Content-Type': 'application/json'
-            })
-            .then(() => {
-                this.$message.success('修改成功');
-                this.refresh(false);
-            })
-            .catch(console.log);
+        await this.$http.post('/api/tag/updateTag', data, {
+            'Content-Type': 'application/json'
+        });
+        this.refresh(false).$message.success('修改成功');
     }
 
     protected async fetch(page: number, pageSize: number) {
@@ -165,35 +121,14 @@ export default class PeopleList extends mixins(TableMixin) {
         let count: number = 0;
 
         try {
-            const [res, zones] = await Promise.all([
-                this.$http.get('/api/tag/getall', {
-                    pageSize,
-                    currentPage: page,
-                    type: this.type || 1
-                }),
-                Promise.resolve().then(() => {
-                    return (
-                        this.zones ||
-                        this.$http.get('/api/zone/getall', {
-                            pageSize: 1000000,
-                            currentPage: 1
-                        })
-                    );
-                })
-            ]);
-
-            data = res.pagedData.datas.map((v: ITag & { zoneName: string }) => {
-                const zone = zones.pagedData.datas.find(
-                    (z: any) => +z.id === +v.zone
-                );
-                v.zoneName = zone ? zone.name : '未知区域';
-
-                return v;
+            const res = await this.$http.get('/api/tag/getall', {
+                pageSize,
+                currentPage: page,
+                type: this.type || 1
             });
 
+            data = res.pagedData.datas;
             count = res.pagedData.totalCount;
-
-            this.zones = zones;
         } catch (e) {
             console.log(e);
         }

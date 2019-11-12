@@ -8,8 +8,8 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { DEFAULT_WIDTH, SX_WIDTH, RESIZE, NOTIFY_KEY } from './constant';
-import Notice from './components/Notice.vue';
+import { RESIZE } from './constant';
+import Notice from './components/notice/Notice.vue';
 
 @Component({
     components: {

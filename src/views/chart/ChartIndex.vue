@@ -6,7 +6,7 @@
 import Component from 'vue-class-component';
 
 import Vue from 'vue';
-import Page from '@/components/Page.vue';
+import Page from '@/components/layout/Page.vue';
 
 @Component({
     components: {

@@ -40,7 +40,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
-import IpInput from '../../components/IpInput.vue';
+import IpInput from '../../components/form/IpInput.vue';
 import { ElForm } from 'element-ui/types/form';
 
 @Component({

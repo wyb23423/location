@@ -6,6 +6,7 @@ declare module 'vue/types/vue' {
         $http: HTTP;
         $worker: VueWorker;
         $event: Events;
+        $async<T, U = any>(promise: Promise<T>): Promise<{ err: null; value: T; } | { err: U; value: null; }>;
     }
 }
 

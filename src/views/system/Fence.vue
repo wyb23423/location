@@ -119,7 +119,7 @@
     </div>
 </template>
 
-<script lang="ts" src="./zone.ts">
+<script lang="ts" src="./fence.ts">
 </script>
 
 <style lang="postcss" module>

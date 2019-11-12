@@ -32,6 +32,17 @@
                 v-model="form.minBaseSize"
             ></el-input-number>
         </el-form-item>
+        <el-form-item prop="channel" label="信道" required>
+            <el-select v-model="form.channel">
+                <el-option
+                    v-for="v of [1, 2, 3, 5]"
+                    :key="v"
+                    :value="+('0x' + v)"
+                    :label="'信道' + v"
+                >
+                </el-option>
+            </el-select>
+        </el-form-item>
         <el-form-item label="算法类型" required>
             <el-cascader
                 v-model="algorithmType"
@@ -55,7 +66,7 @@ import Vue from 'vue';
 import { Ref, Prop, Watch, Component } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
 import { CascaderOption } from 'element-ui/types/cascader';
-import Select from '@/components/Select.vue';
+import Select from '@/components/form/Select.vue';
 
 @Component({
     components: {

@@ -57,6 +57,7 @@ declare interface ITag extends DataBase {
     reason: string; // 临时添加原因
     locked: 0 | 1;
     properties: string;
+    height: number; // 标签高度
 }
 
 declare interface ICamera extends DataBase {
@@ -106,9 +107,10 @@ declare interface IGroup extends DataBase<string> {
     description: string;
     mapId: number;
     mapName: string;
+    channel: number; // 信道
 }
 
-declare interface IAlarm extends IJson {
+declare interface IAlarm {
     id: number;
     baseNo: string;
     tagNo: string;
