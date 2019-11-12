@@ -42,7 +42,6 @@
                     <el-button type="success" @click="onSubmit">
                         立即提交
                     </el-button>
-                    <el-button @click="reset">重置</el-button>
                 </el-form-item>
             </el-form>
         </el-card>
@@ -99,11 +98,7 @@ export default class Submissio extends Vue {
             ip: this.form.base[1]
         });
 
-        this.reset().$message.success(res.message);
-    }
-    public reset() {
-        this.elForm.resetFields();
-        return this;
+        this.$message.success(res.message);
     }
     public selProtocol(content: string) {
         const protocol = this.protocols.find(v => v.content === content);

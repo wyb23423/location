@@ -32,6 +32,17 @@
                 v-model="form.min"
             ></el-input-number>
         </el-form-item>
+        <el-form-item label="信道" required>
+            <el-select v-model="form.channel">
+                <el-option
+                    v-for="v of [1, 2, 3, 5]"
+                    :key="v"
+                    :value="+('0x' + v)"
+                    :label="'信道' + v"
+                >
+                </el-option>
+            </el-select>
+        </el-form-item>
         <el-form-item label="算法类型" required>
             <el-cascader
                 v-model="algorithmType"

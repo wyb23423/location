@@ -84,6 +84,7 @@ declare interface IGroup {
     algorithmType: number; // 算法类型
     description: string;
     mapId: number;
+    channel: number;
 }
 
 declare interface IAlarm {
