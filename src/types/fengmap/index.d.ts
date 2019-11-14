@@ -6,9 +6,10 @@
  */
 
 declare namespace fengmap {
-    class FMMarker<T> {
+    class FMMarker<T = any> {
         public custom?: any;
         public groupID: number;
+        public mapCoord: Vector3;
         // tslint:disable:variable-name
         public _x: number;
         public _y: number;
@@ -52,6 +53,12 @@ declare namespace fengmap {
         show: boolean;
         minlevel: number;
         maxlevel: number;
+    }
+
+    interface FMNaviResult {
+        readonly groupId: number;
+        readonly length: number;
+        readonly pointList: Vector3[];
     }
 }
 
@@ -124,6 +131,25 @@ declare namespace fengmap {
         public close(): void;
     }
 
+    class FMNaviAnalyser {
+        constructor(map: FMMap);
+        public dispose(): void;
+        public getNaviResults(): FMNaviResult[];
+        public analyzeNavi(
+            startGroupId: number, start: Vector3,
+            endGroupId: number, end: Vector3,
+            mode?: FMNaviMode,
+            priority?: FMNaviPriority
+        ): FMRouteCalcuResult;
+
+        public getRouteDistance(navResults?: FMNaviResult[]): number;
+        public getRouteDescriptions(navResults?: FMNaviResult[], params?: GetRouteDescriptionParams): RouteDescription;
+        public getRouteAllPoints(naviResults?: FMNaviResult[]): Vector3[];
+        public getRouteGroupIds(naviResults?: FMNaviResult[]): number[];
+        public getRouteGroupPoints(groupId: number, naviResults?: FMNaviResult[]): Vector3[];
+        public getRouteLineSegments(naviResults?: FMNaviResult[]): FMSegment[];
+    }
+
     const FMHeatMap: {
         create(map: FMMap, config: HeatMapConfig): IFMHeatMap
     };
@@ -170,6 +196,38 @@ declare namespace fengmap {
         FMARROW = 'fmarrow',
         FULL = 'full',
         TRI_DOT_DASH = 'triDotDash'
+    }
+
+    enum FMRouteCalcuResult {
+        ROUTE_FAILED_CANNOT_ARRIVE = 9,
+        ROUTE_FAILED_CANNOT_CALCULATE = 8,
+        ROUTE_FAILED_NO_DATA_END = 5,
+        ROUTE_FAILED_NO_DATA_START = 4,
+        ROUTE_FAILED_NO_FMDBDATA = 2,
+        ROUTE_FAILED_NO_STAIR = 6,
+        ROUTE_FAILED_NOTSUPPORT = 7,
+        ROUTE_FAILED_TOO_CLOSE = 3,
+        ROUTE_SUCCESS = 1
+    }
+
+    enum FMNaviMode {
+        MODULE_BEST = 2,
+        MODULE_SHORTEST = 1
+    }
+
+    enum FMNaviPriority {
+        PRIORITY_DEFAULT = 1,
+        PRIORITY_ESCALATORFIRST = 3,
+        PRIORITY_ESCALATORONLY = 6,
+        PRIORITY_LIFTFIRST = 2,
+        PRIORITY_LIFTONLY = 5,
+        PRIORITY_STAIRFIRST = 4,
+        PRIORITY_STAIRONLY = 7
+    }
+
+    enum FMLanguageType {
+        EN = 'en',
+        ZH = 'zh'
     }
 }
 

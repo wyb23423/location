@@ -8,6 +8,7 @@ import { Ref } from 'vue-property-decorator';
 import { errorStore } from '@/components/notice/init';
 import { ERROR_IMG } from '@/constant';
 import { Loading } from '../loading';
+import { PIXIEL } from '@/assets/map/pixi/animation';
 
 @Component({
     components: {
@@ -69,29 +70,33 @@ export default class MapMixin extends Loading {
         }
     }
 
-    protected moveTo(tagNo: string, coord: Vector3, time: number, update?: () => void) {
+    protected moveTo(
+        tagNo: string, coord: Vector3, time: number,
+        update?: () => void, callback?: (item: fengmap.FMMarker | PIXIEL) => void
+    ) {
         this.beforeMove(tagNo);
 
         return new Promise(resolve => {
             if (!this.mgr) {
                 return resolve();
             }
-
             const points: Vector3[] = [];
-            this.mgr.moveTo(
-                tagNo, coord, time,
-                (v: Vector2) => {
-                    update && update();
+            const updateHander = (v: Vector2) => {
+                update && update();
 
-                    points.push({ x: v.x, y: v.y, z: 1 });
-                    if (this.mgr && points.length >= 10) {
-                        this.mgr.appendLine(tagNo, points, true);
-                        this.link(tagNo, <Vector3>points.pop());
-                        points.length = 0;
-                    }
-                },
-                resolve
-            );
+                points.push({ x: v.x, y: v.y, z: 1 });
+                if (this.mgr && points.length >= 10) {
+                    this.mgr.appendLine(tagNo, points, true);
+                    this.link(tagNo, <Vector3>points.pop());
+                    points.length = 0;
+                }
+            };
+            const callbackFunc = (v: fengmap.FMMarker | PIXIEL) => {
+                callback && callback(v);
+                resolve();
+            };
+
+            this.mgr.moveTo(tagNo, coord, time, updateHander, callbackFunc);
         });
     }
 

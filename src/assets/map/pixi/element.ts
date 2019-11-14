@@ -153,7 +153,7 @@ export class ElsMgr extends Stage {
         coord: Vector23,
         time: number = 1, // 动画时间
         update?: (v: Vector2) => void, // 移动时回调
-        callback?: () => void, // 移动完成时回调
+        callback?: (v: PIXIEL) => void, // 移动完成时回调
         isMapCoor: boolean = false,
     ) {
         if (!isMapCoor) {

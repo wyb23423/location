@@ -8,9 +8,10 @@ import { getCustomInfo } from '../common';
 export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr<T> {
     private layers: Map<string, fengmap.FMMarkerLayer<T>> = new Map();
     private markers: Map<string | number, T[]> = new Map();
+    private naviAnalyser?: fengmap.FMNaviAnalyser;
 
     constructor(private map: fengmap.FMMap) {
-        //
+        // map.on('loadComplete', () => this.naviAnalyser = new fengmap.FMNaviAnalyser(map));
     }
 
     public add(coords: Vector23 | Vector23[], name: string, style?: IJson) {
@@ -41,21 +42,28 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
         coord: Vector23,
         time: number = 1,
         update?: (v: Vector2) => void,
-        callback?: () => void
+        callback?: (v: fengmap.FMMarker) => void
     ) {
+        const fn = (item: fengmap.FMMarker, points: Array<Vector2 & { time: number }>) => {
+            const p = points.shift();
+            if (!p) {
+                return (callback || none)(item);
+            }
+
+            item.moveTo({
+                ...p,
+                update: update || none,
+                callback: fn.bind(null, item, points)
+            });
+        };
+
         this.find(name).forEach(v => {
             if (v.stopMoveTo) {
                 v.stopMoveTo();
                 (<any>v)._isMoving = false;
             }
 
-            v.moveTo({
-                time,
-                x: coord.x,
-                y: coord.y,
-                callback: callback || none,
-                update: update || none
-            });
+            fn(v, this.analyzeNavi(coord, time, v));
         });
     }
 
@@ -90,6 +98,7 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
 
     public dispose() {
         Reflect.set(this, 'map', null);
+        this.naviAnalyser && this.naviAnalyser.dispose();
         this.layers.forEach(v => v.removeAll());
         this.layers.clear();
         this.markers.clear();
@@ -130,5 +139,32 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
         } else {
             console.error('图层名不存在, 无法查询图层');
         }
+    }
+
+    private analyzeNavi(coord: Vector23, time: number, item: fengmap.FMMarker) {
+        const points = [{ ...coord, time }];
+        if (this.naviAnalyser) {
+            const result = this.naviAnalyser.analyzeNavi(item.groupID, item.mapCoord, item.groupID, <Vector3>coord);
+            if (result === fengmap.FMRouteCalcuResult.ROUTE_SUCCESS) {
+                const data = this.naviAnalyser.getNaviResults();
+                const descriptions = this.naviAnalyser.getRouteDescriptions(data);
+
+                let distance = points.length = 0;
+                descriptions.naviDescriptionsData.forEach(d => {
+                    distance += d.distance;
+                    const t = time * distance / descriptions.naviDistance;
+                    if (t > 1e-5) {
+                        distance = 0;
+                        points.push({
+                            x: d.endPoint.x,
+                            y: d.endPoint.y,
+                            time: t
+                        });
+                    }
+                });
+            }
+        }
+
+        return points;
     }
 }

@@ -17,7 +17,7 @@ export class Animation {
         coord: Vector23,
         time: number = 1, // 动画时间
         update?: (v: Vector2) => void, // 移动时回调
-        callback?: () => void // 移动完成时回调
+        callback?: (v: PIXIEL) => void // 移动完成时回调
     ) {
         const action = new PIXI.action.MoveTo(coord.x, coord.y, time);
         return (item: PIXIEL) => this.add(item, 'moveTo', action, update, callback);
@@ -40,7 +40,7 @@ export class Animation {
         type: keyof ElAnimation,
         action: Action,
         update?: (v: Vector2) => void,
-        callback?: () => void,
+        callback?: (v: PIXIEL) => void,
     ) {
         const elAnimation = item.animation || (item.animation = {});
 
@@ -59,7 +59,7 @@ export class Animation {
                 item.animation.moveTo = null;
             }
 
-            callback && callback();
+            callback && callback(item);
         });
 
         item.animation[type] = animation;
