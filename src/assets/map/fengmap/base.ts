@@ -44,47 +44,26 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
         update?: (v: Vector2) => void,
         callback?: (v: fengmap.FMMarker) => void
     ) {
+        const fn = (item: fengmap.FMMarker, points: Array<Vector2 & { time: number }>) => {
+            const p = points.shift();
+            if (!p) {
+                return (callback || none)(item);
+            }
+
+            item.moveTo({
+                ...p,
+                update: update || none,
+                callback: fn.bind(null, item, points)
+            });
+        };
+
         this.find(name).forEach(v => {
             if (v.stopMoveTo) {
                 v.stopMoveTo();
                 (<any>v)._isMoving = false;
             }
 
-            const points = [{ ...coord, time }];
-            if (this.naviAnalyser) {
-                const result = this.naviAnalyser.analyzeNavi(v.groupID, v.mapCoord, v.groupID, <Vector3>coord);
-                if (result === fengmap.FMRouteCalcuResult.ROUTE_SUCCESS) {
-                    const data = this.naviAnalyser.getNaviResults();
-                    const descriptions = this.naviAnalyser.getRouteDescriptions(data);
-
-                    let distance = points.length = 0;
-                    descriptions.naviDescriptionsData.forEach(d => {
-                        distance += d.distance;
-                        const t = time * distance / descriptions.naviDistance;
-                        if (t > 1e-5) {
-                            distance = 0;
-                            points.push({
-                                x: d.endPoint.x,
-                                y: d.endPoint.y,
-                                time: t
-                            });
-                        }
-                    });
-                }
-            }
-
-            const fn = (p?: Vector2 & { time: number }) => {
-                if (!p) {
-                    return (callback || none)(v);
-                }
-
-                v.moveTo({
-                    ...p,
-                    update: update || none,
-                    callback: () => fn(points.shift())
-                });
-            };
-            fn(points.shift());
+            fn(v, this.analyzeNavi(coord, time, v));
         });
     }
 
@@ -160,5 +139,32 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
         } else {
             console.error('图层名不存在, 无法查询图层');
         }
+    }
+
+    private analyzeNavi(coord: Vector23, time: number, item: fengmap.FMMarker) {
+        const points = [{ ...coord, time }];
+        if (this.naviAnalyser) {
+            const result = this.naviAnalyser.analyzeNavi(item.groupID, item.mapCoord, item.groupID, <Vector3>coord);
+            if (result === fengmap.FMRouteCalcuResult.ROUTE_SUCCESS) {
+                const data = this.naviAnalyser.getNaviResults();
+                const descriptions = this.naviAnalyser.getRouteDescriptions(data);
+
+                let distance = points.length = 0;
+                descriptions.naviDescriptionsData.forEach(d => {
+                    distance += d.distance;
+                    const t = time * distance / descriptions.naviDistance;
+                    if (t > 1e-5) {
+                        distance = 0;
+                        points.push({
+                            x: d.endPoint.x,
+                            y: d.endPoint.y,
+                            time: t
+                        });
+                    }
+                });
+            }
+        }
+
+        return points;
     }
 }
