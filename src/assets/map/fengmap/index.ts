@@ -182,7 +182,7 @@ export class FengMapMgr extends CoordTransformer {
         coord: Vector23,
         time: number = 1,
         update?: (v: Vector2) => void,
-        callback?: () => void,
+        callback?: (v: any) => void,
         isMapCoor: boolean = false,
     ) {
         if (!isMapCoor) {

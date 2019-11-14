@@ -2,7 +2,9 @@
 interface PointData extends Vector2 {
     value: number;
 }
-
+interface Coord extends Vector2 {
+    groupId: number;
+}
 interface FMMapOptions {
     container: HTMLElement;
     appName: string;
@@ -115,6 +117,28 @@ interface LineStyle {
         size: number;
         gap: number;
     };
+}
+
+interface GetRouteDescriptionParams {
+    directionAssert?: number;
+    combineAsset?: number;
+    naviLanguage?: fengmap.FMLanguageType;
+}
+interface RouteDescription {
+    naviDescriptions: string[];
+    naviDescriptionsData: Array<{
+        distance: number;
+        endDirection: string;
+        endGID: number;
+        endIndex: number;
+        endPoint: Coord;
+        startDirection: string;
+        startGID: number;
+        startIndex: number;
+        startPoint: Coord;
+    }>;
+    naviDistance: number;
+    naviGroupsDistance: number[];
 }
 
 declare interface Vector2 {
