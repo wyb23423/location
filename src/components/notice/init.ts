@@ -5,7 +5,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { NOTIFY_KEY, ALARM_DEAL, RECOVERY, MODIFY_TAG_ICON, ERROR_IMG, SX_WIDTH } from '@/constant';
-import { Async, loopAwait } from '@/assets/utils/util';
+import { Async, loopAwait, getConfig } from '@/assets/utils/util';
 import { getAndCreateStore } from '@/assets/lib/localstore';
 
 export const errorStore = getAndCreateStore('ERROR_STORE');
@@ -17,6 +17,8 @@ export default class NoticeInit extends Vue {
     public size: string = '50%';
 
     protected messageStore = getAndCreateStore('MESSAGE');
+
+    private readonly moveTime = 1000 / getConfig<number>('SECOND_COUNT', 1);
 
     public created() {
         this.$event.on(NOTIFY_KEY, this.notifyEvent.bind(this))
@@ -64,7 +66,7 @@ export default class NoticeInit extends Vue {
                 );
             });
 
-        this.notify(v);
+        setTimeout(() => this.notify(v), this.moveTime / 2);
     }
 
     // 数据适配器
