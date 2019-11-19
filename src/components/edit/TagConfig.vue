@@ -8,17 +8,6 @@
                 <el-option :value="0xa0" label="5s/次"></el-option>
             </el-select>
         </el-form-item>
-        <el-form-item prop="channel" label="信道切换">
-            <el-select v-model="form.channel">
-                <el-option
-                    v-for="v of [1, 2, 3, 5]"
-                    :key="v"
-                    :value="+('0x' + v)"
-                    :label="'信道' + v"
-                >
-                </el-option>
-            </el-select>
-        </el-form-item>
         <el-form-item>
             <el-button type="success" @click="submit">立即提交</el-button>
         </el-form-item>
@@ -31,6 +20,7 @@
  */
 import Vue from 'vue';
 import { Prop, Component } from 'vue-property-decorator';
+import { END, HEAD } from '@/constant';
 
 @Component
 export default class TagConfig extends Vue {
@@ -39,12 +29,60 @@ export default class TagConfig extends Vue {
     @Prop({ required: true }) public readonly tagNo!: string;
 
     public form = {
-        heartRate: 0x70,
-        channel: 0x01
+        // heartRate: 0x70
     };
 
     public submit() {
-        console.log(this.form);
+        const contents = Object.values(this.form).reduce(
+            (a: Uint8Array[], b) => {
+                if (b) {
+                    const content = this.parseContent(
+                        TagConfig.COMMAND,
+                        Array.isArray(b) ? b : [b]
+                    );
+                    a.push(content);
+                }
+
+                return a;
+            },
+            []
+        );
+
+        console.log(contents);
+    }
+
+    private parseContent(command: number, value: number[]) {
+        const content = new Uint8Array(
+            value.length + this.tagNo.length / 2 + 3
+        );
+
+        let offset: number = 0;
+        [HEAD, [command], value, this.stringToHex(this.tagNo)].forEach(v => {
+            v.forEach((i: number) => (content[offset++] = i));
+        });
+
+        return content;
+    }
+
+    private stringToHex(str: string) {
+        // string转hex
+        let len = str.length;
+        if (len % 2 !== 0) {
+            console.warn(str + '不是一个有效的16进制字符串');
+            return [];
+        }
+
+        let pos = 0;
+        len /= 2;
+        const arrBytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            const s = str.substr(pos, 2);
+            const v = parseInt(s, 16);
+            arrBytes[i] = v;
+            pos += 2;
+        }
+
+        return arrBytes;
     }
 }
 </script>
