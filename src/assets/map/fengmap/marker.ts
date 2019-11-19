@@ -164,7 +164,7 @@ export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
                     lineWidth: 1
                 };
 
-            if (line.segment.length >= 20) {
+            if (line.segment.length >= 1) {
                 // 片段过多合成一条
                 for (let i = line.segment.length - 1; i >= 0; i--) {
                     const v = line.segment[i];

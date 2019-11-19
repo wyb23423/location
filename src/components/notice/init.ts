@@ -18,8 +18,6 @@ export default class NoticeInit extends Vue {
 
     protected messageStore = getAndCreateStore('MESSAGE');
 
-    private readonly moveTime = 1000 / getConfig<number>('SECOND_COUNT', 1);
-
     public created() {
         this.$event.on(NOTIFY_KEY, this.notifyEvent.bind(this))
             .on(ALARM_DEAL, (v: IAlarm) => {
@@ -66,7 +64,7 @@ export default class NoticeInit extends Vue {
                 );
             });
 
-        setTimeout(() => this.notify(v), this.moveTime / 2);
+        this.notify(v);
     }
 
     // 数据适配器

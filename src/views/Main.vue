@@ -23,6 +23,8 @@ import { getIp, getConfig } from '@/assets/utils/util';
     }
 })
 export default class Main extends Vue {
+    private readonly delay = 500 / getConfig<number>('SECOND_COUNT', 1);
+
     public created() {
         this.link();
         this.$event.emit(RECOVERY);
@@ -41,7 +43,10 @@ export default class Main extends Vue {
         ws.onmessage = (e: MessageEvent) => {
             const data: IAlarm & { alarmTime?: number } = JSON.parse(e.data);
             if (Date.now() - (data.alarmTime || data.time) <= 1000) {
-                this.$event.emit(NOTIFY_KEY, data);
+                setTimeout(
+                    () => this.$event.emit(NOTIFY_KEY, data),
+                    this.delay
+                );
             }
         };
     }
