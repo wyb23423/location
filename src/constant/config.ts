@@ -1,6 +1,8 @@
 export const HEAD = [0x23]; // 协议包头
 export const END = [0x0D, 0x0A]; // 协议包尾
 
+export const DEVICE_PIXEL_RATIO = Math.max(2, window.devicePixelRatio);
+
 // 开发者申请应用下web服务的key
 export let APP_KEY: string = '83a75157d56ffe85317ed7ba1e8120ff';
 // 开发者申请应用名称
