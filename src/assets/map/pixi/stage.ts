@@ -5,6 +5,7 @@
 import { MapEvent } from './event';
 import { adaptationVector } from '../common';
 import { getConfig } from '@/assets/utils/util';
+import { DEVICE_PIXEL_RATIO } from '@/constant';
 
 export default class Stage extends MapEvent {
     public map!: PIXI.Renderer;
@@ -26,7 +27,7 @@ export default class Stage extends MapEvent {
             width: dom.offsetWidth,
             height: dom.offsetHeight,
             backgroundColor: 0xe2e2e2,
-            resolution: 2,
+            resolution: DEVICE_PIXEL_RATIO,
             preserveDrawingBuffer: true
         });
 
@@ -115,9 +116,9 @@ export default class Stage extends MapEvent {
         const height = this.stage.height = this.map.height / 2;
         const width = this.stage.width = height * locRange.x / locRange.y;
 
-        this.stage.position.set(this.map.width / 8, height / 4);
+        this.stage.position.set(this.map.width / 4 / DEVICE_PIXEL_RATIO, height / 2 / DEVICE_PIXEL_RATIO);
         this.stage.pivot.set(width / 2, height / 2);
-        this.stage.scale.set(0.4);
+        this.stage.scale.set(1 / DEVICE_PIXEL_RATIO);
 
         this.createBg(width / locRange.x, height / locRange.y);
     }

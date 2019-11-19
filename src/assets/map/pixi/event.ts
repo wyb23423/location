@@ -3,6 +3,7 @@
  */
 
 import * as PIXI from 'pixi.js';
+import { DEVICE_PIXEL_RATIO } from '@/constant';
 
 export class MapEvent {
     // 获取点击点
@@ -77,7 +78,7 @@ export class MapEvent {
             scale *= 11 / 10;
         }
 
-        scale = Math.max(0.2, Math.min(3, scale));
+        scale = Math.max(0.1, 0.4 / DEVICE_PIXEL_RATIO, Math.min(6 / DEVICE_PIXEL_RATIO, scale));
         this.stage.scale.set(scale, scale);
     }
 
@@ -116,12 +117,15 @@ export class MapEvent {
                 x: ev.touches[1].clientX,
                 y: ev.touches[1].clientY
             });
-            const scale = Math.max(0.3, Math.min(3, this.stage.scale.x * distance / this.startDistance));
+            const scale = Math.max(
+                0.1, 0.4 / DEVICE_PIXEL_RATIO,
+                Math.min(6 / DEVICE_PIXEL_RATIO, this.stage.scale.x * distance / this.startDistance)
+            );
             this.stage.scale.set(scale, scale);
         } else {
             // 平移
-            const left = this.stage.x + (pos.x - this.downX) / 2;
-            const top = this.stage.y + (pos.y - this.downY) / 2;
+            const left = this.stage.x + (pos.x - this.downX) / DEVICE_PIXEL_RATIO;
+            const top = this.stage.y + (pos.y - this.downY) / DEVICE_PIXEL_RATIO;
 
             this.stage.position.set(left, top);
 

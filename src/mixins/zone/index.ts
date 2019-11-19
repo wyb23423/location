@@ -9,6 +9,7 @@ import { PIXIMgr } from '@/assets/map/pixi';
 import segmentsIntersect from '@/assets/utils/intersect';
 import { Async } from '@/assets/utils/util';
 import { adaptationVector } from '@/assets/map/common';
+import { DEVICE_PIXEL_RATIO } from '@/constant';
 
 @Component
 export default class ZoneMixin extends mixins(MapMixin) {
@@ -230,7 +231,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
         }
 
         if (this.mgr instanceof PIXIMgr) {
-            const p = this.mgr.stage.toLocal(new PIXI.Point(x / 2, y / 2));
+            const p = this.mgr.stage.toLocal(new PIXI.Point(x / DEVICE_PIXEL_RATIO, y / DEVICE_PIXEL_RATIO));
             return { ...p, z: 9 };
         }
 
