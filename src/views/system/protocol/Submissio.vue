@@ -17,9 +17,9 @@
                         :show-all-levels="false"
                     ></el-cascader>
                 </el-form-item>
-                <el-form-item label="标签：" prop="tagNo">
+                <!-- <el-form-item label="标签：" prop="tagNo">
                     <tag-select @change="form.tagNo = $event"></tag-select>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item label="设置内容：" prop="protocol" required>
                     <el-select
                         v-model="form.protocol"
@@ -71,8 +71,8 @@ export default class Submissio extends Vue {
     public form: any = {
         base: [],
         port: 60000,
-        protocol: '',
-        tagNo: ''
+        protocol: ''
+        // tagNo: ''
     };
 
     public base: SelOption[] = [];
