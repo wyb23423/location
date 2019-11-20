@@ -2,6 +2,7 @@ import Stage from './stage';
 import { getCustomInfo } from '../common';
 import { randomNum } from '@/assets/utils/util';
 import { Animation, PIXIEL, ElAnimation } from './animation';
+import { ZONE_SEPARATOR } from '@/constant';
 
 /**
  * pixi 实现监控的图标管理类
@@ -78,13 +79,16 @@ export class ElsMgr extends Stage {
         }
 
         return new Promise(resolve => {
-            const message = new PIXI.Text(name, {
-                fill: coord.fillcolor || 0xee0000,
-                fontSize: coord.fontsize || 20,
-                stroke: coord.strokecolor || 0xffff00,
-                strokeThickness: 1,
-                ...coord
-            });
+            const message = new PIXI.Text(
+                name.split(ZONE_SEPARATOR).pop()!,
+                {
+                    fill: coord.fillcolor || 0xee0000,
+                    fontSize: coord.fontsize || 20,
+                    stroke: coord.strokecolor || 0xffff00,
+                    strokeThickness: 1,
+                    ...coord
+                }
+            );
             message.position.set((<Vector23>newlist).x, (<Vector23>newlist).y);
             message.anchor.set(0.5, 0.5);
 
