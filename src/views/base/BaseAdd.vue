@@ -103,9 +103,10 @@ import Select from '@/components/form/Select.vue';
     }
 })
 export default class BaseAdd extends Vue {
-    public form: any = {
+    public form = {
         main: 0,
-        ip: []
+        ip: [] as number[],
+        id: ''
     };
     public rules: any = {};
 
@@ -126,7 +127,8 @@ export default class BaseAdd extends Vue {
     // 添加基站
     // 检测表单并暂存基站数据
     public add() {
-        if (this.form.ip.length !== 4) {
+        const { ip, id } = this.form;
+        if (ip.filter(v => !!v).length !== 4) {
             return this.$message.warning('基站ip格式错误');
         }
 
@@ -137,8 +139,8 @@ export default class BaseAdd extends Vue {
                     '/api/base/addBase',
                     {
                         ...this.form,
-                        ip: this.form.ip.join('.'),
-                        id: this.form.id.padStart(8, '0')
+                        ip: ip.join('.'),
+                        id: id.padStart(8, '0')
                     },
                     {
                         'Content-Type': 'application/json'
