@@ -142,12 +142,12 @@ export default class Control extends mixins(ControlMixin) {
                     .then(res => {
                         this.options.length = 0;
                         const icons = new Map<string, string>();
-                        res.pagedData.datas.forEach(v => {
+                        res.pagedData.datas.forEach((v: ITag) => {
                             this.options.push({
                                 label: v.name,
-                                value: v.tagNo
+                                value: v.id
                             });
-                            icons.set(v.tagNo, v.icon);
+                            icons.set(v.id, v.icon);
                         });
 
                         this.$emit('set-icons', icons);
