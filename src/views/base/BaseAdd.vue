@@ -23,10 +23,11 @@
                 ></el-input>
             </el-form-item>
             <el-form-item label="基站组号" required prop="groupId">
-                <el-input
+                <app-select
+                    url="/api/group/getall"
                     v-model="form.groupId"
-                    placeholder="请输入基站组号"
-                ></el-input>
+                    :keys="{ id: 'id', name: 'id' }"
+                ></app-select>
             </el-form-item>
             <el-form-item label="基站ip" required>
                 <ip-input v-model="form.ip"></ip-input>
@@ -38,27 +39,16 @@
                 </el-radio-group>
             </el-form-item>
             <el-form-item label="基站位置" required>
-                <el-col :span="6">
-                    <el-form-item prop="coordx" required>
+                <el-col
+                    v-for="(v, i) of ['coordx', 'coordy', 'coordz']"
+                    :span="6"
+                    :key="v"
+                    :offset="i ? 1 : 0"
+                >
+                    <el-form-item :prop="v" required>
                         <el-input
-                            v-model.number="form.coordx"
-                            placeholder="x"
-                        ></el-input>
-                    </el-form-item>
-                </el-col>
-                <el-col :offset="1" :span="6">
-                    <el-form-item prop="coordy" required>
-                        <el-input
-                            v-model.number="form.coordy"
-                            placeholder="y"
-                        ></el-input>
-                    </el-form-item>
-                </el-col>
-                <el-col :offset="1" :span="6">
-                    <el-form-item prop="coordz" required>
-                        <el-input
-                            v-model.number="form.coordz"
-                            placeholder="z"
+                            v-model.number="form[v]"
+                            :placeholder="v.substr(-1)"
                         ></el-input>
                     </el-form-item>
                 </el-col>
@@ -92,19 +82,20 @@ import Component from 'vue-class-component';
 import IpInput from '../../components/form/IpInput.vue';
 import { ElForm } from 'element-ui/types/form';
 import Vue from 'vue';
-import { hexadecimalRuleFactory } from '@/assets/utils/util';
-
-const ICON_NAME = 'origin';
+import { hexadecimalRuleFactory, Async } from '@/assets/utils/util';
+import Select from '@/components/form/Select.vue';
 
 @Component({
     components: {
-        'ip-input': IpInput
+        'ip-input': IpInput,
+        'app-select': Select
     }
 })
 export default class BaseAdd extends Vue {
-    public form: any = {
+    public form = {
         main: 0,
-        ip: []
+        ip: [] as number[],
+        id: ''
     };
     public rules: any = {};
 
@@ -114,7 +105,6 @@ export default class BaseAdd extends Vue {
         );
 
         Object.assign(this.rules, {
-            groupId: hexadecimalRuleFactory(4, 'groupId'),
             id: hexadecimalRuleFactory(8, 'id'),
             timeCorrectionValue: {
                 pattern: /^[\d\.]+$/,
@@ -124,33 +114,29 @@ export default class BaseAdd extends Vue {
     }
 
     // 添加基站
-    // 检测表单并暂存基站数据
-    public add() {
-        if (this.form.ip.length !== 4) {
+    @Async()
+    public async add() {
+        const { ip, id } = this.form;
+        if (ip.filter(v => !!v).length !== 4) {
             return this.$message.warning('基站ip格式错误');
         }
 
         const form = <ElForm>this.$refs.form;
-        form.validate()
-            .then(() =>
-                this.$http.post(
-                    '/api/base/addBase',
-                    {
-                        ...this.form,
-                        ip: this.form.ip.join('.'),
-                        id: this.form.id.padStart(8, '0'),
-                        groupId: this.form.id.padStart(4, '0')
-                    },
-                    {
-                        'Content-Type': 'application/json'
-                    }
-                )
-            )
-            .then(() => {
-                this.$message.success('添加成功');
-                location.href = location.href;
-            })
-            .catch(console.log);
+        await form.validate();
+        await this.$http.post({
+            url: '/api/base/addBase',
+            body: {
+                ...this.form,
+                ip: ip.join('.'),
+                id: id.padStart(8, '0')
+            },
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        this.$message.success('添加成功');
+        form.resetFields();
     }
 }
 </script>

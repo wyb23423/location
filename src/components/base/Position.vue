@@ -78,7 +78,6 @@ export default class Position extends Vue {
         const form = <ElForm>this.$refs.form;
         form.validate((valid: boolean) => {
             if (valid) {
-                // TODO 提交数据
                 const data = Object.assign({}, this.form, {
                     updateUser: '....',
                     updateTime: Date.now(),

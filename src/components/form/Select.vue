@@ -46,11 +46,11 @@ export default class Select extends Vue {
     public currValue: number | string | Array<number | string> = '';
 
     public get isMultiple() {
-        return this.multiple == null || this.multiple === false ? false : true;
+        return !(this.multiple == null || this.multiple === false);
     }
 
     public get isDisabled() {
-        return this.disabled == null || this.disabled === false ? false : true;
+        return !(this.disabled == null || this.disabled === false);
     }
 
     public created() {
@@ -93,6 +93,3 @@ export default class Select extends Vue {
     }
 }
 </script>
-
-<style lang="postcss" module>
-</style>
