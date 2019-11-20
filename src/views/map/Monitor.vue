@@ -68,6 +68,7 @@
             <Zone
                 style="opacity: 0.85"
                 :zones="zones"
+                :zoneOp="zoneOp"
                 v-if="tools[2].active"
             ></Zone>
         </transition>
@@ -123,6 +124,14 @@ export default class Monitor extends mixins(
     public isFullScreen: boolean = false;
     public findTarget: string = ''; // 查询标签的标签号
     public isName: number = 0; // 是否通过标签名查询标签
+
+    public zoneOp = [
+        {
+            type: { default: 'primary' },
+            name: 'display',
+            desc: { default: '显示' }
+        }
+    ];
 
     private censusTags = new Map<string, Set<string>>(); // 分组统计
     private tagGroup = new Map<string, string>(); // tag-group映射

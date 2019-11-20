@@ -22,6 +22,7 @@ const store = new Vuex.Store({
             group: 4,
             other: 5
         },
+        modeDescript: ['', '切换区域', '进入区域', '离开区域', '分组区域', '其他'],
         rootWidth: 0
     },
     mutations: {

@@ -1,13 +1,29 @@
 <template>
     <div @click.stop>
         <el-card class="card" ref="table" :class="$style.box">
+            <el-select
+                v-model="modes"
+                size="mini"
+                multiple
+                style="margin-bottom: 10px"
+                @change="getData(1, pageSize)"
+                placeholder="区域类型"
+            >
+                <el-option
+                    v-for="(v, i) of modeDescript"
+                    :key="v"
+                    :label="v"
+                    :value="i"
+                    v-show="Object.values(zoneMode).includes(i)"
+                ></el-option>
+            </el-select>
             <app-table
                 :max-height="500"
                 :table-data="tableData"
                 :col-cfg="colCfg"
                 :total-count="totalCount"
-                :op="[{ type: 'danger', name: 'switch', desc: '切换显示' }]"
-                @switch="switchZone"
+                :op="zoneOp"
+                @display="display"
                 @updateData="getData"
                 :isSmall="true"
                 :noPrint="true"
@@ -21,41 +37,51 @@ import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
 import { Prop } from 'vue-property-decorator';
 import { FengMapMgr } from '../../assets/map/fengmap';
+import { State } from 'vuex-class/lib/bindings';
+import { ZONE_SEPARATOR } from '../../constant';
+import DisplayMixin from '@/mixins/zone/display';
+import { ZoneMode } from '@/store';
 
-const openZone: Set<string> = new Set(); // 已显示的区域
+type ZoneData = IZone & {
+    status: '开启' | '关闭';
+    modeName: string;
+};
 
 @Component
-export default class Zone extends mixins(TableMixin) {
-    @Prop() public zones!: IZone[];
+export default class Zone extends mixins(TableMixin, DisplayMixin) {
+    @State public readonly modeDescript!: string[];
+    @State public readonly zoneMode!: ZoneMode;
 
+    @Prop() public readonly zones!: IZone[];
+    @Prop() public readonly zoneOp!: any[];
+
+    public modes: number[] = [];
     public colCfg: any[] = [
         { prop: 'name', label: '区域' },
-        { prop: 'status', label: '状态' }
+        { prop: 'modeName', label: '区域类型' }
     ];
 
-    public switchZone(row: IZone) {
-        if (this.$parent) {
-            const mgr: FengMapMgr = Reflect.get(this.$parent, 'mgr');
-            if (mgr) {
-                if (openZone.has(row.name)) {
-                    mgr.remove(row.name);
-                    openZone.delete(row.name);
-                } else {
-                    mgr.zoneOpen(row);
-                    openZone.add(row.name);
-                }
-            }
-        }
+    public getOperation() {
+        return this.zoneOp;
+    }
+
+    public get mgr() {
+        return this.$parent && Reflect.get(this.$parent, 'mgr');
     }
 
     protected async fetch(page: number, pageSize: number) {
-        const list = this.zones.slice((page - 1) * pageSize, page * pageSize);
+        let zones = this.zones;
+        if (this.modes.length) {
+            zones = this.zones.filter(v => this.modes.includes(v.mode));
+        }
+        const list = zones.slice((page - 1) * pageSize, page * pageSize);
 
         return {
-            count: this.zones.length,
+            count: zones.length,
             data: list.map(v => {
-                const tmp = <IZone & { status: '开启' | '关闭' }>{ ...v };
+                const tmp = <ZoneData>{ ...v };
                 tmp.status = v.enable ? '开启' : '关闭';
+                tmp.modeName = this.modeDescript[tmp.mode];
                 tmp.position =
                     typeof v.position === 'string'
                         ? JSON.parse(v.position)

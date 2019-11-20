@@ -1,7 +1,7 @@
 /**
  * fengmap
  */
-import { MAP_THEME_URL, APP_KEY, APP_NAME, MAP_DATA_URL } from '@/constant';
+import { MAP_THEME_URL, APP_KEY, APP_NAME, MAP_DATA_URL, ZONE_SEPARATOR } from '@/constant';
 import { CoordTransformer } from './coordtransformer';
 import { PolygonMgr, TextMgr, ImageMgr, LineMgr, PopInfo } from './marker';
 import { getCustomInfo } from '../common';
@@ -56,8 +56,10 @@ export class FengMapMgr extends CoordTransformer {
 
         let zones = typeof data.position === 'string' ? JSON.parse(data.position) : data.position;
         zones = zones.coordinates || zones;
-        const height = this.createPolygonMarker(zones, data.name);
-        this.addTextMarker({ ...zones[0], height }, data.name);
+
+        const name = data.id + ZONE_SEPARATOR + data.name;
+        const height = this.createPolygonMarker(zones, name);
+        this.addTextMarker({ ...zones[0], height }, name);
     }
 
     /**
