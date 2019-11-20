@@ -25,10 +25,10 @@ export default class DisplayMixin extends Vue {
             const op = operation[i];
             if (op.type[row.id] || isDel) {
                 op.type[row.id] = undefined;
-                this.remove(row);
+                this.removeZone(row);
             } else {
                 op.type[row.id] = 'success';
-                this.show(row);
+                this.showZone(row);
             }
             op.desc[row.id] = op.desc[row.id] || isDel ? undefined : '隐藏';
 
@@ -42,11 +42,11 @@ export default class DisplayMixin extends Vue {
         return this.operation;
     }
 
-    protected remove(row: IZone) {
+    protected removeZone(row: IZone) {
         this.mgr && this.mgr.remove(row.id + ZONE_SEPARATOR + row.name);
     }
 
-    protected show(row: IZone) {
+    protected showZone(row: IZone) {
         this.mgr && this.mgr.zoneOpen(row);
     }
 }
