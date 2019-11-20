@@ -5,6 +5,7 @@
 import { randomNum, randomColor } from '@/assets/utils/util';
 import { BaseMarkerMgr } from './base';
 import { getCustomInfo } from '../common';
+import { ZONE_SEPARATOR } from '@/constant';
 
 export class PolygonMgr extends BaseMarkerMgr<fengmap.FMPolygonMarker> {
     public add(coords: Vector2[], name: string | number, style: IJson = {}) {
@@ -31,7 +32,7 @@ export class TextMgr extends BaseMarkerMgr<fengmap.FMTextMarker> {
                 strokecolor: '255,255,0',
                 ...style,
                 ...coord,
-                name,
+                name: name.split(ZONE_SEPARATOR).pop()!,
                 callback: () => resolve(tm)
             });
 

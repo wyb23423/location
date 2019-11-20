@@ -6,6 +6,7 @@ import LineMgr from './marker/line';
 import { getCustomInfo } from '../common';
 import { PopInfo } from './marker/pop';
 import { ElsMgr } from './element';
+import { ZONE_SEPARATOR } from '@/constant';
 
 export class PIXIMgr extends ElsMgr {
     public readonly has3D: boolean = false;
@@ -22,8 +23,10 @@ export class PIXIMgr extends ElsMgr {
     public zoneOpen(data: IZone) {
         let zones = typeof data.position === 'string' ? JSON.parse(data.position) : data.position;
         zones = zones.coordinates || zones;
-        this.createPolygonMarker(zones, data.name);
-        this.addTextMarker(zones[0], data.name);
+
+        const name = data.id + ZONE_SEPARATOR + data.name;
+        this.createPolygonMarker(zones, name);
+        this.addTextMarker(zones[0], name);
     }
 
     public on(type: string, callback: any) {

@@ -1,13 +1,29 @@
 <template>
     <div @click.stop>
         <el-card class="card" ref="table" :class="$style.box">
+            <el-select
+                multiple
+                v-model="modes"
+                style="margin-bottom: 10px"
+                placeholder="区域类型"
+                size="mini"
+                @change="getData(1, pageSize)"
+            >
+                <el-option
+                    v-for="(v, i) of modeDescript"
+                    :key="v"
+                    :label="v"
+                    :value="i"
+                    v-show="Object.values(zoneMode).includes(i)"
+                ></el-option>
+            </el-select>
             <app-table
                 :max-height="500"
                 :table-data="tableData"
                 :col-cfg="colCfg"
                 :total-count="totalCount"
-                :op="[{ type: 'danger', name: 'switch', desc: '切换显示' }]"
-                @switch="switchZone"
+                :op="zoneOp"
+                @switch="display"
                 @updateData="getData"
                 :isSmall="true"
                 :noPrint="true"
@@ -21,40 +37,44 @@ import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
 import { Prop } from 'vue-property-decorator';
 import { FengMapMgr } from '../../assets/map/fengmap';
-
-const openZone: Set<string> = new Set(); // 已显示的区域
+import { State } from 'vuex-class/lib/bindings';
+import { ZoneMode } from '@/store';
+import DisplayMixin from '../../mixins/zone/display';
 
 @Component
-export default class Zone extends mixins(TableMixin) {
-    @Prop() public zones!: IZone[];
+export default class Zone extends mixins(TableMixin, DisplayMixin) {
+    @State public readonly zoneMode!: ZoneMode;
+    @State public readonly modeDescript!: string[];
+
+    @Prop() public readonly zones!: IZone[];
+    @Prop() public readonly zoneOp!: any[];
+
+    public modes: number[] = [];
 
     public colCfg: any[] = [
         { prop: 'name', label: '区域' },
         { prop: 'status', label: '状态' }
     ];
 
-    public switchZone(row: IZone) {
-        if (this.$parent) {
-            const mgr: FengMapMgr = Reflect.get(this.$parent, 'mgr');
-            if (mgr) {
-                if (openZone.has(row.name)) {
-                    mgr.remove(row.name);
-                    openZone.delete(row.name);
-                } else {
-                    mgr.zoneOpen(row);
-                    openZone.add(row.name);
-                }
-            }
-        }
+    public get mgr() {
+        return this.$parent && Reflect.get(this.$parent, 'mgr');
+    }
+
+    protected getOperation() {
+        return this.zoneOp || [];
     }
 
     protected async fetch(page: number, pageSize: number) {
-        const list = this.zones.slice((page - 1) * pageSize, page * pageSize);
+        let zones = this.zones;
+        if (this.modes.length) {
+            zones = this.zones.filter(v => this.modes.includes(v.mode));
+        }
+        const list = zones.slice((page - 1) * pageSize, page * pageSize);
 
         return {
-            count: this.zones.length,
+            count: zones.length,
             data: list.map(v => {
-                const tmp = <IZone & {status: string}>{ ...v };
+                const tmp = <IZone & { status: string }>{ ...v };
                 tmp.status = v.enable ? '开启' : '关闭';
                 tmp.position =
                     typeof v.position === 'string'

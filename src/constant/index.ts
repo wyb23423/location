@@ -14,14 +14,16 @@ export const NOTICE_MAX: number = 3; // 同时出现的最大报警数
 export const MISS_MSG: string = '信号丢失'; // 标签信号丢失时的报警信息
 export const ERROR_IMG: string = '/images/error.png'; // 标签异常时的图片
 
+export const ZONE_SEPARATOR = '@#$$^*&(____^#@&(*||)(&..,';
+
 // 全部权限
 export const ALL_PERMISSION = {
     admin: { put: true, delete: true, post: true, get: true }, // 管理员
-    fence: { put: true, delete: true, post: true, get: true }, // 区域(电子围栏)
+    zone: { put: true, delete: true, post: true, get: true }, // 区域(电子围栏)
     camera: { put: true, delete: true, post: true, get: true }, // 摄像机
     protocol: { put: true, delete: true, post: true, get: true }, // 协议
     base: { put: true, delete: true, post: true, get: true }, // 设备(基站)
-    people: { put: true, delete: true, post: true, get: true }, // 人员(标签)
+    tag: { put: true, delete: true, post: true, get: true }, // 人员(标签)
     map: { put: true, delete: true, post: true, get: true }, // 地图(监控)
     alarm: { put: true, delete: true, post: true, get: true } // 报警信息
 };

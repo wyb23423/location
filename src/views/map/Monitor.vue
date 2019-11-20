@@ -68,6 +68,7 @@
             <Zone
                 style="opacity: 0.7"
                 :zones="zones"
+                :zoneOp="operation"
                 v-if="tools[2].active"
             ></Zone>
         </transition>
@@ -111,6 +112,13 @@ export default class Monitor extends mixins(
 
     public groupData: { [x: string]: IBaseStation[] } = {}; // 基站分组
     public zones: IZone[] = []; // 区域列表
+    public operation: any[] = [
+        {
+            type: { default: 'primary' },
+            name: 'display',
+            desc: { default: '显示' }
+        }
+    ];
 
     // 右下工具栏列表
     public tools: ToolItem[] = [

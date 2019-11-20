@@ -11,46 +11,46 @@ import { RouteList } from './assets/lib/role';
 Vue.use(Router);
 
 const router = new Router({
-  routes: [
-    { path: '/login', name: 'login', component: Login },
-    { path: '/404', name: '404', component: NotFound }
-  ],
-  mode: 'history',
-  base: process.env.BASE_URL,
+    routes: [
+        { path: '/login', name: 'login', component: Login },
+        { path: '/404', name: '404', component: NotFound }
+    ],
+    mode: 'history',
+    base: process.env.BASE_URL,
 });
 
 
 // ==========================根据权限初始化路由
 let loadRouter = false;
 export function initRouter() {
-  if (loadRouter) {
-    return;
-  }
+    if (loadRouter) {
+        return;
+    }
 
-  const routes = new RouteList().routes;
+    const routes = new RouteList().routes;
 
-  router.addRoutes([
-    {
-      path: '/', name: 'main', component: Main,
-      children: [
-        { path: 'index', name: 'index', component: Index, alias: '' },
-        ...(<RouteConfig[]>routes),
+    router.addRoutes([
         {
-          path: '/chart', name: 'chart',
-          component: () => import(/* webpackChunkName: "chart" */ '@/views/chart/ChartIndex.vue'),
-          children: [
-            {
-              path: 'heatmap', name: 'heatmap', alias: '',
-              component: () => import(/* webpackChunkName: "chart" */ '@/views/chart/HeatMap.vue'),
-            }
-          ]
-        }
-      ]
-    },
-    { path: '*', redirect: '/404' }
-  ]);
+            path: '/', name: 'main', component: Main,
+            children: [
+                { path: 'index', name: 'index', component: Index, alias: '' },
+                ...(<RouteConfig[]>routes),
+                {
+                    path: '/chart', name: 'chart',
+                    component: () => import(/* webpackChunkName: "chart" */ '@/views/chart/ChartIndex.vue'),
+                    children: [
+                        {
+                            path: 'heatmap', name: 'heatmap', alias: '',
+                            component: () => import(/* webpackChunkName: "chart" */ '@/views/chart/HeatMap.vue'),
+                        }
+                    ]
+                }
+            ]
+        },
+        { path: '*', redirect: '/404' }
+    ]);
 
-  loadRouter = true;
+    loadRouter = true;
 }
 
 export default router;

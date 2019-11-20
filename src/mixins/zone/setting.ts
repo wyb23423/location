@@ -67,7 +67,7 @@ export class Setting extends mixins(ZoneMixin) {
         this.zone = zone;
         this.isSetting = true;
 
-        this.display(zone, index);
+        this.display(zone, index, true);
     }
 
     // 从设置的界面进入设置坐标的模式

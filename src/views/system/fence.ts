@@ -4,13 +4,14 @@ import TableMixin from '../../mixins/table';
 import ZoneEidt from '@/components/edit/ZoneEdit.vue';
 import { Setting, ZoneData } from '@/mixins/zone/setting';
 import { Async } from '@/assets/utils/util';
+import DisplayMixin from '@/mixins/zone/display';
 
 @Component({
     components: {
         'zone-input': ZoneEidt
     }
 })
-export default class Zone extends mixins(Setting, TableMixin) {
+export default class Zone extends mixins(Setting, TableMixin, DisplayMixin) {
     public activeNames: string[] = ['info', 'add'];
 
     // ===================================table
@@ -18,14 +19,6 @@ export default class Zone extends mixins(Setting, TableMixin) {
         { prop: 'name', label: '区域', sortable: true, width: 90 },
         { prop: 'status', label: '状态', width: 60 }
     ];
-    public operation: any[] = [
-        {
-            type: { default: 'primary' },
-            name: 'display',
-            desc: { default: '显示' }
-        }
-    ];
-    // =====================================
 
     // =======================form
     public form: any = {
@@ -54,33 +47,6 @@ export default class Zone extends mixins(Setting, TableMixin) {
         await this.$confirm(`确认删除区域${row.name}?`, '确认删除');
         await this.$http.post('/api/zone/deleteZone', { id: row.id });
         this.refresh().display(row, index, true).$message.success('删除成功');
-    }
-    /**
-     * 切换区域显示
-     */
-    public display(row: IZone, index: number, isDel?: boolean) {
-        const i = this.operation.findIndex(v => v.name === 'display');
-        if (i > -1) {
-            const op = this.operation[i];
-            if (op.type[row.id] || isDel) {
-                op.type[row.id] = undefined;
-
-                if (this.mgr) {
-                    this.mgr.remove(row.name);
-                }
-            } else {
-                op.type[row.id] = 'success';
-
-                if (this.mgr) {
-                    this.mgr.zoneOpen(row);
-                }
-            }
-            op.desc[row.id] = op.desc[row.id] || isDel ? undefined : '隐藏';
-
-            this.$set(this.operation, i, op);
-        }
-
-        return this;
     }
 
     // 确认并添加区域
