@@ -62,7 +62,7 @@ export default class Zone extends mixins(TableMixin, DisplayMixin) {
     ];
 
     public getOperation() {
-        return this.zoneOp;
+        return this.zoneOp || [];
     }
 
     public get mgr() {
