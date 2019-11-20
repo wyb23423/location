@@ -41,7 +41,10 @@ export class FengMapMgr extends CoordTransformer {
             preserveDrawingBuffer: true
         });
         this.map.openMapById(name);
-        this.map.on('loadComplete', () => this.isLoaded = true);
+        this.map.on('loadComplete', () => {
+            this.isLoaded = true;
+            this.map.rotateTo({ to: 0, duration: 0.5 });
+        });
 
         this.init();
     }

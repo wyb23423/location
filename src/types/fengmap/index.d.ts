@@ -93,6 +93,7 @@ declare namespace fengmap {
 
         public on(type: string, callback: (e: FMMapClickEvent) => void): void;
         public dispose(): void;
+        public rotateTo(param: { to: number; duration?: number; callback?: () => void }): void;
     }
 
     class FMPolygonMarker extends FMMarker<FMPolygonMarkerOptions> {
