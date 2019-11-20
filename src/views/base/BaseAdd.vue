@@ -105,7 +105,7 @@ import Select from '@/components/form/Select.vue';
 export default class BaseAdd extends Vue {
     public form = {
         main: 0,
-        ip: [] as number[],
+        ip: [] as string[],
         id: ''
     };
     public rules: any = {};

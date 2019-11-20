@@ -66,6 +66,19 @@ export default class IpInput extends Vue {
         return this.value;
     }
 
+    /**
+     * 检测ip的完整性
+     */
+    public validate() {
+        for (let i = 0; i < this.length; i++) {
+            if (!this.value[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private pasteHandler(str: string, i: number) {
         const ips = <ElInput[]>this.$refs.ip;
 

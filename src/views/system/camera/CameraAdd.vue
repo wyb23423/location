@@ -67,7 +67,7 @@ export default class CameraAdd extends Vue {
     }
 
     public onSubmit() {
-        const isComplete = this.form.ip.every((v: string) => !isNaN(+v));
+        const isComplete = this.form.ip.every((v: string) => !!v);
 
         const form = <ElForm>this.$refs.form;
         form.validate((valid: boolean) => {
