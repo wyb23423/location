@@ -51,11 +51,11 @@ import { ElForm } from 'element-ui/types/form';
 export default class Net extends Vue {
     @Prop() public data!: IBaseStation;
 
-    public form: any = {
-        baseIp: [],
-        serverIp: [],
-        mask: [],
-        mac: [],
+    public form = {
+        baseIp: <string[]>[],
+        serverIp: <string[]>[],
+        mask: <string[]>[],
+        mac: <string[]>[],
         mode: 85
     };
     public rules = {
@@ -91,16 +91,17 @@ export default class Net extends Vue {
     }
 
     private get isValid() {
-        if (this.form.baseIp.length !== 4) {
+        const { baseIp, mask, mac, serverIp } = this.form;
+        if (baseIp.filter(v => !!v).length !== 4) {
             return this.$message.error('基站IP格式错误');
         }
-        if (this.form.mask.length !== 4) {
+        if (mask.filter(v => !!v).length !== 4) {
             return this.$message.error('基站mask格式错误');
         }
-        if (this.form.mac.length !== 6) {
+        if (mac.filter(v => !!v).length !== 6) {
             return this.$message.error('基站mac格式错误');
         }
-        if (this.form.serverIp.length !== 4) {
+        if (serverIp.filter(v => !!v).length !== 4) {
             return this.$message.error('服务器IP格式错误');
         }
 
