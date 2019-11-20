@@ -58,7 +58,7 @@ export default class Zone extends mixins(TableMixin, DisplayMixin) {
     public modes: number[] = [];
     public colCfg: any[] = [
         { prop: 'name', label: '区域' },
-        { prop: 'modeName', label: '区域类型' }
+        { prop: 'status', label: '状态' }
     ];
 
     public getOperation() {
