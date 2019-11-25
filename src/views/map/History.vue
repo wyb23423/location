@@ -202,6 +202,8 @@ export default class History extends mixins(MapMixin) {
                         this.fragmentIndex + 1 + ''
                     );
 
+                    // 下一个点应该是下一个片段中索引为0的点
+                    this.next[tagNo] = { index: 0, errorTime: 0 };
                     return this.parseProgress(
                         data[tagNo] || [],
                         oldFragmentIndex,
@@ -278,7 +280,7 @@ interface PlayRecord {
 }
 interface PlayRecordItem {
     index: number;
-    errorTime: number;
+    errorTime: number; // 时间误差， 由于较小，暂时忽略
 }
 
 interface ProgressData {

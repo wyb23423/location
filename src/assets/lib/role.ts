@@ -342,3 +342,6 @@ export class RouteList {
     }
 }
 
+export default function getRoutes() {
+    return new RouteList().routes;
+}

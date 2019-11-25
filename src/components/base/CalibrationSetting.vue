@@ -105,6 +105,7 @@ import TableMixin from '../../mixins/table';
 import { Prop } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
 import { major, subordinate } from '../../assets/utils/compensation';
+import { Async } from '@/assets/utils/util';
 
 @Component
 export default class CalibrationSetting extends mixins(TableMixin) {
@@ -122,50 +123,47 @@ export default class CalibrationSetting extends mixins(TableMixin) {
         { prop: 'ip', label: '基站IP' }
     ];
 
+    @Async()
     public async submit() {
-        try {
-            await Promise.all([
-                (<ElForm>this.$refs.tag).validate(),
-                (<ElForm>this.$refs.base).validate()
-            ]);
+        await Promise.all([
+            (<ElForm>this.$refs.tag).validate(),
+            (<ElForm>this.$refs.base).validate()
+        ]);
 
-            const main: any = this.tableData.find(v => !!v.main);
-            if (main) {
-                const mainVec: Vector3 = {
-                    x: main.coordx,
-                    y: main.coordy,
-                    z: main.coordz
-                };
-                const arr = this.tableData.map(v => {
-                    const timeCorrectionValue: number = v.main
-                        ? major(mainVec, this.form, this.form[main.id])
-                        : subordinate(
-                              {
-                                  x: v.coordx,
-                                  y: v.coordy,
-                                  z: v.coordz
-                              },
-                              this.form,
-                              mainVec,
-                              this.form[main.id],
-                              this.form[v.id]
-                          );
+        const main: IBaseStation = this.tableData.find(v => !!v.main);
+        if (main) {
+            const mainVec: Vector3 = {
+                x: main.coordx,
+                y: main.coordy,
+                z: main.coordz
+            };
+            const arr = this.tableData.map(v => {
+                const timeCorrectionValue: number = v.main
+                    ? major(mainVec, this.form, this.form[main.id])
+                    : subordinate(
+                          {
+                              x: v.coordx,
+                              y: v.coordy,
+                              z: v.coordz
+                          },
+                          this.form,
+                          mainVec,
+                          this.form[main.id],
+                          this.form[v.id]
+                      );
 
-                    v.timeCorrectionValue = timeCorrectionValue + '';
+                v.timeCorrectionValue = timeCorrectionValue + '';
 
-                    return this.$http.post('/api/base/updateBase', v, {
-                        'Content-Type': 'application/json'
-                    });
+                return this.$http.post('/api/base/updateBase', v, {
+                    'Content-Type': 'application/json'
                 });
+            });
 
-                Promise.all(arr)
-                    .then(() => this.$message.success('修改成功'))
-                    .catch(console.log);
+            Promise.all(arr)
+                .then(() => this.$message.success('修改成功'))
+                .catch(console.log);
 
-                this.reset();
-            }
-        } catch (e) {
-            console.log(e);
+            this.reset();
         }
     }
 

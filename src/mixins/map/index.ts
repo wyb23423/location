@@ -86,7 +86,7 @@ export default class MapMixin extends Loading {
                 update && update();
 
                 points.push({ x: v.x, y: v.y, z: 1 });
-                if (this.mgr && points.length >= 10) {
+                if (this.mgr && points.length >= 5) {
                     this.mgr.appendLine(tagNo, points, true);
                     this.link(tagNo, <Vector3>points.pop());
                     points.length = 0;

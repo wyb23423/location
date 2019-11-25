@@ -54,7 +54,7 @@ export function arr2obj(arr: IJson[], key: string, isArr: boolean = true) {
 
 // 将字符转成utf-8编码
 export function encodeUtf8(text: string) {
-    return new Uint16Array(text.length).map((el, idx) => text.charCodeAt(idx));
+    return new Uint8Array(text.length).map((el, idx) => text.charCodeAt(idx));
 }
 
 export function getIp() {

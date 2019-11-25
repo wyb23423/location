@@ -1,12 +1,12 @@
 import Vue from 'vue';
-import Router, { RouteConfig } from 'vue-router';
+import Router from 'vue-router';
 
 import Login from './views/Login.vue';
 import Main from './views/Main.vue';
 import Index from './views/index/Index.vue';
 import NotFound from './views/NotFound.vue';
 
-import { RouteList } from './assets/lib/role';
+import getRoutes from './assets/lib/role';
 
 Vue.use(Router);
 
@@ -27,14 +27,12 @@ export function initRouter() {
         return;
     }
 
-    const routes = new RouteList().routes;
-
     router.addRoutes([
         {
             path: '/', name: 'main', component: Main,
             children: [
                 { path: 'index', name: 'index', component: Index, alias: '' },
-                ...(<RouteConfig[]>routes),
+                ...getRoutes(),
                 {
                     path: '/chart', name: 'chart',
                     component: () => import(/* webpackChunkName: "chart" */ '@/views/chart/ChartIndex.vue'),
