@@ -23,7 +23,7 @@
                 :col-cfg="colCfg"
                 :total-count="totalCount"
                 :op="zoneOp"
-                @switch="display"
+                @display="display"
                 @updateData="getData"
                 :isSmall="true"
                 :noPrint="true"

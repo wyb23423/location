@@ -68,7 +68,7 @@
             <Zone
                 style="opacity: 0.7"
                 :zones="zones"
-                :zoneOp="operation"
+                :zone-op="operation"
                 v-if="tools[2].active"
             ></Zone>
         </transition>
