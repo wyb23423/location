@@ -1,5 +1,6 @@
 <template>
     <el-select
+        ref="form"
         v-model="value"
         :remote-method="remoteMethod"
         :placeholder="placeholder"
@@ -26,9 +27,10 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { Emit, Prop } from 'vue-property-decorator';
+import { Emit, Prop, Ref } from 'vue-property-decorator';
 import { Async } from '@/assets/utils/util';
 import { ElOption } from 'element-ui/types/option';
+import { ElSelect } from 'element-ui/types/select';
 
 @Component
 export default class TagSelect extends Vue {
@@ -41,6 +43,7 @@ export default class TagSelect extends Vue {
     public tagOptions: Array<Pick<ElOption, 'value' | 'label'>> = [];
     public loading: boolean = false;
 
+    @Ref('form') private readonly elSelect!: ElSelect;
     private timer?: number;
 
     public created() {
@@ -54,10 +57,12 @@ export default class TagSelect extends Vue {
             return (this.tagOptions = []);
         }
 
-        this.timer = setTimeout(
-            () => this.fetchTag(key).then(() => (this.loading = false)),
-            500
-        );
+        this.timer = setTimeout(async () => {
+            const arr = await this.fetchTag(key);
+            this.loading = false;
+
+            this.$nextTick(() => arr && (this.tagOptions = arr));
+        }, 500);
     }
 
     @Async()
@@ -69,12 +74,11 @@ export default class TagSelect extends Vue {
             name: key
         });
 
-        this.tagOptions = res.pagedData.datas.map((v: ITag) => ({
+        this.$emit('remote', res.pagedData.datas);
+        return res.pagedData.datas.map((v: ITag) => ({
             label: v.name,
             value: v.id
         }));
-
-        this.$emit('remote', res.pagedData.datas);
     }
 }
 </script>

@@ -10,6 +10,7 @@
                     :disabled="isPlaying"
                     :multiple="true"
                     @change="tagNos = $event"
+                    @remote="setIcons"
                     style="min-width: 200px"
                 >
                 </tag-select>
@@ -73,7 +74,7 @@ import Vue from 'vue';
 import Component, { mixins } from 'vue-class-component';
 import { formatTime } from '@/assets/lib/date';
 import ControlMixin from '@/mixins/control';
-import { Prop } from 'vue-property-decorator';
+import { Prop, Emit } from 'vue-property-decorator';
 import TagSelect from './form/TagSelect.vue';
 
 interface Option {
@@ -102,6 +103,14 @@ export default class Control extends mixins(ControlMixin) {
 
     public destroyed() {
         this.pause();
+    }
+
+    @Emit('set-icons')
+    public setIcons(data: ITag[]) {
+        const icons = new Map<string, string>();
+        data.forEach(v => icons.set(v.id, v.icon));
+
+        return icons;
     }
 
     public format(value: number) {
