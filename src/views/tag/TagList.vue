@@ -33,6 +33,9 @@
             <el-tab-pane label="参数配置" name="parameter">
                 <tag-config :tag-no="person.id"></tag-config>
             </el-tab-pane>
+            <el-tab-pane label="更换标签" name="modifyId">
+                111
+            </el-tab-pane>
         </el-tabs>
     </div>
 </template>

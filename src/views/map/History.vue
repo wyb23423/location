@@ -52,7 +52,7 @@ export default class History extends mixins(MapMixin) {
     private next: PlayRecord = {}; // 下一个数据点
     private moving: Set<string> = new Set(); // 正在移动中的标签
     private fragmentIndex: number = -1; // 当前points所在的片段索引
-    private points: Fragment = {}; // 当前进度对应的数据片段
+    private points!: Fragment; // 当前进度对应的数据片段
     private icons: Map<string, string> = new Map(); // 标签图标
 
     public get timeRange() {
@@ -64,6 +64,7 @@ export default class History extends mixins(MapMixin) {
     }
 
     public created() {
+        this.points = {};
         // 慢加载完一个数据片段后执行的函数
         this.loadCall = (control: Control, index: number) => {
             if (index === this.fragmentIndex && this.isLoading) {

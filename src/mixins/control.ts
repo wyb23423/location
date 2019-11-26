@@ -23,6 +23,7 @@ export default class ControlMixin extends Vue {
 
     public tagNos: string[] = []; // 选中标签号
     public hasData: boolean = false; // 是否有可以用于播放的数据
+    public mapId?: number;
 
     private fragmentLength: number = DEFAULT_FRAGMENT; // 一个片段的时间长度
     private controller?: AbortController; // 正在请求的数据片段中断控制器
@@ -136,7 +137,7 @@ export default class ControlMixin extends Vue {
 
     // 请求数据
     private fetch(start: number, end: number, controller?: AbortController) {
-        const offset = new Date().getTimezoneOffset() * 60000;
+        const offset = 0; // new Date().getTimezoneOffset() * 60000;
 
         return this.$http
             .post({
@@ -144,7 +145,8 @@ export default class ControlMixin extends Vue {
                 body: {
                     startTime: new Date(start - offset),
                     endTime: new Date(end - offset),
-                    tagNos: this.tagNos
+                    tagNos: this.tagNos,
+                    mapId: this.mapId
                 },
                 headers: {
                     'Content-Type': 'application/json'
@@ -163,7 +165,7 @@ export default class ControlMixin extends Vue {
             await localforage.getItem<PositionItem>(index + '');
         } catch (e) {
             const fragment: Fragment = {};
-            const offset = new Date().getTimezoneOffset() * 60000;
+            const offset = 0; // new Date().getTimezoneOffset() * 60000;
             data.forEach(v => {
                 if (v.position.every(p => +p >= 0)) {
                     (fragment[v.sTagNo] || (fragment[v.sTagNo] = [])).push({
@@ -176,7 +178,7 @@ export default class ControlMixin extends Vue {
                 }
             });
 
-            localforage.setItem(index + '', fragment);
+            return localforage.setItem(index + '', fragment);
         }
     }
 }
