@@ -8,8 +8,11 @@ export class WebSocketInit extends Vue {
     protected tagAll!: { [x: string]: ITag }; // 标签
 
     private ws: WebSocket[] = [];
+    private count!: number;
 
     public created() {
+        this.count = 0;
+
         // 获取所有标签数据
         this.tagAll = {};
         this.$http.get('/api/tag/getall', {
@@ -25,7 +28,10 @@ export class WebSocketInit extends Vue {
         this.tagAll = {};
     }
 
-    protected initWebSocket() {
+    protected initWebSocket(isRelink?: boolean) {
+        if (!(isRelink && this.ws.length)) {
+            return;
+        }
         this.closeWebSocket();
 
         const ip = getIp();
@@ -36,15 +42,21 @@ export class WebSocketInit extends Vue {
         // ==============================收到标签信息后的处理
         const handler = (event: MessageEvent) => {
             const data: ITagInfo = JSON.parse(event.data);
-            if (this.tagAll[data.sTagNo] && data.position.every(v => +v >= 0)) {
+            if (
+                this.groups.includes(data.groupNo)
+                && this.tagAll[data.sTagNo]
+                && data.position.every(v => +v >= 0)
+            ) {
                 this.doMonitor(data);
             }
         };
         // ======================================
         const wsUrl = getConfig<string>('websoket.position', 'ws://#{ip}/realtime/position');
         const ws = new WebSocket(wsUrl.replace('#{ip}', ip));
-        ws.onopen = () => ws.send(JSON.stringify(this.groups));
+        ws.onopen = () => this.count = 0;
         ws.onmessage = handler;
+        ws.onerror = () => this.count++ <= 5 && this.initWebSocket(true);
+
         this.ws = [ws];
     }
 
