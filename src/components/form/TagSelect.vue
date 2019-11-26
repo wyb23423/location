@@ -36,7 +36,7 @@ import { ElSelect } from 'element-ui/types/select';
 export default class TagSelect extends Vue {
     @Prop({ default: () => false }) public readonly disabled!: boolean;
     @Prop({ default: () => false }) public readonly multiple!: boolean;
-    @Prop({ default: () => '请输入标签名或标签号' })
+    @Prop({ default: () => '请输入标签名' })
     public readonly placeholder!: string;
 
     public value: string | string[] = '';
@@ -69,15 +69,16 @@ export default class TagSelect extends Vue {
     private async fetchTag(key: string) {
         this.loading = true;
         const res = await this.$http.get('/api/tag/getall', {
-            pageSize: 100,
-            currentPage: 1
+            pageSize: 100000,
+            currentPage: 1,
+            name: key
         });
 
         this.$emit('remote', res.pagedData.datas);
 
         const arr: Array<Record<'label' | 'value', string>> = [];
         res.pagedData.datas.forEach((v: ITag) => {
-            if (v.name.includes(key) || v.id.includes(key)) {
+            if (v.name.includes(key)) {
                 arr.push({
                     label: v.name,
                     value: v.id
