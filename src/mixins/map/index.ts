@@ -155,6 +155,10 @@ export default class MapMixin extends Loading {
         //
     }
 
+    protected showLine(tagNo: string) {
+        return this.showPath;
+    }
+
     private beforeMove(tagNo: string) {
         const timer = this.twinkleTimer.get(tagNo);
         if (timer) {
@@ -165,7 +169,7 @@ export default class MapMixin extends Loading {
         if (this.mgr) {
             this.mgr.show(tagNo, true);
 
-            if (this.showPath) {
+            if (this.showLine(tagNo)) {
                 this.mgr.addLine([], {
                     lineType: fengmap.FMLineType.FULL,
                     lineWidth: 2,

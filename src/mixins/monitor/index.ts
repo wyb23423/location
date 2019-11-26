@@ -148,7 +148,8 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
         this.showPath = false;
 
         // 渲染基站
-        this.tagAnchor().then(data => Reflect.set(this, 'groupData', arr2obj(data, 'groupCode')));
+        this.tagAnchor();
+        // .then(data => Reflect.set(this, 'groupData', arr2obj(data, 'groupid')));
 
         this.afterMapCreated();
     }

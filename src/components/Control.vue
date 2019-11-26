@@ -6,28 +6,13 @@
                 :class="$style.item"
                 style="margin-right: 20px;"
             >
-                <el-select
-                    v-model="tagNos"
+                <tag-select
                     :disabled="isPlaying"
-                    :multiple-limit="5"
-                    :loading="loading"
-                    :remote-method="remoteMethod"
-                    placeholder="请输入标签名"
-                    @change="change"
+                    :multiple="true"
+                    @change="tagNos = $event"
                     style="min-width: 200px"
-                    multiple
-                    remote
-                    filterable
-                    collapse-tags
                 >
-                    <el-option
-                        v-for="item in options"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                    >
-                    </el-option>
-                </el-select>
+                </tag-select>
                 <el-date-picker
                     v-model="dateProxy"
                     :disabled="isPlaying"
@@ -89,6 +74,7 @@ import Component, { mixins } from 'vue-class-component';
 import { formatTime } from '@/assets/lib/date';
 import ControlMixin from '@/mixins/control';
 import { Prop } from 'vue-property-decorator';
+import TagSelect from './form/TagSelect.vue';
 
 interface Option {
     label: string;
@@ -96,16 +82,14 @@ interface Option {
 }
 
 @Component({
+    components: { 'tag-select': TagSelect },
     filters: { formatTime }
 })
 export default class Control extends mixins(ControlMixin) {
     @Prop() public readonly showPath!: boolean; // 是否显示轨迹
 
     public loading: boolean = false;
-    public remoteMethod: ((key: string) => void) | null = null;
-    public format: ((value: number) => string) | null = null; // 格式化 tooltip message
     public isPlaying: boolean = false; // 是否正在播放
-    public options: Option[] = [];
 
     private timer?: number; // 播放定时器
 
@@ -116,49 +100,12 @@ export default class Control extends mixins(ControlMixin) {
         this.$emit('update:showPath', visible);
     }
 
-    public created() {
-        this.format = (value: number) => formatTime(this.timeRange, value);
-
-        let timer: number = 0;
-        this.remoteMethod = (key: string) => {
-            if (this.loading) {
-                return;
-            }
-
-            clearTimeout(timer);
-            if (!key) {
-                return (this.options.length = 0);
-            }
-
-            timer = setTimeout(() => {
-                this.loading = true;
-
-                this.$http
-                    .get('/api/tag/getall', {
-                        pageSize: 100,
-                        currentPage: 1,
-                        name: key
-                    })
-                    .then(res => {
-                        this.options.length = 0;
-                        const icons = new Map<string, string>();
-                        res.pagedData.datas.forEach((v: ITag) => {
-                            this.options.push({
-                                label: v.name,
-                                value: v.id
-                            });
-                            icons.set(v.id, v.icon);
-                        });
-
-                        this.$emit('set-icons', icons);
-                        this.loading = false;
-                    })
-                    .catch(console.log);
-            }, 500);
-        };
-    }
     public destroyed() {
         this.pause();
+    }
+
+    public format(value: number) {
+        return formatTime(this.timeRange, value);
     }
     // 选择的标签及日期变化时的回调函数
     public change() {

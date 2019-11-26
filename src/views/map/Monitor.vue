@@ -2,6 +2,12 @@
     <div class="map-box" @click="hiddenCover" ref="root">
         <div :class="$style['tool-bar']" class="map-tool-bar flex-center">
             <map-select @selectmap="selectMap"></map-select>
+            <TagSelect
+                @change="showLineTags = $event"
+                placeholder="显示轨迹的标签"
+                :multiple="true"
+                style="margin: 0 10px"
+            ></TagSelect>
             <div class="flex-center">
                 <el-input
                     :placeholder="`请输入${isName ? '标签名' : '标签号'}`"
@@ -30,14 +36,14 @@
                 ></el-button> -->
             </div>
         </div>
-        <el-switch
+        <!-- <el-switch
             v-model="showPath"
             active-text="显示轨迹"
             inactive-text="隐藏轨迹"
             active-color="#13ce66"
             inactive-color="#ff4949"
             :class="$style.switch"
-        ></el-switch>
+        ></el-switch> -->
 
         <div ref="map" style="height: 100%; overflow: hidden"></div>
         <div :class="$style.tools">
@@ -79,10 +85,10 @@
 import Component, { mixins } from 'vue-class-component';
 import TableMixin from '@/mixins/table';
 import EventMixin from '@/mixins/event';
-
 import Zone from '@/components/monitor/Zone.vue';
 import Group from '@/components/monitor/Group.vue';
 import Census from '@/components/monitor/Census.vue';
+import TagSelect from '@/components/form/TagSelect.vue';
 import MonitorMixin from '@/mixins/monitor';
 import { ZoneMode } from '@/store';
 import { State } from 'vuex-class/lib/bindings';
@@ -95,7 +101,8 @@ import { Async } from '../../assets/utils/util';
     components: {
         Zone,
         Group,
-        Census
+        Census,
+        TagSelect
     },
     filters: {
         mode(datas: IZone[], mode: number) {
@@ -110,7 +117,7 @@ export default class Monitor extends mixins(
 ) {
     @State public readonly zoneMode!: ZoneMode;
 
-    public groupData: { [x: string]: IBaseStation[] } = {}; // 基站分组
+    // public groupData: Record<string, IBaseStation[]> = {}; // 基站分组
     public zones: IZone[] = []; // 区域列表
 
     // 右下工具栏列表
@@ -121,10 +128,10 @@ export default class Monitor extends mixins(
         { name: '分组列表', active: false, display: true },
         { name: '统计', active: false, display: true }
     ];
-    public isFullScreen: boolean = false;
+    // public isFullScreen: boolean = false;
     public findTarget: string = ''; // 查询标签的标签号
     public isName: number = 0; // 是否通过标签名查询标签
-
+    public showLineTags: string[] = []; // 显示轨迹的标签号
     public zoneOp = [
         {
             type: { default: 'primary' },
@@ -149,19 +156,19 @@ export default class Monitor extends mixins(
         return this.censusTags;
     }
 
-    public created() {
-        this.on(RESIZE, () => {
-            this.isFullScreen = !!document.fullscreenElement;
+    // public created() {
+    //     this.on(RESIZE, () => {
+    //         this.isFullScreen = !!document.fullscreenElement;
 
-            const container = this.container;
-            if (container && this.mgr instanceof PIXIMgr) {
-                this.mgr.map.resize(
-                    container.offsetWidth,
-                    container.offsetHeight
-                );
-            }
-        });
-    }
+    //         const container = this.container;
+    //         if (container && this.mgr instanceof PIXIMgr) {
+    //             this.mgr.map.resize(
+    //                 container.offsetWidth,
+    //                 container.offsetHeight
+    //             );
+    //         }
+    //     });
+    // }
 
     // ==================================dom事件
     // 切换弹窗的显示
@@ -226,6 +233,10 @@ export default class Monitor extends mixins(
         for (let i = 2; i < this.tools.length; i++) {
             this.tools[i].active = false;
         }
+    }
+
+    protected showLine(tagNo: string) {
+        return this.showLineTags.includes(tagNo);
     }
 
     @Async()
