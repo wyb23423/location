@@ -69,7 +69,7 @@ export default class TagSelect extends Vue {
     private async fetchTag(key: string) {
         this.loading = true;
         const res = await this.$http.get('/api/tag/getall', {
-            pageSize: 100000,
+            pageSize: 100,
             currentPage: 1,
             name: key
         });
