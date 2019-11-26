@@ -108,7 +108,7 @@ export default class Notice extends NoticeInit {
                         const format = (<any>this.$options.filters).date;
                         const el = this.$notify.warning({
                             title: `标签${v.tagNo}异常`,
-                            message: `${format(v.alarmTime)}: ${v.alarmTime}`,
+                            message: `${format(v.alarmTime)}: ${v.alarmMsg}`,
                             duration: 0,
                             showClose: false,
                             customClass: 'notice-component',

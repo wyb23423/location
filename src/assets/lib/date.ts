@@ -39,6 +39,10 @@ export function formatTime(range: number, progress: number) {
  * @param fmt 格式
  */
 export function formatDate(value: number | Date, fmt: string = 'yyyy/MM/dd hh:mm:ss') {
+    if (value == null) {
+        return 'time is undefined';
+    }
+
     const date = typeof value === 'number' ? new Date(value) : value;
 
     if (/(y+)/.test(fmt)) {
