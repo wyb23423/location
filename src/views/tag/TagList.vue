@@ -34,7 +34,38 @@
                 <tag-config :tag-no="person.id"></tag-config>
             </el-tab-pane>
             <el-tab-pane label="更换标签" name="modifyId">
-                111
+                <el-form label-width="100px" ref="tagNo">
+                    <el-form-item
+                        label="标签号"
+                        :rules="{
+                            pattern: /^[0-9A-Fa-f]{8}$/,
+                            message:
+                                'id is not a hexadecimal string of length 8'
+                        }"
+                        required
+                    >
+                        <el-input
+                            v-model="tagNo"
+                            @keyup.enter.native="modifyTagNo"
+                            style="width: 60%"
+                        ></el-input>
+                    </el-form-item>
+
+                    <!-- 阻止单表单域时触发enter提交 -->
+                    <el-form-item v-show="false">
+                        <el-input value="1"></el-input>
+                    </el-form-item>
+
+                    <el-form-item>
+                        <el-button
+                            type="success"
+                            @click="modifyTagNo"
+                            :disabled="tagNo === person.id"
+                        >
+                            立即提交
+                        </el-button>
+                    </el-form-item>
+                </el-form>
             </el-tab-pane>
         </el-tabs>
     </div>
@@ -48,6 +79,7 @@ import { Route } from 'vue-router';
 import TagAdd from './TagAdd.vue';
 import { Async } from '../../assets/utils/util';
 import TagConfig from '../../components/edit/TagConfig.vue';
+import { ElForm } from 'element-ui/types/form';
 
 @Component({
     components: {
@@ -66,8 +98,10 @@ export default class TagList extends mixins(TableMixin) {
         { prop: 'name', label: '名称', width: 120 },
         { prop: 'content', label: '属性', width: 200 }
     ];
+    public tagNo = '';
 
     @Ref('editForm') private readonly editForm!: TagAdd;
+    @Ref('tagNo') private readonly tagNoForm!: ElForm;
 
     private oldData?: ITag; // 用于比较是否需要重新上传图片
 
@@ -93,6 +127,7 @@ export default class TagList extends mixins(TableMixin) {
     public setting(row: any) {
         this.person = { ...row };
         this.oldData = { ...row };
+        this.tagNo = row.id;
     }
 
     @Async()
@@ -112,6 +147,21 @@ export default class TagList extends mixins(TableMixin) {
         await this.$http.post('/api/tag/updateTag', data, {
             'Content-Type': 'application/json'
         });
+        this.refresh(false).$message.success('修改成功');
+    }
+
+    @Async()
+    public async modifyTagNo() {
+        const id = this.person!.id;
+        if (this.tagNo === id) {
+            return;
+        }
+
+        await this.tagNoForm.validate();
+        await this.$confirm('确认修改标签号?');
+
+        console.log(this.tagNo, id);
+        this.person!.id = this.tagNo;
         this.refresh(false).$message.success('修改成功');
     }
 

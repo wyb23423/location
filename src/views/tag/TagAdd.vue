@@ -1,7 +1,12 @@
 <template>
     <div style="padding-left: 5%; padding-top: 3%;">
         <h3 style="color: #009688;">添加标签</h3>
-        <el-form ref="form" :model="form" label-width="auto" style="width: 80%">
+        <el-form
+            ref="form"
+            :model="form"
+            label-width="100px"
+            style="width: 80%"
+        >
             <el-form-item label="头像：">
                 <app-avator v-model="form.img" ref="avator"></app-avator>
             </el-form-item>

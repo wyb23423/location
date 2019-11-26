@@ -1,5 +1,5 @@
 <template>
-    <el-form :model="form" style="padding: 20px 5%">
+    <el-form label-width="100px" :model="form" style="padding: 20px 5%">
         <el-form-item prop="heartRate" label="测试心率">
             <el-select v-model="form.heartRate">
                 <el-option :value="0x70" label="开始"></el-option>
