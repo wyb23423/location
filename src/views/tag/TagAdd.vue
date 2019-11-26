@@ -11,6 +11,7 @@
                 <app-avator v-model="form.img" ref="avator"></app-avator>
             </el-form-item>
             <el-form-item
+                v-if="!update"
                 label="标签号："
                 prop="id"
                 required
