@@ -64,7 +64,7 @@
                 v-if="tools[4].active"
                 @close="tools[4].active = false"
                 :zones="zones | mode(zoneMode.group)"
-                :censusTags="censusTags"
+                :censusTags="census"
                 :censusChange="censusChange"
             ></Census>
         </transition>
