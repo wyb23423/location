@@ -29,9 +29,10 @@ export class WebSocketInit extends Vue {
     }
 
     protected initWebSocket(isRelink?: boolean) {
-        if (!(isRelink && this.ws.length)) {
+        if (this.ws.length && !isRelink) {
             return;
         }
+
         this.closeWebSocket();
 
         const ip = getIp();

@@ -488,3 +488,18 @@ input{
     z-index: 99999999 !important;
     opacity: 0.6;
 }
+
+.heart-rate {
+    animation-direction: initial;
+    animation-name: heart-rate;
+    animation-duration: 200ms;
+}
+
+@keyframes heart-rate {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}

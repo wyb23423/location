@@ -2,7 +2,7 @@
  * 热力图
  */
 import { DEFAULT_HEATMAP_CONFIG } from '../common';
-import { PIXIMgr } from '.';
+import { PIXIMgr } from './index';
 import { FengMapMgr } from '../fengmap';
 
 export default class HeatMap {

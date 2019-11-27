@@ -203,6 +203,7 @@ export class PopInfo {
     private el: HTMLElement | null = null;
 
     private createTime: number = 0;
+    private time!: number;
 
     constructor(map: fengmap.FMMap, marker: fengmap.FMImageMarker) {
         if (marker.custom && marker.custom.info) {
@@ -214,12 +215,12 @@ export class PopInfo {
                 content: `<div>
                                 <div>名字: ${info.tagName}</div>
                                 <div>编号: ${tagNo}</div>
-                                <div id="${tagNo}">心率: --</div>
+                                <div>心率: <span id="${tagNo}" style="opacity: 1">--</span></div>
                             </div>`
             }, marker);
         }
 
-        this.createTime = Date.now();
+        this.createTime = this.time = Date.now();
     }
 
     public update(map: fengmap.FMMap, iHeartRate: number) {
@@ -227,7 +228,15 @@ export class PopInfo {
             if (map && this.pop && this.tagNo) {
                 map.updatePopPosition(this.pop);
                 this.el = this.el || document.getElementById(this.tagNo);
-                this.el && (this.el.innerText = `心率: ${iHeartRate}`);
+                if (this.el) {
+                    this.el.innerText = `${iHeartRate}`;
+                    const now = Date.now();
+                    if (now - this.time >= 500) {
+                        const opacity = this.el.style.opacity;
+                        this.el.style.opacity = opacity === '1' ? '0' : '1';
+                        this.time = now;
+                    }
+                }
             }
         } catch (e) {
             return false;

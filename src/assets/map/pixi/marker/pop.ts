@@ -4,10 +4,12 @@ export class PopInfo {
     public info?: { tagName: string; name: string };
     private textEl?: PIXI.Text;
     private triangle!: PIXI.Graphics;
+    private time!: number;
 
     constructor(img: PIXI.Sprite) {
         img.addChild(this.createBp());
         this.info = this.addText(img);
+        this.time = Date.now();
     }
 
     public update(iHeartRate: number) {
@@ -15,8 +17,14 @@ export class PopInfo {
             return false;
         }
 
-        const { tagName, name } = this.info;
-        this.textEl.text = `名字: ${tagName}\n编号: ${name}\n心率: ${iHeartRate}`;
+        const el = this.textEl.children[0] as PIXI.Text;
+        el.text = `${iHeartRate}`;
+
+        const now = Date.now();
+        if (now - this.time >= 500) {
+            el.alpha = el.alpha ? 0 : 1;
+            this.time = now;
+        }
 
         return true;
     }
@@ -54,15 +62,24 @@ export class PopInfo {
         if (custom && custom.info) {
             info = custom.info;
             const text = this.textEl = new PIXI.Text(
-                `名字: ${info.tagName}\n编号: ${info.name}\n心率: --`,
+                `名字: ${info.tagName}\n编号: ${info.name}\n心率:`,
                 { fontSize: 24 }
             );
             text.anchor.y = 0.5;
             text.position.set(-75, -105);
             text.alpha = 0.8;
+            text.addChild(this.createHeartRate());
             img.addChild(text);
 
             return info;
         }
+    }
+
+    private createHeartRate() {
+        const rate = new PIXI.Text('--', { fontSize: 24 });
+        rate.anchor.y = 0.5;
+        rate.position.set(62, 28);
+
+        return rate;
     }
 }
