@@ -36,6 +36,7 @@ import Vue from 'vue';
 import MapEdit, { MapForm } from '@/components/edit/MapEdit.vue';
 import MapSelect from '@/components/form/MapSelect.vue';
 import { Prop } from 'vue-property-decorator';
+import { Async } from '@/assets/utils/util';
 
 @Component({
     components: {
@@ -66,62 +67,61 @@ export default class MapAdd extends Vue {
         };
     }
 
-    public del() {
-        if (this.map.id != null) {
-            this.$confirm(`删除地图: ${this.map.name}?`)
-                .then(() =>
-                    this.$http.post('/api/map/deleteMap', { id: this.map.id })
-                )
-                .then(() => {
-                    this.$message.success('删除成功');
-                    location.href = location.href;
-                })
-                .catch(console.log);
-        } else {
-            this.$message.error('未选择地图!');
-        }
-    }
-
-    public onSubmit(data: MapForm) {
+    @Async()
+    public async del() {
         if (this.map.id == null) {
             return this.$message.error('未选择地图!');
         }
 
-        this.$confirm('确认修改?')
-            .then((): any => {
-                if (data.map) {
-                    return this.$http.post('/api/map/upload/mapfile', {
-                        file: data.map,
-                        mapName: data.map.name.split('.')[0] || 'map'
-                    });
-                }
+        await this.$confirm(`删除地图: ${this.map.name}?`);
+        await this.$http.post('/api/map/deleteMap', { id: this.map.id });
 
-                return { resultMap: { mapUrl: data.filename || data.url } };
-            })
-            .then((res: { resultMap: { mapUrl: string } }) => {
-                const { minX, maxX, minY, maxY } = data;
+        this.$message.success('删除成功');
+        location.href = location.href;
+    }
 
-                return this.$http.post({
-                    url: '/api/map/updateMap',
-                    body: {
-                        id: this.map.id,
-                        filepath: res.resultMap.mapUrl,
-                        name: data.name,
-                        margin: JSON.stringify([
-                            [minX, minY],
-                            [minX, maxY],
-                            [maxX, maxY],
-                            [maxX, minY],
-                            [data.width, data.height]
-                        ])
-                    },
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-            })
-            .then(() => this.$message.success('修改成功'))
-            .catch(console.log);
+    @Async()
+    public async onSubmit(data: MapForm) {
+        const id = this.map.id;
+        if (id == null) {
+            return this.$message.error('未选择地图!');
+        }
+
+        await this.$confirm('确认修改地图数据?');
+
+        // ======================================
+        let filepath = data.filename || data.url;
+        if (data.map) {
+            const res = (await this.$http.post('/api/map/upload/mapfile', {
+                file: data.map,
+                mapName: data.map.name.split('.')[0] || 'map'
+            })) as ResponseData<any, Record<'mapUrl', string>>;
+            filepath = res.resultMap.mapUrl;
+        }
+
+        // ===========================================
+        const { minX, maxX, minY, maxY, width, height, name } = data;
+        await this.$http.post({
+            url: '/api/map/updateMap',
+            body: {
+                id,
+                name,
+                filepath,
+                margin: JSON.stringify([
+                    [minX, minY],
+                    [minX, maxY],
+                    [maxX, maxY],
+                    [maxX, minY],
+                    [width, height]
+                ])
+            },
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        // ====================================
+        this.$message.success('修改成功');
     }
 }
 </script>

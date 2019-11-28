@@ -15,6 +15,7 @@
 import Component from 'vue-class-component';
 import Vue from 'vue';
 import MapEdit, { MapForm } from '@/components/edit/MapEdit.vue';
+import { Async } from '@/assets/utils/util';
 
 @Component({
     components: {
@@ -22,42 +23,41 @@ import MapEdit, { MapForm } from '@/components/edit/MapEdit.vue';
     }
 })
 export default class MapAdd extends Vue {
-    public onSubmit(data: MapForm) {
+    @Async()
+    public async onSubmit(data: MapForm) {
         if (!data.map) {
             return;
         }
 
-        this.$http
-            .post('/api/map/upload/mapfile', {
-                file: data.map,
-                mapName: data.map.name.split('.')[0] || 'map'
-            })
-            .then((res: ResponseData) => {
-                const { minX, maxX, minY, maxY } = data;
+        // ===========================上传文件
+        const res = (await this.$http.post('/api/map/upload/mapfile', {
+            file: data.map,
+            mapName: data.map.name.split('.')[0] || 'map'
+        })) as ResponseData<any, Record<'mapUrl', string>>;
 
-                return this.$http.post({
-                    url: '/api/map/addMap',
-                    body: {
-                        filepath: res.resultMap.mapUrl,
-                        name: data.name,
-                        margin: JSON.stringify([
-                            [minX, minY],
-                            [minX, maxY],
-                            [maxX, maxY],
-                            [maxX, minY],
-                            [data.width, data.height]
-                        ])
-                    },
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-            })
-            .then(() => {
-                this.$message.success('添加成功');
-                (<MapEdit>this.$refs.form).reset();
-            })
-            .catch(console.log);
+        // ==============================提交数据
+        const { minX, maxX, minY, maxY, width, height, name } = data;
+        await this.$http.post({
+            url: '/api/map/addMap',
+            body: {
+                name,
+                filepath: res.resultMap.mapUrl,
+                margin: JSON.stringify([
+                    [minX, minY],
+                    [minX, maxY],
+                    [maxX, maxY],
+                    [maxX, minY],
+                    [width, height]
+                ])
+            },
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        // ======================================添加成功后的处理
+        this.$message.success('添加成功');
+        (<MapEdit>this.$refs.form).reset();
     }
 }
 </script>
