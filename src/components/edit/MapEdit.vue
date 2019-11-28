@@ -72,9 +72,10 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { Prop, Watch, Emit } from 'vue-property-decorator';
+import { Prop, Watch, Emit, Ref } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
 import { ElUploadInternalFileDetail } from 'element-ui/types/upload';
+import { Async } from '@/assets/utils/util';
 
 export interface MapForm {
     id: number;
@@ -101,13 +102,18 @@ export default class MapEdit extends Vue {
         name: ''
     };
 
+    @Ref('form') private readonly elFrom!: ElForm;
+
     public changeUpload(file: ElUploadInternalFileDetail) {
+        const { raw, name: filename } = file;
         if (
-            file.raw.type !== 'image/png' &&
-            file.raw.type !== 'image/jpeg' &&
-            !file.name.endsWith('.fmap')
+            !(
+                raw.type === 'image/png' ||
+                raw.type === 'image/jpeg' ||
+                filename.endsWith('.fmap')
+            )
         ) {
-            return this.$message.error('只能上传jpg/png/fmag文件!');
+            return this.$message.error('只能上传jpg/png/fmap文件!');
         }
 
         if (file.size / 1024 / 1024 > 5) {
@@ -115,35 +121,30 @@ export default class MapEdit extends Vue {
         }
 
         this.form.url && URL.revokeObjectURL(this.form.url);
-        if (file.name.endsWith('.fmap')) {
-            this.form.url = '';
-            this.form.filename = file.name;
-        } else {
-            this.form.filename = '';
-            this.form.url = URL.createObjectURL(file.raw);
-        }
-
-        this.form.map = file.raw;
+        Object.assign(
+            this.form,
+            { map: raw },
+            filename.endsWith('.fmap')
+                ? { filename, url: '' }
+                : { filename: '', url: URL.createObjectURL(raw) }
+        );
     }
 
-    public submit() {
-        const form = <ElForm>this.$refs.form;
+    @Async()
+    public async submit() {
+        await this.elFrom.validate();
 
-        form.validate()
-            .then(() => {
-                if (!(this.form.map || this.form.url || this.form.filename)) {
-                    return this.$message.warning('地图文件不能为空');
-                }
+        if (!(this.form.map || this.form.url || this.form.filename)) {
+            return this.$message.warning('地图文件不能为空');
+        }
 
-                this.$emit('update:data', this.form);
-                this.$emit('submit', this.form);
-            })
-            .catch(console.log);
+        this.$emit('update:data', this.form);
+        this.$emit('submit', this.form);
     }
 
     @Emit('update:data')
     public reset() {
-        (<ElForm>this.$refs.form).resetFields();
+        this.elFrom.resetFields();
         this.form.map = null;
         this.form.url = this.form.filename = '';
 
