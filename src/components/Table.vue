@@ -44,14 +44,17 @@
             </el-table-column>
         </el-table>
         <div class="flex-center" style="justify-content: space-between;">
-            <el-button
-                size="mini"
-                icon="el-icon-printer"
-                @click="emit('toExcel')"
-                v-if="!noPrint"
-            >
-                导出
-            </el-button>
+            <div>
+                <el-button
+                    size="mini"
+                    icon="el-icon-printer"
+                    @click="emit('toExcel')"
+                    v-if="!noPrint"
+                >
+                    导出
+                </el-button>
+                <slot></slot>
+            </div>
             <el-pagination
                 :current-page="page"
                 :page-size="pageSize"

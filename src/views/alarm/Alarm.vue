@@ -12,7 +12,15 @@
                     @del="del"
                     @updateData="getData"
                     @toExcel="toExcel"
-                ></app-table>
+                >
+                    <el-button
+                        size="mini"
+                        :disabled="!tableData.length"
+                        @click="delPage"
+                    >
+                        删除本页
+                    </el-button>
+                </app-table>
             </el-card>
         </div>
     </app-page>
@@ -22,6 +30,7 @@
 import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
 import Page from '@/components/layout/Page.vue';
+import { Async } from '../../assets/utils/util';
 
 @Component({
     components: {
@@ -50,16 +59,24 @@ export default class Alarm extends mixins(TableMixin) {
         { prop: 'content', label: '报警信息', width: 240 }
     ];
 
-    public del(row: IAlarm) {
-        this.$confirm(`删除报警信息${row.id}?`)
-            .then(() =>
-                this.$http.post('/api/alarm/deleteAlarm', { id: row.id })
-            )
-            .then(() => {
-                this.$message.success('删除成功');
-                this.refresh();
-            })
-            .catch(console.log);
+    @Async()
+    public async del(row: IAlarm) {
+        await this.$confirm(`删除报警信息${row.id}?`);
+        await this.$http.post('/api/alarm/deleteAlarm', { id: row.id });
+        this.refresh().$message.success('删除成功');
+    }
+
+    @Async()
+    public async delPage() {
+        await this.$confirm('删除本页所有报警信息?');
+
+        const ids = this.tableData.map((v: IAlarm) => v.id);
+        // TODO: 向服务器发送批量删除的请求
+
+        const maxPage = Math.ceil(this.totalCount / this.pageSize) - 1;
+        this.refresh(true, Math.min(this.page, maxPage)).$message.success(
+            '删除成功'
+        );
     }
 
     protected async fetch(page: number, pageSize: number) {
