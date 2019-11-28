@@ -12,16 +12,11 @@ import DisplayMixin from '@/mixins/zone/display';
     }
 })
 export default class Zone extends mixins(Setting, TableMixin, DisplayMixin) {
-    public activeNames: string[] = ['info', 'add'];
-
-    // ===================================table
+    public activeNames: string = 'add';
     public colCfg: any[] = [
         { prop: 'name', label: '区域', sortable: true, width: 90 },
         { prop: 'status', label: '状态', width: 60 }
     ];
-    // =====================================
-
-    // =======================form
     public form: any = {
         name: '',
         mode: 2,

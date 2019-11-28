@@ -43,6 +43,7 @@
             v-model="activeNames"
             :class="$style.op"
             v-show="!isDrawing"
+            accordion
         >
             <el-collapse-item
                 name="info"
@@ -70,11 +71,7 @@
                 name="add"
                 v-if="!!permission.post"
             >
-                <zone-input
-                    v-model="form"
-                    form-height="calc(100vh - 560px)"
-                    :groups="groups"
-                >
+                <zone-input v-model="form" :groups="groups">
                     <el-form-item label="区域顶点">
                         <el-button
                             size="mini"
