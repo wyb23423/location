@@ -169,9 +169,9 @@ export default class ControlMixin extends Vue {
             data.forEach(v => {
                 if (v.position.every(p => +p >= 0)) {
                     (fragment[v.sTagNo] || (fragment[v.sTagNo] = [])).push({
-                        x: +v.position[1],
-                        y: +v.position[2],
-                        z: +v.position[3] || 0,
+                        x: +v.position[0],
+                        y: +v.position[1],
+                        z: +v.position[2] || 0,
                         time: new Date((<string>v.time)).getTime() + offset,
                         group: v.groupNo
                     });
