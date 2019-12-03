@@ -148,7 +148,7 @@ export default class History extends mixins(MapMixin) {
                         this.start(target, tagNo);
                     } else {
                         const time = target.time - prev.time + record.errorTime;
-                        this.moveTo(tagNo, target, time).then(() =>
+                        this.moveTo(tagNo, target, time / 1000).then(() =>
                             this.moving.delete(tagNo)
                         );
                         this.moving.add(tagNo);

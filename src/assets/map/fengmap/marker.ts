@@ -211,11 +211,20 @@ export class PopInfo {
             const tagNo = this.tagNo = info.name;
             this.pop = new fengmap.FMPopInfoWindow(map, {
                 width: 180,
-                height: 80,
+                height: 90,
                 content: `<div>
-                                <div>名字: ${info.tagName}</div>
-                                <div>编号: ${tagNo}</div>
-                                <div>心率: <span id="${tagNo}" style="opacity: 1">--</span></div>
+                                <div class="tag-info">
+                                    <img src="/images/name.png" />
+                                    <span>${info.tagName}</span>
+                                </div>
+                                <div class="tag-info" style="margin: 5px 0">
+                                    <img src="/images/no.png" />
+                                    <span>${tagNo}</span>
+                                </div>
+                                <div class="tag-info" id="${tagNo}" style="opacity: 1">
+                                    <img src="/images/heart.png" />
+                                    <span>--</span>
+                                </div>
                             </div>`
             }, marker);
         }
@@ -229,7 +238,9 @@ export class PopInfo {
                 map.updatePopPosition(this.pop);
                 this.el = this.el || document.getElementById(this.tagNo);
                 if (this.el) {
-                    this.el.innerText = `${iHeartRate}`;
+                    const span = <HTMLSpanElement>this.el.children[1];
+                    span && (span.innerText = `${iHeartRate}`);
+
                     const now = Date.now();
                     if (now - this.time >= 500) {
                         const opacity = this.el.style.opacity;

@@ -1,28 +1,32 @@
 import * as PIXI from 'pixi.js';
+import { getCustomInfo } from '../../common';
 
 export class PopInfo {
-    public info?: { tagName: string; name: string };
-    private textEl?: PIXI.Text;
+    public static readonly INFO_POSITION = {
+        name: [-90, -160],
+        no: [-90, -125],
+        heart: [-90, -90],
+    };
+
+    private heartEl?: PIXI.Container;
     private triangle!: PIXI.Graphics;
     private time!: number;
 
     constructor(img: PIXI.Sprite) {
-        img.addChild(this.createBp());
-        this.info = this.addText(img);
+        this.init(img);
         this.time = Date.now();
     }
 
     public update(iHeartRate: number) {
-        if (!(this.textEl && this.info)) {
+        if (!(this.heartEl)) {
             return false;
         }
 
-        const el = this.textEl.children[0] as PIXI.Text;
-        el.text = `${iHeartRate}`;
+        (this.heartEl.children[0] as PIXI.Text).text = `${iHeartRate}`;
 
         const now = Date.now();
         if (now - this.time >= 500) {
-            el.alpha = el.alpha ? 0 : 1;
+            this.heartEl.alpha = this.heartEl.alpha ? 0 : 1;
             this.time = now;
         }
 
@@ -30,10 +34,17 @@ export class PopInfo {
     }
 
     public close(img: PIXI.Sprite) {
-        img.removeChild(this.triangle);
-        this.textEl && img.removeChild(this.textEl);
+        img.removeChildren();
+        (<any>this.triangle) = this.heartEl = undefined;
+    }
 
-        (<any>this.triangle) = this.textEl = undefined;
+    private async init(img: PIXI.Sprite) {
+        img.addChild(this.createBp());
+
+        const { tagName, name } = getCustomInfo<{ tagName: string; name: string }>(img, 'info');
+        img.addChild(await this.createInfoItem('name', tagName || '未知标签'));
+        img.addChild(await this.createInfoItem('no', name || '未编号'));
+        img.addChild(await this.createInfoItem('heart', '--'));
     }
 
     private createBp() {
@@ -56,30 +67,44 @@ export class PopInfo {
         return triangle;
     }
 
-    private addText(img: PIXI.Sprite) {
-        const custom = (<any>img).custom;
-        let info: { tagName: string; name: string };
-        if (custom && custom.info) {
-            info = custom.info;
-            const text = this.textEl = new PIXI.Text(
-                `名字: ${info.tagName}\n编号: ${info.name}\n心率:`,
-                { fontSize: 24 }
-            );
-            text.anchor.y = 0.5;
-            text.position.set(-75, -105);
-            text.alpha = 0.8;
-            text.addChild(this.createHeartRate());
-            img.addChild(text);
+    private async createInfoItem(icon: keyof typeof PopInfo.INFO_POSITION, text: string | number) {
+        const container = new PIXI.Container();
+        container.position.set(...PopInfo.INFO_POSITION[icon]);
+        container.alpha = 0.8;
 
-            return info;
+        container.addChild(this.createText(text));
+        container.addChild(await this.createIcon(icon));
+
+        if (icon === 'heart') {
+            this.heartEl = container;
         }
+
+        return container;
     }
 
-    private createHeartRate() {
-        const rate = new PIXI.Text('--', { fontSize: 24 });
-        rate.anchor.y = 0.5;
-        rate.position.set(62, 28);
+    private async createIcon(icon: keyof typeof PopInfo.INFO_POSITION) {
+        const src = `/images/${icon}.png`;
+        const texture = await new Promise<PIXI.Texture>(resolve => {
+            const cache = PIXI.utils.TextureCache[src];
+            if (cache) {
+                resolve(cache);
+            } else {
+                const loader = new PIXI.Loader();
+                loader.add(src).load(() => resolve(loader.resources[src].texture));
+            }
+        });
 
-        return rate;
+        const iconEl = new PIXI.Sprite(texture);
+        iconEl.width = iconEl.height = 25;
+
+        return iconEl;
+    }
+
+    private createText(text: string | number) {
+        const textEl = new PIXI.Text('' + text);
+        textEl.anchor.y = 0.5;
+        textEl.position.set(35, 12);
+
+        return textEl;
     }
 }
