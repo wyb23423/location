@@ -41,7 +41,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
                     name && this.pops.set(name, this.mgr!.addPopInfo(v));
                 });
             } else {
-                this.$message.info(`未找到标签${key}为${key}的标签`);
+                this.$message.info(`未找到标签${isName ? '名' : '号'}为${key}的标签`);
             }
         }
     }
