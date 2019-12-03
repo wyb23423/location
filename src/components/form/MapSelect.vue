@@ -45,52 +45,52 @@ export default class MapSelect extends Vue {
     }
 
     private async _getMapData() {
-        try {
-            const res = await this.$http.get('/api/map/getall', {
-                currentPage: 1,
-                pageSize: 100000
-            });
-            this.options = res.pagedData.datas.map(v => {
-                v.margin = Array.isArray(v.margin)
-                    ? v.margin
-                    : JSON.parse(v.margin);
+        // try {
+        //     const res = await this.$http.get('/api/map/getall', {
+        //         currentPage: 1,
+        //         pageSize: 100000
+        //     });
+        //     this.options = res.pagedData.datas.map(v => {
+        //         v.margin = Array.isArray(v.margin)
+        //             ? v.margin
+        //             : JSON.parse(v.margin);
 
-                return v;
-            });
-        } catch (e) {
-            if (e.status !== 404) {
-                return;
+        //         return v;
+        //     });
+        // } catch (e) {
+        //     if (e.status !== 404) {
+        //         return;
+        //     }
+
+        this.options = [
+            {
+                id: 1,
+                groupIds: ['0001', '0002'],
+                name: '办公室',
+                filepath: '/image/huijinguangchang.fmap',
+                margin: [
+                    [11582810.7716, 3575751.7814],
+                    [11582810.7716, 3575775.267],
+                    [11582841.6422, 3575775.267],
+                    [11582841.6422, 3575751.7814],
+                    [3073, 2326]
+                ]
+            },
+            {
+                id: 2,
+                name: '办公室-pixi',
+                groupIds: ['0001', '0002'],
+                filepath: '/images/5ad8909aeff13.png',
+                margin: [
+                    [-275, 47],
+                    [-275, 2624],
+                    [3742, 2624],
+                    [3742, 47],
+                    [3073, 2326]
+                ]
             }
-
-            this.options = [
-                {
-                    id: 1,
-                    groupIds: ['0001', '0002'],
-                    name: '办公室',
-                    filepath: '/image/huijinguangchang.fmap',
-                    margin: [
-                        [11582810.7716, 3575751.7814],
-                        [11582810.7716, 3575775.267],
-                        [11582841.6422, 3575775.267],
-                        [11582841.6422, 3575751.7814],
-                        [3073, 2326]
-                    ]
-                },
-                {
-                    id: 2,
-                    name: '办公室-pixi',
-                    groupIds: ['0001', '0002'],
-                    filepath: '/images/5ad8909aeff13.png',
-                    margin: [
-                        [-275, 47],
-                        [-275, 2624],
-                        [3742, 2624],
-                        [3742, 47],
-                        [3073, 2326]
-                    ]
-                }
-            ];
-        }
+        ];
+        // }
 
         if (this.options.length) {
             this.value = this.options[0].id;

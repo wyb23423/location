@@ -2,10 +2,10 @@ import * as PIXI from 'pixi.js';
 import { getCustomInfo } from '../../common';
 
 export class PopInfo {
-    public static readonly INFO_POSITION = {
-        name: [-90, -160],
-        no: [-90, -125],
-        heart: [-90, -90],
+    public static readonly INFO_POSITION_Y = {
+        name: -155,
+        no: -120,
+        heart: -85,
     };
 
     private heartEl?: PIXI.Container;
@@ -54,10 +54,10 @@ export class PopInfo {
         triangle.drawPolygon([
             0, 0,
             10, -10,
-            120, -10,
-            120, -120,
-            -120, -120,
-            -120, -10,
+            90, -10,
+            90, -115,
+            -90, -115,
+            -90, -10,
             -10, -10
         ]);
 
@@ -67,9 +67,9 @@ export class PopInfo {
         return triangle;
     }
 
-    private async createInfoItem(icon: keyof typeof PopInfo.INFO_POSITION, text: string | number) {
+    private async createInfoItem(icon: keyof typeof PopInfo.INFO_POSITION_Y, text: string | number) {
         const container = new PIXI.Container();
-        container.position.set(...PopInfo.INFO_POSITION[icon]);
+        container.position.set(-75, PopInfo.INFO_POSITION_Y[icon]);
         container.alpha = 0.8;
 
         container.addChild(this.createText(text));
@@ -82,7 +82,7 @@ export class PopInfo {
         return container;
     }
 
-    private async createIcon(icon: keyof typeof PopInfo.INFO_POSITION) {
+    private async createIcon(icon: keyof typeof PopInfo.INFO_POSITION_Y) {
         const src = `/images/${icon}.png`;
         const texture = await new Promise<PIXI.Texture>(resolve => {
             const cache = PIXI.utils.TextureCache[src];
