@@ -500,6 +500,9 @@ input{
     margin-right: 5px;
 }
 
+.fm-control-popmarker {
+    opacity: 0.7 !important;
+}
 .fm-control-popmarker-closebtn {
-    display: none !important;
+    display: none  !important;
 }
