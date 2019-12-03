@@ -1,13 +1,13 @@
 import Component, { mixins } from 'vue-class-component';
 import MapMixin from '../map';
 import { WebSocketInit } from './websocket';
-import { arr2obj, getConfig } from '@/assets/utils/util';
+import { getConfig } from '@/assets/utils/util';
 import { LOSS_TIME, MODIFY_TAG_ICON, MISS } from '@/constant';
 import Link from '../map/link';
 import { getCustomInfo } from '@/assets/map/common';
 
 interface Pop {
-    close(immediately?: boolean): void | boolean;
+    close(clickIconTime?: number): void | boolean;
     update(iHeartRate: number): boolean;
 }
 
@@ -17,6 +17,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
     private readonly moveTime = 1 / getConfig<number>('SECOND_COUNT', 1);
+    private clickIconTime?: number;
 
     public created() {
         this.$event.on(MODIFY_TAG_ICON, (tagNo: string, img: string) => this.mgr && this.mgr.modifyImg(tagNo, img));
@@ -52,12 +53,11 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
             if (this.mgr) {
                 const tagNo = getCustomInfo<ITag>(event.target, 'info').id;
                 if (event.nodeType === fengmap.FMNodeType.IMAGE_MARKER && tagNo) {
-                    if (!this.pops.has(tagNo)) {
-                        this.pops.set(tagNo, this.mgr.addPopInfo(<any>event.target));
-                    }
+                    this.pops.has(tagNo) || this.pops.set(tagNo, this.mgr.addPopInfo(<any>event.target));
+                    this.clickIconTime = Date.now();
                 } else {
                     for (const [k, p] of this.pops.entries()) {
-                        p.close() && this.pops.delete(k);
+                        p.close(this.clickIconTime) && this.pops.delete(k);
                     }
                 }
             }
@@ -129,7 +129,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
             // 移除信息框
             if (this.pops.has(tagNo)) {
-                (<Pop>this.pops.get(tagNo)).close(true);
+                (<Pop>this.pops.get(tagNo)).close(0);
                 this.pops.delete(tagNo);
             }
         }

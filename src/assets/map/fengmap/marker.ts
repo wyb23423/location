@@ -210,8 +210,8 @@ export class PopInfo {
             const info = marker.custom.info;
             const tagNo = this.tagNo = info.name;
             this.pop = new fengmap.FMPopInfoWindow(map, {
-                width: 180,
-                height: 90,
+                width: 130,
+                height: 85,
                 content: `<div>
                                 <div class="tag-info">
                                     <img src="/images/name.png" />
@@ -256,8 +256,8 @@ export class PopInfo {
         return true;
     }
 
-    public close(immediately?: boolean) {
-        if (this.pop && (immediately || Date.now() - this.createTime >= 200)) {
+    public close(clickTime: number = this.createTime) {
+        if (this.pop && Date.now() - clickTime >= 200) {
             try {
                 this.el = null;
                 this.pop.close();

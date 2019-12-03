@@ -102,7 +102,7 @@ export class PIXIMgr extends ElsMgr {
         const zIndex = img.zIndex;
 
         img.zIndex = Math.max(99, img.zIndex);
-        pop.info && this.stage.sortChildren();
+        this.stage.sortChildren();
 
         return {
             update: pop.update.bind(pop),

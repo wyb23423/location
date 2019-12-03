@@ -499,3 +499,7 @@ input{
     height: 16px;
     margin-right: 5px;
 }
+
+.fm-control-popmarker-closebtn {
+    display: none !important;
+}
