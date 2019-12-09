@@ -24,6 +24,7 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
 
             if (v instanceof fengmap.FMImageMarker) {
                 v.stopJump();
+                v.url.startsWith('blob') && URL.revokeObjectURL(v.url);
             }
 
             const layer = this.findLayerByMarker(v);

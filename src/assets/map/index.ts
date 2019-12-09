@@ -28,11 +28,14 @@ export function createMap(data: IMap, dom: HTMLElement) {
 }
 
 export function createHeatMap(mgr: FengMapMgr | PIXIMgr) {
+    const config: HeatMapConfig = {};
     if (mgr instanceof FengMapMgr) {
-        return new FMHeatMap({ map: mgr.map });
+        return new FMHeatMap({ ...config, map: mgr.map });
     }
 
-    return new PXHeatMap();
+    const { _width, _height } = <any>mgr.stage;
+    config.radius = Math.min(_width, _height) / 10;
+    return new PXHeatMap(config);
 }
 
 

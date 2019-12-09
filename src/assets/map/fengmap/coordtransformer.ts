@@ -118,9 +118,14 @@ export class CoordTransformer {
     }
 
     /**
-     * 将地图坐标转化为定位坐标
+     * 地图坐标与定位坐标转化
+     * @param is2map 是否是定位坐标转为地图坐标
      */
-    public getCoordinate(v: Vector23): Vector3 {
+    public getCoordinate(v: Vector23, is2map: boolean = false): Vector3 {
+        if (is2map) {
+            return this.transform(v);
+        }
+
         if (!this.valid()) {
             return { x: 0, y: 0, z: 0 };
         }

@@ -70,6 +70,7 @@ declare namespace fengmap {
         public layerLocalHeight: number;
         public mapScene: any;
         public viewMode: string;
+        public mapScale: number;
 
         public gestureEnableController: {
             enableMapHover: boolean;

@@ -19,6 +19,5 @@ declare interface HeatMapConfig {
     radius?: number;
     min?: number;
     max?: number;
-    maxSize?: number;
     opacity?: number;
 }

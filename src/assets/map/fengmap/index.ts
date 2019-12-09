@@ -85,7 +85,7 @@ export class FengMapMgr extends CoordTransformer {
 
                 const { x, y } = e.eventInfo.coord;
                 e.data = { global: this.map.coordMapToScreen(x, y) };
-                console.log(this.getCoordinate(e.eventInfo.coord));
+                console.log(this.getCoordinate(e.eventInfo.coord), this.map.mapScale);
             }
 
             callback(e);

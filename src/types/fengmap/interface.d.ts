@@ -20,6 +20,7 @@ interface FMMapOptions {
     defaultViewMode?: fengmap.FMViewMode.MODE_2D | fengmap.FMViewMode.MODE_3D;
 
     preserveDrawingBuffer?: boolean;
+    defaultViewCenter?: Vector2;
 }
 
 interface PolygonOpt {

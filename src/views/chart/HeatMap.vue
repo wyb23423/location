@@ -7,9 +7,11 @@
                     v-model="date"
                     type="datetime"
                     placeholder="选择日期时间"
-                    @change="paint"
                 >
                 </el-date-picker>
+                <el-button style="margin-left: 10px" @click="paint">
+                    {{ date ? '绘制' : '清除' }}
+                </el-button>
                 <el-button
                     icon="el-icon-download"
                     :disabled="!date"
@@ -29,19 +31,36 @@ import FMHeatMap from '@/assets/map/fengmap/heat_map';
 import PXHeatMap from '@/assets/map/pixi/heat_map';
 import { createHeatMap } from '@/assets/map';
 import { download } from '@/assets/utils/download';
+import { randomNum } from '../../assets/utils/util';
+import { FengMapMgr } from '@/assets/map/fengmap';
+import { PIXIMgr } from '@/assets/map/pixi';
 
 @Component
 export default class HeatMap extends mixins(MapMixin) {
     public date: Date | null = null;
 
     private heatMap!: FMHeatMap | PXHeatMap;
+    private oldDate?: Date | null;
 
     public paint() {
-        if (!this.date) {
-            return this.mgr && this.heatMap.remove(this.mgr);
+        if (!this.beforePaint()) {
+            return;
         }
 
-        this.heatMap.clearPoints();
+        const { mgr, heatMap } = this;
+        for (let i = 0; i < 1; i++) {
+            const { x, y } = mgr!.getCoordinate(
+                {
+                    x: randomNum(200, 3000, false),
+                    y: randomNum(500, 2300, false)
+                },
+                true
+            );
+
+            heatMap.addPoint(x, y, 100);
+        }
+        heatMap.render(mgr!);
+
         // TODO 获取数据点并绘制
 
         // this.$http.post({
@@ -68,12 +87,35 @@ export default class HeatMap extends mixins(MapMixin) {
         }
     }
 
+    protected initData() {
+        this.oldDate = void 0;
+    }
     protected bindEvents() {
         this.mgr!.on('loadComplete', () => {
+            this.mgr!.switchViewMode(fengmap.FMViewMode.MODE_3D);
             this.tagAnchor();
 
             this.heatMap = createHeatMap(this.mgr!);
         });
+    }
+
+    private beforePaint() {
+        if (this.oldDate === this.date) {
+            return false;
+        }
+        this.oldDate = this.date;
+
+        if (!this.mgr) {
+            return false;
+        }
+
+        if (!this.date) {
+            this.heatMap.remove(this.mgr);
+            return false;
+        }
+
+        this.heatMap.clearPoints();
+        return true;
     }
 }
 </script>

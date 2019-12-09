@@ -31,12 +31,12 @@ export default class HeatMap {
      *  类型只能是fengmap.FMMap, PIXI.Container是为了兼容另一种实现
      * @param groupID 楼层数
      */
-    public render(map: fengmap.FMMap | PIXI.Container, groupID?: number) {
-        if (!(this.instance && map instanceof fengmap.FMMap)) {
+    public render(mgr: PIXIMgr | FengMapMgr, groupID?: number) {
+        if (!(this.instance && mgr instanceof FengMapMgr)) {
             return;
         }
 
-        map.getFMGroup(groupID || map.focusGroupID || 0)
+        mgr.map.getFMGroup(groupID || mgr.map.focusGroupID || 0)
             .applyHeatMap(this.instance);
     }
     /**
