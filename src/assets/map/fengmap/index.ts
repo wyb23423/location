@@ -37,6 +37,7 @@ export class FengMapMgr extends CoordTransformer {
             // 开发者申请应用名称
             appName: APP_NAME,
             preserveDrawingBuffer: true,
+            defaultMapScaleLevel: 22
         });
         this.map.openMapById(name);
         this.map.on('loadComplete', () => {

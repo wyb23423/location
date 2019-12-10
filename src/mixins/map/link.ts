@@ -19,14 +19,17 @@ export default class Link extends Vue {
         const testData = [
             {
                 id: 1,
+                name: '1',
                 tags: ['00000004', '00000005']
             },
             {
                 id: 2,
+                name: '2',
                 tags: ['00000001', '00000008']
             },
             {
                 id: 3,
+                name: '3',
                 tags: ['00000001', '00000011']
             },
         ];

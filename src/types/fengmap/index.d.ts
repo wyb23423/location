@@ -8,7 +8,6 @@
 declare namespace fengmap {
     class FMMarker<T = any> {
         public custom?: any;
-        public groupID: number;
         public mapCoord: Vector3;
         // tslint:disable:variable-name
         public _x: number;
@@ -16,6 +15,8 @@ declare namespace fengmap {
         // tslint:enable:variable-name
         public show: boolean;
         constructor(options: T);
+
+        public get groupID(): number;
 
         public alwaysShow(): void;
         public stopMoveTo(): void;

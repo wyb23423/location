@@ -20,7 +20,11 @@
                 ></el-button>
             </div>
         </div>
-        <div ref="map" style="height: 100%; overflow: hidden"></div>
+        <div
+            ref="map"
+            id="map-box"
+            style="height: 100%; overflow: hidden"
+        ></div>
     </div>
 </template>
 
@@ -43,6 +47,7 @@ export default class HeatMap extends mixins(MapMixin) {
     private oldDate?: Date | null;
 
     public paint() {
+        this.heatMap = this.heatMap || createHeatMap(<any>{});
         if (!this.beforePaint()) {
             return;
         }
@@ -52,7 +57,7 @@ export default class HeatMap extends mixins(MapMixin) {
             const { x, y } = mgr!.getCoordinate(
                 {
                     x: randomNum(200, 3000, false),
-                    y: randomNum(500, 2300, false)
+                    y: randomNum(1000, 2500, false)
                 },
                 true
             );
@@ -77,12 +82,24 @@ export default class HeatMap extends mixins(MapMixin) {
 
     public download() {
         if (this.container) {
-            const canvas = this.container.children[0];
-            if (canvas instanceof HTMLCanvasElement) {
+            const c = this.container.children[0];
+            if (c instanceof HTMLCanvasElement) {
                 const name = `heatmap_${
                     this.date ? this.date.toJSON() : 'unknown'
                 }.png`;
-                canvas.toBlob(blob => blob && download(blob, name));
+
+                const canvas = document.createElement('canvas');
+                canvas.width = c.width;
+                canvas.height = c.height;
+
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    ctx.drawImage(c, 0, 0);
+                    this.heatMap.paint(ctx);
+                    canvas.toBlob(blob => blob && download(blob, name));
+                } else {
+                    console.log('创建画布失败');
+                }
             }
         }
     }
@@ -92,11 +109,14 @@ export default class HeatMap extends mixins(MapMixin) {
     }
     protected bindEvents() {
         this.mgr!.on('loadComplete', () => {
-            this.mgr!.switchViewMode(fengmap.FMViewMode.MODE_3D);
+            // this.mgr!.switchViewMode(fengmap.FMViewMode.MODE_3D);
             this.tagAnchor();
 
             this.heatMap = createHeatMap(this.mgr!);
         });
+    }
+    protected dispose() {
+        this.mgr && this.heatMap.remove(this.mgr);
     }
 
     private beforePaint() {

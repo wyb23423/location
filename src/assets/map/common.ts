@@ -25,7 +25,7 @@ export const DEFAULT_HEATMAP_CONFIG = {
     opacity: 0.5,
     min: 0,
     max: 100,
-    radius: 15
+    radius: 20
 };
 
 export function adaptationVector(v: Vector23 | VectorAxis): Vector3 {
@@ -40,11 +40,13 @@ export function adaptationVector(v: Vector23 | VectorAxis): Vector3 {
 
 export class BaseHeatMap {
     protected data: PointData[] = [];
+    protected config!: Required<HeatMapConfig & { map: void }>;
 
-    constructor(protected config: HeatMapConfig = {}) {
+    constructor(config: HeatMapConfig & { map?: fengmap.FMMap } = {}) {
         this.config = {
             ...DEFAULT_HEATMAP_CONFIG,
-            ...config
+            ...config,
+            map: void 0
         };
     }
 
@@ -57,14 +59,18 @@ export class BaseHeatMap {
     public clearPoints() {
         this.data.length = 0;
     }
+    public paint(ctx: CanvasRenderingContext2D) {
+        //
+    }
 
     protected create(w: number, h: number, parseCoord?: (p: PointData) => Vector2) {
         const canvas: HTMLCanvasElement = this.createCanvas();
-        const ctx = <CanvasRenderingContext2D>canvas.getContext('2d');
 
-        const r = this.config.radius || (this.config.radius = Math.min(w, h) / 10);
+        const r = this.config.radius || (this.config.radius = Math.min(w, h) / 8 || 20);
         w = canvas.width = w + r * 2;
         h = canvas.height = h + r * 2;
+
+        const ctx = <CanvasRenderingContext2D>canvas.getContext('2d');
 
         this.renderAlpha(ctx, parseCoord);
         this.putColor(ctx, w, h);
@@ -75,13 +81,13 @@ export class BaseHeatMap {
     // 绘制alpha通道的圆
     private renderAlpha(ctx: CanvasRenderingContext2D, parseCoord?: (p: PointData) => Vector2) {
         const shadowCanvas = this.createShadowTpl();
-        const { min, max, radius } = <Required<HeatMapConfig>>this.config;
+        const { min, max } = <Required<HeatMapConfig>>this.config;
 
         for (const point of this.data) {
             const { x, y } = parseCoord ? parseCoord(point) : point;
             const alpha = (point.value - min) / (max - min);
             ctx.globalAlpha = alpha;
-            ctx.drawImage(shadowCanvas, x + radius, y + radius);
+            ctx.drawImage(shadowCanvas, x, y);
         }
     }
 

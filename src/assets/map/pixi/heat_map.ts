@@ -8,7 +8,7 @@ import { BaseHeatMap } from '../common';
 export default class HeatMap extends BaseHeatMap {
     private sprite = new PIXI.Sprite();
 
-    constructor(config: HeatMapConfig = {}) {
+    constructor(config: HeatMapConfig) {
         super(config);
 
         this.sprite.zIndex = 99999;
@@ -18,8 +18,7 @@ export default class HeatMap extends BaseHeatMap {
 
     /**
      * 生成热力图
-     * @param stage 舞台容器
-     *  类型只能是PIXI.Container, fengmap.FMMap是为了兼容另一种实现
+     * @param mgr 类型只能是PIXIMgr, FengMapMgr是为了兼容另一种实现
      */
     public render(mgr: PIXIMgr | FengMapMgr) {
         if (!(mgr instanceof PIXIMgr)) {

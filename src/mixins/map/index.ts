@@ -27,7 +27,7 @@ export default class MapMixin extends Loading {
     private twinkleTimer = new Map<string, number>();
 
     public beforeDestroy() {
-        this.dispose();
+        this._dispose();
         // 关闭遮罩
         this.loaded();
     }
@@ -41,16 +41,6 @@ export default class MapMixin extends Loading {
 
         if (!(await this.initMap(data))) {
             this.loaded();
-        }
-    }
-
-    protected dispose() {
-        this.twinkleTimer.forEach(clearTimeout);
-        this.twinkleTimer.clear();
-
-        if (this.mgr) {
-            this.mgr.dispose();
-            this.mgr = undefined;
         }
     }
 
@@ -155,8 +145,23 @@ export default class MapMixin extends Loading {
         //
     }
 
+    protected dispose() {
+        //
+    }
+
     protected showLine(tagNo: string) {
         return this.showPath;
+    }
+
+    private _dispose() {
+        this.dispose();
+        this.twinkleTimer.forEach(clearTimeout);
+        this.twinkleTimer.clear();
+
+        if (this.mgr) {
+            this.mgr.dispose();
+            this.mgr = undefined;
+        }
     }
 
     private beforeMove(tagNo: string) {
@@ -234,7 +239,7 @@ export default class MapMixin extends Loading {
         this.loading({ customClass: 'loading-mark' }); // 显示加载遮罩
         await loopAwait(() => !!(this.container && this.container.offsetWidth && this.container.offsetHeight));
 
-        this.dispose();
+        this._dispose();
         this.mgr = createMap(data, this.container);
         this.mgr!.on('loadComplete', this.loaded.bind(this)); // 加载完毕关闭遮罩
         this.bindEvents(data);
