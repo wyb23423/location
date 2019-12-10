@@ -87,7 +87,7 @@ declare namespace fengmap {
 
         public openMapById(id: string): void;
         public getFMGroup(gid: number): FMGroup;
-        public coordMapToScreen(x: number, y: number, z?: number, isFloat?: boolean, giveMeRaw?: boolean): Vector2;
+        public coordMapToScreen(x: number, y: number, z?: number): Vector2;
         public coordScreenToMap(x: number, y: number, z: number, isFloat?: boolean, giveMeRaw?: boolean): Vector3;
         public drawLineMark(line: FMLineMarker, style: LineStyle): void;
         public clearLineMark(): void;

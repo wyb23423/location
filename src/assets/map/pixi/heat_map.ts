@@ -21,7 +21,7 @@ export default class HeatMap extends BaseHeatMap {
      * @param mgr 类型只能是PIXIMgr, FengMapMgr是为了兼容另一种实现
      */
     public render(mgr: PIXIMgr | FengMapMgr) {
-        if (!(mgr instanceof PIXIMgr)) {
+        if (!(mgr instanceof PIXIMgr && this.data.length)) {
             return;
         }
 

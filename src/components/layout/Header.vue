@@ -126,6 +126,8 @@ export default class Header extends Vue {
 .row {
     background: #393d49;
     height: 100%;
+    position: relative;
+    z-index: 9;
 }
 
 .link {

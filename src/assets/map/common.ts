@@ -66,7 +66,7 @@ export class BaseHeatMap {
     protected create(w: number, h: number, parseCoord?: (p: PointData) => Vector2) {
         const canvas: HTMLCanvasElement = this.createCanvas();
 
-        const r = this.config.radius || (this.config.radius = Math.min(w, h) / 8 || 20);
+        const r = this.config.radius || (this.config.radius = Math.min(w, h) / 8 || 200);
         w = canvas.width = w + r * 2;
         h = canvas.height = h + r * 2;
 

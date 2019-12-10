@@ -20,7 +20,7 @@ export default class HeatMap extends BaseHeatMap {
                 transformOrigin: 'left top',
                 left: left + 'px',
                 top: top + 'px',
-                zIndex: 99,
+                zIndex: 2,
                 pointerEvents: 'none'
             });
         }
@@ -31,7 +31,7 @@ export default class HeatMap extends BaseHeatMap {
      * @param mgr 类型只能是FengMapMgr, PIXIMgr是为了兼容另一种实现
      */
     public async render(mgr: PIXIMgr | FengMapMgr) {
-        if (!(mgr instanceof FengMapMgr)) {
+        if (!(mgr instanceof FengMapMgr && this.data.length)) {
             return;
         }
 
@@ -104,18 +104,20 @@ export default class HeatMap extends BaseHeatMap {
     private listener(map: fengmap.FMMap, min: number[], max: number[]) {
         this.timer && cancelAnimationFrame(this.timer);
 
-        const minCoord = map.coordMapToScreen(min[0], min[1]);
-        const maxCoord = map.coordMapToScreen(max[0], max[1]);
+        const minCoord = map.coordMapToScreen(min[0], min[1], 1);
+        const maxCoord = map.coordMapToScreen(max[0], max[1], 1);
 
         const w = Math.abs(maxCoord.x - minCoord.x);
         const h = Math.abs(maxCoord.y - minCoord.y);
 
         const { width, height, style } = this.sprite;
-        if (!(w && h)) {
-            style.transform = `translate(${minCoord.x}px,${minCoord.y}px) scale(${w / width || 0.5},-${h / height || 0.5})`;
-        } else {
-            style.transform = `translate(${minCoord.x - width / 2}px,${minCoord.y - height / 2}px) scale(1,1)`;
-        }
+        const mapScale = map.mapScaleLevel / map.mapScale;
+        const sx = w / width || mapScale;
+        const sy = h / height || mapScale;
+        const r = this.config.radius;
+        const tx = minCoord.x - r * sx;
+        const ty = minCoord.y - r * sy;
+        style.transform = `translate(${tx}px,${ty}px) scale(${sx},${h ? '-' : '+'}${sy})`;
 
         this.timer = requestAnimationFrame(this.listener.bind(this, map, min, max));
     }

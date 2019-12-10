@@ -35,7 +35,7 @@ import FMHeatMap from '@/assets/map/fengmap/heat_map';
 import PXHeatMap from '@/assets/map/pixi/heat_map';
 import { createHeatMap } from '@/assets/map';
 import { download } from '@/assets/utils/download';
-import { randomNum } from '../../assets/utils/util';
+import { randomNum, Async } from '../../assets/utils/util';
 import { FengMapMgr } from '@/assets/map/fengmap';
 import { PIXIMgr } from '@/assets/map/pixi';
 
@@ -46,24 +46,35 @@ export default class HeatMap extends mixins(MapMixin) {
     private heatMap!: FMHeatMap | PXHeatMap;
     private oldDate?: Date | null;
 
-    public paint() {
+    @Async()
+    public async paint() {
         this.heatMap = this.heatMap || createHeatMap(<any>{});
         if (!this.beforePaint()) {
             return;
         }
 
         const { mgr, heatMap } = this;
-        for (let i = 0; i < 1; i++) {
-            const { x, y } = mgr!.getCoordinate(
-                {
-                    x: randomNum(200, 3000, false),
-                    y: randomNum(1000, 2500, false)
-                },
-                true
-            );
 
-            heatMap.addPoint(x, y, 100);
-        }
+        // for (let i = 0; i < 10; i++) {
+        //     const { x, y } = mgr!.getCoordinate(
+        //         {
+        //             x: randomNum(200, 3000, false),
+        //             y: randomNum(500, 2000, false)
+        //         },
+        //         true
+        //     );
+
+        //     heatMap.addPoint(x, y, 100);
+        // }
+        const { x: x0, y: y0 } = mgr!.getCoordinate(
+            {
+                x: 510,
+                y: 2116
+            },
+            true
+        );
+
+        heatMap.addPoint(x0, y0, 100);
         heatMap.render(mgr!);
 
         // TODO 获取数据点并绘制
@@ -144,5 +155,6 @@ export default class HeatMap extends mixins(MapMixin) {
 .tool-bar {
     justify-content: space-between;
     padding: 0 5%;
+    z-index: 9;
 }
 </style>
