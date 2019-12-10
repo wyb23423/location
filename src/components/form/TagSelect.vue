@@ -6,7 +6,7 @@
         :placeholder="placeholder"
         @change="$emit('change', $event)"
         :multiple="multiple"
-        :multiple-limit="5"
+        :multiple-limit="multipleLimit"
         :loading="loading"
         :disabled="disabled"
         remote
@@ -36,6 +36,7 @@ import { ElSelect } from 'element-ui/types/select';
 export default class TagSelect extends Vue {
     @Prop({ default: () => false }) public readonly disabled!: boolean;
     @Prop({ default: () => false }) public readonly multiple!: boolean;
+    @Prop({ default: () => 5 }) public readonly multipleLimit!: number;
     @Prop({ default: () => '请输入标签名' })
     public readonly placeholder!: string;
 
@@ -48,6 +49,11 @@ export default class TagSelect extends Vue {
 
     public created() {
         this.multiple && (this.value = []);
+    }
+
+    public reset() {
+        this.tagOptions.length = 0;
+        this.value = this.multiple ? [] : '';
     }
 
     // 远程搜索标签数据

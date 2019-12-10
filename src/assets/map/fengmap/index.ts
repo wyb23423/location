@@ -31,14 +31,12 @@ export class FengMapMgr extends CoordTransformer {
             mapThemeURL: MAP_THEME_URL,
             // 设置主题
             defaultThemeName: name,
-            // 默认比例尺级别设置为20级
-            defaultMapScaleLevel: 22,
             defaultViewMode: fengmap.FMViewMode.MODE_2D,
             // 开发者申请应用下web服务的key
             key: APP_KEY,
             // 开发者申请应用名称
             appName: APP_NAME,
-            preserveDrawingBuffer: true
+            preserveDrawingBuffer: true,
         });
         this.map.openMapById(name);
         this.map.on('loadComplete', () => {
@@ -77,15 +75,15 @@ export class FengMapMgr extends CoordTransformer {
     public on(type: string, callback: any) {
         this.map.on(type, (e: FMMapClickEvent) => {
             if (e.eventInfo && this.map && e.eventInfo.coord) {
+                const { coord, domEvent } = e.eventInfo;
                 // ===============================处理移动端时的坐标误差
-                if (e.eventInfo.domEvent instanceof TouchEvent) {
-                    e.eventInfo.coord.x -= 2.8;
-                    e.eventInfo.coord.y += 1.4;
+                if (domEvent instanceof TouchEvent) {
+                    coord.x -= 2.8;
+                    coord.y += 1.4;
                 }
 
-                const { x, y } = e.eventInfo.coord;
-                e.data = { global: this.map.coordMapToScreen(x, y) };
-                console.log(this.getCoordinate(e.eventInfo.coord), this.map.mapScale);
+                e.data = { global: this.map.coordMapToScreen(coord.x, coord.y) };
+                console.log(this.getCoordinate(coord));
             }
 
             callback(e);

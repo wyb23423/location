@@ -74,6 +74,7 @@ declare interface IZone {
 
 declare interface IBingdings {
     id: number;
+    name: string;
     tags: string | string[];
 }
 
