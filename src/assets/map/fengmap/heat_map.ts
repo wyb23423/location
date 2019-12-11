@@ -1,6 +1,7 @@
 import { BaseHeatMap } from '../common';
 import { PIXIMgr } from '../pixi';
 import { FengMapMgr } from '.';
+import { download } from '@/assets/utils/download';
 
 export default class HeatMap extends BaseHeatMap {
     private sprite = new Image();
@@ -17,7 +18,7 @@ export default class HeatMap extends BaseHeatMap {
             Object.assign(this.sprite.style, {
                 position: 'absolute',
                 display: 'none',
-                transformOrigin: 'left top',
+                // transformOrigin: 'left top',
                 left: left + 'px',
                 top: top + 'px',
                 zIndex: 2,
@@ -56,6 +57,7 @@ export default class HeatMap extends BaseHeatMap {
         img.src && window.URL.revokeObjectURL(img.src);
         img.src = window.URL.createObjectURL(blob);
         img.style.display = 'block';
+        img.style.transformOrigin = `${this.config.radius}px ${this.config.radius}px`;
 
         this.timer || document.body.appendChild(img);
         this.listener(mgr.map, min, max);
@@ -75,12 +77,27 @@ export default class HeatMap extends BaseHeatMap {
         }
     }
 
-    public paint(ctx: CanvasRenderingContext2D) {
-        const arr = this.sprite.style.transform.match(/(\d|\.)+/g);
+    public download(c: HTMLCanvasElement, name: string) {
+        const canvas = this.createCanvas();
+        canvas.width = c.width;
+        canvas.height = c.height;
+
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+            ctx.drawImage(c, 0, 0);
+            this.paintImg(ctx);
+            super.download(canvas, name);
+        } else {
+            console.log('download: 创建画布失败');
+        }
+    }
+
+    private paintImg(ctx: CanvasRenderingContext2D) {
+        const arr = this.sprite.style.transform.match(/[\d\-\.]+/g);
         if (arr) {
-            const [x, y, sx, sy] = arr;
-            ctx.translate(+x, +y);
-            ctx.scale(+sx, -sy);
+            const [x, y, sx, sy] = arr.map(v => +v);
+            const r = this.config.radius;
+            ctx.setTransform(sx, 0, 0, sy, x + r - sx * r, y + r - sy * r);
             ctx.drawImage(this.sprite, 0, 0);
         } else {
             console.warn('解析transform失败');
@@ -112,12 +129,12 @@ export default class HeatMap extends BaseHeatMap {
 
         const { width, height, style } = this.sprite;
         const mapScale = map.mapScaleLevel / map.mapScale;
-        const sx = w / width || mapScale;
-        const sy = h / height || mapScale;
         const r = this.config.radius;
-        const tx = minCoord.x - r * sx;
-        const ty = minCoord.y - r * sy;
-        style.transform = `translate(${tx}px,${ty}px) scale(${sx},${h ? '-' : '+'}${sy})`;
+        const sx = w ? w / (width - r * 2) : mapScale;
+        const sy = h ? h / (height - r * 2) : mapScale;
+        const tx = minCoord.x - r;
+        const ty = minCoord.y - r;
+        style.transform = `translate(${tx}px,${ty}px) scale(${sx},-${sy})`;
 
         this.timer = requestAnimationFrame(this.listener.bind(this, map, min, max));
     }

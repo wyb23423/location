@@ -55,17 +55,17 @@ export default class HeatMap extends mixins(MapMixin) {
 
         const { mgr, heatMap } = this;
 
-        // for (let i = 0; i < 10; i++) {
-        //     const { x, y } = mgr!.getCoordinate(
-        //         {
-        //             x: randomNum(200, 3000, false),
-        //             y: randomNum(500, 2000, false)
-        //         },
-        //         true
-        //     );
+        for (let i = 0; i < 10; i++) {
+            const { x, y } = mgr!.getCoordinate(
+                {
+                    x: randomNum(200, 3000, false),
+                    y: randomNum(500, 2000, false)
+                },
+                true
+            );
 
-        //     heatMap.addPoint(x, y, 100);
-        // }
+            heatMap.addPoint(x, y, 100);
+        }
         const { x: x0, y: y0 } = mgr!.getCoordinate(
             {
                 x: 510,
@@ -93,24 +93,12 @@ export default class HeatMap extends mixins(MapMixin) {
 
     public download() {
         if (this.container) {
-            const c = this.container.children[0];
-            if (c instanceof HTMLCanvasElement) {
-                const name = `heatmap_${
-                    this.date ? this.date.toJSON() : 'unknown'
-                }.png`;
-
-                const canvas = document.createElement('canvas');
-                canvas.width = c.width;
-                canvas.height = c.height;
-
-                const ctx = canvas.getContext('2d');
-                if (ctx) {
-                    ctx.drawImage(c, 0, 0);
-                    this.heatMap.paint(ctx);
-                    canvas.toBlob(blob => blob && download(blob, name));
-                } else {
-                    console.log('创建画布失败');
-                }
+            const canvas = this.container.children[0];
+            if (canvas instanceof HTMLCanvasElement) {
+                this.heatMap.download(
+                    canvas,
+                    `heatmap_${this.date ? this.date.toJSON() : 'unknown'}.png`
+                );
             }
         }
     }

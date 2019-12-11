@@ -1,3 +1,4 @@
+import { download } from '../utils/download';
 
 
 /**
@@ -59,8 +60,9 @@ export class BaseHeatMap {
     public clearPoints() {
         this.data.length = 0;
     }
-    public paint(ctx: CanvasRenderingContext2D) {
-        //
+
+    public download(canvas: HTMLCanvasElement, name: string) {
+        canvas.toBlob(blob => blob && download(blob, name));
     }
 
     protected create(w: number, h: number, parseCoord?: (p: PointData) => Vector2) {
@@ -78,10 +80,14 @@ export class BaseHeatMap {
         return canvas;
     }
 
+    protected createCanvas() {
+        return document.createElement('canvas');
+    }
+
     // 绘制alpha通道的圆
     private renderAlpha(ctx: CanvasRenderingContext2D, parseCoord?: (p: PointData) => Vector2) {
         const shadowCanvas = this.createShadowTpl();
-        const { min, max } = <Required<HeatMapConfig>>this.config;
+        const { min, max, radius } = <Required<HeatMapConfig>>this.config;
 
         for (const point of this.data) {
             const { x, y } = parseCoord ? parseCoord(point) : point;
@@ -106,10 +112,6 @@ export class BaseHeatMap {
             }
         }
         ctx.putImageData(imgData, 0, 0);
-    }
-
-    private createCanvas() {
-        return document.createElement('canvas');
     }
 
     private createColordata() {
