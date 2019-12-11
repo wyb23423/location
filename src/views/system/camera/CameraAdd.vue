@@ -53,6 +53,7 @@ import Vue from 'vue';
 import { ElForm } from 'element-ui/types/form';
 import { ElInput } from 'element-ui/types/input';
 import IpInput from '../../../components/form/IpInput.vue';
+import { ADD_CAMERA } from '@/constant/request';
 
 @Component({
     components: {
@@ -88,7 +89,7 @@ export default class CameraAdd extends Vue {
                 data.createUser = data.updateUser = 'string';
 
                 this.$http
-                    .post('/api/camera/addCamera', data, {
+                    .post(ADD_CAMERA, data, {
                         'Content-Type': 'application/json'
                     })
                     .then(() => {

@@ -85,16 +85,10 @@ export default class HTTP {
 
         let reqBody: string | FormData | undefined = void 0;
         if (isGet) {
-            const start = url.includes('?') ? '&' : '?';
-            let isFirst = true;
-            url = Object.entries(params).reduce((a, [k, v]) => {
-                if (v != null && v !== '') {
-                    a = `${a}${isFirst ? start : '&'}${k}=${v}`;
-                    isFirst = false;
-                }
-
-                return a;
-            }, url);
+            const [path, s] = url.split('?');
+            const searchParams = new URLSearchParams(s);
+            Object.entries(params).forEach(([k, v]) => searchParams.append(k, v));
+            url = path + '?' + searchParams.toString();
         } else {
             const contentType = this.getHead(headers, 'Content-Type');
             if (contentType && contentType.includes('application/json')) {

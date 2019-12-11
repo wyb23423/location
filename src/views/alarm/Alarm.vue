@@ -31,6 +31,7 @@ import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
 import Page from '@/components/layout/Page.vue';
 import { Async } from '../../assets/utils/util';
+import { RM_ALARM, GET_ALARM } from '@/constant/request';
 
 @Component({
     components: {
@@ -62,7 +63,7 @@ export default class Alarm extends mixins(TableMixin) {
     @Async()
     public async del(row: IAlarm) {
         await this.$confirm(`删除报警信息${row.id}?`);
-        await this.$http.post('/api/alarm/deleteAlarm', { id: row.id });
+        await this.$http.post(RM_ALARM, { id: row.id });
         this.refresh().$message.success('删除成功');
     }
 
@@ -83,7 +84,7 @@ export default class Alarm extends mixins(TableMixin) {
         let data: any[] = [];
         let count: number = 0;
         try {
-            const res = await this.$http.get('/api/alarm/getall', {
+            const res = await this.$http.get(GET_ALARM, {
                 pageSize,
                 currentPage: page
             });

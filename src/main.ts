@@ -16,6 +16,7 @@ import Events from './assets/lib/events';
 import { formatDate } from './assets/lib/date';
 import { awaitWrap } from './assets/utils/util';
 import { Route } from 'vue-router';
+import { GET_ADMIN } from './constant/request';
 
 // ========================================全局变量及注入vue实例的属性
 (<any>window).PIXI = PIXI;
@@ -40,7 +41,7 @@ Vue.config.productionTip = false;
 router.beforeEach((to: Route, from: Route, next: any) => {
     const isLogin = sessionStorage.getItem('login');
     if (!(isLogin && +isLogin) && to.path !== '/login') {
-        http.get('/api/admin/getall', {
+        http.get(GET_ADMIN, {
             pageSize: 1,
             currentPage: 1
         })

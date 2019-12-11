@@ -31,6 +31,7 @@ import { Emit, Prop, Ref } from 'vue-property-decorator';
 import { Async } from '@/assets/utils/util';
 import { ElOption } from 'element-ui/types/option';
 import { ElSelect } from 'element-ui/types/select';
+import { GET_TAG } from '@/constant/request';
 
 @Component
 export default class TagSelect extends Vue {
@@ -74,7 +75,7 @@ export default class TagSelect extends Vue {
     @Async()
     private async fetchTag(key: string) {
         this.loading = true;
-        const res = await this.$http.get('/api/tag/getall', {
+        const res = await this.$http.get(GET_TAG, {
             pageSize: 100000,
             currentPage: 1,
             name: key

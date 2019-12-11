@@ -69,6 +69,8 @@ import Component from 'vue-class-component';
 import { Prop, Watch } from 'vue-property-decorator';
 import Router from 'vue-router';
 import { SX_WIDTH } from '@/constant';
+import { LOGOUT } from '@/constant/request';
+import { Async } from '@/assets/utils/util';
 
 @Component
 export default class Header extends Vue {
@@ -83,14 +85,11 @@ export default class Header extends Vue {
         window.addEventListener('resize', this.setNavItems.bind(this));
     }
 
-    public loginout() {
-        this.$http
-            .post('/api/admin/logout')
-            .then(() => {
-                sessionStorage.removeItem('login');
-                location.href = '/login';
-            })
-            .catch(console.log);
+    @Async()
+    public async loginout() {
+        await this.$http.post(LOGOUT);
+        sessionStorage.removeItem('login');
+        location.href = '/login';
     }
 
     @Watch('$route', { deep: true })

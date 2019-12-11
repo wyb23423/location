@@ -48,6 +48,13 @@ import { ElOption } from 'element-ui/types/option';
 import { Async } from '@/assets/utils/await';
 import { TransferData } from 'element-ui/types/transfer';
 import TagSelect from '@/components/form/TagSelect.vue';
+import {
+    GET_ZONE,
+    UPDATE_TAG_ZONE,
+    ADD_TAG_ZONE,
+    RM_TAG_ZONE,
+    GET_TAG_ZONE
+} from '../../constant/request';
 
 @Component({
     components: {
@@ -67,7 +74,7 @@ export default class TagZone extends Vue {
 
     @Async()
     public async created() {
-        const res = await this.$http.get('/api/zone/getall', {
+        const res = await this.$http.get(GET_ZONE, {
             currentPage: 1,
             pageSize: 1000
         });
@@ -93,19 +100,17 @@ export default class TagZone extends Vue {
     // 更新/添加
     @Async()
     public async submit() {
-        const path = this.isUpdate ? 'updateTagZone' : 'addTagZone';
-        await this.$http.post('/api/tagZone/' + path, this.form);
-
+        await this.$http.post(
+            this.isUpdate ? UPDATE_TAG_ZONE : ADD_TAG_ZONE,
+            this.form
+        );
         this.success(this.isUpdate ? '更新成功' : '添加成功');
     }
 
     // 删除
     @Async()
     public async remove() {
-        await this.$http.post('/api/tagZone/deleteTagZone', {
-            tagId: this.form.tagId
-        });
-
+        await this.$http.post(RM_TAG_ZONE, { tagId: this.form.tagId });
         this.success('删除成功');
     }
 
@@ -123,7 +128,7 @@ export default class TagZone extends Vue {
     private async fetchTagZone(tagId: string) {
         this.$http.showMessage = false;
 
-        const res = await this.$http.get('/api/tagZone/getTagZone', { tagId });
+        const res = await this.$http.get(GET_TAG_ZONE, { tagId });
         this.form.zoneIds = res.resultMap.zones.map((v: IZone) => v.id);
 
         return true;

@@ -118,6 +118,7 @@ import { Async } from '../../assets/utils/util';
 import { ElForm } from 'element-ui/types/form';
 import { Ref } from 'vue-property-decorator';
 import TagSelect from '@/components/form/TagSelect.vue';
+import { GET_TAG } from '@/constant/request';
 
 @Component({
     components: {
@@ -150,13 +151,10 @@ export default class Bind extends Vue {
 
     @Async()
     public async getSource(index: number) {
-        const res: ResponseData<ITag> = await this.$http.get(
-            '/api/tag/getall',
-            {
-                pageSize: 100,
-                currentPage: 1
-            }
-        );
+        const res: ResponseData<ITag> = await this.$http.get(GET_TAG, {
+            pageSize: 100,
+            currentPage: 1
+        });
 
         const keyWord = this.keyWord[index];
         const data: TransferData[] = [];

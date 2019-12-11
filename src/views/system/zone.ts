@@ -5,6 +5,7 @@ import ZoneEidt from '@/components/edit/ZoneEdit.vue';
 import { Setting, ZoneData } from '@/mixins/zone/setting';
 import { Async } from '@/assets/utils/util';
 import DisplayMixin from '@/mixins/zone/display';
+import { RM_ZONE, ADD_ZONE, GET_ZONE } from '@/constant/request';
 
 @Component({
     components: {
@@ -41,7 +42,7 @@ export default class Zone extends mixins(Setting, TableMixin, DisplayMixin) {
     @Async()
     public async del(row: IZone, index: number) {
         await this.$confirm(`确认删除区域${row.name}?`, '确认删除');
-        await this.$http.post('/api/zone/deleteZone', { id: row.id });
+        await this.$http.post(RM_ZONE, { id: row.id });
         this.refresh().display(row, index, true).$message.success('删除成功');
     }
 
@@ -58,7 +59,7 @@ export default class Zone extends mixins(Setting, TableMixin, DisplayMixin) {
             return;
         }
         await this.$http
-            .post('/api/zone/addZone', data, { 'Content-Type': 'application/json' });
+            .post(ADD_ZONE, data, { 'Content-Type': 'application/json' });
 
         this.remove().resetForm().refresh(false).$message.success('添加成功');
     }
@@ -76,7 +77,7 @@ export default class Zone extends mixins(Setting, TableMixin, DisplayMixin) {
         let data: any[] = [];
         let count: number = 0;
         try {
-            const res = await this.$http.get('/api/zone/getall', {
+            const res = await this.$http.get(GET_ZONE, {
                 pageSize,
                 currentPage: page,
                 mapId: this.mapId

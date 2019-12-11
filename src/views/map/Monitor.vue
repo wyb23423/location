@@ -96,6 +96,7 @@ import { Ref, Watch } from 'vue-property-decorator';
 import { PIXIMgr } from '@/assets/map/pixi';
 import { RESIZE } from '@/constant';
 import { Async } from '../../assets/utils/util';
+import { GET_ZONE } from '../../constant/request';
 
 @Component({
     components: {
@@ -243,7 +244,7 @@ export default class Monitor extends mixins(
     protected async afterMapCreated() {
         this.tools[1].display = !!this.mgr && this.mgr.has3D;
 
-        const res = await this.$http.get('/api/zone/getall', {
+        const res = await this.$http.get(GET_ZONE, {
             currentPage: 1,
             pageSize: 1_0000_0000
         });

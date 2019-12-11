@@ -42,6 +42,8 @@ import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
 import IpInput from '../../components/form/IpInput.vue';
 import { ElForm } from 'element-ui/types/form';
+import { SEND_PROTOCOL } from '@/constant/request';
+import { Async } from '../../assets/utils/util';
 
 @Component({
     components: {
@@ -71,23 +73,21 @@ export default class Net extends Vue {
         }
     };
 
-    public onSubmit() {
+    @Async()
+    public async onSubmit() {
         if (this.isValid !== true) {
             return;
         }
 
-        const form = <ElForm>this.$refs.form;
-        form.validate()
-            .then(() => this.$confirm('确认设置?'))
-            .then(() =>
-                this.$http.post('/api/protocol/sendProtocol', {
-                    ip: this.data.ip,
-                    port: 50000,
-                    protocol: '42' + this.parse(this.form)
-                })
-            )
-            .then(() => this.$message.success('设置成功'))
-            .catch(console.log);
+        await (<ElForm>this.$refs.form).validate();
+        await this.$confirm('确认设置?');
+        await this.$http.post(SEND_PROTOCOL, {
+            ip: this.data.ip,
+            port: 50000,
+            protocol: '42' + this.parse(this.form)
+        });
+
+        this.$message.success('设置成功');
     }
 
     private get isValid() {

@@ -24,7 +24,7 @@
             </el-form-item>
             <el-form-item label="基站组号" required prop="groupId">
                 <app-select
-                    url="/api/group/getall"
+                    :url="GET_GROUP"
                     v-model="form.groupId"
                     :keys="{ id: 'id', name: 'id' }"
                 ></app-select>
@@ -84,6 +84,7 @@ import { ElForm } from 'element-ui/types/form';
 import Vue from 'vue';
 import { hexadecimalRuleFactory, Async } from '@/assets/utils/util';
 import Select from '@/components/form/Select.vue';
+import { GET_GROUP, ADD_BASE } from '@/constant/request';
 
 @Component({
     components: {
@@ -92,6 +93,7 @@ import Select from '@/components/form/Select.vue';
     }
 })
 export default class BaseAdd extends Vue {
+    public readonly GET_GROUP = GET_GROUP;
     public form = {
         main: 0,
         ip: [] as number[],
@@ -124,7 +126,7 @@ export default class BaseAdd extends Vue {
         const form = <ElForm>this.$refs.form;
         await form.validate();
         await this.$http.post({
-            url: '/api/base/addBase',
+            url: ADD_BASE,
             body: {
                 ...this.form,
                 ip: ip.join('.'),

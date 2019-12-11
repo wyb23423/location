@@ -106,6 +106,7 @@ import { Prop } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
 import { major, subordinate } from '../../assets/utils/compensation';
 import { Async } from '@/assets/utils/util';
+import { UPDATE_BASE } from '@/constant/request';
 
 @Component
 export default class CalibrationSetting extends mixins(TableMixin) {
@@ -154,7 +155,7 @@ export default class CalibrationSetting extends mixins(TableMixin) {
 
                 v.timeCorrectionValue = timeCorrectionValue + '';
 
-                return this.$http.post('/api/base/updateBase', v, {
+                return this.$http.post(UPDATE_BASE, v, {
                     'Content-Type': 'application/json'
                 });
             });

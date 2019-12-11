@@ -21,6 +21,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Emit } from 'vue-property-decorator';
+import { GET_MAP } from '@/constant/request';
 
 @Component
 export default class MapSelect extends Vue {
@@ -46,7 +47,7 @@ export default class MapSelect extends Vue {
 
     private async _getMapData() {
         try {
-            const res = await this.$http.get('/api/map/getall', {
+            const res = await this.$http.get(GET_MAP, {
                 currentPage: 1,
                 pageSize: 100000
             });

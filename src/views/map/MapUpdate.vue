@@ -37,6 +37,7 @@ import MapEdit, { MapForm } from '@/components/edit/MapEdit.vue';
 import MapSelect from '@/components/form/MapSelect.vue';
 import { Prop } from 'vue-property-decorator';
 import { Async } from '@/assets/utils/util';
+import { RM_MAP, UPLOAD_MAPFILE, UPDATE_MAP } from '@/constant/request';
 
 @Component({
     components: {
@@ -74,7 +75,7 @@ export default class MapAdd extends Vue {
         }
 
         await this.$confirm(`删除地图: ${this.map.name}?`);
-        await this.$http.post('/api/map/deleteMap', { id: this.map.id });
+        await this.$http.post(RM_MAP, { id: this.map.id });
 
         this.$message.success('删除成功');
         location.href = location.href;
@@ -92,7 +93,7 @@ export default class MapAdd extends Vue {
         // ======================================
         let filepath = data.filename || data.url;
         if (data.map) {
-            const res = (await this.$http.post('/api/map/upload/mapfile', {
+            const res = (await this.$http.post(UPLOAD_MAPFILE, {
                 file: data.map,
                 mapName: data.map.name.split('.')[0] || 'map'
             })) as ResponseData<any, Record<'mapUrl', string>>;
@@ -102,7 +103,7 @@ export default class MapAdd extends Vue {
         // ===========================================
         const { minX, maxX, minY, maxY, width, height, name } = data;
         await this.$http.post({
-            url: '/api/map/updateMap',
+            url: UPDATE_MAP,
             body: {
                 id,
                 name,

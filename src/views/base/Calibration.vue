@@ -29,6 +29,7 @@ import { State } from 'vuex-class/lib/bindings';
 import TableMixin from '../../mixins/table';
 import CalibrationSetting from '../../components/base/CalibrationSetting.vue';
 import { arr2obj } from '../../assets/utils/util';
+import { GET_BASE } from '../../constant/request';
 
 @Component({
     components: {
@@ -51,7 +52,7 @@ export default class Calibration extends mixins(TableMixin) {
         let count: number = 0;
         try {
             if (!this.allBase.length) {
-                const res = await this.$http.get('/api/base/getall', {
+                const res = await this.$http.get(GET_BASE, {
                     pageSize: 10000000,
                     currentPage: 1
                 });

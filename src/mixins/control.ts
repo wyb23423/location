@@ -6,6 +6,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
 import localforage from '@/assets/lib/localforage';
+import { GET_HISTORY } from '@/constant/request';
 
 export interface PositionItem extends Vector3 {
     time: number;
@@ -141,7 +142,7 @@ export default class ControlMixin extends Vue {
 
         return this.$http
             .post({
-                url: '/api/tag/queryTagHistory',
+                url: GET_HISTORY,
                 body: {
                     startTime: new Date(start - offset),
                     endTime: new Date(end - offset),

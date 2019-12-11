@@ -9,6 +9,7 @@ import { errorStore } from '@/components/notice/init';
 import { ERROR_IMG } from '@/constant';
 import { Loading } from '../loading';
 import { PIXIEL } from '@/assets/map/pixi/animation';
+import { GET_BASE } from '@/constant/request';
 
 @Component({
     components: {
@@ -94,7 +95,7 @@ export default class MapMixin extends Loading {
     // 获取并显示基站
     @Async(() => [])
     protected async tagAnchor() {
-        const res = await this.$http.get('/api/base/getall', {
+        const res = await this.$http.get(GET_BASE, {
             currentPage: 1,
             pageSize: 10000,
         });

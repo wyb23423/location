@@ -20,6 +20,8 @@
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../../mixins/table';
+import { RM_PROTOCOL, GET_PROTOCOL } from '@/constant/request';
+import { Async } from '@/assets/utils/util';
 
 @Component
 export default class ProtocolList extends mixins(TableMixin) {
@@ -31,23 +33,18 @@ export default class ProtocolList extends mixins(TableMixin) {
         { prop: 'content', label: '协议内容', width: 220 }
     ];
 
-    public del(row: any) {
-        this.$confirm(`删除协议${row.id}?`)
-            .then(() =>
-                this.$http.post('/api/protocol/deleteProtocol', { id: row.id })
-            )
-            .then(() => {
-                this.$message.success('删除成功');
-                this.refresh();
-            })
-            .catch(console.log);
+    @Async()
+    public async del(row: any) {
+        await this.$confirm(`删除协议${row.id}?`);
+        await this.$http.post(RM_PROTOCOL, { id: row.id });
+        this.refresh().$message.success('删除成功');
     }
 
     protected async fetch(page: number, pageSize: number) {
         let data: any[] = [];
         let count: number = 0;
         try {
-            const res = await this.$http.get('/api/protocol/getall', {
+            const res = await this.$http.get(GET_PROTOCOL, {
                 pageSize: 10_0000,
                 currentPage: 1
             });

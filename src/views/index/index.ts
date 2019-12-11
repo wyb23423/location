@@ -6,6 +6,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import echarts from 'echarts';
 import { loopAwait } from '@/assets/utils/util';
+import { GET_ALARM } from '@/constant/request';
 
 interface CardInfo {
     icon: string;
@@ -35,7 +36,10 @@ export default class Main extends Vue {
     private chart2?: echarts.ECharts;
 
     public created() {
-        this.$http.get('/api/alarm/getall?pageSize=20&currentPage=1')
+        this.$http.get(GET_ALARM, {
+            pageSize: 20,
+            currentPage: 1
+        })
             .then(res => {
                 this.records = res.pagedData.datas.map((v: IAlarm) => ({
                     type: 'warning',

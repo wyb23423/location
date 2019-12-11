@@ -53,6 +53,8 @@ import { TableRowOperation } from '@/components/Table.vue';
 import Permission from '@/components/form/Permission.vue';
 import { ElForm } from 'element-ui/types/form';
 import { Ref } from 'vue-property-decorator';
+import { RM_ADMIN, UPDATE_ADMIN, GET_ADMIN } from '@/constant/request';
+import { Async } from '@/assets/utils/util';
 
 @Component({
     components: {
@@ -100,45 +102,34 @@ export default class AdminList extends mixins(TableMixin) {
         return op;
     }
 
-    public del(row: IAdmin) {
-        this.$confirm(`删除${row.name}?`)
-            .then(() =>
-                this.$http.post('/api/admin/deleteAdmin', {
-                    username: row.username
-                })
-            )
-            .then(() => {
-                this.$message.success('删除成功');
-                this.refresh();
-            })
-            .catch(console.log);
+    @Async()
+    public async del(row: IAdmin) {
+        await this.$confirm(`删除${row.name}?`);
+        await this.$http.post(RM_ADMIN, { username: row.username });
+        this.refresh().$message.success('删除成功');
     }
 
-    public submit() {
-        this.elForm
-            .validate()
-            .then(() => {
-                Object.assign(this.admin, {
-                    role: JSON.stringify(this.elPermission.parse())
-                });
+    @Async()
+    public async submit() {
+        await this.elForm.validate();
 
-                return this.$http.post(
-                    '/api/admin/updateAdmin',
-                    <IAdmin>this.admin,
-                    {
-                        'Content-Type': 'application/json'
-                    }
-                );
-            })
-            .then(() => this.$message.success('修改管理员信息成功'))
-            .catch(console.log);
+        Object.assign(this.admin, {
+            role: JSON.stringify(this.elPermission.parse())
+        });
+        await this.$http.post({
+            url: UPDATE_ADMIN,
+            data: <IAdmin>this.admin,
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        this.$message.success('修改管理员信息成功');
     }
 
     protected async fetch(page: number, pageSize: number) {
         let data: any[] = [];
         let count: number = 0;
         try {
-            const res = await this.$http.get('/api/admin/getall', {
+            const res = await this.$http.get(GET_ADMIN, {
                 pageSize,
                 currentPage: page
             });

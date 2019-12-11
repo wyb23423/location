@@ -72,6 +72,8 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Ref } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
+import { SEND_PROTOCOL } from '@/constant/request';
+import { Async } from '@/assets/utils/util';
 
 @Component
 export default class Primary extends Vue {
@@ -104,19 +106,17 @@ export default class Primary extends Vue {
         }
     };
 
-    public onSubmit() {
-        this.elForm
-            .validate()
-            .then(() => this.$confirm('确认设置?'))
-            .then(() =>
-                this.$http.post('/api/protocol/sendProtocol', {
-                    ip: this.data.ip,
-                    port: 50000,
-                    protocol: '41' + this.parse(this.form)
-                })
-            )
-            .then(() => this.$message.success('设置成功'))
-            .catch(console.log);
+    @Async()
+    public async onSubmit() {
+        await this.elForm.validate();
+        await this.$confirm('确认设置?');
+
+        await this.$http.post(SEND_PROTOCOL, {
+            ip: this.data.ip,
+            port: 50000,
+            protocol: '41' + this.parse(this.form)
+        });
+        this.$message.success('设置成功');
     }
 
     // 解析基站基本配置

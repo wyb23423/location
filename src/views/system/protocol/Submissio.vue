@@ -55,6 +55,11 @@ import { ElForm } from 'element-ui/types/form';
 import TagSelect from '@/components/form/TagSelect.vue';
 import { Async } from '@/assets/utils/util';
 import { Ref } from 'vue-property-decorator';
+import {
+    SEND_PROTOCOL,
+    GET_BASE,
+    GET_PROTOCOL
+} from '../../../constant/request';
 
 interface SelOption {
     value?: any;
@@ -93,7 +98,7 @@ export default class Submissio extends Vue {
             return;
         }
 
-        const res = await this.$http.post('/api/protocol/sendProtocol', {
+        const res = await this.$http.post(SEND_PROTOCOL, {
             ...this.form,
             ip: this.form.base[1]
         });
@@ -107,7 +112,7 @@ export default class Submissio extends Vue {
 
     @Async()
     private async getBase() {
-        const res = await this.$http.get('/api/base/getall', {
+        const res = await this.$http.get(GET_BASE, {
             pageSize: 10000000,
             currentPage: 1
         });
@@ -131,7 +136,7 @@ export default class Submissio extends Vue {
 
     @Async()
     private async getProtocol() {
-        this.protocols = (await this.$http.get('/api/protocol/getall', {
+        this.protocols = (await this.$http.get(GET_PROTOCOL, {
             pageSize: 10000000,
             currentPage: 1
         })).pagedData.datas;

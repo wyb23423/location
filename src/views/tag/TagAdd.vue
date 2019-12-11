@@ -68,6 +68,7 @@ import { ElForm } from 'element-ui/types/form';
 import Select from '../../components/form/Select.vue';
 import Avator from '../../components/Avator.vue';
 import { Async } from '@/assets/utils/util';
+import { ADD_TAG } from '@/constant/request';
 
 @Component({
     components: {
@@ -96,7 +97,7 @@ export default class TagAdd extends Vue {
 
         const [res1, res2] = await this.avator.getImgUrl(this.form.name);
         await this.$http.post({
-            url: '/api/tag/addTag',
+            url: ADD_TAG,
             body: {
                 ...this.form,
                 img: res2.resultMap.photoUrl,

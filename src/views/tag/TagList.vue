@@ -80,6 +80,7 @@ import TagAdd from './TagAdd.vue';
 import { Async } from '../../assets/utils/util';
 import TagConfig from '../../components/edit/TagConfig.vue';
 import { ElForm } from 'element-ui/types/form';
+import { RM_TAG, UPDATE_TAG, GET_TAG } from '@/constant/request';
 
 @Component({
     components: {
@@ -120,7 +121,7 @@ export default class TagList extends mixins(TableMixin) {
     @Async()
     public async del(row: ITag) {
         await this.$confirm(`删除标签${row.name}?`);
-        await this.$http.post('/api/tag/deleteTag', { id: row.id });
+        await this.$http.post(RM_TAG, { id: row.id });
         this.refresh().$message.success('删除成功');
     }
 
@@ -144,7 +145,7 @@ export default class TagList extends mixins(TableMixin) {
             }
         }
 
-        await this.$http.post('/api/tag/updateTag', data, {
+        await this.$http.post(UPDATE_TAG, data, {
             'Content-Type': 'application/json'
         });
         this.refresh(false).$message.success('修改成功');
@@ -170,7 +171,7 @@ export default class TagList extends mixins(TableMixin) {
         let count: number = 0;
 
         try {
-            const res = await this.$http.get('/api/tag/getall', {
+            const res = await this.$http.get(GET_TAG, {
                 pageSize,
                 currentPage: page,
                 type: this.type || 1

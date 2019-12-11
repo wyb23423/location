@@ -48,6 +48,7 @@ import Component from 'vue-class-component';
 import { initRouter } from '@/router';
 import { ElForm } from 'element-ui/types/form';
 import { load } from '@/assets/utils/download';
+import { LOGIN, GET_TAG } from '@/constant/request';
 
 interface LoginInfo {
     password: string;
@@ -74,11 +75,9 @@ export default class Login extends Vue {
             if (valid) {
                 try {
                     const res = await this.$http.post({
-                        url: '/api/admin/login',
+                        url: LOGIN,
                         body: this.form,
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
+                        headers: { 'Content-Type': 'application/json' }
                     });
 
                     // =======================设置登录信息
@@ -90,7 +89,7 @@ export default class Login extends Vue {
                     // =====================================
 
                     initRouter(); // 加载路由
-                    load('/api/tag/getall', 'id', 'tag'); // 慢加载标签数据
+                    load(GET_TAG, 'id', 'tag'); // 慢加载标签数据
 
                     this.$router.push('/');
                 } catch (e) {

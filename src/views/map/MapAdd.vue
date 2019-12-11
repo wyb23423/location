@@ -16,6 +16,7 @@ import Component from 'vue-class-component';
 import Vue from 'vue';
 import MapEdit, { MapForm } from '@/components/edit/MapEdit.vue';
 import { Async } from '@/assets/utils/util';
+import { UPLOAD_MAPFILE, ADD_MAP } from '@/constant/request';
 
 @Component({
     components: {
@@ -30,7 +31,7 @@ export default class MapAdd extends Vue {
         }
 
         // ===========================上传文件
-        const res = (await this.$http.post('/api/map/upload/mapfile', {
+        const res = (await this.$http.post(UPLOAD_MAPFILE, {
             file: data.map,
             mapName: data.map.name.split('.')[0] || 'map'
         })) as ResponseData<any, Record<'mapUrl', string>>;
@@ -38,7 +39,7 @@ export default class MapAdd extends Vue {
         // ==============================提交数据
         const { minX, maxX, minY, maxY, width, height, name } = data;
         await this.$http.post({
-            url: '/api/map/addMap',
+            url: ADD_MAP,
             body: {
                 name,
                 filepath: res.resultMap.mapUrl,

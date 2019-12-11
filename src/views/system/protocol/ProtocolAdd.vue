@@ -29,6 +29,7 @@ import Component from 'vue-class-component';
 import Vue from 'vue';
 import { ElForm } from 'element-ui/types/form';
 import { ElInput } from 'element-ui/types/input';
+import { ADD_PROTOCOL } from '@/constant/request';
 
 @Component
 export default class ProtocolAdd extends Vue {
@@ -47,7 +48,7 @@ export default class ProtocolAdd extends Vue {
                 data.createUser = data.updateUser = 'string';
 
                 this.$http
-                    .post('/api/protocol/addProtocol', data, {
+                    .post(ADD_PROTOCOL, data, {
                         'Content-Type': 'application/json'
                     })
                     .then(() => {

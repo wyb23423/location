@@ -39,6 +39,8 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
+import { GET_ZONE, UPDATE_BASE } from '@/constant/request';
+import { Async } from '@/assets/utils/util';
 
 @Component
 export default class Position extends Vue {
@@ -58,7 +60,7 @@ export default class Position extends Vue {
         this.form.zone = this.data.zone;
 
         this.$http
-            .get('/api/zone/getall', {
+            .get(GET_ZONE, {
                 currentPage: 1,
                 pageSize: 10000
             })
@@ -74,26 +76,20 @@ export default class Position extends Vue {
             .catch(console.error);
     }
 
-    public onSubmit() {
-        const form = <ElForm>this.$refs.form;
-        form.validate((valid: boolean) => {
-            if (valid) {
-                const data = Object.assign({}, this.form, {
-                    updateUser: '....',
-                    updateTime: Date.now(),
-                    id: this.data.id
-                });
+    @Async()
+    public async onSubmit() {
+        await (<ElForm>this.$refs.form).validate();
+        await this.$confirm('确认修改');
 
-                this.$confirm('确认修改')
-                    .then(() =>
-                        this.$http.post('/api/base/updateBase', data, {
-                            'Content-Type': 'application/json'
-                        })
-                    )
-                    .then(() => this.$message.success('修改成功'))
-                    .catch(console.log);
-            }
+        const data = Object.assign({}, this.form, {
+            updateUser: '....',
+            updateTime: Date.now(),
+            id: this.data.id
         });
+        await this.$http.post(UPDATE_BASE, data, {
+            'Content-Type': 'application/json'
+        });
+        this.$message.success('修改成功');
     }
 }
 </script>

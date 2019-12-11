@@ -53,7 +53,7 @@
             <el-input v-model="form.description"></el-input>
         </el-form-item>
         <el-form-item label="所属地图">
-            <app-select url="/api/map/getall" v-model="form.mapId"></app-select>
+            <app-select :url="GET_MAP" v-model="form.mapId"></app-select>
         </el-form-item>
         <el-form-item>
             <el-button type="primary" @click="onSubmit">提交</el-button>
@@ -67,6 +67,7 @@ import { Ref, Prop, Watch, Component } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
 import { CascaderOption } from 'element-ui/types/cascader';
 import Select from '@/components/form/Select.vue';
+import { GET_MAP, ADD_GROUP, UPDATE_GROUP } from '@/constant/request';
 
 @Component({
     components: {
@@ -77,6 +78,7 @@ export default class GroupAdd extends Vue {
     @Prop({ default: () => ({ description: '' }) }) public form!: IGroup;
     @Prop({ default: () => true }) public showId!: boolean;
 
+    public readonly GET_MAP = GET_MAP;
     public algorithmType: number[] = [];
     public algorithm: CascaderOption[] = [[0, 1, 2], [1, 2], [1, 2]].map(
         (v, i) => ({
@@ -107,11 +109,9 @@ export default class GroupAdd extends Vue {
         data.id = data.id.padStart(4, '0');
 
         this.$http
-            .post(
-                `/api/group/${this.showId ? 'addGroup' : 'updateGroup'}`,
-                data,
-                { 'Content-Type': 'application/json' }
-            )
+            .post(this.showId ? ADD_GROUP : UPDATE_GROUP, data, {
+                'Content-Type': 'application/json'
+            })
             .then(() => {
                 if (this.showId) {
                     this.$message.success('添加成功');

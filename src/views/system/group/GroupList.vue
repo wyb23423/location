@@ -37,6 +37,8 @@
 import Component, { mixins } from 'vue-class-component';
 import TableMixin from '@/mixins/table';
 import GroupAdd from './GroupAdd.vue';
+import { RM_GROUP, GET_GROUP } from '@/constant/request';
+import { Async } from '@/assets/utils/util';
 
 @Component({
     components: {
@@ -60,23 +62,18 @@ export default class GroupList extends mixins(TableMixin) {
         ];
     }
 
-    public del(row: IGroup) {
-        this.$confirm(`删除分组${row.id}`)
-            .then(() =>
-                this.$http.post('/api/group/deleteGroup', { groupCode: row.id })
-            )
-            .then(() => {
-                this.$message.success('删除成功');
-                this.refresh();
-            })
-            .catch(console.log);
+    @Async()
+    public async del(row: IGroup) {
+        await this.$confirm(`删除分组${row.id}`);
+        await this.$http.post(RM_GROUP, { groupCode: row.id });
+        this.refresh().$message.success('删除成功');
     }
 
     protected async fetch(page: number, pageSize: number) {
         let data: any[] = [];
         let count: number = 0;
         try {
-            const res = await this.$http.get('/api/group/getall', {
+            const res = await this.$http.get(GET_GROUP, {
                 pageSize,
                 currentPage: page
             });

@@ -58,7 +58,8 @@ import BaseInfo from '../../components/base/BaseInfo.vue';
 import Primary from '../../components/base/Primary.vue';
 import Net from '../../components/base/Net.vue';
 import Position from '../../components/base/Position.vue';
-import { encodeUtf8 } from '@/assets/utils/util';
+import { encodeUtf8, Async } from '@/assets/utils/util';
+import { RM_BASE, SEND_RECEIVE, GET_BASE } from '@/constant/request';
 
 @Component({
     components: {
@@ -89,38 +90,37 @@ export default class Info extends mixins(TableMixin) {
         return op;
     }
 
-    public del(row: IBaseStation) {
-        this.$confirm(`删除基站${row.name}?`)
-            .then(() => this.$http.post('/api/base/deleteBase', { id: row.id }))
-            .then(() => {
-                this.$message.success('删除成功');
-                this.refresh();
-            })
-            .catch(console.log);
+    @Async()
+    public async del(row: IBaseStation) {
+        await this.$confirm(`删除基站${row.name}?`);
+        await this.$http.post(RM_BASE, { id: row.id });
+        this.refresh().$message.success('删除成功');
     }
 
-    public look(row: IBaseStation) {
-        this.$http
-            .post({
-                url: '/api/protocol/sendReceive',
+    public async look(row: IBaseStation) {
+        const { value: res } = await this.$async(
+            this.$http.post({
+                url: SEND_RECEIVE,
                 body: {
                     ip: '192.168.1.19', // row.ip,
                     port: 60000,
                     protocol: '2345201801230D0A'
                 }
             })
-            .then(res => {
-                console.log(encodeUtf8(res.resultMap.resp));
-            })
-            .catch(console.log)
-            .finally(() => (this.base = row));
+        );
+
+        if (res) {
+            console.log(encodeUtf8(res.resultMap.resp));
+        }
+
+        this.base = row;
     }
 
     protected async fetch(page: number, pageSize: number) {
         let data: any[] = [];
         let count: number = 0;
         try {
-            const res = await this.$http.get('/api/base/getall', {
+            const res = await this.$http.get(GET_BASE, {
                 pageSize,
                 currentPage: page
             });

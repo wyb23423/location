@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { arr2obj, getIp, getConfig } from '@/assets/utils/util';
 import Component from 'vue-class-component';
+import { GET_TAG } from '@/constant/request';
 
 @Component
 export class WebSocketInit extends Vue {
@@ -15,7 +16,7 @@ export class WebSocketInit extends Vue {
 
         // 获取所有标签数据
         this.tagAll = {};
-        this.$http.get('/api/tag/getall', {
+        this.$http.get(GET_TAG, {
             currentPage: 1,
             pageSize: 1_0000_0000
         })

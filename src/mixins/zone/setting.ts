@@ -9,6 +9,7 @@ import { FengMapMgr } from '@/assets/map/fengmap';
 import { PIXIMgr } from '@/assets/map/pixi';
 import ZoneMixin from './index';
 import { Async } from '@/assets/utils/util';
+import { UPDATE_ZONE } from '@/constant/request';
 
 @Component
 export class Setting extends mixins(ZoneMixin) {
@@ -38,7 +39,7 @@ export class Setting extends mixins(ZoneMixin) {
         }
 
         await this.$http
-            .post('/api/zone/updateZone', data, { 'Content-Type': 'application/json' });
+            .post(UPDATE_ZONE, data, { 'Content-Type': 'application/json' });
 
         this.refresh(false).$message.success('修改区域信息成功');
     }

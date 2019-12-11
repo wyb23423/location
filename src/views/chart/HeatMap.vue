@@ -38,6 +38,7 @@ import { download } from '@/assets/utils/download';
 import { randomNum, Async } from '../../assets/utils/util';
 import { FengMapMgr } from '@/assets/map/fengmap';
 import { PIXIMgr } from '@/assets/map/pixi';
+import { GET_INSTANT } from '@/constant/request';
 
 @Component
 export default class HeatMap extends mixins(MapMixin) {
@@ -53,42 +54,33 @@ export default class HeatMap extends mixins(MapMixin) {
             return;
         }
 
-        const { mgr, heatMap } = this;
+        const {
+            pagedData: { datas }
+        }: ResponseData<ITagInfo> = await this.$http.get({
+            url: GET_INSTANT,
+            data: {
+                time: this.date,
+                mapId: this.mapId
+            }
+        });
 
-        for (let i = 0; i < 10; i++) {
+        if (!datas.length) {
+            return this.$message.info('没有历史数据');
+        }
+
+        const { mgr, heatMap } = this;
+        datas.forEach(v => {
             const { x, y } = mgr!.getCoordinate(
                 {
-                    x: randomNum(200, 3000, false),
-                    y: randomNum(500, 2000, false)
+                    x: +v.position[0],
+                    y: +v.position[1]
                 },
                 true
             );
 
             heatMap.addPoint(x, y, 100);
-        }
-        const { x: x0, y: y0 } = mgr!.getCoordinate(
-            {
-                x: 510,
-                y: 2116
-            },
-            true
-        );
-
-        heatMap.addPoint(x0, y0, 100);
+        });
         heatMap.render(mgr!);
-
-        // TODO 获取数据点并绘制
-
-        // this.$http.post({
-        //     url: '/api/tag/queryTagHistory',
-        //     body: {
-        //         startTime: this.date,
-        //         endTime: this.date
-        //     },
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     }
-        // });
     }
 
     public download() {

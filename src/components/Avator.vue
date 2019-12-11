@@ -163,6 +163,7 @@ import Component from 'vue-class-component';
 import { Model } from 'vue-property-decorator';
 import { ElUploadInternalFileDetail } from 'element-ui/types/upload';
 import { base642blob } from '../assets/utils/util';
+import { UPLOAD_TAGPHOTO } from '@/constant/request';
 
 @Component
 export default class Avator extends Vue {
@@ -275,9 +276,7 @@ export default class Avator extends Vue {
                     return Promise.reject('获取头像数据失败');
                 }
 
-                return this.$http.post('/api/tag/upload/tagPhoto', {
-                    tagPhoto: photo
-                });
+                return this.$http.post(UPLOAD_TAGPHOTO, { tagPhoto: photo });
             });
 
         let avatar = Promise.resolve<ResponseData>({
@@ -295,7 +294,7 @@ export default class Avator extends Vue {
             }
         });
         if (this.imgIndex > 1) {
-            avatar = this.$http.post('/api/tag/upload/tagPhoto', {
+            avatar = this.$http.post(UPLOAD_TAGPHOTO, {
                 tagPhoto: base642blob(this.customUrl)
             });
         }

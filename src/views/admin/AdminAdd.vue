@@ -55,6 +55,8 @@ import Vue from 'vue';
 import { ElForm } from 'element-ui/types/form';
 import Permission from '@/components/form/Permission.vue';
 import { Ref } from 'vue-property-decorator';
+import { ADD_ADMIN } from '@/constant/request';
+import { Async } from '@/assets/utils/util';
 
 @Component({
     components: {
@@ -105,26 +107,20 @@ export default class AdminAdd extends Vue {
         });
     }
 
-    public onSubmit() {
-        this.elForm
-            .validate()
-            .then(() => {
-                return this.$http.post(
-                    '/api/admin/addAdmin',
-                    {
-                        ...this.form,
-                        role: JSON.stringify(this.permission.parse())
-                    },
-                    {
-                        'Content-Type': 'application/json'
-                    }
-                );
-            })
-            .then(() => {
-                this.$message.success('添加成功');
-                this.reset();
-            })
-            .catch(console.log);
+    @Async()
+    public async onSubmit() {
+        await this.elForm.validate();
+        await this.$http.post({
+            url: ADD_ADMIN,
+            data: {
+                ...this.form,
+                role: JSON.stringify(this.permission.parse())
+            },
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        this.$message.success('添加成功');
+        this.reset();
     }
 
     public reset() {
