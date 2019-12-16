@@ -5,6 +5,7 @@
             type="danger"
             :max="999"
             :hidden="messages.length <= 0"
+            style="z-index: 1"
         >
             <el-tooltip content="实时报警" effect="light">
                 <i
@@ -83,22 +84,6 @@
     justify-content: space-between !important;
     margin-top: 20px;
     padding-left: 10px;
-}
-
-.alarm {
-    position: absolute !important;
-    z-index: 10;
-    top: 30px;
-    transform: translateY(-50%);
-    right: 8%;
-    color: #fff;
-
-    cursor: pointer;
-    color: color(#fff alpha(70%));
-
-    &:hover {
-        color: #fff;
-    }
 }
 </style>
 

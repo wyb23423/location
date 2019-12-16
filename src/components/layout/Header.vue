@@ -32,7 +32,7 @@
             </el-menu>
         </el-col>
         <el-col :offset="1" :span="2" :class="$style['hidden-xs-only']">
-            <notice :class="$style.link" style="margin-right: 20px"></notice>
+            <notice :class="$style.link" style="margin-right: 30px"></notice>
             <span :class="$style.link" @click="loginout">退出</span>
         </el-col>
 
@@ -43,7 +43,10 @@
         ></el-col>
         <el-col :class="$style['hidden-sm-and-up']" style="width: auto">
             <div style="display: flex; align-items: center">
-                <notice :class="$style.link" style="margin-right: 5px"></notice>
+                <notice
+                    :class="$style.link"
+                    style="margin-right: 15px"
+                ></notice>
                 <el-menu
                     background-color="#393d49"
                     text-color="#fff"
@@ -159,7 +162,7 @@ export default class Header extends Vue {
     align-items: center;
 
     @media (width <= 1000px) {
-        margin-left: -40px;
+        margin-left: -70px;
     }
 
     @media (width <= 768px) {

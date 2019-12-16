@@ -11,7 +11,6 @@ import NoticeInit, { errorStore } from './init';
 export default class Notice extends NoticeInit {
     public drawer: boolean = false;
     public page: number = 1;
-    public selected: IAlarm[] = [];
 
     private elNotify = new Map<string | IAlarm, ElNotificationComponent>();
     private notifyCount: number = 0;
@@ -50,8 +49,8 @@ export default class Notice extends NoticeInit {
 
     // 处理异常
     @Async()
-    public async doDeal() {
-        await this.$confirm('选中异常已解决?');
+    public async doDeal(notConfirm?: boolean) {
+        notConfirm || await this.$confirm('选中异常已解决?');
 
         const countObj = this.selected.reduce(
             (count, v) => {
@@ -70,7 +69,7 @@ export default class Notice extends NoticeInit {
         // // message里已经没有信息了
         // arr.length || this.updateMore(0);
 
-        this.elTable.clearSelection();
+        notConfirm || this.elTable.clearSelection();
         this.selected.length = 0;
     }
 
@@ -106,7 +105,7 @@ export default class Notice extends NoticeInit {
                         const format = (<any>this.$options.filters).date;
                         const el = this.$notify.warning({
                             offset: 110,
-                            title: `标签${v.deviceId}异常`,
+                            title: this.getTitle(v),
                             message: `<span style="color: #e00">${format(v.time)}: ${v.content}</span>`,
                             // duration: 0,
                             dangerouslyUseHTMLString: true,
@@ -124,13 +123,11 @@ export default class Notice extends NoticeInit {
                         });
 
                         this.elNotify.set(v, el);
-                    })
-                    .then(this.$nextTick);
+                    });
             }
         }
 
-        // this.notifyPromise = this.notifyPromise
-        //     .then(this.$nextTick)
+        this.notifyPromise = this.notifyPromise.then(this.$nextTick);
         //     .then(() => this.updateMore(oldCount));
     }
 
@@ -175,5 +172,10 @@ export default class Notice extends NoticeInit {
                 }
             })
             .catch(console.log);
+    }
+
+    private getTitle(v: IAlarm) {
+        const isBase = [2].includes(v.type);
+        return `${isBase ? '基站' : '标签'}${v.deviceId}异常`;
     }
 }

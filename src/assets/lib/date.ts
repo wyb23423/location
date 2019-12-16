@@ -60,7 +60,7 @@ export function formatDate(value: number | Date, fmt: string = 'yyyy/MM/dd hh:mm
     for (let i = 0; i < o.length; i++) {
         if (new RegExp(`(${o[i++]})`).test(fmt)) {
             const str = o[i] + '';
-            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? str : str.padStart(str.length, '0'));
+            fmt = fmt.replace(RegExp.$1, str.padStart(RegExp.$1.length, '0'));
         }
     }
     return fmt;

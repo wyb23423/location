@@ -4,7 +4,7 @@
 
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { NOTIFY_KEY, ALARM_DEAL, RECOVERY, MODIFY_TAG_ICON, ERROR_IMG, SX_WIDTH, NOTICE_MAX } from '@/constant';
+import { NOTIFY_KEY, ALARM_DEAL, RECOVERY, MODIFY_TAG_ICON, ERROR_IMG, SX_WIDTH } from '@/constant';
 import { Async, loopAwait } from '@/assets/utils/util';
 import { getAndCreateStore } from '@/assets/lib/localstore';
 
@@ -15,6 +15,7 @@ export default class NoticeInit extends Vue {
     public messages: IAlarm[] = [];
     public maxHeight: number = 666;
     public size: string = '50%';
+    public selected: IAlarm[] = [];
 
     protected messageStore = getAndCreateStore('MESSAGE');
 
@@ -25,21 +26,15 @@ export default class NoticeInit extends Vue {
                 const message = this.messages.find(m => this.itemToString(m) === this.itemToString(v));
                 message && this.reset(message);
             })
-            .on(RECOVERY, () => {
-                const hasNumber = new Set<string>();
-                this.messageStore.iterate<IAlarm, void>((v, k, c) => {
-                    if (hasNumber.has(k)) {
-                        return;
-                    }
-
-                    hasNumber.add(k);
-                    c < NOTICE_MAX ? this.notify(v) : this.messages.push(v);
-                });
-            });
+            .on(RECOVERY, () => this.messageStore.iterate<IAlarm, void>(v => { this.messages.push(v); }));
     }
 
     public mounted() {
         this.setSize();
+    }
+
+    public doDeal(notConfirm?: boolean) {
+        //
     }
 
     // 隐藏报警
