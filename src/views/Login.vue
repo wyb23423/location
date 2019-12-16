@@ -81,11 +81,9 @@ export default class Login extends Vue {
                     });
 
                     // =======================设置登录信息
-                    sessionStorage.setItem('login', '1');
-                    sessionStorage.setItem(
-                        'user',
-                        JSON.stringify(res.pagedData.datas[0].admin)
-                    );
+                    const user: IAdmin = res.pagedData.datas[0].admin;
+                    sessionStorage.setItem('login', user.username);
+                    sessionStorage.setItem('user', JSON.stringify(user));
                     // =====================================
 
                     initRouter(); // 加载路由

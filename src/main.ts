@@ -40,20 +40,9 @@ Vue.config.productionTip = false;
  */
 router.beforeEach((to: Route, from: Route, next: any) => {
     const isLogin = sessionStorage.getItem('login');
-    if (!(isLogin && +isLogin) && to.path !== '/login') {
-        http.get(GET_ADMIN, {
-            pageSize: 1,
-            currentPage: 1
-        })
-            .then(() => {
-                sessionStorage.setItem('login', '1');
-                initRouter();
-                next(to);
-            })
-            .catch(e => {
-                next(false);
-                location.href = '/login';
-            });
+    if (!isLogin && to.path !== '/login') {
+        next(false);
+        location.href = '/login';
     } else {
         next();
     }
@@ -66,7 +55,7 @@ Vue.filter('date', formatDate);
 async function init() {
     const { err } = await awaitWrap(initConfig());
     if (!err) {
-        if (+(<string>sessionStorage.getItem('login'))) {
+        if (sessionStorage.getItem('login')) {
             console.log('load router...');
             initRouter();
         }
