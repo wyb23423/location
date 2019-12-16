@@ -1,7 +1,6 @@
 <template>
     <div ref="root">
         <router-view />
-        <app-notice></app-notice>
     </div>
 </template>
 
@@ -9,13 +8,8 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { RESIZE } from './constant';
-import Notice from '@/components/notice/Notice.vue';
 
-@Component({
-    components: {
-        'app-notice': Notice
-    }
-})
+@Component
 export default class App extends Vue {
     public created() {
         let timer: number;

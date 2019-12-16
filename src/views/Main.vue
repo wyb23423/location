@@ -27,6 +27,9 @@ export default class Main extends Vue {
 
     public created() {
         this.link();
+    }
+
+    public mounted() {
         this.$event.emit(RECOVERY);
     }
 

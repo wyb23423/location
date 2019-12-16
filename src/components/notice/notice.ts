@@ -54,40 +54,38 @@ export default class Notice extends NoticeInit {
         await this.$confirm('选中异常已解决?');
 
         const countObj = this.selected.reduce(
-            (a, v) => {
+            (count, v) => {
                 this.reset(v, true);
-                const count = a[v.deviceId] || 0;
-                a[v.deviceId] = count + 1;
+                count[v.deviceId] = (count[v.deviceId] || 0) + 1;
 
-                return a;
+                return count;
             },
             {} as Record<string, number>
         );
         Object.entries(countObj).forEach(([id, c]) => this.reduceError(id, c));
 
         // 需要从更多里添加到外面的报警
-        const arr = this.messages.splice(this.notifyCount, NOTICE_MAX - this.notifyCount);
-        arr.forEach(this.notify.bind(this));
-        // message里已经没有信息了
-        arr.length || this.updateMore(0);
+        // const arr = this.messages.splice(this.notifyCount, NOTICE_MAX - this.notifyCount);
+        // arr.forEach(this.notify.bind(this));
+        // // message里已经没有信息了
+        // arr.length || this.updateMore(0);
 
         this.elTable.clearSelection();
         this.selected.length = 0;
     }
 
-    // 隐藏报警
+    /**
+     * 隐藏报警
+     * @param isMultiple 是否一次移除多个报警
+     */
     protected reset(v: IAlarm, isMultiple?: boolean) {
         const el = this.elNotify.get(v);
-        if (el) {
-            el.close();
-            this.notifyCount--;
-            this.elNotify.delete(v);
-        }
+        el && el.close();
 
         const index = this.messages.indexOf(v);
         if (index > -1) {
             this.messages.splice(index, 1);
-            isMultiple || this.notify(this.messages.splice(this.notifyCount, 1)[0]);
+            // isMultiple || this.notify(this.messages.splice(this.notifyCount, 1)[0]);
             this.messageStore.removeItem(this.itemToString(v));
         }
 
@@ -96,7 +94,7 @@ export default class Notice extends NoticeInit {
 
     // 显示报警
     protected notify(v: IAlarm) {
-        const oldCount: number = this.notifyCount;
+        // const oldCount: number = this.notifyCount;
         if (v) {
             this.messages.push(v);
             if (this.notifyCount < NOTICE_MAX) {
@@ -107,26 +105,33 @@ export default class Notice extends NoticeInit {
                     .then(() => {
                         const format = (<any>this.$options.filters).date;
                         const el = this.$notify.warning({
+                            offset: 110,
                             title: `标签${v.deviceId}异常`,
-                            message: `${format(v.time)}: ${v.content}`,
-                            duration: 0,
+                            message: `<span style="color: #e00">${format(v.time)}: ${v.content}</span>`,
+                            // duration: 0,
+                            dangerouslyUseHTMLString: true,
                             showClose: false,
                             customClass: 'notice-component',
                             onClick: () => {
                                 this.$confirm(`异常${v.content}已解决?`)
                                     .then(() => this.reset(v))
                                     .catch(console.log);
+                            },
+                            onClose: () => {
+                                this.notifyCount--;
+                                this.elNotify.delete(v);
                             }
                         });
 
                         this.elNotify.set(v, el);
-                    });
+                    })
+                    .then(this.$nextTick);
             }
         }
 
-        this.notifyPromise = this.notifyPromise
-            .then(this.$nextTick)
-            .then(() => this.updateMore(oldCount));
+        // this.notifyPromise = this.notifyPromise
+        //     .then(this.$nextTick)
+        //     .then(() => this.updateMore(oldCount));
     }
 
     // 更新 “更多” 的显示

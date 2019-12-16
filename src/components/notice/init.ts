@@ -4,7 +4,7 @@
 
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { NOTIFY_KEY, ALARM_DEAL, RECOVERY, MODIFY_TAG_ICON, ERROR_IMG, SX_WIDTH } from '@/constant';
+import { NOTIFY_KEY, ALARM_DEAL, RECOVERY, MODIFY_TAG_ICON, ERROR_IMG, SX_WIDTH, NOTICE_MAX } from '@/constant';
 import { Async, loopAwait } from '@/assets/utils/util';
 import { getAndCreateStore } from '@/assets/lib/localstore';
 
@@ -25,7 +25,17 @@ export default class NoticeInit extends Vue {
                 const message = this.messages.find(m => this.itemToString(m) === this.itemToString(v));
                 message && this.reset(message);
             })
-            .on(RECOVERY, () => this.messageStore.iterate<IAlarm, void>(this.notify.bind(this)));
+            .on(RECOVERY, () => {
+                const hasNumber = new Set<string>();
+                this.messageStore.iterate<IAlarm, void>((v, k, c) => {
+                    if (hasNumber.has(k)) {
+                        return;
+                    }
+
+                    hasNumber.add(k);
+                    c < NOTICE_MAX ? this.notify(v) : this.messages.push(v);
+                });
+            });
     }
 
     public mounted() {
