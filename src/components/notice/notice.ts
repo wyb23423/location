@@ -104,7 +104,7 @@ export default class Notice extends NoticeInit {
                     .then(() => {
                         const format = (<any>this.$options.filters).date;
                         const el = this.$notify.warning({
-                            offset: 110,
+                            offset: 50,
                             title: this.getTitle(v),
                             message: `<span style="color: #e00">${format(v.time)}: ${v.content}</span>`,
                             // duration: 0,

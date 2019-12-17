@@ -26,7 +26,7 @@ export default class NoticeInit extends Vue {
                 const message = this.messages.find(m => this.itemToString(m) === this.itemToString(v));
                 message && this.reset(message);
             })
-            .on(RECOVERY, () => this.messageStore.iterate<IAlarm, void>(v => { this.messages.push(v); }));
+            .on(RECOVERY, () => this.messageStore.iterate<IAlarm, void>(this.notify.bind(this)));
     }
 
     public mounted() {

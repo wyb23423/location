@@ -32,7 +32,6 @@
             </el-menu>
         </el-col>
         <el-col :offset="1" :span="2" :class="$style['hidden-xs-only']">
-            <notice :class="$style.link" style="margin-right: 30px"></notice>
             <span :class="$style.link" @click="loginout">退出</span>
         </el-col>
 
@@ -42,35 +41,26 @@
             style="flex-grow: 1"
         ></el-col>
         <el-col :class="$style['hidden-sm-and-up']" style="width: auto">
-            <div style="display: flex; align-items: center">
-                <notice
-                    :class="$style.link"
-                    style="margin-right: 15px"
-                ></notice>
-                <el-menu
-                    background-color="#393d49"
-                    text-color="#fff"
-                    active-text-color="#ffd04b"
-                    :default-active="activeIndex"
-                    :router="true"
-                    :collapse="true"
-                >
-                    <el-submenu index="-1">
-                        <template slot="title">
-                            <i class="el-icon-menu"></i>
-                        </template>
-                        <el-menu-item
-                            v-for="v of tabs"
-                            :key="v[1]"
-                            :index="v[1]"
-                        >
-                            {{ v[0] }}
-                        </el-menu-item>
-                        <el-menu-item @click="loginout">退出</el-menu-item>
-                    </el-submenu>
-                </el-menu>
-            </div>
+            <el-menu
+                background-color="#393d49"
+                text-color="#fff"
+                active-text-color="#ffd04b"
+                :default-active="activeIndex"
+                :router="true"
+                :collapse="true"
+            >
+                <el-submenu index="-1">
+                    <template slot="title">
+                        <i class="el-icon-menu"></i>
+                    </template>
+                    <el-menu-item v-for="v of tabs" :key="v[1]" :index="v[1]">
+                        {{ v[0] }}
+                    </el-menu-item>
+                    <el-menu-item @click="loginout">退出</el-menu-item>
+                </el-submenu>
+            </el-menu>
         </el-col>
+        <notice :class="[$style.link, $style.alarm]"></notice>
     </el-row>
 </template>
 
@@ -149,7 +139,6 @@ export default class Header extends Vue {
     color: color(#fff alpha(70%));
     text-decoration: none;
     cursor: pointer;
-    white-space: nowrap;
 
     &:hover {
         color: #fff;
@@ -157,13 +146,23 @@ export default class Header extends Vue {
     }
 }
 
-.hidden-xs-only {
-    display: flex;
-    align-items: center;
+.alarm {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 8%;
 
-    @media (width <= 1000px) {
-        margin-left: -70px;
+    @media (width <= 1160px) {
+        right: 9.5%;
     }
+
+    @media (width <= 768px) {
+        right: 70px;
+    }
+}
+
+.hidden-xs-only {
+    text-align: center;
 
     @media (width <= 768px) {
         display: none;
