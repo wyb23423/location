@@ -5,6 +5,7 @@ import { GET_TAG } from '@/constant/request';
 
 @Component
 export class WebSocketInit extends Vue {
+    protected needTagInfo = true;
     protected groups: string[] = [];
     protected tagAll!: { [x: string]: ITag }; // 标签
 
@@ -16,12 +17,14 @@ export class WebSocketInit extends Vue {
 
         // 获取所有标签数据
         this.tagAll = {};
-        this.$http.get(GET_TAG, {
-            currentPage: 1,
-            pageSize: 1_0000_0000
-        })
-            .then(res => this.tagAll = arr2obj(res.pagedData.datas, 'id', false))
-            .catch(() => console.log);
+        if (this.needTagInfo) {
+            this.$http.get(GET_TAG, {
+                currentPage: 1,
+                pageSize: 1_0000_0000
+            })
+                .then(res => this.tagAll = arr2obj(res.pagedData.datas, 'id', false))
+                .catch(() => console.log);
+        }
     }
 
     public beforeDestroy() {

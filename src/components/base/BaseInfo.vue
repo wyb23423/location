@@ -5,7 +5,7 @@
                 <li :class="$style.name">
                     <span>设备名称：{{ data.name }}</span>
                     <span>{{ '&nbsp;'.repeat(30) }}</span>
-                    <span>设备分组：{{ data.groupCode }}</span>
+                    <span>设备分组：{{ data.groupId }}</span>
                 </li>
                 <li style="min-height: 100px">
                     设备简介：{{ data.description || '暂无简介' }}

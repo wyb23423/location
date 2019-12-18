@@ -38,7 +38,7 @@ export default class MapMixin extends Loading {
             this.groups = data.groupIds;
             this.mapId = data.id;
         }
-        this.initData();
+        this.initData(data);
 
         if (!(await this.initMap(data))) {
             this.loaded();
@@ -134,11 +134,11 @@ export default class MapMixin extends Loading {
     }
 
     // 绑定地图数据
-    protected bindEvents(data?: IMap) {
+    protected bindEvents(data: IMap) {
         //
     }
     // 在选择地图后初始化数据
-    protected initData() {
+    protected initData(data: IMap) {
         //
     }
     // 根据标签是否一组绘制连线
