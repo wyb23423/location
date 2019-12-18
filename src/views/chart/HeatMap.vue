@@ -45,6 +45,7 @@
                         <el-form-item label="标签" prop="tags" required>
                             <tag-select
                                 @change="form.tags = $event"
+                                :multiple="true"
                             ></tag-select>
                         </el-form-item>
                     </template>
@@ -341,19 +342,25 @@ export default class HeatMap extends mixins(MapMixin, Loading) {
         };
     }
 
+    // 聚合热力点数据
     private poly(interval: number, datas: ITagInfo[]) {
         const xNum = Math.floor(this.width / interval) + 1;
         const yNum = Math.floor(this.height / interval) + 1;
         const dataGrid: Array<PointData | undefined> = new Array(xNum * yNum);
 
+        let count = 0;
         datas.forEach(v => {
-            const { index, x, y } = this.findGridInfo(interval, v);
-            this.addValue(dataGrid, index, { x, y, value: 1 });
+            if (this.groups.includes(v.groupNo)) {
+                const { index, x, y } = this.findGridInfo(interval, v);
+                this.addValue(dataGrid, index, { x, y, value: 1 });
+                count++;
+            }
         });
 
-        return { data: dataGrid, length: datas.length };
+        return { data: dataGrid, length: count };
     }
 
+    // 为热力点数据增加热力值
     private addValue(
         arr: Array<PointData | undefined>,
         index: number,
