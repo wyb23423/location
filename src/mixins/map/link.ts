@@ -6,9 +6,10 @@ import Component from 'vue-class-component';
 import { FengMapMgr } from '@/assets/map/fengmap';
 import { PIXIMgr } from '@/assets/map/pixi';
 import { MISS } from '@/constant';
+import EventMixin from '../event';
 
 @Component
-export default class Link extends Vue {
+export default class Link extends EventMixin {
     public mgr?: FengMapMgr | PIXIMgr;
 
     private bindings = new Map<string, number[]>(); // 用于记录标签属于哪些绑定组 <标签号, 绑定组号>
@@ -36,11 +37,7 @@ export default class Link extends Vue {
         this.normalize(testData);
 
         // 绑定信号丢失时移除关联线的处理函数
-        this.$event.on(MISS, this.link.bind(this));
-    }
-
-    public destroyed() {
-        this.$event.off(MISS);
+        this.on(MISS, this.link.bind(this));
     }
 
     protected link(tagNo: string, coords?: Vector3) {

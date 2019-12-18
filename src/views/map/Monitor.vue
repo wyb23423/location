@@ -83,10 +83,9 @@
 
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
-import TableMixin from '@/mixins/table';
 import EventMixin from '@/mixins/event';
 import Zone from '@/components/monitor/Zone.vue';
-import Group from '@/components/monitor/Group.vue';
+// import Group from '@/components/monitor/Group.vue';
 import Census from '@/components/monitor/Census.vue';
 import TagSelect from '@/components/form/TagSelect.vue';
 import MonitorMixin from '@/mixins/monitor';
@@ -101,7 +100,7 @@ import { GET_ZONE } from '../../constant/request';
 @Component({
     components: {
         Zone,
-        Group,
+        // Group,
         Census,
         TagSelect
     },
@@ -111,11 +110,7 @@ import { GET_ZONE } from '../../constant/request';
         }
     }
 })
-export default class Monitor extends mixins(
-    MonitorMixin,
-    TableMixin,
-    EventMixin
-) {
+export default class Monitor extends mixins(MonitorMixin, EventMixin) {
     @State public readonly zoneMode!: ZoneMode;
 
     // public groupData: Record<string, IBaseStation[]> = {}; // 基站分组
