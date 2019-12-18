@@ -91,8 +91,7 @@ export class BaseHeatMap {
 
         for (const point of this.data) {
             const { x, y } = parseCoord ? parseCoord(point) : point;
-            const alpha = (point.value - min) / (max - min);
-            ctx.globalAlpha = alpha;
+            ctx.globalAlpha = (point.value - min) / (max - min);
             ctx.drawImage(shadowCanvas, x, y);
         }
     }
@@ -103,12 +102,13 @@ export class BaseHeatMap {
         const imgData = ctx.getImageData(0, 0, width, height);
         const { data } = imgData;
 
-        for (let i = 0; i < data.length; i++) {
-            const value = data[i];
-            if (value) {
-                data[i - 3] = colorData[4 * value];
-                data[i - 2] = colorData[4 * value + 1];
-                data[i - 1] = colorData[4 * value + 2];
+        for (let i = 3; i < data.length; i += 4) {
+            let alpha = data[i];
+            if (alpha) {
+                alpha *= 4;
+                data[i - 3] = colorData[alpha];
+                data[i - 2] = colorData[alpha + 1];
+                data[i - 1] = colorData[alpha + 2];
             }
         }
         ctx.putImageData(imgData, 0, 0);
@@ -123,7 +123,7 @@ export class BaseHeatMap {
             [0, 0, cCanvas.width, cCanvas.height];
 
         const grd = cCtx.createLinearGradient(...tuple);
-        for (const [key, value] of Object.entries(this.config.gradient!)) {
+        for (const [key, value] of Object.entries(this.config.gradient)) {
             grd.addColorStop(parseFloat(key), value);
         }
         cCtx.fillStyle = grd;

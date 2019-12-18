@@ -9,11 +9,7 @@
         <el-collapse v-model="activeNames" :class="$style.collapse">
             <el-collapse-item name="collapse" title="数据设置">
                 <div :class="$style['tool-bar']">
-                    <el-radio-group
-                        size="small"
-                        v-model="type"
-                        style="margin: 20px 0"
-                    >
+                    <el-radio-group size="small" v-model="type">
                         <el-radio-button label="time">
                             所有标签某一时刻的热力图
                         </el-radio-button>
@@ -21,7 +17,7 @@
                             部分标签在一个时段的热力图
                         </el-radio-button>
                     </el-radio-group>
-                    <div>
+                    <div style="margin: 20px 0">
                         <map-select @selectmap="selectMap"></map-select>
                         <el-button
                             icon="el-icon-download"
@@ -90,26 +86,32 @@ import { GET_INSTANT, GET_HISTORY } from '@/constant/request';
 import TagSelect from '@/components/form/TagSelect.vue';
 import { ElForm } from 'element-ui/types/form';
 import { Ref } from 'vue-property-decorator';
+import { Loading } from '@/mixins/loading';
+
+interface IntervalFormData {
+    start: Date | null;
+    end: Date | null;
+    tags: string[];
+}
 
 @Component({
     components: {
         'tag-select': TagSelect
     }
 })
-export default class HeatMap extends mixins(MapMixin) {
+export default class HeatMap extends mixins(MapMixin, Loading) {
     public canDownload = false;
     public activeNames = ['collapse'];
     public type: 'time' | 'interval' = 'time';
-    public form = {
-        start: <Date | null>null,
-        end: <Date | null>null,
-        tags: <string[]>[]
+    public form: IntervalFormData = {
+        start: null,
+        end: null,
+        tags: []
     };
-    // 上次选择的时间用于减少不必要的操作
-    private oldStart?: Date | null;
-    private oldEnd?: Date | null;
 
     private heatMap!: FMHeatMap | PXHeatMap;
+    // 上次选择的数据用于减少不必要的操作
+    private old: Partial<IntervalFormData> = {};
 
     // 地图大小(定位)
     private width!: number;
@@ -125,12 +127,23 @@ export default class HeatMap extends mixins(MapMixin) {
             return false;
         }
 
-        if (start === this.oldStart) {
-            return isPaintTime ? false : end === this.oldEnd;
+        if (!isPaintTime && !(tags.length && end)) {
+            return false;
         }
 
-        if (!isPaintTime) {
-            return !!tags.length && !!end;
+        const old = this.old;
+        if (start === old.start) {
+            if (isPaintTime) {
+                return false;
+            }
+
+            if (
+                old.tags &&
+                tags.length === old.tags.length &&
+                old.tags.every(v => tags.includes(v))
+            ) {
+                return end !== old.end;
+            }
         }
 
         return true;
@@ -146,14 +159,17 @@ export default class HeatMap extends mixins(MapMixin) {
 
         this.heatMap = this.heatMap || createHeatMap(<any>{});
         this.heatMap.clearPoints();
+
+        this.loading();
         await (this.type === 'time' ? this.paintTime() : this.paintInterval());
         await this.heatMap.render(this.mgr!);
+        this.loaded();
 
         this.$message.success('绘制完成');
 
         this.activeNames = [];
-        this.oldStart = this.form.start;
-        this.oldEnd = this.form.end;
+        const { start, end, tags } = this.form;
+        this.old = { start, end, tags: [...tags] };
         this.canDownload = true;
     }
 
@@ -162,10 +178,10 @@ export default class HeatMap extends mixins(MapMixin) {
             return console.error('地图错误');
         }
 
-        this.oldStart = this.oldEnd = null;
+        this.old = {};
         this.canDownload = false;
-
         this.heatMap.remove(this.mgr);
+        this.$message.success('已清除');
     }
 
     public download() {
@@ -189,7 +205,7 @@ export default class HeatMap extends mixins(MapMixin) {
 
     // =========================================地图生命周期
     protected initData(data: IMap) {
-        this.oldStart = this.oldEnd = null;
+        this.old = {};
         [this.width, this.height] = <number[]>data.margin[4];
     }
     protected bindEvents() {
@@ -216,7 +232,8 @@ export default class HeatMap extends mixins(MapMixin) {
             }
         });
         if (!datas.length) {
-            return this.$message.info('没有历史数据');
+            this.$message.info('没有历史数据');
+            return Promise.reject();
         }
 
         const { mgr, heatMap } = this;
@@ -247,6 +264,11 @@ export default class HeatMap extends mixins(MapMixin) {
             v.data.forEach((p, i) => p && this.addValue(data, i, p));
             length += v.length;
         });
+
+        if (!length) {
+            this.$message.info('没有历史数据');
+            return Promise.reject();
+        }
 
         data.forEach(v => {
             if (v && v.value) {
