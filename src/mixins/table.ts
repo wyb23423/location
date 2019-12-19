@@ -4,10 +4,18 @@ import { loopAwait } from '../assets/utils/util';
 import { Prop } from 'vue-property-decorator';
 import { table2Excel } from '../assets/utils/download';
 import Table from '@/components/Table.vue';
+import { ElTableColumn } from 'element-ui/types/table-column';
 
 interface TableData {
     count: number;
     data: any[];
+}
+
+export interface ColCfgItem {
+    formatter?: (cellValue: any) => any;
+    prop: string;
+    label: string;
+    width?: number | string;
 }
 
 @Component({
@@ -21,7 +29,7 @@ export default class TableMixin extends Vue {
     public totalCount: number = 0;
     public tableData: any[] = [];
     public maxHeight: number = 100;
-    public colCfg: any[] = [];
+    public colCfg: ColCfgItem[] = [];
     protected pageSize: number = 10;
     protected page: number = 1;
 

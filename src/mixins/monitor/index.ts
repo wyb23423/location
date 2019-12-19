@@ -72,13 +72,15 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
     }
 
     // 获取标签位置信息后的处理函数
-    protected doMonitor(tag: ITagInfo) {
+    protected handler(tag: ITagInfo) {
         if (!this.mgr) {
             return console.log('获取地图失败!!');
         }
 
+        const renderTags = this.renderTags;
+
         const tagNo = tag.sTagNo;
-        const timer = this.renderTags[tagNo];
+        const timer = renderTags[tagNo];
         const coord: Vector3 = {
             x: +tag.position[0],
             y: +tag.position[1],
@@ -88,28 +90,28 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
         if (timer) {
             clearTimeout(timer);
 
-            const update = () => {
-                const p = this.pops.get(tagNo);
-                if (p && p.update) {
-                    p.update(tag.iHeartRate) || this.pops.delete(tagNo);
-                }
-            };
-
-            if (+tag.position[2] >= 1000) {
-                this.exitAnimation(tagNo);
-                update();
-            } else {
-                this.moveTo(tagNo, coord, this.moveTime, update);
-            }
+            // if (+tag.position[2] >= 1000) {
+            //     this.exitAnimation(tagNo);
+            //     this.positionUpdateCall(tag);
+            // } else {
+            this.moveTo(tagNo, coord, this.moveTime, this.positionUpdateCall.bind(this, tag));
+            // }
 
         } else {
             this.addTag(tagNo, coord);
-            this.renderTags[tagNo] = 1;
+            renderTags[tagNo] = 1;
         }
 
-        if (!tag.static) {
+        if (tag.static) {
+            // 标签静止, 不再持续收到标签数据, 手动维持更新动画
+            const fn = () => {
+                this.positionUpdateCall(tag);
+                renderTags[tagNo] = setTimeout(fn, 500);
+            };
+            renderTags[tagNo] = setTimeout(fn, 500);
+        } else {
             // 长时间未收到信号, 将标签号推入信号丢失队列
-            this.renderTags[tagNo] = setTimeout(this.miss.bind(this, tagNo), LOSS_TIME);
+            renderTags[tagNo] = setTimeout(this.miss.bind(this, tagNo), LOSS_TIME);
         }
 
         // 统计(添加对应统计信息)
@@ -118,7 +120,8 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
     // 信号丢失报警循环
     private miss(tagNo: string) {
-        this.$event.emit(MISS, tagNo);
+        clearTimeout(this.renderTags[tagNo]);
+        this.$event.emit(MISS, tagNo); // 抛出信号丢失的全局事件
 
         if (this.mgr) {
             this.renderTags[tagNo] = -1; // 标记标签已丢失
@@ -128,13 +131,22 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
             this.doCensus(tagNo); // 更新统计数据(移除对应统计信息)
 
             // 移除信息框
-            if (this.pops.has(tagNo)) {
-                (<Pop>this.pops.get(tagNo)).close(0);
-                this.pops.delete(tagNo);
-            }
+            const pop = this.pops.get(tagNo);
+            pop && pop.close(0);
+            this.pops.delete(tagNo);
         }
     }
 
+    // 标签位置更新时的回调
+    private positionUpdateCall(tag: ITagInfo) {
+        const tagNo = tag.sTagNo;
+        const p = this.pops.get(tagNo);
+        if (p && p.update) {
+            p.update(tag.iHeartRate) || this.pops.delete(tagNo);
+        }
+    }
+
+    // 地图创建完成的回调
     private mapCreated() {
         // 清空已显示的标签的记录
         Object.values(this.renderTags).forEach(clearTimeout);
@@ -149,7 +161,6 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
         // 渲染基站
         this.tagAnchor();
-        // .then(data => Reflect.set(this, 'groupData', arr2obj(data, 'groupid')));
 
         this.afterMapCreated();
     }
@@ -164,7 +175,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
         }
 
         // 第一次收到信号
-        const tagData: ITag = this.tagAll[tagNo];
+        const tagData = this.tagAll.get(tagNo)!;
         this.addIcon(ids[0] || 0, {
             ...tagData,
             ...coord,

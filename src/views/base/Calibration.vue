@@ -28,8 +28,13 @@ import Component, { mixins } from 'vue-class-component';
 import { State } from 'vuex-class/lib/bindings';
 import TableMixin from '../../mixins/table';
 import CalibrationSetting from '../../components/base/CalibrationSetting.vue';
-import { arr2obj } from '../../assets/utils/util';
 import { GET_BASE } from '../../constant/request';
+
+interface GroupsWithBase {
+    code: string;
+    children: IBaseStation[];
+    includes: string;
+}
 
 @Component({
     components: {
@@ -38,32 +43,29 @@ import { GET_BASE } from '../../constant/request';
 })
 export default class Calibration extends mixins(TableMixin) {
     public colCfg: any[] = [
-        { prop: 'id', label: '分组id', sortable: true },
-        { prop: 'code', label: '分组编号' },
-        { prop: 'count', label: '基站数量' }
+        { prop: 'code', label: '分组编号', sortable: true },
+        { prop: 'includes', label: '组内基站', width: 200 }
     ];
-
     public bases: IBaseStation | null = null;
 
-    private allBase: IBaseStation[] = [];
+    private groupsWithBase?: GroupsWithBase[];
 
     protected async fetch(page: number, pageSize: number) {
         let data: any[] = [];
         let count: number = 0;
         try {
-            if (!this.allBase.length) {
+            let arr = this.groupsWithBase;
+            if (!arr) {
                 const res = await this.$http.get(GET_BASE, {
                     pageSize: 10000000,
                     currentPage: 1
                 });
 
-                this.allBase = res.pagedData.datas;
+                this.groupsWithBase = arr = this.toTree(res.pagedData.datas);
             }
 
-            const bases = this.toTree();
-
-            count = bases.length;
-            data = bases.slice((page - 1) * pageSize, page * pageSize);
+            count = arr.length;
+            data = arr.slice((page - 1) * pageSize, page * pageSize);
         } catch (e) {
             console.log(e);
         }
@@ -71,20 +73,23 @@ export default class Calibration extends mixins(TableMixin) {
         return { count, data };
     }
 
-    private toTree() {
-        const group: { [key: string]: any[] } = arr2obj(
-            this.allBase,
-            'groupId'
-        );
+    private toTree(bases: IBaseStation[]) {
+        const groups = new Map<string, GroupsWithBase>();
+        bases.forEach(v => {
+            const group = groups.get(v.groupId);
+            if (!group) {
+                groups.set(v.groupId, {
+                    code: v.groupId,
+                    includes: v.id,
+                    children: [v]
+                });
+            } else {
+                group.includes += ',' + v.id;
+                group.children.push(v);
+            }
+        });
 
-        return Object.entries(group)
-            .sort((a, b) => +a[0] - +b[0])
-            .map(([k, v], i) => ({
-                id: i,
-                count: v.length,
-                code: k,
-                children: v
-            }));
+        return Array.from(groups.values());
     }
 }
 </script>

@@ -25,7 +25,7 @@
         <map-form
             @submit="onSubmit"
             :data.sync="map"
-            v-if="!!permission.put"
+            v-if="!!permission.post"
         ></map-form>
     </div>
 </template>

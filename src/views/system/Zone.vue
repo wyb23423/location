@@ -69,7 +69,7 @@
             <el-collapse-item
                 title="添加区域"
                 name="add"
-                v-if="!!permission.post"
+                v-if="!!permission.put"
             >
                 <zone-input v-model="form" :groups="groups">
                     <el-form-item label="区域顶点">

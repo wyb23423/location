@@ -29,7 +29,7 @@ export default class Zone extends mixins(Setting, TableMixin, DisplayMixin) {
         if (this.permission.delete) {
             this.operation.push({ type: 'danger', name: 'del', desc: '删除' });
         }
-        if (this.permission.put) {
+        if (this.permission.post) {
             this.operation.push({ type: 'warning', name: 'setting', desc: '设置' });
         }
 

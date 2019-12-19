@@ -44,16 +44,7 @@
                         }"
                         required
                     >
-                        <el-input
-                            v-model="tagNo"
-                            @keyup.enter.native="modifyTagNo"
-                            style="width: 60%"
-                        ></el-input>
-                    </el-form-item>
-
-                    <!-- 阻止单表单域时触发enter提交 -->
-                    <el-form-item v-show="false">
-                        <el-input value="1"></el-input>
+                        <el-input v-model="tagNo" style="width: 60%"></el-input>
                     </el-form-item>
 
                     <el-form-item>
@@ -73,7 +64,7 @@
 
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
-import TableMixin from '../../mixins/table';
+import TableMixin, { ColCfgItem } from '../../mixins/table';
 import { Prop, Watch, Ref } from 'vue-property-decorator';
 import { Route } from 'vue-router';
 import TagAdd from './TagAdd.vue';
@@ -81,6 +72,7 @@ import { Async } from '../../assets/utils/util';
 import TagConfig from '../../components/edit/TagConfig.vue';
 import { ElForm } from 'element-ui/types/form';
 import { RM_TAG, UPDATE_TAG, GET_TAG } from '@/constant/request';
+import { WebSocketInit } from '@/mixins/monitor/websocket';
 
 @Component({
     components: {
@@ -88,22 +80,29 @@ import { RM_TAG, UPDATE_TAG, GET_TAG } from '@/constant/request';
         'tag-config': TagConfig
     }
 })
-export default class TagList extends mixins(TableMixin) {
+export default class TagList extends mixins(TableMixin, WebSocketInit) {
     @Prop() public type!: number;
     @Prop() public permission!: Permission;
 
     public activeTab: string = 'info';
     public person: ITag | null = null;
-    public colCfg: any[] = [
-        { prop: 'id', label: '编号', width: 120 },
+    public colCfg: ColCfgItem[] = [
+        { prop: 'id', label: '编号', width: 100 },
         { prop: 'name', label: '名称', width: 120 },
+        {
+            prop: 'iBbattery',
+            label: '剩余电量',
+            width: 80,
+            formatter: b => (b == null ? '----' : `${b * 100}%`)
+        },
         { prop: 'content', label: '属性', width: 200 }
     ];
-    public tagNo = '';
+    public tagNo = ''; // 正在进行配置操作的标签的当前标签号
 
     @Ref('editForm') private readonly editForm!: TagAdd;
     @Ref('tagNo') private readonly tagNoForm!: ElForm;
 
+    private readonly no2Index = new Map<string, number>();
     private oldData?: ITag; // 用于比较是否需要重新上传图片
 
     public get op() {
@@ -111,11 +110,16 @@ export default class TagList extends mixins(TableMixin) {
         if (this.permission.delete) {
             op.push({ type: 'danger', name: 'del', desc: '删除' });
         }
-        if (this.permission.put) {
+        if (this.permission.post) {
             op.push({ type: 'primary', name: 'setting', desc: '配置' });
         }
 
         return op;
+    }
+
+    public created() {
+        // 创建websocket, 用于更新电量
+        this.initWebSocket();
     }
 
     @Async()
@@ -166,8 +170,18 @@ export default class TagList extends mixins(TableMixin) {
         this.refresh(false).$message.success('修改成功');
     }
 
+    protected isValid({ sTagNo }: ITagInfo) {
+        return this.no2Index.has(sTagNo);
+    }
+
+    protected handler({ sTagNo, iBbattery }: ITagInfo) {
+        const index = this.no2Index.get(sTagNo)!;
+        const item = this.tableData[index];
+        item && (item.iBbattery = iBbattery);
+    }
+
     protected async fetch(page: number, pageSize: number) {
-        let data: any[] = [];
+        let data: ITag[] = [];
         let count: number = 0;
 
         try {
@@ -182,8 +196,15 @@ export default class TagList extends mixins(TableMixin) {
         } catch (e) {
             console.log(e);
         }
+        this.no2Index.clear();
+
+        data.forEach((v, i) => this.no2Index.set(v.id, i));
 
         return { count, data };
+    }
+
+    protected async initTagAll() {
+        //
     }
 
     @Watch('$route.params.type')
