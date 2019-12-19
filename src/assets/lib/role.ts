@@ -36,13 +36,13 @@ export class RouteList {
                 props: {
                     permission: {
                         delete: this.hasPermission('admin', 'delete'),
-                        put: this.hasPermission('admin', 'put')
+                        post: this.hasPermission('admin', 'post')
                     }
                 }
             });
         }
 
-        if (this.hasPermission('admin', 'post')) {
+        if (this.hasPermission('admin', 'put')) {
             routes.push({
                 path: 'add',
                 name: 'admin-add',
@@ -86,7 +86,7 @@ export class RouteList {
     // 区域
     public zone() {
         const getPermission = this.hasPermission('zone', 'get');
-        const putPermission = this.hasPermission('zone', 'post');
+        const putPermission = this.hasPermission('zone', 'put');
         if (putPermission || getPermission) {
             return [{
                 path: 'zone',
@@ -95,8 +95,8 @@ export class RouteList {
                 props: {
                     permission: {
                         delete: this.hasPermission('zone', 'delete'),
-                        put: this.hasPermission('zone', 'put'),
-                        post: putPermission,
+                        put: putPermission,
+                        post: this.hasPermission('zone', 'post'),
                         get: getPermission
                     }
                 }
@@ -116,7 +116,7 @@ export class RouteList {
                 props: {
                     permission: {
                         delete: this.hasPermission('camera', 'delete'),
-                        put: this.hasPermission('camera', 'put')
+                        post: this.hasPermission('camera', 'post')
                     }
                 }
             });
@@ -148,7 +148,7 @@ export class RouteList {
             });
         }
 
-        if (this.hasPermission('protocol', 'post')) {
+        if (this.hasPermission('protocol', 'put')) {
             routes.push({
                 path: 'protocol/add',
                 name: 'protocol-add',
@@ -156,13 +156,11 @@ export class RouteList {
             });
         }
 
-        if (this.hasPermission('protocol', 'put')) {
-            routes.push({
-                path: 'protocol/submissio',
-                name: 'protocol-submissio',
-                component: () => import(/* webpackChunkName: "system" */ '@/views/system/protocol/Submissio.vue')
-            });
-        }
+        routes.push({
+            path: 'protocol/submissio',
+            name: 'protocol-submissio',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/protocol/Submissio.vue')
+        });
 
         return routes;
     }
@@ -184,7 +182,7 @@ export class RouteList {
 
     // 设备
     public base() {
-        const putPermission = this.hasPermission('base', 'put');
+        const postPermission = this.hasPermission('base', 'post');
         const routes: RouteConfig[] = [];
 
         if (this.hasPermission('base', 'get')) {
@@ -194,20 +192,20 @@ export class RouteList {
                 props: {
                     permission: {
                         delete: this.hasPermission('base', 'delete'),
-                        put: putPermission
+                        post: postPermission
                     }
                 }
             });
         }
 
-        if (this.hasPermission('base', 'post')) {
+        if (this.hasPermission('base', 'put')) {
             routes.push({
                 path: 'add', name: 'base-add',
                 component: () => import(/* webpackChunkName: "base" */ '@/views/base/BaseAdd.vue')
             });
         }
 
-        if (putPermission) {
+        if (postPermission) {
             routes.push({
                 path: 'calibration', name: 'calibration',
                 component: () => import(/* webpackChunkName: "base" */ '@/views/base/Calibration.vue')
@@ -243,14 +241,14 @@ export class RouteList {
                     type: route.params.type,
                     permission: {
                         delete: this.hasPermission('admin', 'delete'),
-                        put: this.hasPermission('admin', 'put')
+                        post: this.hasPermission('admin', 'post')
                     }
                 })
             });
             redirect = 'tag/list/1';
         }
 
-        if (this.hasPermission('tag', 'post')) {
+        if (this.hasPermission('tag', 'put')) {
             routes.push({
                 path: 'add', name: 'tag-add',
                 component: () => import(/* webpackChunkName: "tag" */ '@/views/tag/TagAdd.vue')
@@ -284,23 +282,23 @@ export class RouteList {
             );
         }
 
-        if (this.hasPermission('map', 'post')) {
+        if (this.hasPermission('map', 'put')) {
             routes.push({
                 path: 'add', name: 'map-add',
                 component: () => import(/* webpackChunkName: "map" */ '@/views/map/MapAdd.vue')
             });
         }
 
-        const putPermission = this.hasPermission('map', 'put');
+        const postPermission = this.hasPermission('map', 'post');
         const deletePermission = this.hasPermission('map', 'delete');
-        if (putPermission || deletePermission) {
+        if (postPermission || deletePermission) {
             routes.push({
                 path: 'edit', name: 'map-edit',
                 component: () => import(/* webpackChunkName: "map" */ '@/views/map/MapUpdate.vue'),
                 props: {
                     permission: {
                         delete: deletePermission,
-                        put: putPermission
+                        post: postPermission
                     }
                 }
             });
