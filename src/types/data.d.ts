@@ -72,10 +72,14 @@ declare interface IZone {
     groupId2: string;
 }
 
-declare interface IBingdings {
+declare interface IBingdings<T = Pick<ITag, 'id' | 'name'>> {
     id: number;
     name: string;
-    tags: string | string[];
+    bundle: T[];
+    main: T;
+    type: 0 | 1; // 0:跟随报警,1:靠近报警
+    radius: number;
+    detail: string;
 }
 
 declare interface IGroup {

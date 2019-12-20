@@ -54,5 +54,8 @@ export const GET_PROTOCOL = '/api/protocol/getall'; // 获取协议数据
 export const SEND_PROTOCOL = '/api/protocol/sendProtocol'; // 下发协议
 export const SEND_RECEIVE = '/api/protocol/sendReceive'; // 下发协议并获取回复
 
+export const BIND_CONTROLLER = '/api/bundle'; // 标签绑定相关
+export const GET_BIND = '/api/bundle/getAll'; // 获取标签绑定数据
+
 export const LOGIN = '/api/admin/login'; // 登录
 export const LOGOUT = '/api/admin/logout'; // 登出
