@@ -84,7 +84,9 @@ export default class TagSelect extends Vue {
         }
 
         this.value = data;
-        this.fetchTag().then(() => (this.loading = false));
+        if (data && (!Array.isArray(data) || data.length)) {
+            this.fetchTag().then(() => (this.loading = false));
+        }
     }
 
     // 远程搜索标签数据

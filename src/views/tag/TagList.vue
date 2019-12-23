@@ -90,10 +90,10 @@ export default class TagList extends mixins(TableMixin, WebSocketInit) {
         { prop: 'id', label: '编号', width: 100 },
         { prop: 'name', label: '名称', width: 120 },
         {
-            prop: 'iBbattery',
-            label: '剩余电量',
+            prop: 'iBattery',
+            label: '电量',
             width: 80,
-            formatter: b => (b == null ? '----' : `${b * 100}%`)
+            formatter: b => (b == null ? '----' : `${b}%`)
         },
         { prop: 'content', label: '属性', width: 200 }
     ];
@@ -165,6 +165,7 @@ export default class TagList extends mixins(TableMixin, WebSocketInit) {
         await this.tagNoForm.validate();
         await this.$confirm('确认修改标签号?');
 
+        // TODO
         console.log(this.tagNo, id);
         this.person!.id = this.tagNo;
         this.refresh(false).$message.success('修改成功');
@@ -174,10 +175,13 @@ export default class TagList extends mixins(TableMixin, WebSocketInit) {
         return this.no2Index.has(sTagNo);
     }
 
-    protected handler({ sTagNo, iBbattery }: ITagInfo) {
+    protected handler({ sTagNo, iBattery }: ITagInfo) {
         const index = this.no2Index.get(sTagNo)!;
         const item = this.tableData[index];
-        item && (item.iBbattery = iBbattery);
+        if (item && item.iBattery !== iBattery) {
+            item.iBattery = iBattery;
+            this.$set(this.tableData, index, item);
+        }
     }
 
     protected async fetch(page: number, pageSize: number) {
