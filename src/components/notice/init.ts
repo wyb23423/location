@@ -4,7 +4,7 @@
 
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { NOTIFY_KEY, ALARM_DEAL, RECOVERY, MODIFY_TAG_ICON, ERROR_IMG, SX_WIDTH } from '@/constant';
+import { NOTIFY_KEY, ALARM_DEAL, RECOVERY, MODIFY_TAG_ICON, ERROR_IMG, SX_WIDTH, BASE_ERROR_IMG } from '@/constant';
 import { Async, loopAwait } from '@/assets/utils/util';
 import { getAndCreateStore } from '@/assets/lib/localstore';
 
@@ -50,6 +50,10 @@ export default class NoticeInit extends Vue {
         return [item.deviceId, item.type, item.time, item.content].join('$');
     }
 
+    protected isBase(v: IAlarm) {
+        return [2].includes(v.type);
+    }
+
     // 触发报警提示的全局事件函数
     private notifyEvent(v: IAlarm) {
         v = this.adapter(v);
@@ -65,7 +69,7 @@ export default class NoticeInit extends Vue {
                 this.$event.emit(
                     MODIFY_TAG_ICON,
                     v.deviceId,
-                    ERROR_IMG
+                    this.isBase(v) ? BASE_ERROR_IMG : ERROR_IMG
                 );
             });
 

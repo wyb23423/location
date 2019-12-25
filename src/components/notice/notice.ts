@@ -128,33 +128,6 @@ export default class Notice extends NoticeInit {
         }
 
         this.notifyPromise = this.notifyPromise.then(this.$nextTick);
-        //     .then(() => this.updateMore(oldCount));
-    }
-
-    // 更新 “更多” 的显示
-    private updateMore(oldCount: number) {
-        let more = this.elNotify.get('more');
-
-        const moreCount = this.messages.length - this.notifyCount;
-        if (moreCount > 0) {
-            if (!more || oldCount !== this.notifyCount) {
-                more && more.close();
-
-                more = this.$notify.info({
-                    title: '更多',
-                    message: `+${moreCount}`,
-                    duration: 0,
-                    showClose: false,
-                    customClass: 'notice-component',
-                    onClick: () => (this.drawer = true)
-                });
-                this.elNotify.set('more', more);
-            } else {
-                more.$data.message = `+${moreCount}`;
-            }
-        } else {
-            more && more.close();
-        }
     }
 
     // 清除报警记录
@@ -175,7 +148,6 @@ export default class Notice extends NoticeInit {
     }
 
     private getTitle(v: IAlarm) {
-        const isBase = [2].includes(v.type);
-        return `${isBase ? '基站' : '标签'}${v.deviceId}异常`;
+        return `${this.isBase(v) ? '基站' : '标签'}${v.deviceId}异常`;
     }
 }

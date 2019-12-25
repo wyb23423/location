@@ -20,7 +20,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
     private clickIconTime?: number;
 
     public created() {
-        this.$event.on(MODIFY_TAG_ICON, (tagNo: string, img: string) => this.mgr && this.mgr.modifyImg(tagNo, img));
+        this.$event.on(MODIFY_TAG_ICON, (name: string, img: string) => this.mgr && this.mgr.modifyImg(name, img));
     }
 
     public beforeDestroy() {

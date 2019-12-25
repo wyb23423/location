@@ -6,7 +6,7 @@ import MapSelect from '@/components/form/MapSelect.vue';
 import { PIXIMgr } from '@/assets/map/pixi';
 import { Ref } from 'vue-property-decorator';
 import { errorStore } from '@/components/notice/init';
-import { ERROR_IMG } from '@/constant';
+import { ERROR_IMG, BASE_ERROR_IMG } from '@/constant';
 import { Loading } from '../loading';
 import { PIXIEL } from '@/assets/map/pixi/animation';
 import { GET_BASE } from '@/constant/request';
@@ -126,7 +126,7 @@ export default class MapMixin extends Loading {
             x: info.x,
             y: info.y,
             height: 1,
-            url: await this.getIcon(info, type),
+            url: (await this.getIcon(info, type)) || info.icon,
             size: info.size || 48
         };
 
@@ -206,7 +206,7 @@ export default class MapMixin extends Loading {
         // 添加基站名
         this.mgr!.addTextMarker(
             {
-                height: 2,
+                height: 0.8,
                 fontsize: 15,
                 type: 1,
                 x: v.coordx,
@@ -216,16 +216,16 @@ export default class MapMixin extends Loading {
         );
     }
 
+    @Async()
     private async getIcon(info: IconParms, type: ICON_TYPE) {
         switch (type) {
             case ICON_TYPE.TAG: {
-                try {
-                    await errorStore.getItem((<ITag>info).id);
-
-                    return ERROR_IMG;
-                } catch (e) {
-                    //
-                }
+                await errorStore.getItem((<ITag>info).id);
+                return ERROR_IMG;
+            }
+            case ICON_TYPE.STATION: {
+                await errorStore.getItem((<BaseIconParams>info).name);
+                return BASE_ERROR_IMG;
             }
             default: return info.icon;
         }
