@@ -89,14 +89,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
         if (timer) {
             clearTimeout(timer);
-
-            // if (+tag.position[2] >= 1000) {
-            //     this.exitAnimation(tagNo);
-            //     this.positionUpdateCall(tag);
-            // } else {
             this.moveTo(tagNo, coord, this.moveTime, this.positionUpdateCall.bind(this, tag));
-            // }
-
         } else {
             this.addTag(tagNo, coord);
             renderTags[tagNo] = 1;

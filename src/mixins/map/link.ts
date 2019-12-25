@@ -7,35 +7,18 @@ import { FengMapMgr } from '@/assets/map/fengmap';
 import { PIXIMgr } from '@/assets/map/pixi';
 import { MISS } from '@/constant';
 import EventMixin from '../event';
+import { Async } from '@/assets/utils/util';
+import { GET_BIND } from '@/constant/request';
 
 @Component
 export default class Link extends EventMixin {
     public mgr?: FengMapMgr | PIXIMgr;
 
-    private bindings = new Map<string, number[]>(); // 用于记录标签属于哪些绑定组 <标签号, 绑定组号>
+    private bindings = new Map<string, Set<number>>(); // 用于记录标签属于哪些绑定组 <标签号, 绑定组号>
     private points = new Map<number, Record<string, Vector3>>(); // 记录的坐标点 <绑定组号, 各标签坐标>
 
     public created() {
-        // TODO 从服务器获取数据
-        const testData = [
-            {
-                id: 1,
-                name: '1',
-                tags: ['00000004', '00000005']
-            },
-            {
-                id: 2,
-                name: '2',
-                tags: ['00000001', '00000008']
-            },
-            {
-                id: 3,
-                name: '3',
-                tags: ['00000001', '00000011']
-            },
-        ];
-        this.normalize(testData);
-
+        this.initLinkData();
         // 绑定信号丢失时移除关联线的处理函数
         this.on(MISS, this.link.bind(this));
     }
@@ -67,11 +50,18 @@ export default class Link extends EventMixin {
                             color: '#e00',
                             colorNum: 0xee0000
                         },
-                        name
+                        name,
+                        true
                     );
                 }
             }
         });
+    }
+
+    @Async()
+    private async initLinkData() {
+        const { pagedData: { datas } }: ResponseData<IBingdings> = await this.$http.get(GET_BIND);
+        this.normalize(datas);
     }
 
     private getAngRecordPoints(tagNo: string, coords?: Vector3) {
@@ -81,22 +71,26 @@ export default class Link extends EventMixin {
             return [];
         }
 
-        return bindings.map(flag => {
+        const result: Array<Record<number, Vector3[]>> = [];
+        bindings.forEach(flag => {
             const points = this.points.get(flag) || {};
             coords ? (points[tagNo] = coords) : Reflect.deleteProperty(points, tagNo);
             this.points.set(flag, points);
 
-            return { [flag]: Object.values(points) };
+            result.push({ [flag]: Object.values(points) });
         });
+
+        return result;
     }
 
     private normalize(datas: IBingdings[]) {
         datas.forEach(v => {
-            const tags: string[] = Array.isArray(v.tags) ? v.tags : JSON.parse(v.tags);
+            const tags: string[] = v.bundle.map(t => t.id);
+            tags.push(v.main.id);
 
             tags.forEach(tagNo => {
-                const tmp = this.bindings.get(tagNo) || [];
-                tmp.push(v.id);
+                const tmp = this.bindings.get(tagNo) || new Set();
+                tmp.add(v.id);
                 this.bindings.set(tagNo, tmp);
             });
         });

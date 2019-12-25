@@ -189,7 +189,11 @@ export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
                 seg.points = points.slice(-3000);
                 line.addSegment(seg);
 
-                this.map.drawLineMark(line, style);
+                try {
+                    this.map.drawLineMark(line, style);
+                } catch (e) {
+                    //
+                }
             }
         } else {
             // console.warn(`标识为${name}的线未找到`);
