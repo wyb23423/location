@@ -265,7 +265,8 @@ export class FengMapMgr extends CoordTransformer {
         const pop = new PopInfo(this.map, marker);
 
         return {
-            update: (iHeartRate: number) => pop.update(this.map, iHeartRate),
+            updatePosition: () => pop.updatePosition(this.map),
+            updateInfo: (info: ITagInfo) => pop.updateInfo(this.map, info),
             close: pop.close.bind(pop)
         };
     }

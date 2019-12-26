@@ -14,7 +14,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import Header from '../components/layout/Header.vue';
 import { Prop } from 'vue-property-decorator';
-import { NOTIFY_KEY, RECOVERY } from '@/constant';
+import { NOTIFY_KEY, RECOVERY, ALARM_TYPE, MISS } from '@/constant';
 import { getIp, getConfig } from '@/assets/utils/util';
 
 @Component({
@@ -46,12 +46,19 @@ export default class Main extends Vue {
         ws.onmessage = (e: MessageEvent) => {
             const data: IAlarm & { alarmTime?: number } = JSON.parse(e.data);
             if (Date.now() - (data.alarmTime || data.time) <= 1000) {
-                setTimeout(
-                    () => this.$event.emit(NOTIFY_KEY, data),
-                    this.delay
-                );
+                setTimeout(this.alarm.bind(this, data), this.delay);
             }
         };
+    }
+
+    private alarm(data: IAlarm & { alarmTime?: number }) {
+        this.$event.emit(NOTIFY_KEY, data);
+        switch (data.type) {
+            case ALARM_TYPE.TAG_OUT:
+                return this.$event.emit(MISS, data.deviceId);
+            default:
+                break;
+        }
     }
 }
 </script>

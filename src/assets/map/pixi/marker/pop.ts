@@ -17,18 +17,12 @@ export class PopInfo {
         this.time = Date.now();
     }
 
-    public update(iHeartRate: number) {
+    public updateInfo(info: ITagInfo) {
         if (!(this.heartEl)) {
             return false;
         }
 
-        (this.heartEl.children[0] as PIXI.Text).text = `${iHeartRate}`;
-
-        const now = Date.now();
-        if (now - this.time >= 500) {
-            this.heartEl.alpha = this.heartEl.alpha ? 0 : 1;
-            this.time = now;
-        }
+        this.updateHeartRate(info.iHeartRate);
 
         return true;
     }
@@ -36,6 +30,17 @@ export class PopInfo {
     public close(img: PIXI.Sprite) {
         img.removeChildren();
         (<any>this.triangle) = this.heartEl = undefined;
+    }
+
+    // 更新心率的显示
+    private updateHeartRate(heartRate: number) {
+        (this.heartEl!.children[0] as PIXI.Text).text = `${heartRate}`;
+
+        const now = Date.now();
+        if (now - this.time >= 500) {
+            this.heartEl!.alpha = this.heartEl!.alpha ? 0 : 1;
+            this.time = now;
+        }
     }
 
     private async init(img: PIXI.Sprite) {

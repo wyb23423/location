@@ -4,7 +4,7 @@
 
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { NOTIFY_KEY, ALARM_DEAL, RECOVERY, MODIFY_TAG_ICON, ERROR_IMG, SX_WIDTH, BASE_ERROR_IMG } from '@/constant';
+import { NOTIFY_KEY, ALARM_DEAL, RECOVERY, MODIFY_TAG_ICON, ERROR_IMG, SX_WIDTH, BASE_ERROR_IMG, ALARM_TYPE } from '@/constant';
 import { Async, loopAwait } from '@/assets/utils/util';
 import { getAndCreateStore } from '@/assets/lib/localstore';
 
@@ -51,7 +51,7 @@ export default class NoticeInit extends Vue {
     }
 
     protected isBase(v: IAlarm) {
-        return [2].includes(v.type);
+        return [ALARM_TYPE.BASE_OFFLINE].includes(v.type);
     }
 
     // 触发报警提示的全局事件函数

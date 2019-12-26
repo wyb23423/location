@@ -236,28 +236,14 @@ export class PopInfo {
         this.createTime = this.time = Date.now();
     }
 
-    public update(map: fengmap.FMMap, iHeartRate: number) {
-        try {
-            if (map && this.pop && this.tagNo) {
-                map.updatePopPosition(this.pop);
-                this.el = this.el || document.getElementById(this.tagNo);
-                if (this.el) {
-                    const span = <HTMLSpanElement>this.el.children[1];
-                    span && (span.innerText = `${iHeartRate}`);
+    public updatePosition(map: fengmap.FMMap) {
+        return this._update(map, () => map.updatePopPosition(this.pop!));
+    }
 
-                    const now = Date.now();
-                    if (now - this.time >= 500) {
-                        const opacity = this.el.style.opacity;
-                        this.el.style.opacity = opacity === '1' ? '0' : '1';
-                        this.time = now;
-                    }
-                }
-            }
-        } catch (e) {
-            return false;
-        }
-
-        return true;
+    public updateInfo(map: fengmap.FMMap, info: ITagInfo) {
+        return this._update(map, () => {
+            this.updateHeartRate(info.iHeartRate);
+        });
     }
 
     public close(clickTime: number = this.createTime) {
@@ -270,6 +256,33 @@ export class PopInfo {
             }
 
             return true;
+        }
+    }
+
+    private _update(map: fengmap.FMMap, func: () => void) {
+        try {
+            if (map && this.pop && this.tagNo) {
+                func();
+            }
+        } catch (e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private updateHeartRate(heartRate: number) {
+        this.el = this.el || document.getElementById(this.tagNo!);
+        if (this.el) {
+            const span = <HTMLSpanElement>this.el.children[1];
+            span && (span.innerText = `${heartRate}`);
+
+            const now = Date.now();
+            if (now - this.time >= 500) {
+                const opacity = this.el.style.opacity;
+                this.el.style.opacity = opacity === '1' ? '0' : '1';
+                this.time = now;
+            }
         }
     }
 }

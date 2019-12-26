@@ -12,5 +12,7 @@ export default class EventMixin extends Vue {
     protected on(name: PropertyKey, handler: (...args: any[]) => any) {
         this.remove.add(() => this.$event.off(name, handler));
         this.$event.on(name, handler);
+
+        return this;
     }
 }

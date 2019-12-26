@@ -25,3 +25,17 @@ export async function initConfig() {
 
     sessionStorage.setItem('config', JSON.stringify(res));
 }
+
+export enum ALARM_TYPE {
+    IN = 0, // 进入报警
+    OUT = 1, // 离开报警
+    BASE_OFFLINE = 2, // 基站离线
+    SOS = 3, // 标签SOS报警
+    STATIC = 4, // 标签静止报警
+    HUMMER = 5, // 蜂鸣器报警
+    BAND = 6, // 手环断开报警
+    TAG_OUT = 7, // 标签消失报警
+    BATTERY_LOW = 8, // 电量低报警
+    FAR = 9, // 跟随报警,{0}远离了主体:{1}
+    BESIDE = 10 // 靠近报警,{0}靠近了主体:{1}
+}

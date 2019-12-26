@@ -105,7 +105,7 @@ export class PIXIMgr extends ElsMgr {
         this.stage.sortChildren();
 
         return {
-            update: pop.update.bind(pop),
+            updateInfo: pop.updateInfo.bind(pop),
             close: () => {
                 pop.close(img);
                 img.zIndex = zIndex;
