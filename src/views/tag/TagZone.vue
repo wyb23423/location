@@ -80,7 +80,7 @@ export default class TagZone extends Vue {
         });
 
         res.pagedData.datas.forEach((v: IZone) => {
-            if (v.mode === this.zoneMode.in || v.mode === this.zoneMode.out) {
+            if (v.mode === this.zoneMode.fence) {
                 this.zones.push({
                     label: v.name,
                     key: v.id,

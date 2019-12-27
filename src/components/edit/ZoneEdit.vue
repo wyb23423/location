@@ -10,15 +10,15 @@
         </el-form-item>
         <el-form-item label="区域模式">
             <el-select v-model="zone.mode" placeholder="请选择">
-                <el-option label="进入区域" :value="zoneMode.in"></el-option>
-                <el-option label="离开区域" :value="zoneMode.out"></el-option>
+                <!-- <el-option label="进入区域" :value="zoneMode.in"></el-option>
+                <el-option label="离开区域" :value="zoneMode.out"></el-option> -->
                 <el-option
                     label="切换区域"
                     :value="zoneMode.switch"
                     :disabled="groups.length < 2"
                 ></el-option>
                 <el-option label="分组区域" :value="zoneMode.group"></el-option>
-                <el-option label="其他" :value="zoneMode.other"></el-option>
+                <el-option label="电子围栏" :value="zoneMode.fence"></el-option>
             </el-select>
         </el-form-item>
         <el-form-item
@@ -52,11 +52,7 @@
                 </el-select>
             </el-form-item>
         </template>
-        <el-form-item
-            label="围栏阈值"
-            required
-            v-else-if="zone.mode !== zoneMode.other"
-        >
+        <el-form-item label="围栏阈值" required>
             <el-input-number
                 v-model="zone.threshold"
                 :min="0"

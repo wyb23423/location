@@ -20,7 +20,7 @@ export default class Zone extends mixins(Setting, TableMixin, DisplayMixin) {
     ];
     public form: any = {
         name: '',
-        mode: 2,
+        mode: 5,
         open: true
     };
     // ====================================
@@ -33,7 +33,7 @@ export default class Zone extends mixins(Setting, TableMixin, DisplayMixin) {
             this.operation.push({ type: 'warning', name: 'setting', desc: '设置' });
         }
 
-        this.form.mode = this.zoneMode.in;
+        this.form.mode = this.zoneMode.fence;
     }
 
     /**
@@ -106,7 +106,7 @@ export default class Zone extends mixins(Setting, TableMixin, DisplayMixin) {
     private resetForm() {
         this.form = {
             name: '',
-            mode: this.zoneMode.in,
+            mode: this.zoneMode.fence,
             open: true
         };
 

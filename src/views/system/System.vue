@@ -14,7 +14,7 @@ import Page from '@/components/layout/Page.vue';
 })
 export default class System extends Vue {
     public tabs = [
-        { title: '电子围栏', to: '/system/zone', icon: 'el-icon-crop' },
+        { title: '区域', to: '/system/zone', icon: 'el-icon-crop' },
         { title: '标签绑定', to: '/system/bind', icon: 'el-icon-connection' },
         {
             title: '分组配置',
