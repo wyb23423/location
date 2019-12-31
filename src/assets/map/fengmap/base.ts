@@ -47,7 +47,15 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
                 return (callback || none)(item);
             }
 
-            item.moveTo({
+            // fengmap 移动时会把height改为0, 会出现一些问题
+            // 应保持height值不变
+            const el = new Proxy(item, {
+                set(t, k, v) {
+                    v = k === '_height' ? Reflect.get(t, k) : v;
+                    return Reflect.set(t, k, v);
+                }
+            });
+            el.moveTo({
                 ...p,
                 update: update || none,
                 callback: fn.bind(null, item, points)

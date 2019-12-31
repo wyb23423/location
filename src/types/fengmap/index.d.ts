@@ -110,6 +110,8 @@ declare namespace fengmap {
     }
 
     class FMImageMarker extends FMMarker<FMImageMarkerOptions> {
+        public height: number;
+
         public url: string;
         public avoid(value: boolean): void;
         public stopJump(): void;
