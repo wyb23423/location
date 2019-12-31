@@ -19,7 +19,7 @@
                     </div>
                     <div>
                         <span :class="$style.title">设备地址：</span>
-                        <span>{{ data.location }}</span>
+                        <span>{{ data.location || '未知' }}</span>
                     </div>
                 </li>
                 <li>
@@ -39,7 +39,7 @@
                     </div>
                     <div>
                         <span :class="$style.title">安装时间：</span>
-                        <span>{{ data.installTime || '保密' }}</span>
+                        <span>{{ data.installTime | date }}</span>
                     </div>
                 </li>
             </ul>
@@ -119,7 +119,7 @@ export default class BaseInfo extends Vue {
 .title {
     display: inline-block;
     vertical-align: middle;
-    width: 200px;
+    width: 100px;
 }
 </style>
 

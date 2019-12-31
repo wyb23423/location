@@ -20,7 +20,7 @@ export default class Zone extends mixins(Setting, TableMixin, DisplayMixin) {
     ];
     public form: any = {
         name: '',
-        mode: 5,
+        mode: 1,
         open: true
     };
     // ====================================

@@ -1,20 +1,18 @@
 <template>
     <div>
-        <el-badge
-            :value="messages.length"
-            type="danger"
-            :max="999"
-            :hidden="messages.length <= 0"
-            style="z-index: 1"
-        >
-            <el-tooltip content="实时报警" effect="light">
-                <i
-                    class="el-icon-bell"
-                    style="font-size: 18px"
-                    @click="drawer = true"
-                ></i>
-            </el-tooltip>
-        </el-badge>
+        <div @click="drawer = true">
+            <el-badge
+                :value="messages.length"
+                type="danger"
+                :max="999"
+                :hidden="messages.length <= 0"
+                style="z-index: 1"
+            >
+                <el-tooltip content="实时报警" effect="light">
+                    <i class="el-icon-bell" style="font-size: 24px"></i>
+                </el-tooltip>
+            </el-badge>
+        </div>
         <el-drawer title="报警列表" :visible.sync="drawer" :size="size">
             <el-table
                 :data="list"

@@ -11,11 +11,11 @@
                 @change="index = $event"
             >
                 <el-carousel-item v-for="(v, i) of bindings" :key="v.id">
-                    <el-card style="height: 100%">
+                    <el-card class="bind-item-card" style="height: 100%">
                         <div
                             slot="header"
                             class="flex-center"
-                            style="justify-content: space-between"
+                            style="justify-content: space-between;"
                         >
                             <span>{{ v.name }}</span>
                             <div>
@@ -162,10 +162,6 @@ import TagSelect from '@/components/form/TagSelect.vue';
 import Empty from '@/components/layout/Empty.vue';
 import { GET_TAG, GET_BIND, BIND_CONTROLLER } from '@/constant/request';
 
-function mainDesc(type: 0 | 1) {
-    return type ? '禁止靠近标签' : '被跟随标签';
-}
-
 type IBingdingsData = IBingdings & { bundleStr: string };
 
 @Component({
@@ -174,7 +170,9 @@ type IBingdingsData = IBingdings & { bundleStr: string };
         Empty
     },
     filters: {
-        mainDesc,
+        mainDesc(type: 0 | 1) {
+            return type ? '禁止靠近标签' : '被跟随标签';
+        },
         typeDesc: (type?: 0 | 1) => {
             return type ? '靠近' : '跟随';
         }
@@ -347,5 +345,12 @@ export default class Bind extends Vue {
     &::-webkit-scrollbar {
         display: none;
     }
+}
+</style>
+
+
+<style lang="postcss">
+.bind-item-card .el-card__header {
+    background: #efefef;
 }
 </style>
