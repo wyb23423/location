@@ -16,7 +16,6 @@ import Events from './assets/lib/events';
 import { formatDate } from './assets/lib/date';
 import { awaitWrap } from './assets/utils/util';
 import { Route } from 'vue-router';
-import { GET_ADMIN } from './constant/request';
 
 // ========================================全局变量及注入vue实例的属性
 (<any>window).PIXI = PIXI;

@@ -5,17 +5,6 @@
         label-width="100px"
         style="padding-right: 20%"
     >
-        <el-form-item label="区域：">
-            <el-select v-model="form.zone" filterable>
-                <el-option
-                    v-for="(item, i) in zones"
-                    :key="i"
-                    :label="item[1]"
-                    :value="item[0]"
-                >
-                </el-option>
-            </el-select>
-        </el-form-item>
         <el-form-item label="坐标X：" prop="coordx" required>
             <el-input
                 v-model.number="form.coordx"
@@ -44,36 +33,16 @@ import { Async } from '@/assets/utils/util';
 
 @Component
 export default class Position extends Vue {
-    @Prop() public data!: any;
+    @Prop() public data!: IBaseStation;
 
     public form: any = {
         coordx: 0,
-        coordy: 0,
-        zone: '0'
+        coordy: 0
     };
-
-    public zones: string[][] = [];
 
     public created() {
         this.form.coordx = this.data.coordx;
         this.form.coordy = this.data.coordy;
-        this.form.zone = this.data.zone;
-
-        this.$http
-            .get(GET_ZONE, {
-                currentPage: 1,
-                pageSize: 10000
-            })
-            .then((res: ResponseData) => {
-                this.zones = res.pagedData.datas.map((v: any) => [
-                    v.id + '',
-                    v.name + (v.name.endsWith('区域') ? '' : '区域')
-                ]);
-                if (this.zones.every(v => v[0] !== this.form.zone)) {
-                    this.form.zone = this.zones[0][0];
-                }
-            })
-            .catch(console.error);
     }
 
     @Async()
@@ -81,11 +50,7 @@ export default class Position extends Vue {
         await (<ElForm>this.$refs.form).validate();
         await this.$confirm('确认修改');
 
-        const data = Object.assign({}, this.form, {
-            updateUser: '....',
-            updateTime: Date.now(),
-            id: this.data.id
-        });
+        const data = Object.assign({}, this.data, this.form);
         await this.$http.post(UPDATE_BASE, data, {
             'Content-Type': 'application/json'
         });

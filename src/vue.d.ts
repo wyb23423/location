@@ -40,6 +40,7 @@ interface HTTP {
     retry: boolean;
     timeoutTime: number;
     maxRetryCount: number;
+    beforeFetch(init: RequestInit): RequestInit;
 }
 
 interface VueWorker {

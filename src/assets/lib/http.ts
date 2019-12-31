@@ -138,8 +138,8 @@ export default class HTTP {
     /**
      * 请求前拦截器
      */
-    public beforeFetch(req: RequestConfig): RequestConfig {
-        return req;
+    public beforeFetch(init: RequestInit): RequestInit {
+        return init;
     }
 
     /**
@@ -174,11 +174,11 @@ export default class HTTP {
             reqBody = this.resolveBody(headers, params);
         }
 
-        return this.beforeFetch({
+        return {
             ...this,
             url, headers, controller,
             params: reqBody
-        });
+        };
     }
 
     private resolveBody(headers: Record<string, any> | Headers, data: Record<string, any> = {}) {
@@ -193,13 +193,13 @@ export default class HTTP {
     // 发送请求
     private doFetch(req: RequestConfig, method: string, retryCount: number) {
         req.controller = req.controller || new AbortController();
-        const init: RequestInit = {
+        const init = this.beforeFetch({
             method,
             headers: req.headers,
             body: req.params,
             credentials: 'include',
             signal: req.controller.signal
-        };
+        });
 
         const timer = setTimeout(() => {
             this.timeout(req, method, retryCount);
