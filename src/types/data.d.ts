@@ -100,10 +100,13 @@ declare interface IAlarm {
     time: number;
 }
 
-declare interface IPosTag {
+declare interface ITagZone {
     id: number;
     tagId: string;
     zoneId: number;
+    type: 1 | 2;
+    tagName: string;
+    zoneName?: string;
 }
 
 // ==========================================

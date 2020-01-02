@@ -4,7 +4,6 @@ import { loopAwait } from '../assets/utils/util';
 import { Prop } from 'vue-property-decorator';
 import { table2Excel } from '../assets/utils/download';
 import Table from '@/components/Table.vue';
-import { ElTableColumn } from 'element-ui/types/table-column';
 
 interface TableData {
     count: number;

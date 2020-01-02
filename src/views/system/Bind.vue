@@ -117,7 +117,7 @@
                     <tag-select
                         ref="tagSelectMain"
                         :is-valid="isValidMain"
-                        @change="selectedMain"
+                        @change="selectMain"
                     ></tag-select>
                 </el-form-item>
                 <el-form-item label="关联标签" prop="bundle" required>
@@ -127,7 +127,7 @@
                         :multiple="true"
                         :multiple-limit="null"
                         :is-valid="isValid"
-                        @change="selectedTag"
+                        @change="selectTag"
                     ></tag-select>
                 </el-form-item>
                 <el-form-item label="极限距离(cm)" prop="radius" required>
@@ -204,14 +204,14 @@ export default class Bind extends Vue {
     public created() {
         this.initData();
     }
-    public selectedTag(_: string[], tags: ITag[]) {
+    public selectTag(_: string[], tags: ITag[]) {
         const nameArr: string[] = [];
         this.form.bundle = tags.map(tag => {
             nameArr.push(tag.name);
             return { id: tag.id, name: tag.name };
         });
     }
-    public selectedMain(_: string, tag: ITag) {
+    public selectMain(_: string, tag: ITag) {
         this.form.main = { id: tag.id, name: tag.name };
     }
 

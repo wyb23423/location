@@ -240,8 +240,8 @@ export class RouteList {
                 props: (route: Route) => ({
                     type: route.params.type,
                     permission: {
-                        delete: this.hasPermission('admin', 'delete'),
-                        post: this.hasPermission('admin', 'post')
+                        delete: this.hasPermission('tag', 'delete'),
+                        post: this.hasPermission('tag', 'post')
                     }
                 })
             });
