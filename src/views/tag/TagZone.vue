@@ -250,9 +250,3 @@ export default class TagZone extends mixins(TableMixin) {
     }
 }
 </script>
-
-<style lang="postcss">
-.tag-zone-transfer .el-transfer-panel__item {
-    display: block !important;
-}
-</style>
