@@ -119,6 +119,14 @@ declare interface IAlarm {
     alarmMsg: string;
 }
 
+declare interface ITagZone {
+    id: number;
+    zoneId: number;
+    tagNo: string;
+    tagName: string;
+    zoneName?: string;
+}
+
 // ==========================================
 declare type TPosition = [Vector2, Vector2, Vector2, Vector2];
 
