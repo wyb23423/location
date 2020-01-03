@@ -2,7 +2,7 @@ import Component, { mixins } from 'vue-class-component';
 import MapMixin from '../map';
 import { WebSocketInit } from './websocket';
 import { getConfig } from '@/assets/utils/util';
-import { LOSS_TIME, MODIFY_TAG_ICON, MISS } from '@/constant';
+import { MODIFY_TAG_ICON, MISS } from '@/constant';
 import Link from '../map/link';
 import { getCustomInfo } from '@/assets/map/common';
 
@@ -14,7 +14,10 @@ interface Pop {
 
 @Component
 export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) {
-    public renderTags: Record<string, number> = {}; // 已经在地图上的标签, {tagNo: timer}
+    public censusChange: number = 0; // 用于触发响应（当前vue版本不支持Map及Set的数据响应）
+    protected censusTags = new Map<string, Set<string>>(); // 分组统计
+    private tagGroup = new Map<string, string>(); // tag-group映射, 也用于判断标签是否已添加到地图上
+    private time?: number; // 统计刷新时间戳
 
     private pops: Map<string, Pop> = new Map(); // 关闭标签信息的函数
     private readonly moveTime = 1 / getConfig<number>('SECOND_COUNT', 1);
@@ -26,7 +29,6 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
     }
 
     public beforeDestroy() {
-        Object.values(this.renderTags).forEach(clearTimeout);
         this.pops.forEach(v => v.close());
     }
 
@@ -67,9 +69,6 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
     protected afterMapCreated() {
         // 其他地图创建完成后的操作
     }
-    protected doCensus(tag: ITagInfo | string) {
-        //
-    }
 
     // 获取标签位置信息后的处理函数
     protected handler(tag: ITagInfo) {
@@ -77,22 +76,17 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
             return console.log('获取地图失败!!');
         }
 
-        const renderTags = this.renderTags;
-
         const tagNo = tag.sTagNo;
-        const timer = renderTags[tagNo];
         const coord: Vector3 = {
             x: +tag.position[0],
             y: +tag.position[1],
             z: 1
         };
 
-        if (timer) {
-            clearTimeout(timer);
+        if (this.tagGroup.has(tagNo)) {
             this.moveTo(tagNo, coord, this.moveTime, () => this.updateCall(tag, false));
         } else {
             this.addTag(tagNo, coord);
-            renderTags[tagNo] = 1;
         }
 
         this.updateCall(tag, true); // 更新面板信息
@@ -103,20 +97,18 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
     // 信号丢失报警循环
     private miss(tagNo: string) {
-        clearTimeout(this.renderTags[tagNo]);
-
-        if (this.mgr) {
-            this.renderTags[tagNo] = -1; // 标记标签已丢失
-
-            this.mgr.show(tagNo, false); // 隐藏标签
-            this.mgr.lineMgr.remove(tagNo); // 移除轨迹线
-            this.doCensus(tagNo); // 更新统计数据(移除对应统计信息)
-
-            // 移除信息框
-            const pop = this.pops.get(tagNo);
-            pop && pop.close(0);
-            this.pops.delete(tagNo);
+        if (!this.mgr) {
+            return;
         }
+
+        this.mgr.show(tagNo, false); // 隐藏标签
+        this.mgr.lineMgr.remove(tagNo); // 移除轨迹线
+        this.doCensus(tagNo); // 更新统计数据(移除对应统计信息)
+
+        // 移除信息框
+        const pop = this.pops.get(tagNo);
+        pop && pop.close(0);
+        this.pops.delete(tagNo);
     }
 
     /**
@@ -141,9 +133,10 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
     // 地图创建完成的回调
     private mapCreated() {
-        // 清空已显示的标签的记录
-        Object.values(this.renderTags).forEach(clearTimeout);
-        this.renderTags = {};
+        // 清空统计的标签的记录
+        this.censusTags.clear();
+        this.tagGroup.clear();
+        this.updateCensus();
 
         // 移除所有信息窗
         this.pops.forEach(v => v.close());
@@ -175,5 +168,38 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
             name: tagNo,
             tagName: tagData.name,
         });
+    }
+
+    private doCensus(tag: ITagInfo | string) {
+        const tagNo = (<ITagInfo>tag).sTagNo || <string>tag;
+        const group = this.tagGroup.get(tagNo);
+
+        let hasUpdate = false; // 是否有更新
+        if (group) {
+            const set = this.censusTags.get(group);
+            hasUpdate = !!(set && set.delete(tagNo));
+        }
+
+        if (typeof tag !== 'string') {
+            const set = this.censusTags.get(tag.groupNo) || new Set();
+            const oldSize = set.size;
+            set.add(tagNo);
+
+            hasUpdate = hasUpdate || oldSize !== set.size;
+            this.censusTags.set(tag.groupNo, set);
+            this.tagGroup.set(tagNo, tag.groupNo);
+        }
+
+        if (hasUpdate) {
+            const now = Date.now();
+            if (!this.time || now - this.time >= 1000) {
+                this.updateCensus(now);
+            }
+        }
+    }
+
+    private updateCensus(now = Date.now()) {
+        this.censusChange = this.censusChange ? 0 : 1;
+        this.time = now;
     }
 }

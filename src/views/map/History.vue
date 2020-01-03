@@ -45,7 +45,7 @@ export default class History extends mixins(MapMixin) {
     public loadCall: ((control: Control, index: number) => void) | null = null;
     public isLoading: boolean = false; // 是否当前进度的数据正在加载
 
-    protected renderTags: Set<string> = new Set(); // 已经在地图上的标签
+    private renderTags: Set<string> = new Set(); // 已经在地图上的标签
 
     @Ref('control') private readonly control!: Control;
 

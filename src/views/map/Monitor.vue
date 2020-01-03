@@ -136,11 +136,6 @@ export default class Monitor extends mixins(MonitorMixin, EventMixin) {
         }
     ];
 
-    public censusChange: number = 0; // 用于触发响应（当前vue版本不支持Map及Set的数据响应）
-    private censusTags = new Map<string, Set<string>>(); // 分组统计
-    private tagGroup = new Map<string, string>(); // tag-group映射
-    private time?: number; // 统计刷新时间戳
-
     @Ref('root') private readonly root!: HTMLDivElement;
 
     public get census() {
@@ -246,35 +241,6 @@ export default class Monitor extends mixins(MonitorMixin, EventMixin) {
         this.zones = res.pagedData.datas.filter(
             (v: IZone) => v.mapId === this.mapId
         );
-    }
-
-    protected doCensus(tag: ITagInfo | string) {
-        const tagNo = (<ITagInfo>tag).sTagNo || <string>tag;
-        const group = this.tagGroup.get(tagNo);
-
-        let hasUpdate = false; // 是否有更新
-        if (group) {
-            const set = this.censusTags.get(group);
-            hasUpdate = !!(set && set.delete(tagNo));
-        }
-
-        if (typeof tag !== 'string') {
-            const set = this.censusTags.get(tag.groupNo) || new Set();
-            const oldSize = set.size;
-            set.add(tagNo);
-
-            hasUpdate = hasUpdate || oldSize !== set.size;
-            this.censusTags.set(tag.groupNo, set);
-            this.tagGroup.set(tagNo, tag.groupNo);
-        }
-
-        if (hasUpdate) {
-            const now = Date.now();
-            if (!this.time || now - this.time >= 1000) {
-                this.censusChange = this.censusChange ? 0 : 1;
-                this.time = now;
-            }
-        }
     }
 }
 
