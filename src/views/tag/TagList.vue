@@ -66,7 +66,6 @@
 import Component, { mixins } from 'vue-class-component';
 import TableMixin, { ColCfgItem } from '../../mixins/table';
 import { Prop, Watch, Ref } from 'vue-property-decorator';
-import { Route } from 'vue-router';
 import TagAdd from './TagAdd.vue';
 import { Async } from '../../assets/utils/util';
 import TagConfig from '../../components/edit/TagConfig.vue';

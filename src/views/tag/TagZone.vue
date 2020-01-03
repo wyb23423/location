@@ -73,22 +73,12 @@
 import Component, { mixins } from 'vue-class-component';
 import { State } from 'vuex-class/lib/bindings';
 import { ZoneMode } from '@/store';
-import { ElSelect } from 'element-ui/types/select';
-import { ElOption } from 'element-ui/types/option';
 import { Async } from '@/assets/utils/await';
-import { TransferData } from 'element-ui/types/transfer';
 import TagSelect from '@/components/form/TagSelect.vue';
-import {
-    GET_ZONE,
-    UPDATE_TAG_ZONE,
-    ADD_TAG_ZONE,
-    RM_TAG_ZONE,
-    GET_TAG_ZONE
-} from '../../constant/request';
-import Table from '@/components/Table.vue';
 import TableMixin, { ColCfgItem } from '@/mixins/table';
 import { Ref } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
+import { GET_ZONE } from '@/constant/request';
 
 enum TAG_ZONE_TYPE {
     IN = 1,
@@ -97,8 +87,7 @@ enum TAG_ZONE_TYPE {
 
 @Component({
     components: {
-        'tag-select': TagSelect,
-        'app-table': Table
+        'tag-select': TagSelect
     }
 })
 export default class TagZone extends mixins(TableMixin) {

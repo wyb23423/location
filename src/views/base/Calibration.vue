@@ -29,6 +29,7 @@ import { State } from 'vuex-class/lib/bindings';
 import TableMixin from '../../mixins/table';
 import CalibrationSetting from '../../components/base/CalibrationSetting.vue';
 import { GET_BASE } from '../../constant/request';
+import { Async } from '@/assets/utils/util';
 
 interface GroupsWithBase {
     code: string;
@@ -50,27 +51,22 @@ export default class Calibration extends mixins(TableMixin) {
 
     private groupsWithBase?: GroupsWithBase[];
 
+    @Async(() => ({ count: 0, data: [] }))
     protected async fetch(page: number, pageSize: number) {
-        let data: any[] = [];
-        let count: number = 0;
-        try {
-            let arr = this.groupsWithBase;
-            if (!arr) {
-                const res = await this.$http.get(GET_BASE, {
-                    pageSize: 10000000,
-                    currentPage: 1
-                });
+        let arr = this.groupsWithBase;
+        if (!arr) {
+            const res = await this.$http.get(GET_BASE, {
+                pageSize: 10000000,
+                currentPage: 1
+            });
 
-                this.groupsWithBase = arr = this.toTree(res.pagedData.datas);
-            }
-
-            count = arr.length;
-            data = arr.slice((page - 1) * pageSize, page * pageSize);
-        } catch (e) {
-            console.log(e);
+            this.groupsWithBase = arr = this.toTree(res.pagedData.datas);
         }
 
-        return { count, data };
+        return {
+            count: arr.length,
+            data: arr.slice((page - 1) * pageSize, page * pageSize)
+        };
     }
 
     private toTree(bases: IBaseStation[]) {
