@@ -7,6 +7,8 @@
                 :col-cfg="colCfg"
                 :total-count="totalCount"
                 :op="[{ type: 'danger', name: 'switch', desc: '切换显示' }]"
+                ,
+                :op-width="100"
                 @switch="switchZone"
                 @updateData="getData"
                 :isSmall="true"
@@ -18,7 +20,7 @@
 
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
-import TableMixin from '../../mixins/table';
+import TableMixin, { ColCfgItem } from '../../mixins/table';
 import { Prop } from 'vue-property-decorator';
 import { FengMapMgr } from '../../assets/map/fengmap';
 import { PIXIMgr } from '@/assets/map/pixi';
@@ -27,7 +29,10 @@ import { PIXIMgr } from '@/assets/map/pixi';
 export default class Group extends mixins(TableMixin) {
     @Prop() public group!: { [x: string]: IBaseStation[] };
 
-    public colCfg: any[] = [{ prop: 'id', label: '分组' }];
+    public colCfg: ColCfgItem[] = [
+        { prop: 'id', label: '分组', width: 100 },
+        { prop: 'bases', label: '基站', width: 200 }
+    ];
 
     public switchZone(row: { id: string; children: IBaseStation[] }) {
         if (this.$parent) {
@@ -48,6 +53,7 @@ export default class Group extends mixins(TableMixin) {
             count: list.length,
             data: list.map(v => ({
                 id: v[0],
+                bases: v[1].map(b => b.id).join(','),
                 children: v[1]
             }))
         };

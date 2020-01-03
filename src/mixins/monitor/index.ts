@@ -66,6 +66,10 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
         });
     }
 
+    protected initBases(data: IBaseStation[]) {
+        //
+    }
+
     protected afterMapCreated() {
         // 其他地图创建完成后的操作
     }
@@ -146,7 +150,7 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
         this.showPath = false;
 
         // 渲染基站
-        this.tagAnchor();
+        this.tagAnchor().then(this.initBases.bind(this));
 
         this.afterMapCreated();
     }

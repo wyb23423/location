@@ -95,12 +95,12 @@ export default class MapMixin extends Loading {
     // 获取并显示基站
     @Async(() => [])
     protected async tagAnchor() {
-        const res = await this.$http.get(GET_BASE, {
+        const { pagedData: { datas } }: ResponseData<IBaseStation> = await this.$http.get(GET_BASE, {
             currentPage: 1,
             pageSize: 10000,
         });
 
-        const data: IBaseStation[] = res.pagedData.datas;
+        const data = datas.filter(v => this.groups.includes(v.groupId));
         this.mgr && data.forEach(this.createBase.bind(this));
 
         return data;
@@ -254,8 +254,6 @@ enum ICON_TYPE {
     TAG = 1,
     STATION = 2
 }
-
-// =====================================================================================
 
 type Sprite = (fengmap.FMImageMarker | PIXI.Sprite) & { custom?: Record<string, any> };
 interface BaseIconParams extends Vector2 {

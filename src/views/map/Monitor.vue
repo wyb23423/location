@@ -26,24 +26,8 @@
                         <el-option :value="1" label="标签名"></el-option>
                     </el-select>
                 </el-input>
-                <!-- <el-button
-                    :icon="
-                        isFullScreen
-                            ? 'el-icon-ali-tuichuquanping'
-                            : 'el-icon-full-screen'
-                    "
-                    @click="fullScreen"
-                ></el-button> -->
             </div>
         </div>
-        <!-- <el-switch
-            v-model="showPath"
-            active-text="显示轨迹"
-            inactive-text="隐藏轨迹"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            :class="$style.switch"
-        ></el-switch> -->
 
         <div ref="map" style="height: 100%; overflow: hidden"></div>
         <div :class="$style.tools">
@@ -53,7 +37,6 @@
                 :type="v.active ? 'primary' : ''"
                 :class="$style['tool-item']"
                 @click.stop="swithDisplay(i)"
-                v-show="v.display && i !== 3"
             >
                 {{ v.name }}
             </el-button>
@@ -70,7 +53,11 @@
         </transition>
 
         <transition name="el-fade-in-linear">
-            <!-- <Group :group="groupData" v-if="tools[3].active"></Group> -->
+            <Group
+                style="opacity: 0.85"
+                :group="groupData"
+                v-if="tools[3].active"
+            ></Group>
             <Zone
                 style="opacity: 0.85"
                 :zones="zones"
@@ -85,22 +72,20 @@
 import Component, { mixins } from 'vue-class-component';
 import EventMixin from '@/mixins/event';
 import Zone from '@/components/monitor/Zone.vue';
-// import Group from '@/components/monitor/Group.vue';
+import Group from '@/components/monitor/Group.vue';
 import Census from '@/components/monitor/Census.vue';
 import TagSelect from '@/components/form/TagSelect.vue';
 import MonitorMixin from '@/mixins/monitor';
 import { ZoneMode } from '@/store';
 import { State } from 'vuex-class/lib/bindings';
-import { Ref, Watch } from 'vue-property-decorator';
-import { PIXIMgr } from '@/assets/map/pixi';
-import { RESIZE } from '@/constant';
+import { Ref } from 'vue-property-decorator';
 import { Async } from '../../assets/utils/util';
 import { GET_ZONE } from '../../constant/request';
 
 @Component({
     components: {
         Zone,
-        // Group,
+        Group,
         Census,
         TagSelect
     },
@@ -113,7 +98,7 @@ import { GET_ZONE } from '../../constant/request';
 export default class Monitor extends mixins(MonitorMixin, EventMixin) {
     @State public readonly zoneMode!: ZoneMode;
 
-    // public groupData: Record<string, IBaseStation[]> = {}; // 基站分组
+    public groupData: Record<string, IBaseStation[]> = {}; // 基站分组
     public zones: IZone[] = []; // 区域列表
 
     // 右下工具栏列表
@@ -146,20 +131,6 @@ export default class Monitor extends mixins(MonitorMixin, EventMixin) {
 
         return this.censusTags;
     }
-
-    // public created() {
-    //     this.on(RESIZE, () => {
-    //         this.isFullScreen = !!document.fullscreenElement;
-
-    //         const container = this.container;
-    //         if (container && this.mgr instanceof PIXIMgr) {
-    //             this.mgr.map.resize(
-    //                 container.offsetWidth,
-    //                 container.offsetHeight
-    //             );
-    //         }
-    //     });
-    // }
 
     // ==================================dom事件
     // 切换弹窗的显示
@@ -240,6 +211,17 @@ export default class Monitor extends mixins(MonitorMixin, EventMixin) {
         });
         this.zones = res.pagedData.datas.filter(
             (v: IZone) => v.mapId === this.mapId
+        );
+    }
+
+    // 基站相关数据初始化
+    protected initBases(data: IBaseStation[]) {
+        this.groupData = data.reduce(
+            (groupData, v) => {
+                (groupData[v.groupId] || (groupData[v.groupId] = [])).push(v);
+                return groupData;
+            },
+            <Record<string, IBaseStation[]>>{}
         );
     }
 }
