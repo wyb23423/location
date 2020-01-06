@@ -1,6 +1,5 @@
 /// <reference path="./types/vue-module.d.ts" />
 
-import Vue from 'vue';
 import App from './App.vue';
 import router, { initRouter } from './router';
 import store from './store';
@@ -16,7 +15,7 @@ import Events from './assets/lib/events';
 import { formatDate } from './assets/lib/date';
 import { awaitWrap } from './assets/utils/util';
 import { Route } from 'vue-router';
-import { Matrix } from 'pixi.js';
+import Vue from 'vue';
 
 // ========================================全局变量及注入vue实例的属性
 (<any>window).PIXI = PIXI;

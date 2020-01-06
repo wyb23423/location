@@ -10,7 +10,7 @@ export class Vector extends Point {
      */
     public static create(vec: Vector23 | VectorAxis | Array<number | string>) {
         if (Array.isArray(vec)) {
-            return new Vector(...vec.map(v => +v || void 0));
+            return new Vector(...vec.map(v => isNaN(+v) ? void 0 : +v));
         }
 
         const vector: any = { ...vec };

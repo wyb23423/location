@@ -196,7 +196,9 @@ export default class TagZone extends mixins(TableMixin) {
         await this.$confirm('确认提交修改?');
         console.log(this.form);
 
-        const index = this.tableData.findIndex(v => v.id === this.form.id);
+        const index = this.tableData.findIndex(
+            (v: ITagZone) => v.id === this.form.id
+        );
         if (index > -1) {
             const zone = this.zones.find(v => v.id === this.form.zoneId);
             if (zone) {
