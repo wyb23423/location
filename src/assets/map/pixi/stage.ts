@@ -58,16 +58,16 @@ export default class Stage extends Transform {
         // ==================================================================
 
         // ==================================================================初始化变换矩阵
-        const scaleX = width / locRangeX;
-        const scaleY = height / locRangeY;
+        const sx = width / locRangeX;
+        const sy = height / locRangeY;
         this.initTransform([
-            [p0[0] * scaleX, height - p0[1] * scaleY],
-            [p1[0] * scaleX, height - p1[1] * scaleY],
+            [p0[0] * sx, height - p0[1] * sy],
+            [p1[0] * sx, height - p1[1] * sy],
             ...margin
         ]);
 
         // ================================================================创建背景
-        await this.createBg(bg, scaleX, scaleY, p0, p1);
+        await this.createBg(bg, sx, sy, p0, p1);
 
         this.loaded.forEach(fn => fn());
         this.isLoaded = true;
