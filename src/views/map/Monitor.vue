@@ -37,6 +37,7 @@
                 :type="v.active ? 'primary' : ''"
                 :class="$style['tool-item']"
                 @click.stop="swithDisplay(i)"
+                v-show="v.display"
             >
                 {{ v.name }}
             </el-button>
@@ -56,6 +57,7 @@
             <Group
                 style="opacity: 0.85"
                 :group="groupData"
+                :groupOp="groupOp"
                 v-if="tools[3].active"
             ></Group>
             <Zone
@@ -114,6 +116,13 @@ export default class Monitor extends mixins(MonitorMixin, EventMixin) {
     public isName: number = 0; // 是否通过标签名查询标签
     public showLineTags: string[] = []; // 显示轨迹的标签号
     public zoneOp = [
+        {
+            type: { default: 'primary' },
+            name: 'display',
+            desc: { default: '显示' }
+        }
+    ];
+    public groupOp = [
         {
             type: { default: 'primary' },
             name: 'display',

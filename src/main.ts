@@ -32,6 +32,7 @@ Object.assign(
     }
 );
 Vue.config.productionTip = false;
+Vue.config.devtools = true;
 
 // ====================================全局路由守卫
 /**

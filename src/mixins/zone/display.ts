@@ -18,17 +18,17 @@ export default class DisplayMixin extends Vue {
     /**
      * 切换区域显示
      */
-    public display(row: IZone, index: number, isDel?: boolean) {
+    public display<T extends Record<string, any>>(row: T, index: number, isDel?: boolean) {
         const operation = this.getOperation();
         const i = operation.findIndex(v => v.name === 'display');
         if (i > -1) {
             const op = operation[i];
             if (op.type[row.id] || isDel) {
                 op.type[row.id] = undefined;
-                this.removeZone(row);
+                this.remove(row);
             } else {
                 op.type[row.id] = 'success';
-                this.showZone(row);
+                this.show(row);
             }
             op.desc[row.id] = op.desc[row.id] || isDel ? undefined : '隐藏';
 
@@ -42,11 +42,11 @@ export default class DisplayMixin extends Vue {
         return this.operation;
     }
 
-    protected removeZone(row: IZone) {
+    protected remove<T extends Record<string, any>>(row: T) {
         this.mgr && this.mgr.remove(row.id + ZONE_SEPARATOR + row.name);
     }
 
-    protected showZone(row: IZone) {
-        this.mgr && this.mgr.zoneOpen(row);
+    protected show<T extends Record<string, any>>(row: T) {
+        this.mgr && this.mgr.zoneOpen(<any>row);
     }
 }

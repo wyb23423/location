@@ -41,6 +41,7 @@ import { State } from 'vuex-class/lib/bindings';
 import { ZONE_SEPARATOR } from '../../constant';
 import DisplayMixin from '@/mixins/zone/display';
 import { ZoneMode } from '@/store';
+import { TableRowOperation } from '../Table.vue';
 
 type ZoneData = IZone & {
     status: '开启' | '关闭';
@@ -53,7 +54,7 @@ export default class Zone extends mixins(TableMixin, DisplayMixin) {
     @State public readonly zoneMode!: ZoneMode;
 
     @Prop() public readonly zones!: IZone[];
-    @Prop() public readonly zoneOp!: any[];
+    @Prop() public readonly zoneOp!: TableRowOperation[];
 
     public modes: number[] = [];
     public colCfg: any[] = [
