@@ -37,10 +37,10 @@ declare interface ICamera {
     windowSplit: string; // 窗口分割数
 }
 
-declare interface IMap {
+declare interface IMap<T extends string | number[][] = number[][]> {
     id: number;
     name: string;
-    margin: string | number[][]; // 地图边界值[左下, 左上, 右上, 右下, [监控区域宽, 监控区域高]]
+    margin: T; // 地图边界值[左下, 左上, 右上, 右下, [监控区域宽, 监控区域高]]
     filepath: string; // 地图文件。背景图或.fmap
     groupIds: string[]; // 关联的基站分组
 }

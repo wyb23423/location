@@ -29,7 +29,12 @@
             ref="tag"
             label-width="auto"
         >
-            <el-form-item label="标签" style="margin-right: 10%">
+            <el-form-item
+                prop="tagNo"
+                label="标签"
+                style="margin-right: 10%"
+                required
+            >
                 <tag-select @change="form.tagNo = $event"></tag-select>
             </el-form-item>
             <el-form-item label="标签坐标" required>
@@ -104,9 +109,7 @@ export default class CalibrationSetting extends mixins(TableMixin) {
     @Prop() public visible!: boolean;
     @Prop() public bases!: IBaseStation[];
 
-    public form = <CorrectionParams>{
-        tagNo: '00000004'
-    };
+    public form = <CorrectionParams>{};
 
     public colCfg: ColCfgItem[] = [
         { prop: 'id', label: '基站编号' },

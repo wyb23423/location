@@ -8,8 +8,8 @@ import { FengMapMgr } from '@/assets/map/fengmap';
 import { PIXIMgr } from '@/assets/map/pixi';
 import segmentsIntersect from '@/assets/utils/intersect';
 import { Async } from '@/assets/utils/util';
-import { adaptationVector } from '@/assets/map/common';
 import { DEVICE_PIXEL_RATIO } from '@/constant';
+import { Vector } from '@/assets/map/transform/vector';
 
 @Component
 export default class ZoneMixin extends mixins(MapMixin) {
@@ -157,7 +157,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
             return;
         }
 
-        const { x, y } = adaptationVector(p);
+        const { x, y } = Vector.create(p);
         this.points.push(
             this.mgr.addImage(
                 {

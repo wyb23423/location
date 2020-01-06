@@ -14,16 +14,6 @@ export function getCustomInfo<K>(el: any, key: string): K | Record<string, undef
     return el.custom[key];
 }
 
-export function adaptationVector(v: Vector23 | VectorAxis): Vector3 {
-    const vector: any = { ...v };
-    vector.x = vector.x || vector.xaxis || 0;
-    vector.y = vector.y || vector.yaxis || 0;
-    vector.z = vector.z || vector.zaxis || null;
-
-    return vector;
-}
-
-
 export class BaseHeatMap {
     public static DEFAULT_HEATMAP_CONFIG = {
         gradient: {

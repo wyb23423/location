@@ -1,27 +1,20 @@
 /**
  *
  */
-
-import { MapEvent } from './event';
-import { adaptationVector } from '../common';
-import { getConfig } from '@/assets/utils/util';
 import { DEVICE_PIXEL_RATIO } from '@/constant';
+import { Transform } from '../transform/transform';
 
-export default class Stage extends MapEvent {
+export default class Stage extends Transform {
     public map!: PIXI.Renderer;
+    public stage = new PIXI.Container(); // 场景舞台
 
-    public locOrigion: Vector2 = { x: 0, y: 0 };
+    private loaded: Set<() => void> = new Set(); // 加载完成后的执行函数
+    private timer: number | null = null;
 
-    protected loaded: Array<() => void> = []; // 加载完成后的执行函数
-    protected timer: number | null = null;
+    private isLoaded: boolean = false;
 
-    // tslint:disable-next-line:variable-name
-    private _locRange?: Vector2;
-    // tslint:disable-next-line:variable-name
-    private _margin?: TPosition;
-
-    constructor(private bg: string, dom: HTMLElement) {
-        super(dom);
+    constructor(dom: HTMLElement) {
+        super();
 
         this.map = PIXI.autoDetectRenderer({
             width: dom.offsetWidth,
@@ -37,93 +30,64 @@ export default class Stage extends MapEvent {
         this.loop();
     }
 
-    public set margin(data: TPosition) {
-        if (!this._margin) {
-            this._margin = data;
-            this._locRange && this.initStageAndAddBg(this._locRange);
-        } else {
-            console.error('地图边界只能设置一次');
-        }
+    public dispose() {
+        this.timer && cancelAnimationFrame(this.timer);
+        this.stage.destroy();
+        this.map.destroy();
+
+        this.loaded.clear();
     }
 
-    public set locRange(data: Vector2) {
-        if (!this._locRange) {
-            this._locRange = data;
-            this._margin && this.initStageAndAddBg(data);
+    /**
+     * 初始化地图
+     */
+    protected async init(bg: string, margin: number[][]) {
+        // ============================================确定并设置舞台尺寸
+        const [p0, p1] = margin;
+        const locRangeX = p1[0] - p0[0];
+        const locRangeY = p1[1] - p0[1];
+
+        const height = this.stage.height = this.map.height / 2;
+        const width = this.stage.width = height * locRangeX / locRangeY;
+        // ================================================================
+
+        // ===========================================================设置舞台的变换
+        this.stage.position.set(this.map.width / 4 / DEVICE_PIXEL_RATIO, height / 2 / DEVICE_PIXEL_RATIO);
+        this.stage.pivot.set(width / 2, height / 2);
+        this.stage.scale.set(1 / DEVICE_PIXEL_RATIO);
+        // ==================================================================
+
+        // ==================================================================初始化变换矩阵
+        const scaleX = width / locRangeX;
+        const scaleY = height / locRangeY;
+        this.initTransform([
+            [p0[0] * scaleX, height - p0[1] * scaleY],
+            [p1[0] * scaleX, height - p1[1] * scaleY],
+            ...margin
+        ]);
+
+        // ================================================================创建背景
+        await this.createBg(bg, scaleX, scaleY, p0, p1);
+
+        this.loaded.forEach(fn => fn());
+        this.isLoaded = true;
+    }
+
+    /**
+     * 绑定加载完成后的事件
+     * 如果地图已加载完成，直接执行
+     */
+    protected bindLoaded(fn: () => void) {
+        if (this.isLoaded) {
+            fn();
         } else {
-            console.error('地图范围只能设置一次');
+            this.loaded.add(fn);
         }
     }
 
     /**
-     * 地图坐标与定位坐标转化
-     * @param is2map 是否是定位坐标转为地图坐标
+     * 加载纹理
      */
-    public getCoordinate(v: Vector23, is2map: boolean = false) {
-        const vector = adaptationVector(v);
-
-        if (!this._locRange) {
-            console.error('地图范围为空');
-        } else {
-            const height = (<any>this.stage)._height;
-
-            const scaleX = (<any>this.stage)._width / this._locRange.x;
-            const scaleY = height / this._locRange.y;
-
-            const { x, y } = getConfig('adjust', { x: 0, y: 0 });
-
-            if (is2map) {
-                vector.x = (vector.x + x) * scaleX;
-                vector.y = height - (vector.y + y) * scaleY;
-            } else {
-                vector.x = vector.x / scaleX - x;
-                vector.y = (height - vector.y) / scaleY - y;
-            }
-        }
-
-        return <Vector3>vector;
-    }
-
-    public parseCood(data: Vector23 | Vector23[]) {
-        if (Array.isArray(data)) {
-            return data.map(v => this.getCoordinate(v, true));
-        }
-
-        return this.getCoordinate(data, true);
-    }
-
-    public dispose() {
-        if (this.timer) {
-            cancelAnimationFrame(this.timer);
-            this.timer = null;
-        }
-
-        if (this.stage) {
-            this.stage.destroy();
-        }
-        if (this.map) {
-            this.map.destroy();
-        }
-
-        Reflect.set(this, 'map', null);
-        Reflect.set(this, 'stage', null);
-
-        this.loaded.length = 0;
-    }
-
-    // 初始化舞台及背景图
-    protected initStageAndAddBg(locRange: Vector2) {
-        const height = this.stage.height = this.map.height / 2;
-        const width = this.stage.width = height * locRange.x / locRange.y;
-
-        this.stage.position.set(this.map.width / 4 / DEVICE_PIXEL_RATIO, height / 2 / DEVICE_PIXEL_RATIO);
-        this.stage.pivot.set(width / 2, height / 2);
-        this.stage.scale.set(1 / DEVICE_PIXEL_RATIO);
-
-        this.createBg(width / locRange.x, height / locRange.y);
-    }
-
-    // 加载纹理
     protected load(...src: string[] | [string[]]): Promise<PIXI.Texture[]> {
         if (Array.isArray(src[0])) {
             src = src[0];
@@ -159,26 +123,20 @@ export default class Stage extends MapEvent {
 
     private loop() {
         this.timer = requestAnimationFrame(this.loop.bind(this));
-
-        if (this.map && this.stage) {
-            this.map.render(this.stage);
-            PIXI.actionManager.update();
-        }
+        this.map.render(this.stage);
+        PIXI.actionManager.update();
     }
 
-    private async createBg(scaleX: number, scaleY: number) {
-        const [texture] = await this.load(this.bg);
-
-        const [p0, p1, p2] = this._margin!;
+    private async createBg(bg: string, scaleX: number, scaleY: number, p0: number[], p1: number[]) {
+        const [texture] = await this.load(bg);
 
         const bgSprite = new PIXI.Sprite(texture);
-        bgSprite.width = (p2.x - p0.x) * scaleX;
-        bgSprite.height = (p2.y - p0.y) * scaleY;
-        const { x, y } = this.getCoordinate(p1, true);
+        bgSprite.width = (p1[0] - p0[0]) * scaleX;
+        bgSprite.height = (p1[1] - p0[1]) * scaleY;
+
+        const { x, y } = this.location2map({ x: p0[0], y: p1[1] }, false);
         bgSprite.position.set(x, y);
 
         this.stage.addChild(bgSprite);
-
-        this.loaded.forEach(fn => fn());
     }
 }

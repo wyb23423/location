@@ -33,44 +33,70 @@ export class MapEvent {
 
     // 计算两点间距离
     public static getDistance(start: Vector2, stop: Vector2) {
-        return Math.sqrt(Math.pow((stop.x - start.x), 2) + Math.pow((stop.y - start.y), 2));
+        return Math.sqrt((stop.x - start.x) ** 2 + (stop.y - start.y) ** 2);
     }
-
-    public stage: PIXI.Container = new PIXI.Container(); // 场景舞台
 
     // 用于平移
     private downX: number = 0;
     private downY: number = 0;
-
     private startDistance: number = 0; // 用于缩放
 
-    constructor(root: HTMLElement) {
-        this.stage.interactive = true;
+    /**
+     * 将事件绑定到对应的pixi地图上
+     * @param root pixi地图容器
+     * @param stage 作为舞台使用的PIXI.Container
+     */
+    public apply(root: HTMLElement, stage: PIXI.Container) {
+        stage.interactive = true;
 
         // ======================================滚动缩放
-        root.addEventListener('mousewheel', <EventListener>this.onMouseWheel, false);
-        root.addEventListener('DOMMouseScroll', <EventListener>this.onMouseWheel, false);
+        const onMouseWheel = <EventListener>((e: MouseEvent) => this.onMouseWheel(e, stage));
+        root.addEventListener('mousewheel', onMouseWheel, false);
+        root.addEventListener('DOMMouseScroll', onMouseWheel, false);
 
         // =======================================拖动地图
-        root.addEventListener('mousedown', (ev: MouseEvent) => this.downHandler(ev, 'mousemove'));
-        root.addEventListener('mouseup', () => this.upHandler('mousemove'));
+        const moveHandler = (e: MouseEvent | TouchEvent) => this.moveHandler(e, stage);
 
-        root.addEventListener('touchstart', (ev: TouchEvent) => this.downHandler(ev, 'touchmove'));
-        root.addEventListener('touchend', () => this.upHandler('touchmove'));
+        const onMouseDown = (e: MouseEvent) => {
+            this.downHandler(e);
+            root.addEventListener('mousemove', moveHandler);
+        };
+        root.addEventListener('mousedown', onMouseDown, false);
+
+        const onMouseUp = () => root.removeEventListener('mousemove', moveHandler);
+        root.addEventListener('mouseup', onMouseUp, false);
+
+        const onTouchStart = (e: TouchEvent) => {
+            this.downHandler(e);
+            root.addEventListener('touchmove', moveHandler);
+        };
+        root.addEventListener('touchstart', onTouchStart, false);
+
+        const onTouchEnd = () => root.removeEventListener('touchmove', moveHandler);
+        root.addEventListener('touchend', onTouchEnd, false);
+
+        this.dispose = () => {
+            root.removeEventListener('mousewheel', onMouseWheel, false);
+            root.removeEventListener('DOMMouseScroll', onMouseWheel, false);
+            root.removeEventListener('mousedown', onMouseDown, false);
+            root.removeEventListener('mouseup', onMouseUp, false);
+            root.removeEventListener('touchstart', onTouchStart, false);
+            root.removeEventListener('touchend', onTouchEnd, false);
+        };
     }
 
-    private onMouseWheel = (ev: MouseEvent) => {
+    public dispose() {
+        //
+    }
+
+    private onMouseWheel(ev: MouseEvent, stage: PIXI.Container) {
         ev = ev || window.event;
         ev.returnValue = false;
         if (ev.preventDefault) {
             ev.preventDefault();
         }
 
-        if (!this.stage) {
-            return;
-        }
-
-        let scale = this.stage.scale.x;
+        let scale = stage.scale.x;
         const down = (<any>ev).wheelDelta ? (<any>ev).wheelDelta < 0 : ev.detail > 0;
         if (down) {
             scale *= 9 / 10;
@@ -79,10 +105,10 @@ export class MapEvent {
         }
 
         scale = Math.max(0.1, 0.4 / DEVICE_PIXEL_RATIO, Math.min(6 / DEVICE_PIXEL_RATIO, scale));
-        this.stage.scale.set(scale, scale);
+        stage.scale.set(scale, scale);
     }
 
-    private downHandler(e: MouseEvent | TouchEvent, type: string) {
+    private downHandler(e: MouseEvent | TouchEvent) {
         e = e || window.event;
 
         const pos = MapEvent.getPosition(e);
@@ -94,20 +120,14 @@ export class MapEvent {
                 y: e.touches[1].clientY
             });
         }
-
-        document.addEventListener(type, <EventListener>this.moveHandler);
     }
 
-    private moveHandler = (ev: MouseEvent | TouchEvent) => {
+    private moveHandler(ev: MouseEvent | TouchEvent, stage: PIXI.Container) {
         ev = ev || window.event;
 
         ev.returnValue = false;
         if (ev.preventDefault) {
             ev.preventDefault();
-        }
-
-        if (!this.stage) {
-            return;
         }
 
         const pos = MapEvent.getPosition(ev);
@@ -119,23 +139,19 @@ export class MapEvent {
             });
             const scale = Math.max(
                 0.1, 0.4 / DEVICE_PIXEL_RATIO,
-                Math.min(6 / DEVICE_PIXEL_RATIO, this.stage.scale.x * distance / this.startDistance)
+                Math.min(6 / DEVICE_PIXEL_RATIO, stage.scale.x * distance / this.startDistance)
             );
-            this.stage.scale.set(scale, scale);
+            stage.scale.set(scale, scale);
         } else {
             // 平移
-            const left = this.stage.x + (pos.x - this.downX) / DEVICE_PIXEL_RATIO;
-            const top = this.stage.y + (pos.y - this.downY) / DEVICE_PIXEL_RATIO;
+            const left = stage.x + (pos.x - this.downX) / DEVICE_PIXEL_RATIO;
+            const top = stage.y + (pos.y - this.downY) / DEVICE_PIXEL_RATIO;
 
-            this.stage.position.set(left, top);
+            stage.position.set(left, top);
 
             this.downX = pos.x;
             this.downY = pos.y;
         }
-    }
-
-    private upHandler(type: string) {
-        document.removeEventListener(type, <EventListener>this.moveHandler);
     }
 }
 

@@ -7,7 +7,7 @@ import { ZONE_SEPARATOR } from '@/constant';
 /**
  * pixi 实现监控的图标管理类
  */
-export class ElsMgr extends Stage {
+export class Element extends Stage {
     protected animation = new Animation();
     private els: Map<string | number, PIXIEL[]> = new Map(); // 已添加到舞台上的元素
 
@@ -37,10 +37,7 @@ export class ElsMgr extends Stage {
         gid?: number
     ) {
         const points = coords.map(v => {
-            if (!isMapCoor) {
-                v = this.getCoordinate(v, true) || v;
-            }
-
+            v = isMapCoor ? v : this.location2map(v);
             return [v.x, v.y];
         }).flat();
 
@@ -68,15 +65,7 @@ export class ElsMgr extends Stage {
             return Promise.reject('no text');
         }
 
-        let newlist = {
-            x: coord.x || coord.xaxis || 0,
-            y: coord.y || coord.yaxis || 0
-        };
-
-        // tslint:disable-next-line:no-conditional-assignment
-        if (!isMapCoor) {
-            newlist = this.getCoordinate(newlist, true);
-        }
+        const vec = isMapCoor ? coord : this.location2map(coord);
 
         return new Promise(resolve => {
             const message = new PIXI.Text(
@@ -89,7 +78,7 @@ export class ElsMgr extends Stage {
                     ...coord
                 }
             );
-            message.position.set((<Vector23>newlist).x, (<Vector23>newlist).y);
+            message.position.set(vec.x, vec.y);
             message.anchor.set(0.5, 0.5);
 
             this.save(message, name);
@@ -104,11 +93,7 @@ export class ElsMgr extends Stage {
         gid?: number,
         isMapCoor: boolean = true
     ): Vector3 {
-        let p = { x: opt.x, y: opt.y, z: opt.z || 0 };
-
-        if (!isMapCoor) {
-            p = this.getCoordinate(p, true) || p;
-        }
+        const vec = isMapCoor ? opt : this.location2map(opt);
 
         this.load(opt.url).then(([texture]) => {
             const img = new PIXI.Sprite(texture);
@@ -118,20 +103,20 @@ export class ElsMgr extends Stage {
             }
 
             img.anchor.set(0.5);
-            img.position.set(p.x, p.y);
+            img.position.set(vec.x, vec.y);
 
             img.interactive = true;
             img.buttonMode = true;
             img.zIndex = Math.ceil(opt.height || 0);
 
-            this.save(img, (name || JSON.stringify(p)) + '');
+            this.save(img, (name || JSON.stringify(vec)) + '');
 
             if (opt.callback) {
                 opt.callback(img);
             }
         });
 
-        return p;
+        return vec;
     }
     // ==============================================================
 
@@ -160,9 +145,7 @@ export class ElsMgr extends Stage {
         callback?: (v: any) => void, // 移动完成时回调
         isMapCoor: boolean = false,
     ) {
-        if (!isMapCoor) {
-            coord = this.getCoordinate(coord, true);
-        }
+        coord = isMapCoor ? coord : this.location2map(coord);
 
         const action = this.animation.createMoveTo(coord, time, update, callback);
         this.find(name).forEach(action);

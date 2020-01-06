@@ -118,7 +118,7 @@ export class Setting extends mixins(ZoneMixin) {
         }
 
         return Object.assign({}, zone, {
-            position: JSON.stringify(this.points.map(v => this.mgr!.getCoordinate(v))),
+            position: JSON.stringify(this.points.map(v => this.mgr!.map2location(v))),
             enable: zone.open ? 1 : 0,
             mapId: this.mapId
         });

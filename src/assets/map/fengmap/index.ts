@@ -2,11 +2,11 @@
  * fengmap
  */
 import { MAP_THEME_URL, APP_KEY, APP_NAME, MAP_DATA_URL, ZONE_SEPARATOR } from '@/constant';
-import { CoordTransformer } from './coordtransformer';
 import { PolygonMgr, TextMgr, ImageMgr, LineMgr, PopInfo } from './marker';
 import { getCustomInfo } from '../common';
+import { Transform } from '../transform/transform';
 
-export class FengMapMgr extends CoordTransformer {
+export class FengMapMgr extends Transform {
     public readonly has3D: boolean = true;
     public map!: fengmap.FMMap;
 
@@ -17,8 +17,8 @@ export class FengMapMgr extends CoordTransformer {
 
     private isLoaded: boolean = false;
 
-    constructor(name: string, dom: HTMLElement) {
-        super();
+    constructor(name: string, dom: HTMLElement, margin: number[][]) {
+        super(margin);
 
         dom.innerHTML = '';
 
@@ -52,10 +52,6 @@ export class FengMapMgr extends CoordTransformer {
      * 显示区域
      */
     public zoneOpen(data: IZone) {
-        if (!this.margin) {
-            return console.error('地图范围为空');
-        }
-
         let zones = typeof data.position === 'string' ? JSON.parse(data.position) : data.position;
         zones = zones.coordinates || zones;
 
@@ -84,7 +80,7 @@ export class FengMapMgr extends CoordTransformer {
                 }
 
                 e.data = { global: this.map.coordMapToScreen(coord.x, coord.y) };
-                console.log(this.getCoordinate(coord));
+                console.log(this.map2location(coord));
             }
 
             callback(e);
@@ -98,18 +94,13 @@ export class FengMapMgr extends CoordTransformer {
         isMapCoor: boolean = true
     ): Vector3 {
         const group = this.map.getFMGroup(gid);
-        let p: Vector3 | undefined = {
+        let p: Vector3 = {
             x: opt.x,
             y: opt.y,
             z: opt.z || group.groupHeight + this.map.layerLocalHeight || 0
         };
 
-        if (!isMapCoor) {
-            p = <Vector3 | undefined>this.parseCood(p);
-            if (!p) {
-                return { x: 0, y: 0, z: 0 };
-            }
-        }
+        p = isMapCoor ? p : this.location2map(p);
 
         this.imageMgr.add(p, name, { ...opt, gid })
             .then(im => opt.callback && opt.callback(im));
@@ -130,13 +121,7 @@ export class FengMapMgr extends CoordTransformer {
         isMapCoor: boolean = false,
         gid?: number
     ) {
-        if (!isMapCoor) {
-            (<any>coords) = this.parseCood(coords);
-            if (!coords) {
-                return 0;
-            }
-        }
-
+        coords = isMapCoor ? coords : coords.map(v => this.location2map(v));
         return this.polygonMgr.add(coords, name, { gid });
     }
 
@@ -150,24 +135,15 @@ export class FengMapMgr extends CoordTransformer {
             return Promise.reject('no text');
         }
 
-        let newlist: Vector23 | undefined = {
-            x: coord.x || coord.xaxis || 0,
-            y: coord.y || coord.yaxis || 0
-        };
+        const vec = isMapCoor ? coord : this.location2map(coord);
 
-        if (!isMapCoor) {
-            newlist = <Vector3 | undefined>this.parseCood(newlist);
-            if (!newlist) {
-                return Promise.reject();
-            }
-        }
-
-        return this.textMgr.add(newlist, name, { ...coord, gid });
+        return this.textMgr.add(vec, name, { ...coord, gid });
     }
 
     public dispose() {
         const fn = () => {
-            ['polygonMgr', 'textMgr', 'imageMgr', 'lineMgr', 'map'].forEach(k => {
+            const keys = ['polygonMgr', 'textMgr', 'imageMgr', 'lineMgr', 'map'];
+            keys.forEach(k => {
                 Reflect.get(this, k).dispose();
                 Reflect.set(this, k, null);
             });
@@ -189,12 +165,7 @@ export class FengMapMgr extends CoordTransformer {
         callback?: (v: any) => void,
         isMapCoor: boolean = false,
     ) {
-        if (!isMapCoor) {
-            (<any>coord) = this.parseCood(coord);
-            if (!coord) {
-                return;
-            }
-        }
+        coord = isMapCoor ? coord : this.location2map(coord);
 
         this.polygonMgr.moveTo(name, coord, time, update, callback);
         this.textMgr.moveTo(name, coord, time, update, callback);
@@ -239,24 +210,12 @@ export class FengMapMgr extends CoordTransformer {
         name: string | number,
         isMapCoor: boolean = false
     ) {
-        if (!isMapCoor) {
-            (<any>points) = this.parseCood(points);
-            if (!points) {
-                return;
-            }
-        }
-
+        points = isMapCoor ? points : points.map(v => this.location2map(v));
         this.lineMgr.add(points, name, lineStyle);
     }
     // 为一条线添加片段
     public appendLine(name: string | number, points: Vector3[], isMapCoor: boolean = false) {
-        if (!isMapCoor) {
-            (<any>points) = this.parseCood(points);
-            if (!points) {
-                return;
-            }
-        }
-
+        points = isMapCoor ? points : points.map(v => this.location2map(v));
         this.lineMgr.append(points, name);
     }
 

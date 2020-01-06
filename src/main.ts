@@ -16,6 +16,7 @@ import Events from './assets/lib/events';
 import { formatDate } from './assets/lib/date';
 import { awaitWrap } from './assets/utils/util';
 import { Route } from 'vue-router';
+import { Matrix } from 'pixi.js';
 
 // ========================================全局变量及注入vue实例的属性
 (<any>window).PIXI = PIXI;

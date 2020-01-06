@@ -239,13 +239,10 @@ export default class HeatMap extends mixins(MapMixin, Loading) {
 
         const { mgr, heatMap } = this;
         datas.forEach(v => {
-            const { x, y } = mgr!.getCoordinate(
-                {
-                    x: +v.position[0],
-                    y: +v.position[1]
-                },
-                true
-            );
+            const { x, y } = mgr!.location2map({
+                x: +v.position[0],
+                y: +v.position[1]
+            });
             heatMap.addPoint(x, y, 100);
         });
     }
@@ -273,7 +270,7 @@ export default class HeatMap extends mixins(MapMixin, Loading) {
 
         data.forEach(v => {
             if (v && v.value) {
-                const { x, y } = this.mgr!.getCoordinate(v, true);
+                const { x, y } = this.mgr!.location2map(v);
                 this.heatMap.addPoint(x, y, (v.value / length) * 1000);
             }
         });
