@@ -26,25 +26,35 @@ import { UPLOAD_MAPFILE, ADD_MAP } from '@/constant/request';
 export default class MapAdd extends Vue {
     public loading = false;
 
-    @Async()
     public async onSubmit(data: MapForm) {
         if (!data.map) {
             return;
         }
 
         this.loading = true;
+        await this.fetch(data);
 
+        // ======================================添加成功后的处理
+        this.$message.success('添加成功');
+        (<MapEdit>this.$refs.form).reset();
+
+        this.loading = false;
+    }
+
+    @Async()
+    private async fetch(data: MapForm) {
         // ===========================上传文件
         const res = (await this.$http.post(UPLOAD_MAPFILE, {
             file: data.map,
-            mapName: data.map.name.split('.')[0] || 'map'
+            mapName: data.map!.name.split('.')[0] || 'map'
         })) as ResponseData<any, Record<'mapUrl', string>>;
 
         // ==============================提交数据
         const { m0, m1, l0, l1, name, url, filename } = data;
         const margin = [m0, m1, l0, l1].map(v => [v.x, v.y]);
         data.filename || margin.splice(0, 2);
-        await this.$http.post({
+
+        return this.$http.post({
             url: ADD_MAP,
             body: {
                 name,
@@ -55,12 +65,6 @@ export default class MapAdd extends Vue {
                 'Content-Type': 'application/json'
             }
         });
-
-        // ======================================添加成功后的处理
-        this.$message.success('添加成功');
-        (<MapEdit>this.$refs.form).reset();
-
-        this.loading = false;
     }
 }
 </script>

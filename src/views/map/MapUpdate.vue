@@ -87,14 +87,22 @@ export default class MapUpdate extends Vue {
 
     @Async()
     public async onSubmit(data: MapForm) {
-        const id = this.map.id;
-        if (id == null) {
+        if (this.map.id == null) {
             return this.$message.error('未选择地图!');
         }
         await this.$confirm('确认修改地图数据?');
 
         this.loading = true;
 
+        await this.fetch(data);
+        this.$message.success('修改成功');
+        this.mapSelect.getMapData();
+
+        this.loading = false;
+    }
+
+    @Async()
+    private async fetch(data: MapForm) {
         // ======================================
         let filepath = data.filename || data.url;
         if (data.map) {
@@ -108,10 +116,11 @@ export default class MapUpdate extends Vue {
         const { m0, m1, l0, l1, name, url, filename } = data;
         const margin = [m0, m1, l0, l1].map(v => [v.x, v.y]);
         data.filename || margin.splice(0, 2);
-        await this.$http.post({
+
+        return this.$http.post({
             url: UPDATE_MAP,
             body: {
-                id,
+                id: this.map.id,
                 name,
                 filepath,
                 margin: JSON.stringify(margin)
@@ -120,11 +129,6 @@ export default class MapUpdate extends Vue {
                 'Content-Type': 'application/json'
             }
         });
-        // ====================================
-        this.$message.success('修改成功');
-        await this.mapSelect.getMapData();
-
-        this.loading = false;
     }
 }
 </script>
