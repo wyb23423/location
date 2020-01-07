@@ -13,7 +13,12 @@
                 </el-badge>
             </el-tooltip>
         </div>
-        <el-drawer title="报警列表" :visible.sync="drawer" :size="size">
+        <el-drawer
+            title="报警列表"
+            :visible.sync="drawer"
+            :size="size"
+            append-to-body
+        >
             <el-table
                 :data="list"
                 style="padding: 0 10px"
