@@ -7,41 +7,6 @@
                 placeholder="请输入地图名称"
             ></el-input>
         </el-form-item>
-        <el-form-item
-            v-for="k of ['minX', 'maxX', 'minY', 'maxY']"
-            :key="k"
-            :label="k"
-            :prop="k"
-            required
-        >
-            <el-input-number
-                :step="100"
-                v-model="form[k]"
-                placeholder="地图坐标"
-            ></el-input-number>
-        </el-form-item>
-        <el-form-item label="地图大小" required>
-            <el-form-item required :class="$style.inline" prop="width">
-                <el-input-number
-                    :step="100"
-                    v-model="form.width"
-                    placeholder="宽(定位)"
-                ></el-input-number>
-            </el-form-item>
-            <el-form-item
-                required
-                :class="$style.inline"
-                style="margin-left: 20px"
-                prop="height"
-            >
-                <el-input-number
-                    :step="100"
-                    v-model="form.height"
-                    placeholder="高(定位)"
-                ></el-input-number>
-            </el-form-item>
-        </el-form-item>
-
         <el-form-item required label="地图">
             <el-upload
                 :auto-upload="false"
@@ -63,8 +28,82 @@
                 </div>
             </el-upload>
         </el-form-item>
+        <el-divider content-position="left" class="map-edit-divider">
+            定位坐标
+        </el-divider>
+        <el-form-item label="左下角" required>
+            <el-form-item :class="$style.inline" required prop="l0.x">
+                <el-input-number
+                    :step="100"
+                    v-model="form.l0.x"
+                    placeholder="x"
+                ></el-input-number>
+            </el-form-item>
+            <el-form-item prop="l0.y" required :class="$style.inline">
+                <el-input-number
+                    :step="100"
+                    v-model="form.l0.y"
+                    placeholder="y"
+                ></el-input-number>
+            </el-form-item>
+        </el-form-item>
+        <el-form-item label="右上角" required>
+            <el-form-item :class="$style.inline" required prop="l1.x">
+                <el-input-number
+                    :step="100"
+                    v-model="form.l1.x"
+                    placeholder="x"
+                ></el-input-number>
+            </el-form-item>
+            <el-form-item prop="l1.y" required :class="$style.inline">
+                <el-input-number
+                    :step="100"
+                    v-model="form.l1.y"
+                    placeholder="y"
+                ></el-input-number>
+            </el-form-item>
+        </el-form-item>
+        <template v-if="!!form.filename">
+            <el-divider content-position="left" class="map-edit-divider">
+                地图坐标
+            </el-divider>
+            <el-form-item label="左下角" required>
+                <el-form-item :class="$style.inline" required prop="m0.x">
+                    <el-input-number
+                        :step="100"
+                        v-model="form.m0.x"
+                        placeholder="x"
+                    ></el-input-number>
+                </el-form-item>
+                <el-form-item prop="m0.y" required :class="$style.inline">
+                    <el-input-number
+                        :step="100"
+                        v-model="form.m0.y"
+                        placeholder="y"
+                    ></el-input-number>
+                </el-form-item>
+            </el-form-item>
+            <el-form-item label="右上角" required>
+                <el-form-item :class="$style.inline" required prop="m1.x">
+                    <el-input-number
+                        :step="100"
+                        v-model="form.m1.x"
+                        placeholder="x"
+                    ></el-input-number>
+                </el-form-item>
+                <el-form-item prop="m1.y" required :class="$style.inline">
+                    <el-input-number
+                        :step="100"
+                        v-model="form.m1.y"
+                        placeholder="y"
+                    ></el-input-number>
+                </el-form-item>
+            </el-form-item>
+        </template>
         <el-form-item>
-            <el-button type="success" @click="submit">立即提交</el-button>
+            <el-button type="success" @click="submit" :loading="loading">
+                立即提交
+            </el-button>
         </el-form-item>
     </el-form>
 </template>
@@ -78,27 +117,33 @@ import { ElUploadInternalFileDetail } from 'element-ui/types/upload';
 import { Async } from '@/assets/utils/util';
 
 export interface MapForm {
-    id: number;
+    id?: number;
     name: string;
-    minX: number;
-    maxX: number;
-    minY: number;
-    maxY: number;
-    width: number;
-    height: number;
+
+    // 地图上的两个坐标点(左下、右上)
+    m0: Vector2;
+    m1: Vector2;
+    // 定位坐标
+    l0: Vector2;
+    l1: Vector2;
+
     filename?: string;
     url?: string;
-    map?: File | null;
+    map?: File;
 }
 
 @Component
 export default class MapEdit extends Vue {
+    @Prop({ default: () => false }) public loading!: boolean;
     @Prop({ default: () => ({}) }) public data!: MapForm;
 
     public form = <MapForm>{
         url: '',
         filename: '',
-        map: null,
+        m0: {},
+        m1: {},
+        l0: {},
+        l1: {},
         name: ''
     };
 
@@ -145,10 +190,10 @@ export default class MapEdit extends Vue {
     @Emit('update:data')
     public reset() {
         this.elFrom.resetFields();
-        this.form.map = null;
+        this.form.map = void 0;
         this.form.url = this.form.filename = '';
 
-        return {};
+        return this.form;
     }
 
     @Watch('data')
@@ -167,6 +212,21 @@ export default class MapEdit extends Vue {
 .inline {
     display: inline-block;
     vertical-align: middle;
+
+    &:last-child {
+        margin-left: 20px;
+    }
 }
 </style>
 
+<style lang="postcss">
+.map-edit-divider {
+    background-color: #b2b8c5;
+    width: 80%;
+    margin: 30px 0 20px;
+
+    & .el-divider__text {
+        background-color: #e2e2e2;
+    }
+}
+</style>

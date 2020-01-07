@@ -29,7 +29,7 @@ export default class MapSelect extends Vue {
     public options: IMap[] = [];
 
     public mounted() {
-        this._getMapData();
+        this.getMapData(true);
     }
 
     @Emit()
@@ -45,7 +45,7 @@ export default class MapSelect extends Vue {
         }
     }
 
-    private async _getMapData() {
+    public async getMapData(modify?: boolean) {
         try {
             const res = await this.$http.get(GET_MAP, {
                 currentPage: 1,
@@ -86,7 +86,7 @@ export default class MapSelect extends Vue {
             ];
         }
 
-        if (this.options.length) {
+        if (this.options.length && modify) {
             this.value = this.options[0].id;
             this.$emit('selectmap', { ...this.options[0] });
         }

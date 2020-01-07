@@ -7,7 +7,7 @@
                 "/data/theme/" 目录)
             </span>
         </h3>
-        <map-form @submit="onSubmit" ref="form"></map-form>
+        <map-form @submit="onSubmit" ref="form" :loading="loading"></map-form>
     </div>
 </template>
 
@@ -24,11 +24,15 @@ import { UPLOAD_MAPFILE, ADD_MAP } from '@/constant/request';
     }
 })
 export default class MapAdd extends Vue {
+    public loading = false;
+
     @Async()
     public async onSubmit(data: MapForm) {
         if (!data.map) {
             return;
         }
+
+        this.loading = true;
 
         // ===========================上传文件
         const res = (await this.$http.post(UPLOAD_MAPFILE, {
@@ -37,19 +41,15 @@ export default class MapAdd extends Vue {
         })) as ResponseData<any, Record<'mapUrl', string>>;
 
         // ==============================提交数据
-        const { minX, maxX, minY, maxY, width, height, name } = data;
+        const { m0, m1, l0, l1, name, url, filename } = data;
+        const margin = [m0, m1, l0, l1].map(v => [v.x, v.y]);
+        data.filename || margin.splice(0, 2);
         await this.$http.post({
             url: ADD_MAP,
             body: {
                 name,
                 filepath: res.resultMap.mapUrl,
-                margin: JSON.stringify([
-                    [minX, minY],
-                    [minX, maxY],
-                    [maxX, maxY],
-                    [maxX, minY],
-                    [width, height]
-                ])
+                margin: JSON.stringify(margin)
             },
             headers: {
                 'Content-Type': 'application/json'
@@ -59,6 +59,8 @@ export default class MapAdd extends Vue {
         // ======================================添加成功后的处理
         this.$message.success('添加成功');
         (<MapEdit>this.$refs.form).reset();
+
+        this.loading = false;
     }
 }
 </script>
