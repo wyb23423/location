@@ -52,9 +52,9 @@ export default class Stage extends Transform {
         // ================================================================
 
         // ===========================================================设置舞台的变换
-        this.stage.position.set(this.map.width / 4 / DEVICE_PIXEL_RATIO, height / 2 / DEVICE_PIXEL_RATIO);
+        this.stage.position.set(this.map.width / 5 / DEVICE_PIXEL_RATIO, 3 * height / DEVICE_PIXEL_RATIO / 5);
         this.stage.pivot.set(width / 2, height / 2);
-        this.stage.scale.set(1 / DEVICE_PIXEL_RATIO);
+        this.stage.scale.set(2 / DEVICE_PIXEL_RATIO / 3);
         // ==================================================================
 
         // ==================================================================初始化变换矩阵
