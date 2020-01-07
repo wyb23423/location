@@ -101,7 +101,12 @@
             </el-form-item>
         </template>
         <el-form-item>
-            <el-button type="success" @click="submit" :loading="loading">
+            <el-button
+                type="success"
+                @click="submit"
+                :loading="loading"
+                :disabled="loading"
+            >
                 立即提交
             </el-button>
         </el-form-item>
