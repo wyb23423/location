@@ -44,6 +44,6 @@ export class Vector extends Point {
 
     public set(x?: number, y?: number, z?: number) {
         super.set(x, y);
-        this.z = z ?? y ?? x ?? this.z;
+        this.z = z ?? this.z;
     }
 }
