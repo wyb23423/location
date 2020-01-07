@@ -21,9 +21,29 @@ export class Vector extends Point {
         return new Vector(x, y, z);
     }
 
-    constructor(
-        public x: number = 0,
-        public y: number = x,
-        public z: number = 1
-    ) { super(x, y); }
+    constructor(x: number = 0, y: number = x, public z: number = 1) { super(x, y); }
+
+    public clone() {
+        return Vector.create(this);
+    }
+
+    public copyFrom(vec: Vector) {
+        super.copyFrom(vec);
+        this.z = vec.z;
+
+        return this;
+    }
+
+    public copyTo(vec: Vector) {
+        return vec.copyFrom(this);
+    }
+
+    public equals(vec: Vector) {
+        return super.equals(vec) && this.z === vec.z;
+    }
+
+    public set(x?: number, y?: number, z?: number) {
+        super.set(x, y);
+        this.z = z ?? y ?? x ?? this.z;
+    }
 }
