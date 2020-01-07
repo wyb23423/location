@@ -26,7 +26,8 @@ export class Transform {
         return adjust ? this.adjust(vec, false) : vec;
     }
 
-    // 初始化变换矩阵, 不存在旋转
+    // 初始化变换矩阵
+    // 正常情况下不存在旋转，暂不考虑
     protected initTransform([m0, m1, l0, l1]: number[][]) {
         const mx = m1[0] - m0[0];
         const my = m1[1] - m0[1];
