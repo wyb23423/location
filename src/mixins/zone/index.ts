@@ -2,7 +2,7 @@
  * 区域
  * 地图操作
  */
-import Component, { mixins } from 'vue-class-component';
+import Component from 'vue-class-component';
 import MapMixin from '../map';
 import { FengMapMgr } from '@/assets/map/fengmap';
 import { PIXIMgr } from '@/assets/map/pixi';
@@ -12,7 +12,7 @@ import { DEVICE_PIXEL_RATIO } from '@/constant';
 import { Vector } from '@/assets/map/transform/vector';
 
 @Component
-export default class ZoneMixin extends mixins(MapMixin) {
+export default class ZoneMixin extends MapMixin {
     private static readonly LINE_NAME = 'zone_line';
     private static readonly LINE_STYLE = {
         lineType: fengmap.FMLineType.FULL,
@@ -99,7 +99,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
     public cancel() {
         return this.$confirm('清除当前图形并退出绘制模式?')
             .then(() => {
-                this.remove();
+                this.removeZone();
                 this.isDrawing = false;
 
                 return true;
@@ -142,7 +142,7 @@ export default class ZoneMixin extends mixins(MapMixin) {
     /**
      * 移除区域图形
      */
-    protected remove() {
+    protected removeZone() {
         if (this.mgr) {
             this.points.forEach(v => this.mgr!.remove(JSON.stringify(v)));
             this.mgr.lineMgr.remove(ZoneMixin.LINE_NAME);

@@ -61,7 +61,7 @@ export default class Zone extends mixins(Setting, TableMixin, DisplayMixin) {
         await this.$http
             .post(ADD_ZONE, data, { 'Content-Type': 'application/json' });
 
-        this.remove().resetForm().refresh(false).$message.success('添加成功');
+        this.removeZone().resetForm().refresh(false).$message.success('添加成功');
     }
 
 

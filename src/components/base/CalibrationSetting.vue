@@ -21,7 +21,7 @@
             校准者误差配置需要参数：基站坐标，标签实际坐标，标签距离基站距离(自动计算)，平均时间戳
         </div>
 
-        <el-divider content-position="left">输入标签参数</el-divider>
+        <el-divider content-position="left">输入参数</el-divider>
         <el-form
             :model="form"
             :inline="true"
@@ -37,51 +37,47 @@
             >
                 <tag-select @change="form.tagNo = $event"></tag-select>
             </el-form-item>
-            <el-form-item label="标签坐标" required>
-                <el-row style="width: 388px">
-                    <el-col :span="6">
-                        <el-form-item
-                            prop="x"
-                            required
-                            :rules="{ type: 'number' }"
-                        >
-                            <el-input
-                                v-model.number="form.x"
-                                placeholder="x"
-                            ></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="6" :offset="1">
-                        <el-form-item
-                            prop="y"
-                            required
-                            :rules="{ type: 'number' }"
-                        >
-                            <el-input
-                                v-model.number="form.y"
-                                placeholder="y"
-                            ></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="6" :offset="1">
-                        <el-form-item
-                            prop="z"
-                            required
-                            :rules="{ type: 'number' }"
-                        >
-                            <el-input
-                                v-model.number="form.z"
-                                placeholder="z"
-                            ></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
+            <el-form-item label="标签坐标" required style="width: 388px">
+                <el-col :span="6">
+                    <el-form-item prop="x" required :rules="{ type: 'number' }">
+                        <el-input
+                            v-model.number="form.x"
+                            placeholder="x"
+                        ></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="6" :offset="1">
+                    <el-form-item prop="y" required :rules="{ type: 'number' }">
+                        <el-input
+                            v-model.number="form.y"
+                            placeholder="y"
+                        ></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="6" :offset="1">
+                    <el-form-item prop="z" required :rules="{ type: 'number' }">
+                        <el-input
+                            v-model.number="form.z"
+                            placeholder="z"
+                        ></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-form-item>
+            <el-form-item prop="count" required label="计算次数">
+                <el-input-number
+                    v-model="form.count"
+                    :min="1"
+                    step-strictly
+                ></el-input-number>
             </el-form-item>
         </el-form>
 
         <template slot="footer">
-            <el-button @click="submit" type="primary">计 算</el-button>
             <el-button @click="$emit('close')">取 消</el-button>
+            <el-button @click="calc" type="primary">计 算</el-button>
+            <el-button @click="submit" :disabled="canSubmit" type="success">
+                提交
+            </el-button>
         </template>
     </el-dialog>
 </template>
@@ -98,6 +94,7 @@ import TagSelect from '../form/TagSelect.vue';
 
 interface CorrectionParams extends Vector3 {
     tagNo: string;
+    count: number;
 }
 
 @Component({
@@ -118,14 +115,20 @@ export default class CalibrationSetting extends mixins(TableMixin) {
         { prop: 'ip', label: '基站IP' },
         { prop: 'timeCorrectionValue', label: '时间补偿值' }
     ];
+    public canSubmit = false;
 
     @Ref('tag') private readonly tagForm!: ElForm;
 
     @Async()
-    public async submit() {
+    public async calc() {
         await this.tagForm.validate();
 
         // TODO 发送请求
+    }
+
+    @Async()
+    public async submit() {
+        //
     }
 
     protected fetch(page: number, pageSize: number) {
