@@ -2,7 +2,7 @@
  * 区域设置
  */
 
-import Component, { mixins } from 'vue-class-component';
+import Component from 'vue-class-component';
 import { State } from 'vuex-class/lib/bindings';
 import { ZoneMode } from '@/store';
 import { FengMapMgr } from '@/assets/map/fengmap';
@@ -12,7 +12,7 @@ import { Async } from '@/assets/utils/util';
 import { UPDATE_ZONE } from '@/constant/request';
 
 @Component
-export class Setting extends mixins(ZoneMixin) {
+export class Setting extends ZoneMixin {
     public zone: ZoneData = Object.create({}); // 设置中的区域
     public isSetting: boolean = false;
 
@@ -127,7 +127,7 @@ export class Setting extends mixins(ZoneMixin) {
     // 切换地图上的地图显示
     private switchZone<T extends Vector3 | VectorAxis>(position: T[], isMapCoor: boolean) {
         if (this.mgr) {
-            this.remove(); // 移除现有区域
+            this.removeZone(); // 移除现有区域
             position.forEach(v => this.drawIcon(v, isMapCoor)); // 添加点
             this.ok(false); // 添加线
         }
