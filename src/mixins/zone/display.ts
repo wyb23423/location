@@ -15,12 +15,17 @@ export default class DisplayMixin extends Vue {
         }
     ];
 
+    // 切换显示的按钮配置name
+    // 用于获取按钮配置对象
+    protected displayName = 'display';
+    protected hiddenDesc = '隐藏'; // 隐藏时按钮上显示的文字
+
     /**
-     * 切换区域显示
+     * 切换显示
      */
     public display<T extends Record<string, any>>(row: T, index: number, isDel?: boolean) {
         const operation = this.getOperation();
-        const i = operation.findIndex(v => v.name === 'display');
+        const i = operation.findIndex(v => v.name === this.displayName);
         if (i > -1) {
             const op = operation[i];
             if (op.type[row.id] || isDel) {
@@ -30,7 +35,7 @@ export default class DisplayMixin extends Vue {
                 op.type[row.id] = 'success';
                 this.show(row);
             }
-            op.desc[row.id] = op.desc[row.id] || isDel ? undefined : '隐藏';
+            op.desc[row.id] = op.desc[row.id] || isDel ? undefined : this.hiddenDesc;
 
             this.$set(operation, i, op);
         }

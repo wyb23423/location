@@ -64,7 +64,6 @@ export default class Zone extends mixins(Setting, TableMixin, DisplayMixin) {
         this.removeZone().resetForm().refresh(false).$message.success('添加成功');
     }
 
-
     protected initData() {
         this.getData(1, 10);
     }

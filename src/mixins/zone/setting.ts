@@ -25,7 +25,7 @@ export class Setting extends ZoneMixin {
     // 用于存储打开设置模式时地图上的状态
     private enterPointsStatus?: Vector3[];
 
-    // 更新区域数据\
+    // 更新区域数据
     @Async()
     public async update() {
         if (this.isVaild(this.zone.name, this.zone.mode) !== true) {
