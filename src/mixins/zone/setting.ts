@@ -125,10 +125,10 @@ export class Setting extends ZoneMixin {
     }
 
     // 切换地图上的地图显示
-    private switchZone<T extends Vector3 | VectorAxis>(position: T[], isMapCoor: boolean) {
+    private switchZone<T extends Vector3 | VectorAxis>(position: T[], isMapCoord: boolean) {
         if (this.mgr) {
             this.removeZone(); // 移除现有区域
-            position.forEach(v => this.drawIcon(v, isMapCoor)); // 添加点
+            position.forEach(v => this.drawIcon(v, isMapCoord)); // 添加点
             this.ok(false); // 添加线
         }
     }
