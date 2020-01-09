@@ -6,7 +6,10 @@
             :max-height="maxHeight"
             header-row-class-name="table-thead"
             style="margin-bottom: 10px"
+            ref="table"
+            @selection-change="$emit('selection-change', $event)"
         >
+            <slot name="column"></slot>
             <el-table-column
                 v-for="(v, i) of colCfg"
                 show-overflow-tooltip
@@ -74,9 +77,10 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { Prop } from 'vue-property-decorator';
+import { Prop, Ref } from 'vue-property-decorator';
 import { SX_WIDTH, DEFAULT_WIDTH } from '../constant';
 import { ElTableColumn, TableColumn } from 'element-ui/types/table-column';
+import { ElTable } from 'element-ui/types/table';
 
 export interface TableRowOperation {
     type: string | IJson;
@@ -100,6 +104,8 @@ export default class Table extends Vue {
 
     public pageSize: number = 10;
     public page: number = 1;
+
+    @Ref('table') public readonly elTable!: ElTable;
 
     private timer?: any;
     private formatters = new Map<string, (cellValue: any) => any>();

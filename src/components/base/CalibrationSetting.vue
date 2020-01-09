@@ -15,7 +15,14 @@
             :noPrint="true"
             :isSmall="true"
             @updateData="getData"
-        ></app-table>
+            @selection-change="selectBase"
+        >
+            <el-table-column
+                slot="column"
+                type="selection"
+                width="55"
+            ></el-table-column>
+        </app-table>
 
         <el-divider content-position="left">输入参数</el-divider>
         <el-form
@@ -106,6 +113,7 @@ interface CorrectionParams {
     number: number;
     tag: Vector3;
     groupId: string;
+    bases: string[];
 }
 
 interface Calibration {
@@ -123,7 +131,8 @@ export default class CalibrationSetting extends TableMixin {
 
     public form = <CorrectionParams>{
         tag: {},
-        tagId: ''
+        tagId: '',
+        bases: <string[]>[]
     };
 
     public colCfg: ColCfgItem[] = [
@@ -140,6 +149,10 @@ export default class CalibrationSetting extends TableMixin {
 
     @Async()
     public async calc() {
+        if (!this.form.bases.length) {
+            return this.$message.error('未选择基站，无法计算');
+        }
+
         await this.tagForm.validate();
         this.loading = true;
 
@@ -177,12 +190,17 @@ export default class CalibrationSetting extends TableMixin {
 
     @Async()
     public async submit() {
+        await this.$confirm('提交当前补偿值?');
         await Promise.all(
             this.tableData.map(v => this.$http.post(UPDATE_BASE, v))
         );
 
         this.$message.success('更新成功');
         this.$emit('refresh');
+    }
+
+    public selectBase(rows: IBaseStation[]) {
+        this.form.bases = rows.map(v => v.id);
     }
 
     protected fetch(page: number, pageSize: number) {
