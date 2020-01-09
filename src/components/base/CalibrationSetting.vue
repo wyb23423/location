@@ -84,7 +84,7 @@
             >
                 计 算
             </el-button>
-            <el-button @click="submit" :disabled="canSubmit" type="success">
+            <el-button @click="submit" :disabled="!canSubmit" type="success">
                 提交
             </el-button>
         </template>
