@@ -35,6 +35,7 @@ export class TextMgr extends BaseMarkerMgr<fengmap.FMTextMarker> {
                 name: name.split(ZONE_SEPARATOR).pop()!,
                 callback: () => resolve(tm)
             });
+            tm.avoid(!!style.avoid);
 
             tm.height = style.height || 0;
             this.save(tm, name, 'textMarker', style.gid);

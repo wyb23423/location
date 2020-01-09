@@ -17,6 +17,7 @@
             <setting
                 :visible="!!bases"
                 :bases="bases"
+                @refresh="refresh(false)"
                 @close="bases = null"
             ></setting>
         </template>
@@ -24,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import Component, { mixins } from 'vue-class-component';
+import Component from 'vue-class-component';
 import { State } from 'vuex-class/lib/bindings';
 import TableMixin from '../../mixins/table';
 import CalibrationSetting from '../../components/base/CalibrationSetting.vue';
@@ -42,7 +43,7 @@ interface GroupsWithBase {
         setting: CalibrationSetting
     }
 })
-export default class Calibration extends mixins(TableMixin) {
+export default class Calibration extends TableMixin {
     public colCfg: any[] = [
         { prop: 'code', label: '分组编号', sortable: true },
         { prop: 'includes', label: '组内基站', width: 200 }

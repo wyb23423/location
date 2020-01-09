@@ -132,7 +132,7 @@ declare interface RequestParams {
     controller?: AbortController; // 用于中止请求
 }
 // 响应数据
-declare interface ResponseData<T = any, K = Record<string, any>> {
+declare interface ResponseData<T = any, K = any> {
     code: number;
     message: string;
     pagedData: {

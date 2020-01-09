@@ -38,6 +38,7 @@ export const ADD_BASE = '/api/base/addBase'; // 添加基站
 export const RM_BASE = '/api/base/deleteBase'; // 删除基站
 export const UPDATE_BASE = '/api/base/updateBase'; // 更新基站
 export const GET_BASE = '/api/base/getall'; // 获取基站数据
+export const GET_COMPENSATION = '/api/compensation/group'; // 计算一组基站的补偿值
 
 export const ADD_GROUP = '/api/group/addGroup'; // 添加分组
 export const RM_GROUP = '/api/group/deleteGroup'; // 删除分组
