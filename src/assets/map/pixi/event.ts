@@ -33,7 +33,7 @@ export class MapEvent {
 
     // 计算两点间距离
     public static getDistance(start: Vector2, stop: Vector2) {
-        return Math.sqrt((stop.x - start.x) ** 2 + (stop.y - start.y) ** 2);
+        return ((stop.x - start.x) ** 2 + (stop.y - start.y) ** 2) ** 0.5;
     }
 
     // 用于平移
