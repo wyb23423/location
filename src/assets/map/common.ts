@@ -4,14 +4,15 @@ import { download } from '../utils/download';
  * 获取元素的自定义属性
  */
 export function getCustomInfo<K>(el: any, key: string): K | Record<string, undefined> {
+    // return el?.custom?.[key] ?? {};
+
     if (el == null) {
         return {};
     }
 
-    el.custom = el.custom == null ? {} : el.custom;
-    el.custom[key] = el.custom[key] == null ? {} : el.custom[key];
+    el.custom = el.custom ?? {};
 
-    return el.custom[key];
+    return el.custom[key] = el.custom[key] ?? {};
 }
 
 export class BaseHeatMap {

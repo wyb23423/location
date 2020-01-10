@@ -11,7 +11,7 @@ import { MapEvent } from './event';
 
 export class PIXIMgr extends Element {
     public readonly has3D: boolean = false;
-    public lineMgr!: LineMgr;
+    public lineMgr: LineMgr = new LineMgr(this.stage);
 
     private event = new MapEvent();
 
@@ -19,8 +19,6 @@ export class PIXIMgr extends Element {
         super(dom);
 
         this.bindLoaded(() => this.event.apply(dom, this.stage));
-        this.lineMgr = new LineMgr(this.stage);
-
         this.init(bg, margin);
     }
     /**

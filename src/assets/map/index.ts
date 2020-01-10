@@ -14,14 +14,12 @@ export function createMap(data: IMap, dom: HTMLElement) {
     const res = data.filepath.match(/([^\/\\]+)\.([a-z]+)$/i);
 
     if (Array.isArray(res)) {
-        const map = isFengMap(res[2])
+        return isFengMap(res[2])
             ? new FengMapMgr(res[1], dom, data.margin)
             : new PIXIMgr(data.filepath, dom, data.margin);
-
-        return map;
-    } else {
-        console.error('地图文件错误:' + data.filepath);
     }
+
+    console.error('地图文件错误:' + data.filepath);
 }
 
 export function createHeatMap(mgr: FengMapMgr | PIXIMgr) {
