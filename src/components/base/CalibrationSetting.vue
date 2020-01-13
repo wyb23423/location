@@ -103,7 +103,6 @@ import Component from 'vue-class-component';
 import TableMixin, { ColCfgItem } from '../../mixins/table';
 import { Prop, Ref } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
-import { major, subordinate } from '../../assets/utils/compensation';
 import { Async } from '@/assets/utils/util';
 import { UPDATE_BASE, GET_COMPENSATION } from '@/constant/request';
 import TagSelect from '../form/TagSelect.vue';
