@@ -205,9 +205,12 @@ export default class HeatMap extends mixins(MapMixin, Loading) {
     }
 
     // =========================================地图生命周期
-    protected initData(data: IMap) {
+    protected initData({ margin }: IMap) {
         this.old = {};
-        [this.width, this.height] = <number[]>data.margin[4];
+        const p1 = margin[2] || margin[0];
+        const p2 = margin[3] || margin[1];
+        this.width = p2[0] - p1[0];
+        this.height = p2[1] - p1[1];
     }
     protected bindEvents() {
         this.mgr!.on('loadComplete', () => {
