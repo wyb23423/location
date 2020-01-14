@@ -31,7 +31,7 @@ import Component, { mixins } from 'vue-class-component';
 import TableMixin from '../../mixins/table';
 import Page from '@/components/layout/Page.vue';
 import { Async } from '../../assets/utils/util';
-import { RM_ALARM, GET_ALARM } from '@/constant/request';
+import { RM_ALARM, GET_ALARM, RM_ALARM_BATCH } from '@/constant/request';
 
 @Component({
     components: {
@@ -72,7 +72,11 @@ export default class Alarm extends mixins(TableMixin) {
         await this.$confirm('删除本页所有报警信息?');
 
         const ids = this.tableData.map((v: IAlarm) => v.id);
-        // TODO: 向服务器发送批量删除的请求
+        await this.$http.post({
+            url: RM_ALARM_BATCH,
+            data: { ids },
+            headers: { 'Content-Type': 'application/json' }
+        });
 
         const maxPage = Math.ceil(this.totalCount / this.pageSize) - 1;
         this.refresh(true, Math.min(this.page, maxPage)).$message.success(

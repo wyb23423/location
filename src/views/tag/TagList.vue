@@ -34,9 +34,10 @@
                 <tag-config :tag-no="person.id"></tag-config>
             </el-tab-pane>
             <el-tab-pane label="更换标签" name="modifyId">
-                <el-form label-width="100px" ref="tagNo">
+                <el-form :model="{ tagNo }" label-width="100px" ref="tagNo">
                     <el-form-item
                         label="标签号"
+                        prop="tagNo"
                         :rules="{
                             pattern: /^[0-9A-Fa-f]{8}$/,
                             message:
@@ -70,7 +71,7 @@ import TagAdd from './TagAdd.vue';
 import { Async } from '../../assets/utils/util';
 import TagConfig from '../../components/edit/TagConfig.vue';
 import { ElForm } from 'element-ui/types/form';
-import { RM_TAG, UPDATE_TAG, GET_TAG } from '@/constant/request';
+import { RM_TAG, UPDATE_TAG, GET_TAG, UPDATE_TAG_ID } from '@/constant/request';
 import { WebSocketInit } from '@/mixins/monitor/websocket';
 
 @Component({
@@ -163,9 +164,11 @@ export default class TagList extends mixins(TableMixin, WebSocketInit) {
 
         await this.tagNoForm.validate();
         await this.$confirm('确认修改标签号?');
+        await this.$http.post(UPDATE_TAG_ID, {
+            sourceTagId: id,
+            targetTagId: this.tagNo
+        });
 
-        // TODO
-        console.log(this.tagNo, id);
         this.person!.id = this.tagNo;
         this.refresh(false).$message.success('修改成功');
     }

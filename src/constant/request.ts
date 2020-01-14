@@ -20,6 +20,7 @@ export const GET_TAG = '/api/tag/getall'; // 获取标签数据
 export const GET_HISTORY = '/api/tag/queryTagHistory'; // 获取标签历史轨迹
 export const GET_INSTANT = '/api/tag/queryInstantInMap'; // 获取一个时刻所有标签的历史位置
 export const UPLOAD_TAGPHOTO = '/api/tag/upload/tagPhoto'; // 上传标签图
+export const UPDATE_TAG_ID = '/api/tag/updateTagId'; // 更换标签
 
 export const ADD_TAG_ZONE = '/api/tagZone/addTagZone'; // 添加标签与区域关系
 export const RM_TAG_ZONE = '/api/tagZone/deleteTagZone'; // 删除标签与区域关系
@@ -33,6 +34,7 @@ export const GET_ADMIN = '/api/admin/getall'; // 获取管理员数据
 
 export const RM_ALARM = '/api/alarm/deleteAlarm'; // 删除报警
 export const GET_ALARM = '/api/alarm/getall'; // 获取报警数据
+export const RM_ALARM_BATCH = '/api/alarm/batchDeleteAlarm'; // 批量删除报警
 
 export const ADD_BASE = '/api/base/addBase'; // 添加基站
 export const RM_BASE = '/api/base/deleteBase'; // 删除基站
