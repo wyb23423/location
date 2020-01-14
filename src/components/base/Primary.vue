@@ -11,15 +11,15 @@
         </el-form-item>
         <el-form-item label="基站类型">
             <el-radio-group v-model="form.main">
-                <el-radio :label="85">从基站</el-radio>
-                <el-radio :label="170">主基站</el-radio>
+                <el-radio :label="0xaa">从基站</el-radio>
+                <el-radio :label="0x55">主基站</el-radio>
             </el-radio-group>
         </el-form-item>
         <el-form-item label="基站模式">
             <el-radio-group v-model="form.mode">
-                <el-radio :label="17">单基站</el-radio>
-                <el-radio :label="34">下行模式</el-radio>
-                <el-radio :label="51">上行模式</el-radio>
+                <el-radio :label="0x11">单基站</el-radio>
+                <el-radio :label="0x22">下行模式</el-radio>
+                <el-radio :label="0x33">上行模式</el-radio>
             </el-radio-group>
         </el-form-item>
         <el-form-item label="距离参数" required prop="distance">
@@ -31,35 +31,37 @@
         </el-form-item>
         <el-form-item label="基站信道">
             <el-radio-group v-model="form.channel">
+                <el-radio :label="1"></el-radio>
                 <el-radio :label="2"></el-radio>
                 <el-radio :label="5"></el-radio>
             </el-radio-group>
         </el-form-item>
-        <el-form-item label="时间补偿" required prop="time">
+        <!-- <el-form-item label="时间补偿" required prop="time">
             <el-input
                 v-model.number="form.time"
                 prefix-icon="el-icon-timer"
             ></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="频率等级" :class="$style.item">
             <el-rate
                 v-model="form.power"
                 :colors="colors"
                 show-score
+                :low-threshold="3"
+                :high-threshold="8"
+                :max="10"
                 :class="$style.center"
             ></el-rate>
         </el-form-item>
         <el-form-item label="发送等级" :class="$style.item">
-            <el-rate
+            <el-slider
+                :class="$style.send"
                 v-model="form.send"
-                :colors="colors"
-                :max="3"
-                :low-threshold="1"
-                :high-threshold="3"
-                show-score
-                :class="$style.center"
+                :max="0x0f"
+                :min="0"
+                show-stops
             >
-            </el-rate>
+            </el-slider>
         </el-form-item>
         <el-form-item>
             <el-button type="success" @click="onSubmit">设置</el-button>
@@ -75,18 +77,31 @@ import { ElForm } from 'element-ui/types/form';
 import { SEND_PROTOCOL } from '@/constant/request';
 import { Async } from '@/assets/utils/util';
 
+interface PrimaryConfig {
+    power: number;
+    main: number;
+    channel: number;
+    send: number;
+    mode: number;
+    groupCode: string;
+    baseCode: string;
+    distance: number;
+}
+
 @Component
 export default class Primary extends Vue {
-    @Ref('form') public readonly elForm!: ElForm;
-    @Prop() public readonly data!: IBaseStation;
+    private static readonly HEAD = '234501';
 
-    public readonly colors: string[] = ['#99A9BF', '#F7BA2A', '#FF9900'];
-    public form: IJson = {
+    @Prop() public readonly ip!: string;
+    @Prop() public readonly protocols!: string[];
+
+    public readonly colors = ['#99A9BF', '#F7BA2A', '#FF9900'];
+    public form = <PrimaryConfig>{
         power: 1,
-        main: 85,
+        main: 0xaa,
         channel: 2,
         send: 1,
-        mode: 17
+        mode: 0x11
     };
     public rules = {
         groupCode: {
@@ -106,23 +121,30 @@ export default class Primary extends Vue {
         }
     };
 
+    @Ref('form') private readonly elForm!: ElForm;
+
+    public created() {
+        const protocol = this.protocols.find(v => v.startsWith(Primary.HEAD));
+        protocol && (this.form = <PrimaryConfig>this.parse(protocol));
+    }
+
     @Async()
     public async onSubmit() {
         await this.elForm.validate();
         await this.$confirm('确认设置?');
 
         await this.$http.post(SEND_PROTOCOL, {
-            ip: this.data.ip,
-            port: 50000,
-            protocol: '41' + this.parse(this.form)
+            ip: this.ip,
+            protocol: '2341' + this.parse(this.form) + '0D0A'
         });
         this.$message.success('设置成功');
     }
 
     // 解析基站基本配置
-    private parse(value: string | IJson) {
+    private parse(value: string | PrimaryConfig) {
         // [[key, byte]]
         const keys = [
+            ['baseCode', 4],
             ['groupCode', 2],
             ['main', 1],
             ['mode', 1],
@@ -136,10 +158,10 @@ export default class Primary extends Vue {
         if (typeof value === 'string') {
             const data: IJson = {};
 
-            let start: number = 0;
-            keys.forEach(([k, byte]) => {
+            let start: number = Primary.HEAD.length;
+            keys.forEach(([k, byte], i) => {
                 const str = value.substr(start, <number>byte * 2);
-                data[k] = start ? +('0x' + str) : str.toUpperCase();
+                data[k] = i > 1 ? +('0x' + str) : str.toUpperCase();
                 start += <number>byte * 2;
             });
 
@@ -148,7 +170,11 @@ export default class Primary extends Vue {
 
         return keys
             .reduce((a, [k, byte]) => {
-                a.push(value[k].toString(16).padStart(<number>byte * 2, '0'));
+                a.push(
+                    value[<keyof PrimaryConfig>k]
+                        .toString(16)
+                        .padStart(<number>byte * 2, '0')
+                );
 
                 return a;
             }, [])
@@ -168,5 +194,8 @@ export default class Primary extends Vue {
 
 .item > div {
     position: relative;
+}
+.send > div {
+    background-color: #e00;
 }
 </style>

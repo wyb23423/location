@@ -17,6 +17,8 @@ import { Prop } from 'vue-property-decorator';
 import { NOTIFY_KEY, RECOVERY, ALARM_TYPE, MISS } from '@/constant';
 import { getIp, getConfig } from '@/assets/utils/util';
 
+type Alarm = IAlarm & { alarmTime?: number };
+
 @Component({
     components: {
         'app-nav': Header
@@ -24,6 +26,9 @@ import { getIp, getConfig } from '@/assets/utils/util';
 })
 export default class Main extends Vue {
     private readonly delay = 500 / getConfig<number>('SECOND_COUNT', 1);
+
+    private time = 0; // 上次报警时间
+    private queue: Alarm[] = [];
 
     public created() {
         this.link();
@@ -44,21 +49,34 @@ export default class Main extends Vue {
         );
         const ws = new WebSocket(wsUrl.replace('#{ip}', ip));
         ws.onmessage = (e: MessageEvent) => {
-            const data: IAlarm & { alarmTime?: number } = JSON.parse(e.data);
+            const data: Alarm = JSON.parse(e.data);
             if (Date.now() - (data.alarmTime || data.time) <= 1000) {
                 setTimeout(this.alarm.bind(this, data), this.delay);
             }
         };
     }
 
-    private alarm(data: IAlarm & { alarmTime?: number }) {
+    private alarm(data?: Alarm) {
+        if (!data) {
+            return;
+        }
+
+        const now = Date.now();
+        if (now - this.time < 200) {
+            return this.queue.push(data);
+        }
+
+        this.time = now;
         this.$event.emit(NOTIFY_KEY, data);
         switch (data.type) {
             case ALARM_TYPE.TAG_OUT:
-                return this.$event.emit(MISS, data.deviceId);
+                this.$event.emit(MISS, data.deviceId);
+                break;
             default:
                 break;
         }
+
+        this.$nextTick(() => this.alarm(this.queue.shift()));
     }
 }
 </script>

@@ -31,14 +31,17 @@
                 name="primary"
                 v-if="!!permission.post"
             >
-                <base-primary :data="base"></base-primary>
+                <base-primary
+                    :ip="base.ip"
+                    :protocols="protocols"
+                ></base-primary>
             </el-tab-pane>
             <el-tab-pane
                 label="网络参数设置"
                 name="net"
                 v-if="!!permission.post"
             >
-                <base-net :data="base"></base-net>
+                <base-net :ip="base.ip" :protocols="protocols"></base-net>
             </el-tab-pane>
             <el-tab-pane
                 label="位置设置"
@@ -80,6 +83,7 @@ export default class Info extends mixins(TableMixin) {
 
     public base: IBaseStation | null = null;
     public activeTab: string = 'info';
+    public protocols: string[] = [];
 
     public get op() {
         const op = [{ type: 'success', name: 'look', desc: '查看详情' }];
@@ -97,22 +101,13 @@ export default class Info extends mixins(TableMixin) {
         this.refresh().$message.success('删除成功');
     }
 
+    @Async()
     public async look(row: IBaseStation) {
-        const { value: res } = await this.$async(
-            this.$http.post({
-                url: SEND_RECEIVE,
-                body: {
-                    ip: '192.168.1.19', // row.ip,
-                    port: 60000,
-                    protocol: '2345201801230D0A'
-                }
-            })
-        );
+        const {
+            pagedData: { datas }
+        } = await this.$http.post({ url: SEND_RECEIVE, body: { ip: row.ip } });
 
-        if (res) {
-            console.log(encodeUtf8(res.resultMap.resp));
-        }
-
+        this.protocols = datas;
         this.base = row;
     }
 

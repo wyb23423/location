@@ -24,11 +24,14 @@
         <el-form-item label="服务器端口" prop="serverPort">
             <el-input v-model.number="form.serverPort"></el-input>
         </el-form-item>
-        <el-form-item label="传输模式">
+        <el-form-item label="传输模式" required>
             <el-radio-group v-model="form.mode">
-                <el-radio :label="85">UDP</el-radio>
-                <el-radio :label="170">TCP</el-radio>
+                <el-radio :label="0x55">UDP</el-radio>
+                <el-radio :label="0xaa">TCP</el-radio>
             </el-radio-group>
+        </el-form-item>
+        <el-form-item prop="name" label="设备名称">
+            <el-input v-model="form.name"></el-input>
         </el-form-item>
         <el-form-item>
             <el-button type="success" @click="onSubmit">设置</el-button>
@@ -51,14 +54,18 @@ import { Async } from '../../assets/utils/util';
     }
 })
 export default class Net extends Vue {
-    @Prop() public data!: IBaseStation;
+    private static readonly HEAD = ['234502', '234503', '234504'];
+
+    @Prop() public ip!: string;
+    @Prop() public readonly protocols!: string[];
 
     public form = {
         baseIp: <string[]>[],
         serverIp: <string[]>[],
         mask: <string[]>[],
         mac: <string[]>[],
-        mode: 85
+        mode: 85,
+        name: ''
     };
     public rules = {
         basePort: {
@@ -70,8 +77,19 @@ export default class Net extends Vue {
             type: 'number',
             max: 0xffff,
             required: true
+        },
+        name: {
+            required: true,
+            max: 8
         }
     };
+
+    public created() {
+        this.protocols.forEach(v => {
+            const i = Net.HEAD.findIndex(h => v.startsWith(h));
+            i > -1 && Object.assign(this.form, this.parse(v, i));
+        });
+    }
 
     @Async()
     public async onSubmit() {
@@ -82,9 +100,8 @@ export default class Net extends Vue {
         await (<ElForm>this.$refs.form).validate();
         await this.$confirm('确认设置?');
         await this.$http.post(SEND_PROTOCOL, {
-            ip: this.data.ip,
-            port: 50000,
-            protocol: '42' + this.parse(this.form)
+            ip: this.ip,
+            protocol: '2342' + this.parse(this.form) + '0D0A'
         });
 
         this.$message.success('设置成功');
@@ -109,9 +126,9 @@ export default class Net extends Vue {
     }
 
     // 解析基站网络设置
-    private parse(value: string | IJson) {
+    private parse(value: string | IJson, index?: number) {
         // [[key, byte, 是否用数组表示]]
-        const keys = [
+        const keys: Array<[string, number, boolean]> = [
             ['baseIp', 4, true],
             ['mask', 4, true],
             ['mac', 6, true],
@@ -122,23 +139,48 @@ export default class Net extends Vue {
         ];
 
         if (typeof value === 'string') {
-            return this.str2obj(keys, value);
+            const key = <keyof Net>('str2obj' + index);
+            return this[key](keys, value);
         }
 
-        return this.obj2str(keys, value);
+        return this.obj2str(keys, value) + this.name2code();
+    }
+
+    private str2obj0(keys: Array<[string, number, boolean]>, value: string) {
+        keys = keys.slice(0, 4);
+        return this.str2obj(keys, value, Net.HEAD[0].length);
+    }
+
+    private str2obj1(keys: Array<[string, number, boolean]>, value: string) {
+        keys = keys.slice(4);
+        return this.str2obj(keys, value, Net.HEAD[1].length);
+    }
+
+    private str2obj2(keys: Array<[string, number, boolean]>, value: string) {
+        value = value.substr(Net.HEAD[2].length, 32);
+        const arr = value.match(/[\dA-Fa-f]{4}/g) || [];
+        return {
+            name: arr
+                .map(v => String.fromCodePoint(+`0x${v}`))
+                .join('')
+                .trim()
+        };
     }
 
     // 配置命令串转显示用对象
-    private str2obj(keys: any[], value: string) {
+    private str2obj(
+        keys: Array<[string, number, boolean]>,
+        value: string,
+        start: number = 6
+    ) {
         const parse210 = (v: string) => +('0x' + v);
         const parseToArr = (s: number, l: number) => {
-            const arr = value.substr(s, l).match(/\d{2}/g) || [];
+            const arr = value.substr(s, l).match(/[\dA-Fa-f]{2}/g) || [];
 
             return arr.map(parse210);
         };
 
         const data: IJson = {};
-        let start: number = 0;
         keys.forEach(([k, byte, isArr]) => {
             const len = <number>byte * 2;
 
@@ -153,7 +195,7 @@ export default class Net extends Vue {
     }
 
     // 显示对象转配置命令串
-    private obj2str(keys: any[], value: IJson) {
+    private obj2str(keys: Array<[string, number, boolean]>, value: IJson) {
         return keys
             .reduce((a, [k, byte]) => {
                 let str: number | string | number[] = value[k];
@@ -168,7 +210,21 @@ export default class Net extends Vue {
                 a.push(str);
 
                 return a;
-            }, [])
+            }, <string[]>[])
+            .join('');
+    }
+
+    private name2code() {
+        if (!this.form.name) {
+            return '0020'.repeat(8);
+        }
+
+        return new Array(8)
+            .fill('0020')
+            .map((v, i) => {
+                const code = this.form.name.codePointAt(i);
+                return code?.toString(16).padStart(4, '0') ?? v;
+            })
             .join('');
     }
 }
