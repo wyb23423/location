@@ -63,6 +63,7 @@ import Net from '../../components/base/Net.vue';
 import Position from '../../components/base/Position.vue';
 import { encodeUtf8, Async } from '@/assets/utils/util';
 import { RM_BASE, SEND_RECEIVE, GET_BASE } from '@/constant/request';
+import { Loading } from '@/mixins/loading';
 
 @Component({
     components: {
@@ -72,7 +73,7 @@ import { RM_BASE, SEND_RECEIVE, GET_BASE } from '@/constant/request';
         'base-position': Position
     }
 })
-export default class Info extends mixins(TableMixin) {
+export default class Info extends mixins(TableMixin, Loading) {
     public colCfg: any[] = [
         { prop: 'id', label: '基站编号', width: 175 },
         { prop: 'name', label: '基站名称', width: 175 },
@@ -103,12 +104,15 @@ export default class Info extends mixins(TableMixin) {
 
     @Async()
     public async look(row: IBaseStation) {
+        this.loading({ customClass: 'loading-mark' });
         const {
             pagedData: { datas }
-        } = await this.$http.post({ url: SEND_RECEIVE, body: { ip: row.ip } });
+        } = await this.$http
+            .post({ url: SEND_RECEIVE, body: { ip: row.ip } })
+            .finally(() => (this.base = row))
+            .finally(() => this.loaded());
 
         this.protocols = datas;
-        this.base = row;
     }
 
     protected async fetch(page: number, pageSize: number) {

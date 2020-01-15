@@ -54,14 +54,15 @@
             ></el-rate>
         </el-form-item>
         <el-form-item label="发送等级" :class="$style.item">
-            <el-slider
-                :class="$style.send"
-                v-model="form.send"
-                :max="0x0f"
-                :min="0"
-                show-stops
-            >
-            </el-slider>
+            <el-rate
+                v-model="form.power"
+                :colors="colors"
+                show-score
+                :low-threshold="4"
+                :high-threshold="8"
+                :max="12"
+                :class="$style.center"
+            ></el-rate>
         </el-form-item>
         <el-form-item>
             <el-button type="success" @click="onSubmit">设置</el-button>
@@ -164,21 +165,45 @@ export default class Primary extends Vue {
                 data[k] = i > 1 ? +('0x' + str) : str.toUpperCase();
                 start += <number>byte * 2;
             });
+            data.power = this.setPowerForChannel(data.channel, data.power);
 
             return data;
         }
 
         return keys
             .reduce((a, [k, byte]) => {
-                a.push(
-                    value[<keyof PrimaryConfig>k]
-                        .toString(16)
-                        .padStart(<number>byte * 2, '0')
-                );
+                let data = value[<keyof PrimaryConfig>k];
+                if (k === 'power') {
+                    data = this.getPowerForChannel(value.channel, <number>data);
+                }
+                a.push(data.toString(16).padStart(<number>byte * 2, '0'));
 
                 return a;
             }, [])
             .join('');
+    }
+
+    // 接收到的功率等级转排序
+    private setPowerForChannel(channel: number, power: number) {
+        const mapping = [
+            [8, 1, 7, 2, 9, 3, 8, 5, 8, 4, 11, 6, 11, 10, 12, 12],
+            [4, 1, 6, 2, 6, 3, 8, 5, 8, 6, 9, 7, 10, 9, 11, 12],
+            [5, 1, 4, 2, 8, 3, 9, 6, 10, 7, 12, 8, 11, 12, 12]
+        ];
+
+        return mapping[channel - 1]?.[power] ?? 12;
+    }
+
+    // 排序转功率等级
+    private getPowerForChannel(channel: number, order: number) {
+        const mapping = [
+            [1, 3, 5, 9, 7, 11, 2, 0, 4, 13, 10],
+            [1, 3, 5, 0, 7, 4, 11, 6, 13, 12, 14],
+            [1, 3, 5, 2, 0, 7, 9, 11, 6, 8, 13]
+        ];
+        const defaultPower = [14, 15, 10];
+
+        return mapping[--channel]?.[order - 1] ?? defaultPower[channel] ?? 0;
     }
 }
 </script>
