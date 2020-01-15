@@ -148,27 +148,27 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
 
     private analyzeNavi(coord: Vector23, time: number, item: fengmap.FMMarker) {
         const points = [{ ...coord, time }];
-        if (this.naviAnalyser) {
-            const result = this.naviAnalyser.analyzeNavi(item.groupID, item.mapCoord, item.groupID, <Vector3>coord);
-            if (result === fengmap.FMRouteCalcuResult.ROUTE_SUCCESS) {
-                const data = this.naviAnalyser.getNaviResults();
-                const descriptions = this.naviAnalyser.getRouteDescriptions(data);
+        // if (this.naviAnalyser) {
+        //     const result = this.naviAnalyser.analyzeNavi(item.groupID, item.mapCoord, item.groupID, <Vector3>coord);
+        //     if (result === fengmap.FMRouteCalcuResult.ROUTE_SUCCESS) {
+        //         const data = this.naviAnalyser.getNaviResults();
+        //         const descriptions = this.naviAnalyser.getRouteDescriptions(data);
 
-                let distance = points.length = 0;
-                descriptions.naviDescriptionsData.forEach(d => {
-                    distance += d.distance;
-                    const t = time * distance / descriptions.naviDistance;
-                    if (t > 1e-5) {
-                        distance = 0;
-                        points.push({
-                            x: d.endPoint.x,
-                            y: d.endPoint.y,
-                            time: t
-                        });
-                    }
-                });
-            }
-        }
+        //         let distance = points.length = 0;
+        //         descriptions.naviDescriptionsData.forEach(d => {
+        //             distance += d.distance;
+        //             const t = time * distance / descriptions.naviDistance;
+        //             if (t > 1e-5) {
+        //                 distance = 0;
+        //                 points.push({
+        //                     x: d.endPoint.x,
+        //                     y: d.endPoint.y,
+        //                     time: t
+        //                 });
+        //             }
+        //         });
+        //     }
+        // }
 
         return points;
     }

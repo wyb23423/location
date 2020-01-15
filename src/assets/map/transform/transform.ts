@@ -4,6 +4,7 @@ import { getConfig } from '@/assets/utils/util';
 
 export class Transform {
     private matrix = new Matrix();
+    private readonly adjustConfig = getConfig('adjust', { x: 0, y: 0 });
 
     constructor(margin?: number[][]) {
         margin && this.initTransform(margin);
@@ -42,7 +43,7 @@ export class Transform {
 
     // 根据配置的坐标校准值调整坐标
     private adjust(vec: Vector, is2map: boolean) {
-        const { x, y } = getConfig('adjust', { x: 0, y: 0 });
+        const { x, y } = this.adjustConfig;
         if (is2map) {
             vec.x += x;
             vec.y += y;

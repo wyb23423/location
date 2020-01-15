@@ -191,7 +191,11 @@ export default class CalibrationSetting extends TableMixin {
     public async submit() {
         await this.$confirm('提交当前补偿值?');
         await Promise.all(
-            this.tableData.map(v => this.$http.post(UPDATE_BASE, v))
+            this.tableData.map(v =>
+                this.$http.post(UPDATE_BASE, v, {
+                    'Content-Type': 'application/json'
+                })
+            )
         );
 
         this.$message.success('更新成功');
