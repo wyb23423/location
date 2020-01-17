@@ -97,8 +97,8 @@ export default class HTTP {
      * @param res 响应对象
      */
     public async parseRes(res: Response) {
-        if (res.status === 302) {
-            location.href = location.href;
+        if (res.type === 'opaqueredirect') {
+            location.href = '/login';
             return Promise.reject('redirect');
         }
 
