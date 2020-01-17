@@ -18,12 +18,12 @@ export default class ChartIndex extends Vue {
             title: '热力图',
             to: '/chart/heatmap',
             icon: 'el-icon-c-scale-to-original'
-        },
-        {
-            title: '数据报表',
-            to: '/chart/charts',
-            icon: 'el-icon-pie-chart'
         }
+        // {
+        //     title: '数据报表',
+        //     to: '/chart/charts',
+        //     icon: 'el-icon-pie-chart'
+        // }
     ];
 }
 </script>
