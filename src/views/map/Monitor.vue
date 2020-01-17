@@ -126,7 +126,7 @@ export default class Monitor extends mixins(MonitorMixin, EventMixin) {
         {
             type: { default: 'primary' },
             name: 'display',
-            desc: { default: '显示' }
+            desc: { default: '隐藏' }
         }
     ];
 
@@ -225,13 +225,10 @@ export default class Monitor extends mixins(MonitorMixin, EventMixin) {
 
     // 基站相关数据初始化
     protected initBases(data: IBaseStation[]) {
-        this.groupData = data.reduce(
-            (groupData, v) => {
-                (groupData[v.groupId] || (groupData[v.groupId] = [])).push(v);
-                return groupData;
-            },
-            <Record<string, IBaseStation[]>>{}
-        );
+        this.groupData = data.reduce((groupData, v) => {
+            (groupData[v.groupId] || (groupData[v.groupId] = [])).push(v);
+            return groupData;
+        }, <Record<string, IBaseStation[]>>{});
     }
 }
 

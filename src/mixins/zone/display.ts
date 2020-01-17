@@ -18,7 +18,7 @@ export default class DisplayMixin extends Vue {
     // 切换显示的按钮配置name
     // 用于获取按钮配置对象
     protected displayName = 'display';
-    protected hiddenDesc = '隐藏'; // 隐藏时按钮上显示的文字
+    protected switchDesc = '隐藏'; // 切换后按钮上显示的文字
 
     /**
      * 切换显示
@@ -35,7 +35,7 @@ export default class DisplayMixin extends Vue {
                 op.type[row.id] = 'success';
                 this.show(row);
             }
-            op.desc[row.id] = op.desc[row.id] || isDel ? undefined : this.hiddenDesc;
+            op.desc[row.id] = op.desc[row.id] || isDel ? undefined : this.switchDesc;
 
             this.$set(operation, i, op);
         }

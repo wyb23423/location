@@ -36,6 +36,8 @@ export default class Group extends mixins(TableMixin, DisplayMixin) {
         { prop: 'bases', label: '基站', width: 200 }
     ];
 
+    protected switchDesc = '显示';
+
     public getOperation() {
         return this.groupOp || [];
     }
