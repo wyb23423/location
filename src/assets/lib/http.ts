@@ -97,6 +97,11 @@ export default class HTTP {
      * @param res 响应对象
      */
     public async parseRes(res: Response) {
+        if (res.status === 302) {
+            location.href = location.href;
+            return Promise.reject('redirect');
+        }
+
         if (this.isSuccess(res.status)) {
             let data: ResponseData;
             try {
