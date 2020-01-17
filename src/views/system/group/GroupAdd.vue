@@ -1,10 +1,5 @@
 <template>
-    <el-form
-        ref="form"
-        :model="form"
-        label-width="auto"
-        style="padding: 10% 8%"
-    >
+    <el-form ref="form" :model="form" label-width="auto" style="padding: 6%">
         <el-form-item
             v-if="showId"
             label="分组号"
@@ -80,16 +75,18 @@ export default class GroupAdd extends Vue {
 
     public readonly GET_MAP = GET_MAP;
     public algorithmType: number[] = [];
-    public algorithm: CascaderOption[] = [[0, 1, 2], [1, 2], [1, 2]].map(
-        (v, i) => ({
-            value: i + 1,
-            label: ['一', '二', '三'][i] + '维算法',
-            children: v.map(j => ({
-                value: j,
-                label: '序号' + j
-            }))
-        })
-    );
+    public algorithm: CascaderOption[] = [
+        [0, 1, 2],
+        [1, 2],
+        [1, 2]
+    ].map((v, i) => ({
+        value: i + 1,
+        label: ['一', '二', '三'][i] + '维算法',
+        children: v.map(j => ({
+            value: j,
+            label: '序号' + j
+        }))
+    }));
 
     @Ref('form') private readonly elForm!: ElForm;
 
