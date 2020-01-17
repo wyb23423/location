@@ -99,9 +99,13 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
         this.doCensus(tag);
     }
 
+    protected invalid(tag: ITagInfo) {
+        this.miss(tag.sTagNo);
+    }
+
     // 信号丢失报警循环
     private miss(tagNo: string) {
-        if (!this.mgr) {
+        if (!(this.mgr && this.tagGroup.has(tagNo))) {
             return;
         }
 
