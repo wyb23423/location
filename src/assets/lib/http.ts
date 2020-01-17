@@ -203,7 +203,8 @@ export default class HTTP {
             headers: req.headers,
             body: req.params,
             credentials: 'include',
-            signal: req.controller.signal
+            signal: req.controller.signal,
+            redirect: 'manual'
         });
 
         const timer = setTimeout(() => {
