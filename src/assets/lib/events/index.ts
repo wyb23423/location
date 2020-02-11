@@ -1,0 +1,90 @@
+// tslint:disable:ban-types
+
+/**
+ * 发布订阅者模式
+ */
+
+import { EvtName } from './index.d';
+
+export default class Events {
+    /**
+     * 为一个对象或构造函数添加 发布-订阅 功能
+     */
+    public static mixTo<T extends Function | object>(target: T) {
+        if (typeof target === 'function') {
+            const prototype = target.prototype;
+            Events.assgin(prototype);
+
+            const fn = (...args: any[]) => {
+                const data = Reflect.construct(target, args);
+                data.events = new Map<EvtName, Set<Function>>();
+
+                return data;
+            };
+
+            return <T>fn;
+        } else {
+            Events.assgin(target);
+            (<any>target).events = new Map<EvtName, Set<Function>>();
+
+            return target;
+        }
+    }
+    private static assgin(target: Record<string | symbol, any>) {
+        const keys = Object.getOwnPropertyNames(Events.prototype);
+        keys.forEach(k => {
+            if (k !== 'constructor') {
+                target[k] = Reflect.get(Events.prototype, k);
+            }
+        });
+    }
+
+    private readonly events = new Map<EvtName, Set<Function>>();
+
+    public on(evt: EvtName, handler: Function) {
+        if (typeof handler !== 'function') {
+            return this;
+        }
+
+        const set = this.events.get(evt) || new Set();
+        set.add(handler);
+        this.events.set(evt, set);
+
+        return this;
+    }
+
+    public off(evt: EvtName, handler?: Function) {
+        if (!handler) {
+            this.events.delete(evt);
+        } else {
+            const set = this.events.get(evt);
+            set && set.delete(handler);
+        }
+
+        return this;
+    }
+
+    public emit(evt: EvtName, ...args: any[]) {
+        return this.trigger(evt, ...args);
+    }
+
+    public once(evt: EvtName, handler: Function) {
+        if (typeof handler === 'function') {
+            const fn = (...args: any[]) => {
+                handler(...args);
+                this.off(evt, fn);
+            };
+
+            this.on(evt, fn);
+        }
+
+        return this;
+    }
+
+    public trigger(evt: EvtName, ...args: any[]) {
+        const set = this.events.get(evt);
+        set && set.forEach(fn => fn(...args));
+
+        return this;
+    }
+}

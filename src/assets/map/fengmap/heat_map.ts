@@ -1,0 +1,141 @@
+import { BaseHeatMap } from '../common';
+import { PIXIMgr } from '../pixi';
+import { FengMapMgr } from '.';
+import { download } from '@/assets/utils/download';
+
+export default class HeatMap extends BaseHeatMap {
+    private sprite = new Image();
+    private timer?: number;
+
+    constructor(config: HeatMapConfig & { map: fengmap.FMMap }) {
+        super(config);
+
+        const box = document.getElementById('map-box');
+        if (!box) {
+            console.warn('地图错误');
+        } else {
+            const { left, top } = box.getBoundingClientRect();
+            Object.assign(this.sprite.style, {
+                position: 'absolute',
+                display: 'none',
+                // transformOrigin: 'left top',
+                left: left + 'px',
+                top: top + 'px',
+                zIndex: 2,
+                pointerEvents: 'none'
+            });
+        }
+    }
+
+    /**
+     * 生成热力图
+     * @param mgr 类型只能是FengMapMgr, PIXIMgr是为了兼容另一种实现
+     */
+    public async render(mgr: PIXIMgr | FengMapMgr) {
+        if (!(mgr instanceof FengMapMgr && this.data.length)) {
+            return;
+        }
+
+        const { min, max } = this.resolve();
+        const originWidth = max[0] - min[0];
+        const originHeight = max[1] - min[1];
+
+        let scale = document.body.offsetWidth * 0.8 / Math.max(originWidth, originHeight);
+        scale = scale === Infinity ? 0 : scale;
+        this.config.radius = 0; // 触发半径的比例计算
+
+        const canvas = this.create(
+            originWidth * scale,
+            originHeight * scale,
+            p => ({ x: (p.x - min[0]) * scale, y: (p.y - min[1]) * scale })
+        );
+        const blob = await new Promise<Blob>(resolve => canvas.toBlob(b => resolve(<Blob>b), 'image/png', 1));
+
+        const img = this.sprite;
+        img.width = canvas.width;
+        img.height = canvas.height;
+        img.src && window.URL.revokeObjectURL(img.src);
+        img.src = window.URL.createObjectURL(blob);
+        img.style.display = 'block';
+        img.style.transformOrigin = `${this.config.radius}px ${this.config.radius}px`;
+
+        this.timer || document.body.appendChild(img);
+        this.listener(mgr.map, min, max);
+    }
+
+    /**
+     * 移除热力图
+     */
+    public remove(mgr: PIXIMgr | FengMapMgr) {
+        this.timer && cancelAnimationFrame(this.timer);
+        this.timer = void 0;
+        try {
+            window.URL.revokeObjectURL(this.sprite.src);
+            document.body.removeChild(this.sprite);
+        } catch (e) {
+            //
+        }
+    }
+
+    public download(c: HTMLCanvasElement, name: string) {
+        const canvas = this.createCanvas();
+        canvas.width = c.width;
+        canvas.height = c.height;
+
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+            ctx.drawImage(c, 0, 0);
+            this.paintImg(ctx);
+            super.download(canvas, name);
+        } else {
+            console.log('download: 创建画布失败');
+        }
+    }
+
+    private paintImg(ctx: CanvasRenderingContext2D) {
+        const arr = this.sprite.style.transform.match(/[\d\-\.]+/g);
+        if (arr) {
+            const [x, y, sx, sy] = arr.map(v => +v);
+            const r = this.config.radius;
+            ctx.setTransform(sx, 0, 0, sy, x + r - sx * r, y + r - sy * r);
+            ctx.drawImage(this.sprite, 0, 0);
+        } else {
+            console.warn('解析transform失败');
+        }
+    }
+
+    private resolve() {
+        const min = [Number.MAX_VALUE, Number.MAX_VALUE];
+        const max = [-Number.MAX_VALUE, -Number.MAX_VALUE];
+
+        this.data.forEach(v => {
+            min[0] = Math.min(min[0], v.x);
+            min[1] = Math.min(min[1], v.y);
+            max[0] = Math.max(max[0], v.x);
+            max[1] = Math.max(max[1], v.y);
+        });
+
+        return { min, max };
+    }
+
+    private listener(map: fengmap.FMMap, min: number[], max: number[]) {
+        this.timer && cancelAnimationFrame(this.timer);
+
+        const minCoord = map.coordMapToScreen(min[0], min[1], 1);
+        const maxCoord = map.coordMapToScreen(max[0], max[1], 1);
+
+        const w = Math.abs(maxCoord.x - minCoord.x);
+        const h = Math.abs(maxCoord.y - minCoord.y);
+
+        const { width, height, style } = this.sprite;
+        const mapScale = map.mapScaleLevel / map.mapScale;
+        const r = this.config.radius;
+        const sx = w ? w / (width - r * 2) : mapScale;
+        const sy = h ? h / (height - r * 2) : mapScale;
+        const tx = minCoord.x - r;
+        const ty = minCoord.y - r;
+        style.transform = `translate(${tx}px,${ty}px) scale(${sx},-${sy})`;
+
+        this.timer = requestAnimationFrame(this.listener.bind(this, map, min, max));
+    }
+}
