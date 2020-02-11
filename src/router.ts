@@ -38,11 +38,11 @@ export function initRouter() {
                     component: () => import(/* webpackChunkName: "chart" */ '@/views/chart/ChartIndex.vue'),
                     children: [
                         {
-                            path: 'heatmap', name: 'heatmap', alias: '',
+                            path: 'heatmap', name: 'heatmap',
                             component: () => import(/* webpackChunkName: "chart" */ '@/views/chart/HeatMap.vue'),
                         },
                         {
-                            path: 'charts', name: 'charts',
+                            path: 'charts', name: 'charts', alias: '',
                             component: () => import(/* webpackChunkName: "chart" */ '@/views/chart/Charts.vue'),
                         }
                     ]

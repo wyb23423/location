@@ -13,10 +13,14 @@ import Component from 'vue-class-component';
 import { getConfig } from '@/assets/utils/util';
 import { Ref } from 'vue-property-decorator';
 
+const CHARTS_TARGET = getConfig(
+    'CHARTS_TARGET',
+    'http://127.0.0.1:3000'
+).replace(/\/+$/, '');
+
 @Component
 export default class Charts extends Vue {
-    public target =
-        getConfig('CHARTS_TARGET', 'http://127.0.0.1:3000') + '/fields';
+    public target = CHARTS_TARGET + '/fields';
 
     @Ref('charts') private readonly iFrame!: HTMLIFrameElement;
 
@@ -25,9 +29,10 @@ export default class Charts extends Vue {
     }
 
     public postMsg() {
-        const content = this.iFrame.contentWindow;
-        content &&
-            content.postMessage(sessionStorage.getItem('login'), this.target);
+        this.iFrame.contentWindow?.postMessage(
+            sessionStorage.getItem('login'),
+            this.target
+        );
     }
 
     private fitLocalhost() {
