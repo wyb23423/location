@@ -26,7 +26,10 @@ export const ALL_PERMISSION = {
     base: { put: true, delete: true, post: true, get: true }, // 设备(基站)
     tag: { put: true, delete: true, post: true, get: true }, // 人员(标签)
     map: { put: true, delete: true, post: true, get: true }, // 地图(监控)
-    alarm: { put: true, delete: true, post: true, get: true } // 报警信息
+    alarm: { put: true, delete: true, post: true, get: true }, // 报警信息
+    group: { put: true, delete: true, post: true, get: true }, // 分组
+    bundle: { put: true, delete: true, post: true, get: true }, // 标签跟随/远离
+    tagZone: { put: true, delete: true, post: true, get: true } // 标签-区域
 };
 
 export * from './config';

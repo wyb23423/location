@@ -56,10 +56,16 @@ export default class GroupList extends mixins(TableMixin) {
     ];
 
     public get op() {
-        return [
-            { type: 'danger', name: 'del', desc: '删除' },
-            { type: 'primary', name: 'setting', desc: '编辑' }
-        ];
+        const btn = [];
+        if (this.permission?.delete) {
+            btn.push({ type: 'danger', name: 'del', desc: '删除' });
+        }
+
+        if (this.permission?.post) {
+            btn.push({ type: 'primary', name: 'setting', desc: '编辑' });
+        }
+
+        return btn;
     }
 
     @Async()

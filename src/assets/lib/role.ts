@@ -19,9 +19,8 @@ export class RouteList {
         }
         this.roles.tag = this.roles.tag || this.roles.people;
 
-        ['admin', 'system', 'base', 'tag', 'map', 'alarm'].forEach(v => {
-            Reflect.get(this, v).call(this);
-        });
+        const nav = ['admin', 'system', 'base', 'tag', 'map', 'alarm'];
+        nav.forEach(v => Reflect.get(this, v).call(this));
     }
 
     // 生成管理员相关路由
@@ -63,15 +62,11 @@ export class RouteList {
 
     // 生成系统设置相关路由
     public system() {
-        const routes: RouteConfig[] = ['zone', 'camera', 'protocol', 'group'].map(k => {
+        const nav = ['zone', 'camera', 'protocol', 'group', 'bundle'];
+        const routes: RouteConfig[] = nav.map(k => {
             const func = Reflect.get(this, k);
             return func.call(this);
         }).flat();
-
-        routes.push({
-            path: 'bind', name: 'bind',
-            component: () => import(/* webpackChunkName: "system" */ '@/views/system/Bind.vue')
-        });
 
         if (routes.length) {
             routes[0].alias = '';
@@ -166,18 +161,53 @@ export class RouteList {
     }
     // 分组
     public group() {
-        return [
-            {
+        const routes: RouteConfig[] = [];
+
+        if (this.hasPermission('group', 'get')) {
+            routes.push({
                 path: 'group/list',
                 name: 'group-list',
-                component: () => import(/* webpackChunkName: "system" */ '@/views/system/group/GroupList.vue')
-            },
-            {
+                component: () => import(/* webpackChunkName: "system" */ '@/views/system/group/GroupList.vue'),
+                props: {
+                    permission: {
+                        delete: this.hasPermission('group', 'delete'),
+                        post: this.hasPermission('group', 'post')
+                    }
+                }
+            });
+        }
+
+        if (this.hasPermission('group', 'put')) {
+            routes.push({
                 path: 'group/add',
                 name: 'group-add',
                 component: () => import(/* webpackChunkName: "system" */ '@/views/system/group/GroupAdd.vue')
+            });
+        }
+
+        return routes;
+    }
+
+    public bundle() {
+        const getPermission = this.hasPermission('bundle', 'get');
+        const putPermission = this.hasPermission('bundle', 'put');
+
+        if (!(getPermission && putPermission)) {
+            return [];
+        }
+
+        return [{
+            path: 'bind', name: 'bind',
+            component: () => import(/* webpackChunkName: "system" */ '@/views/system/Bind.vue'),
+            props: {
+                permission: {
+                    delete: this.hasPermission('bundle', 'delete'),
+                    post: this.hasPermission('bundle', 'post'),
+                    get: getPermission,
+                    put: putPermission
+                }
             }
-        ];
+        }];
     }
 
     // 设备
@@ -224,12 +254,7 @@ export class RouteList {
 
     // 标签管理
     public tag() {
-        const routes: RouteConfig[] = [
-            {
-                path: 'tagzone', name: 'tagzone',
-                component: () => import(/* webpackChunkName: "tag" */ '@/views/tag/TagZone.vue')
-            }
-        ];
+        const routes: RouteConfig[] = [...this.tagZone()];
 
         let redirect = '';
         if (this.hasPermission('tag', 'get')) {
@@ -269,6 +294,28 @@ export class RouteList {
                 children: routes
             });
         }
+    }
+
+    public tagZone() {
+        const getPermission = this.hasPermission('tagZone', 'get');
+        const putPermission = this.hasPermission('tagZone', 'put');
+
+        if (!(getPermission && putPermission)) {
+            return [];
+        }
+
+        return [{
+            path: 'tagzone', name: 'tagzone',
+            component: () => import(/* webpackChunkName: "tag" */ '@/views/tag/TagZone.vue'),
+            props: {
+                permission: {
+                    delete: this.hasPermission('tagZone', 'delete'),
+                    post: this.hasPermission('tagZone', 'post'),
+                    get: getPermission,
+                    put: putPermission
+                }
+            }
+        }];
     }
 
     // 地图、实时监控

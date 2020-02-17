@@ -23,6 +23,7 @@
                                     effect="dark"
                                     content="更新"
                                     placement="left"
+                                    v-if="permission.post"
                                 >
                                     <el-button
                                         :disabled="index !== i"
@@ -37,6 +38,7 @@
                                     effect="dark"
                                     content="删除"
                                     placement="right"
+                                    v-if="permission.delete"
                                 >
                                     <el-button
                                         :disabled="index !== i"
@@ -157,7 +159,7 @@ import Component from 'vue-class-component';
 import { State } from 'vuex-class/lib/bindings';
 import { Async, none } from '../../assets/utils/util';
 import { ElForm } from 'element-ui/types/form';
-import { Ref } from 'vue-property-decorator';
+import { Ref, Prop } from 'vue-property-decorator';
 import TagSelect from '@/components/form/TagSelect.vue';
 import Empty from '@/components/layout/Empty.vue';
 import { GET_TAG, GET_BIND, BIND_CONTROLLER } from '@/constant/request';
@@ -180,6 +182,8 @@ type IBingdingsData = IBingdings & { bundleStr: string };
 })
 export default class Bind extends Vue {
     @State public readonly rootWidth!: number;
+
+    @Prop() public permission!: Permission;
 
     public bodyStyle = {
         height: '100%',
@@ -309,6 +313,10 @@ export default class Bind extends Vue {
 
     @Async(console.error)
     private async initData() {
+        if (!this.permission?.get) {
+            return (this.bindings = []);
+        }
+
         const {
             pagedData: { datas }
         }: ResponseData<IBingdings> = await this.$http.get(GET_BIND);

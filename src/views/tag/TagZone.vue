@@ -114,10 +114,16 @@ export default class TagZone extends mixins(TableMixin) {
     @Ref('tagSelect') private readonly tagSelect!: TagSelect;
 
     public get op() {
-        return [
-            { type: 'danger', name: 'del', desc: '删除' },
-            { type: 'warning', name: 'update', desc: '设置' }
-        ];
+        const btn = [];
+        if (this.permission?.delete) {
+            btn.push({ type: 'danger', name: 'del', desc: '删除' });
+        }
+
+        if (this.permission?.post) {
+            btn.push({ type: 'primary', name: 'update', desc: '编辑' });
+        }
+
+        return btn;
     }
 
     // 更新/添加
@@ -230,6 +236,10 @@ export default class TagZone extends mixins(TableMixin) {
     }
 
     private async fetchTagZone(page: number, pageSize: number) {
+        if (!this.permission?.get) {
+            return [];
+        }
+
         // TODO 从服务器获取标签-区域关系
         return new Array(pageSize).fill(1).map<ITagZone>((v, i) => ({
             id: (page - 1) * pageSize + i,

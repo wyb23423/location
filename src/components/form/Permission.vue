@@ -15,21 +15,13 @@
 import Vue from 'vue';
 import { Component, Prop } from 'vue-property-decorator';
 import { TreeNode, TreeData, ElTree } from 'element-ui/types/tree';
+import { ALL_PERMISSION } from '@/constant';
 
 @Component
 export default class Permission extends Vue {
     @Prop() public role?: string;
 
-    private readonly oneLevels: string[] = [
-        'admin',
-        'zone',
-        'camera',
-        'protocol',
-        'base',
-        'tag',
-        'map',
-        'alarm'
-    ];
+    private readonly oneLevels: string[] = Object.keys(ALL_PERMISSION);
 
     public get defaultChecked() {
         if (!this.role) {
@@ -75,8 +67,11 @@ export default class Permission extends Vue {
             return resolve([
                 { label: '管理员设置', id: 'admin' },
                 { label: '区域管理', id: 'zone' },
+                { label: '分组管理', id: 'group' },
+                { label: '标签跟随/远离报警', id: 'bundle' },
                 { label: '摄像机管理', id: 'camera' },
                 { label: '通信协议', id: 'protocol' },
+                { label: '电子围栏报警', id: 'tagZone' },
                 { label: '设备管理', id: 'base' },
                 { label: '标签管理', id: 'tag' },
                 { label: '地图管理', id: 'map' },
@@ -88,10 +83,10 @@ export default class Permission extends Vue {
         }
 
         resolve([
-            { label: '增', id: node.key + ':put', isLeaf: true },
-            { label: '删', id: node.key + ':delete', isLeaf: true },
-            { label: '改', id: node.key + ':post', isLeaf: true },
-            { label: '查', id: node.key + ':get', isLeaf: true }
+            { label: '增加', id: node.key + ':put', isLeaf: true },
+            { label: '删除', id: node.key + ':delete', isLeaf: true },
+            { label: '编辑', id: node.key + ':post', isLeaf: true },
+            { label: '查询', id: node.key + ':get', isLeaf: true }
         ]);
     }
 
