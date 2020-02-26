@@ -31,7 +31,7 @@ this.emit('update', this.sprite); // 添加
     {
         "APP_KEY": "83a75157d56ffe85317ed7ba1e8120ff", // fengmap 对应app_id
         "APP_NAME": "hunjingguanchang", // fengmap 对应app_name
-        "SECOND_COUNT": 5, // 实时监控是每秒收到数据的数量
+        "SECOND_COUNT": 5, // 实时监控时每秒收到数据的数量(单个标签)
         "PROXY_TARGET": "http://127.0.0.1/", // 调试服务器地址, 最后的 / 必须
         "CHARTS_TARGET": "http://127.0.0.1:3000", // 表格服务器地址
         // 对定位数据的调整

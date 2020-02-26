@@ -5,8 +5,8 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import echarts from 'echarts';
-import { loopAwait } from '@/assets/utils/util';
-import { GET_ALARM } from '@/constant/request';
+import { loopAwait, Async } from '@/assets/utils/util';
+import { GET_ALARM, GET_ZONE, GET_TAG, GET_ADMIN } from '@/constant/request';
 
 interface CardInfo {
     icon: string;
@@ -50,17 +50,20 @@ export default class Main extends Vue {
             .catch(console.log);
     }
     public mounted() {
-        this.createPie().then(chart => this.chart1 = chart);
-        this.createBar().then(chart => this.chart2 = chart);
+        // this.createPie().then(chart => this.chart1 = chart);
+        // this.createBar().then(chart => this.chart2 = chart);
+
+        const api = [GET_ZONE, GET_ADMIN, GET_TAG, GET_ALARM];
+        api.forEach(async (url, i) => {
+            const { value, err } = await this.$async(this.$http.get(url, { currentPage: 1, pageSize: 1 }));
+            value && !err && (this.cards[i].num = value.pagedData.totalCount);
+
+            err && console.error(err);
+        });
     }
     public beforeDestroy() {
-        if (this.chart1) {
-            this.chart1.dispose();
-        }
-
-        if (this.chart2) {
-            this.chart2.dispose();
-        }
+        this.chart1?.dispose();
+        this.chart2?.dispose();
     }
 
     private eConsole(param: any, chart: echarts.ECharts, option: any) {
@@ -77,12 +80,10 @@ export default class Main extends Vue {
         }
     }
 
-    private getOption(name: string, chart: echarts.ECharts, option: any) {
-        fetch('/data/json/data.json')
-            .then((res: Response) => res.json())
-            .then((res: any) => {
-                this.forOption(name, res.data, option, chart);
-            });
+    @Async()
+    private async getOption(name: string, chart: echarts.ECharts, option: any) {
+        const res = await (await fetch('/data/json/data.json')).json();
+        this.forOption(name, res.data, option, chart);
     }
 
     private forOption(
@@ -271,6 +272,7 @@ export default class Main extends Vue {
         return chart;
     }
 
+    @Async()
     private async createChart(dom: HTMLDivElement): Promise<echarts.ECharts> {
         await loopAwait(() => !!dom.offsetWidth && !!dom.offsetHeight);
 

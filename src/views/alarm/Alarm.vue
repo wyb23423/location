@@ -1,5 +1,5 @@
 <template>
-    <app-page :tabs="tabs" :hasRouter="false">
+    <app-page :tabs="tabs">
         <div style="padding: 5%; height: 100%">
             <el-card class="card" ref="table">
                 <app-table

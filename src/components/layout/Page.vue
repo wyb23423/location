@@ -2,8 +2,7 @@
     <div @click="isMini && (display = false)">
         <div class="main">
             <div style="overflow-y: auto; height: calc(100vh - 60px)">
-                <router-view v-if="hasRouter" />
-                <slot></slot>
+                <slot><router-view /></slot>
             </div>
         </div>
         <app-aside
@@ -40,7 +39,6 @@ import { Prop } from 'vue-property-decorator';
 })
 export default class Page extends Vue {
     @Prop() public readonly tabs!: TabItem[];
-    @Prop({ default: () => true }) public readonly hasRouter!: boolean;
 
     public display: boolean = true;
     public isMini: boolean = false;

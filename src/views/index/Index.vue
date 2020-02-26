@@ -17,7 +17,7 @@
                 </router-link>
             </div>
 
-            <el-collapse v-model="activeNames" :class="$style.collapse">
+            <!-- <el-collapse v-model="activeNames" :class="$style.collapse">
                 <el-collapse-item title="监控信息：图表" name="1">
                     <el-row :class="$style['collapse-item']">
                         <el-col :span="12">
@@ -34,7 +34,7 @@
                         </el-col>
                     </el-row>
                 </el-collapse-item>
-            </el-collapse>
+            </el-collapse> -->
 
             <el-collapse v-model="activeNames" :class="$style.collapse">
                 <el-collapse-item title="区域信息：记录" name="2">

@@ -59,20 +59,20 @@ export class MapEvent {
 
         const onMouseDown = (e: MouseEvent) => {
             this.downHandler(e);
-            root.addEventListener('mousemove', moveHandler);
+            root.addEventListener('mousemove', moveHandler, false);
         };
         root.addEventListener('mousedown', onMouseDown, false);
 
-        const onMouseUp = () => root.removeEventListener('mousemove', moveHandler);
+        const onMouseUp = () => root.removeEventListener('mousemove', moveHandler, false);
         root.addEventListener('mouseup', onMouseUp, false);
 
         const onTouchStart = (e: TouchEvent) => {
             this.downHandler(e);
-            root.addEventListener('touchmove', moveHandler);
+            root.addEventListener('touchmove', moveHandler, false);
         };
         root.addEventListener('touchstart', onTouchStart, false);
 
-        const onTouchEnd = () => root.removeEventListener('touchmove', moveHandler);
+        const onTouchEnd = () => root.removeEventListener('touchmove', moveHandler, false);
         root.addEventListener('touchend', onTouchEnd, false);
 
         this.dispose = () => {
