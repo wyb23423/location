@@ -231,15 +231,12 @@ export class FengMapMgr extends Transform {
     }
 
     // 查找标记为name的marker
-    public find(name?: string | number, isName: boolean = false) {
-        const markers: Array<fengmap.FMMarker<any>> = [];
-        markers.push(
+    public find<T = any>(name?: string | number, isName: boolean = false): Array<fengmap.FMMarker<T>> {
+        return [
             ...this.polygonMgr.find(name, isName),
             ...this.textMgr.find(name, isName),
             ...this.imageMgr.find(name, isName),
-        );
-
-        return markers;
+        ];
     }
 
     private init() {

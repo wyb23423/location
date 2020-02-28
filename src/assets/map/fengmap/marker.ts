@@ -90,6 +90,8 @@ export class ImageMgr extends BaseMarkerMgr<fengmap.FMImageMarker> {
 }
 
 export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
+    private static readonly MAX_SEGMENT_COUNT = 3; // 一条线可包含的最大片段数
+    private static readonly MAX_POINT_COUNT = 3000; // 一个片段可包含的最大点数量
     private lines: Map<string | number, fengmap.FMLineMarker> = new Map();
 
     constructor(private map: fengmap.FMMap) {
@@ -166,7 +168,7 @@ export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
                     lineWidth: 1
                 };
 
-            if (line.segment.length >= 3) {
+            if (line.segment.length >= LineMgr.MAX_SEGMENT_COUNT) {
                 // 片段过多合成一条
                 for (let i = line.segment.length - 1; i >= 0; i--) {
                     const v = line.segment[i];
@@ -187,7 +189,7 @@ export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
                     points.unshift(last.points[last.points.length - 1]);
                 }
 
-                seg.points = points.slice(-3000);
+                seg.points = points.slice(-LineMgr.MAX_POINT_COUNT);
                 line.addSegment(seg);
 
                 try {

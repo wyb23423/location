@@ -73,7 +73,7 @@ export default class LineMgr implements MarkerMgr<PIXI.Graphics> {
                 const start: Vector3 = (<any>line).start || points.shift();
                 start && line.moveTo(start.x, start.y);
 
-                for (const v of points.slice(-10000)) {
+                for (const v of points.slice(-3000)) {
                     line.lineTo(v.x, v.y);
                 }
 

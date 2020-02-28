@@ -148,7 +148,8 @@ export default class CalibrationSetting extends TableMixin {
 
     @Async()
     public async calc() {
-        if (!this.form.bases.length) {
+        const bases = this.form.bases;
+        if (!bases.length) {
             return this.$message.error('未选择基站，无法计算');
         }
 
@@ -173,12 +174,14 @@ export default class CalibrationSetting extends TableMixin {
         }
 
         this.tableData = (<IBaseStation[]>this.tableData).map(base => {
-            const index = compensation.findIndex(v => v.baseId === base.id);
-            if (index > -1) {
-                base.timeCorrectionValue =
-                    compensation[index].compensation + '';
+            if (bases.includes(base.id)) {
+                const index = compensation.findIndex(v => v.baseId === base.id);
+                if (index > -1) {
+                    base.timeCorrectionValue =
+                        compensation[index].compensation + '';
 
-                compensation.splice(index, 1);
+                    compensation.splice(index, 1);
+                }
             }
 
             return base;
