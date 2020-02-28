@@ -97,7 +97,7 @@ import { GET_ZONE } from '../../constant/request';
         }
     }
 })
-export default class Monitor extends mixins(MonitorMixin, EventMixin) {
+export default class Monitor extends MonitorMixin {
     @State public readonly zoneMode!: ZoneMode;
 
     public groupData: Record<string, IBaseStation[]> = {}; // 基站分组

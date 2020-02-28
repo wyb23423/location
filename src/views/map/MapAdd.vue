@@ -42,17 +42,16 @@ export default class MapAdd extends Vue {
     }
 
     @Async()
-    private async fetch(data: MapForm) {
+    private async fetch({ m0, m1, l0, l1, name, filename, map }: MapForm) {
         // ===========================上传文件
         const res = (await this.$http.post(UPLOAD_MAPFILE, {
-            file: data.map,
-            mapName: data.map!.name.split('.')[0] || 'map'
+            file: map,
+            mapName: map?.name.split('.')[0] || 'map'
         })) as ResponseData<any, Record<'mapUrl', string>>;
 
         // ==============================提交数据
-        const { m0, m1, l0, l1, name, url, filename } = data;
         const margin = [m0, m1, l0, l1].map(v => [v.x, v.y]);
-        data.filename || margin.splice(0, 2);
+        filename || margin.splice(0, 2);
 
         return this.$http.post({
             url: ADD_MAP,

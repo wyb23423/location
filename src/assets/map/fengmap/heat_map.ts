@@ -1,7 +1,6 @@
 import { BaseHeatMap } from '../common';
 import { PIXIMgr } from '../pixi';
 import { FengMapMgr } from '.';
-import { download } from '@/assets/utils/download';
 
 export default class HeatMap extends BaseHeatMap {
     private sprite = new Image();

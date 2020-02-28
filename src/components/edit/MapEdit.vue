@@ -154,19 +154,18 @@ export default class MapEdit extends Vue {
 
     @Ref('form') private readonly elFrom!: ElForm;
 
-    public changeUpload(file: ElUploadInternalFileDetail) {
-        const { raw, name: filename } = file;
+    public changeUpload({ raw, name, size }: ElUploadInternalFileDetail) {
         if (
             !(
                 raw.type === 'image/png' ||
                 raw.type === 'image/jpeg' ||
-                filename.endsWith('.fmap')
+                name.endsWith('.fmap')
             )
         ) {
             return this.$message.error('只能上传jpg/png/fmap文件!');
         }
 
-        if (file.size / 1024 / 1024 > 5) {
+        if (size / 1024 / 1024 > 5) {
             return this.$message.error('上传文件大小不能超过 5MB!');
         }
 
@@ -174,8 +173,8 @@ export default class MapEdit extends Vue {
         Object.assign(
             this.form,
             { map: raw },
-            filename.endsWith('.fmap')
-                ? { filename, url: '' }
+            name.endsWith('.fmap')
+                ? { filename: name, url: '' }
                 : { filename: '', url: URL.createObjectURL(raw) }
         );
     }
