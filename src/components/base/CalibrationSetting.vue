@@ -180,7 +180,7 @@ export default class CalibrationSetting extends TableMixin {
                     base.timeCorrectionValue =
                         compensation[index].compensation + '';
 
-                    compensation.splice(index, 1);
+                    // compensation.splice(index, 1);
                 }
             }
 

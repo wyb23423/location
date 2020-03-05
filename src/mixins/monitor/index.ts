@@ -141,6 +141,9 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
 
     // 地图创建完成的回调
     private mapCreated() {
+        // 清除当前在缓冲区的数据
+        this.data.length = 0;
+
         // 清空统计的标签的记录
         this.censusTags.clear();
         this.tagGroup.clear();
