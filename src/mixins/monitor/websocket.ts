@@ -72,7 +72,10 @@ export class WebSocketInit extends Vue {
         const ws = this.ws = new WebSocket(wsUrl.replace('#{ip}', ip));
         ws.addEventListener('open', () => this.count = 0);
         ws.addEventListener('error', () => this.count++ <= 5 && this.initWebSocket(true));
-        ws.addEventListener('message', (event: MessageEvent) => this.data.push(event.data));
+        ws.addEventListener('message', (event: MessageEvent) => {
+            this.data.push(event.data);
+            this.data = this.data.slice(-3e4);
+        });
     }
 
     // 判断收到的数据是否是需处理的有效数据
