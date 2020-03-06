@@ -12,7 +12,7 @@
                     @del="del"
                     @updateData="getData"
                     @toExcel="toExcel"
-                    @selection-change="selectAlarms"
+                    @selection-change="selected = $event"
                 >
                     <el-table-column
                         slot="column"
@@ -65,7 +65,7 @@ export default class Alarm extends mixins(TableMixin) {
         },
         { prop: 'content', label: '报警信息', width: 240 }
     ];
-    public selected: number[] = [];
+    public selected: IAlarm[] = [];
 
     @Async()
     public async del(row: IAlarm) {
@@ -76,7 +76,7 @@ export default class Alarm extends mixins(TableMixin) {
 
     @Async()
     public async delMul() {
-        const ids = this.selected;
+        const ids = this.selected.map(v => v.id);
         if (!ids.length) {
             return this.$message.warning('未选择报警信息!');
         }
@@ -93,10 +93,6 @@ export default class Alarm extends mixins(TableMixin) {
         const page =
             ids.length >= this.tableData.length ? this.page - 1 : this.page;
         this.refresh(true, page).$message.success('删除成功');
-    }
-
-    public selectAlarms(rows: IAlarm[]) {
-        this.selected = rows.map(v => v.id);
     }
 
     protected async fetch(page: number, pageSize: number) {
