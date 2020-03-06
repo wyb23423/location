@@ -12,13 +12,19 @@
                     @del="del"
                     @updateData="getData"
                     @toExcel="toExcel"
+                    @selection-change="selectAlarms"
                 >
+                    <el-table-column
+                        slot="column"
+                        type="selection"
+                        width="40"
+                    ></el-table-column>
                     <el-button
                         size="mini"
                         :disabled="!tableData.length"
-                        @click="delPage"
+                        @click="delMul"
                     >
-                        删除本页
+                        删除选中
                     </el-button>
                 </app-table>
             </el-card>
@@ -59,6 +65,7 @@ export default class Alarm extends mixins(TableMixin) {
         },
         { prop: 'content', label: '报警信息', width: 240 }
     ];
+    public selected: number[] = [];
 
     @Async()
     public async del(row: IAlarm) {
@@ -68,20 +75,28 @@ export default class Alarm extends mixins(TableMixin) {
     }
 
     @Async()
-    public async delPage() {
-        await this.$confirm('删除本页所有报警信息?');
+    public async delMul() {
+        const ids = this.selected;
+        if (!ids.length) {
+            this.$message.warning('未选择报警信息!');
+        }
 
-        const ids = this.tableData.map((v: IAlarm) => v.id);
-        await this.$http.post({
+        await this.$confirm('删除选中的所有报警信息?');
+
+        await this.$http.request({
             url: RM_ALARM_BATCH,
+            method: 'DELETE',
             data: { ids },
             headers: { 'Content-Type': 'application/json' }
         });
 
-        const maxPage = Math.ceil(this.totalCount / this.pageSize) - 1;
-        this.refresh(true, Math.min(this.page, maxPage)).$message.success(
-            '删除成功'
-        );
+        const page =
+            ids.length >= this.tableData.length ? this.page - 1 : this.page;
+        this.refresh(true, page).$message.success('删除成功');
+    }
+
+    public selectAlarms(rows: IAlarm[]) {
+        this.selected = rows.map(v => v.id);
     }
 
     protected async fetch(page: number, pageSize: number) {
