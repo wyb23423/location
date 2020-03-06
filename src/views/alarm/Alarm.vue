@@ -78,7 +78,7 @@ export default class Alarm extends mixins(TableMixin) {
     public async delMul() {
         const ids = this.selected;
         if (!ids.length) {
-            this.$message.warning('未选择报警信息!');
+            return this.$message.warning('未选择报警信息!');
         }
 
         await this.$confirm('删除选中的所有报警信息?');
