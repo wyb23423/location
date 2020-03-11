@@ -78,11 +78,17 @@ import TagSelect from '@/components/form/TagSelect.vue';
 import TableMixin, { ColCfgItem } from '@/mixins/table';
 import { Ref } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
-import { GET_ZONE } from '@/constant/request';
+import {
+    GET_ZONE,
+    GET_TAG_ZONE,
+    ADD_TAG_ZONE,
+    UPDATE_TAG_ZONE,
+    RM_TAG_ZONE
+} from '@/constant/request';
 
 enum TAG_ZONE_TYPE {
-    IN = 1,
-    OUT = 2
+    IN = 0,
+    OUT = 1
 }
 
 @Component({
@@ -93,6 +99,7 @@ enum TAG_ZONE_TYPE {
 export default class TagZone extends mixins(TableMixin) {
     @State public zoneMode!: ZoneMode;
 
+    public tableData!: ITagZone[];
     public form = <ITagZone>{};
     public tagZoneType = TAG_ZONE_TYPE;
     public zones: IZone[] = [];
@@ -100,7 +107,7 @@ export default class TagZone extends mixins(TableMixin) {
 
     public colCfg: ColCfgItem[] = [
         { prop: 'id', label: '编号', width: 100 },
-        { prop: 'tagName', label: '标签', width: 120 },
+        { prop: 'tagId', label: '标签', width: 120 },
         { prop: 'zoneName', label: '区域', width: 120 },
         {
             prop: 'type',
@@ -109,6 +116,8 @@ export default class TagZone extends mixins(TableMixin) {
             formatter: t => this.tagZoneType[t]
         }
     ];
+
+    private zoneNames = new Map<number, string>();
 
     @Ref('form') private readonly elForm!: ElForm;
     @Ref('tagSelect') private readonly tagSelect!: TagSelect;
@@ -142,17 +151,18 @@ export default class TagZone extends mixins(TableMixin) {
             ...(data || {})
         });
 
-        this.$nextTick(
-            () => this.tagSelect && this.tagSelect.setValue(form.tagId)
-        );
+        this.$nextTick(() => this.tagSelect?.setValue(form.tagId));
     }
 
     // 删除
     @Async()
-    public async remove(data: ITagZone) {
-        await this.$confirm(`删除id为${data.id}电子围栏报警设置`);
-        // TODO 发送删除请求
-        // await this.$http.post(RM_TAG_ZONE, { tagId: this.form.tagId });
+    public async remove({ id }: ITagZone) {
+        await this.$confirm(`删除id为${id}电子围栏报警设置`);
+        await this.$http.request({
+            url: RM_TAG_ZONE,
+            data: { id },
+            method: 'DELETE'
+        });
         this.refresh().$message.success('删除成功');
     }
 
@@ -163,31 +173,37 @@ export default class TagZone extends mixins(TableMixin) {
 
     @Async(() => ({ count: 0, data: [] }))
     protected async fetch(page: number, pageSize: number) {
-        const promises: [Promise<IZone[]>, Promise<ITagZone[]>] = [
+        const promises: [
+            Promise<{ count: number; data: ITagZone[] }>,
+            Promise<IZone[]>
+        ] = [
+            Promise.resolve().then(
+                this.fetchTagZone.bind(this, page, pageSize)
+            ),
             Promise.resolve().then(() => {
                 if (this.zones.length) {
                     return this.zones;
                 }
 
                 return this.fetchZone();
-            }),
-            Promise.resolve().then(this.fetchTagZone.bind(this, page, pageSize))
+            })
         ];
 
-        const [zones, tagZones] = await Promise.all(promises);
+        const [tagZones] = await Promise.all(promises);
+        tagZones.data.forEach(
+            v => (v.zoneName = this.zoneNames.get(v.zoneId) || '未知区域')
+        );
 
-        // TODO==================================================
-        tagZones.forEach(v => {
-            const index = Math.floor(v.zoneId / zones.length);
-            v.zoneName = zones[v.zoneId % zones.length].name + index;
-        });
-
-        return { count: tagZones.length * 10, data: tagZones };
+        return tagZones;
     }
 
     @Async()
     private async doAdd() {
-        console.log({ ...this.form });
+        await this.$http.request({
+            data: this.form,
+            method: 'PUT',
+            url: ADD_TAG_ZONE
+        });
 
         if (this.tableData.length < this.pageSize) {
             this.refresh(false);
@@ -200,17 +216,15 @@ export default class TagZone extends mixins(TableMixin) {
     @Async()
     private async doUpdate() {
         await this.$confirm('确认提交修改?');
-        console.log(this.form);
+        await this.$http.post(UPDATE_TAG_ZONE, this.form, {
+            'Content-Type': 'application/json'
+        });
 
-        const index = this.tableData.findIndex(
-            (v: ITagZone) => v.id === this.form.id
-        );
+        const { zoneId, id, zoneName } = this.form;
+        const index = this.tableData.findIndex(v => v.id === id);
         if (index > -1) {
-            const zone = this.zones.find(v => v.id === this.form.zoneId);
-            if (zone) {
-                this.form.zoneName = zone.name;
-                this.$set(this.tableData, index, this.form);
-            }
+            this.form.zoneName = this.zoneNames.get(zoneId) || '未知区域';
+            this.$set(this.tableData, index, this.form);
         }
 
         this.$message.success('更新成功');
@@ -230,24 +244,27 @@ export default class TagZone extends mixins(TableMixin) {
         return zones;
     }
 
-    private isFence({ mode }: IZone) {
+    private isFence({ mode, id, name }: IZone) {
+        this.zoneNames.set(id, name);
+
         const { group, switch: switchMode } = this.zoneMode;
         return mode !== group && mode !== switchMode;
     }
 
     private async fetchTagZone(page: number, pageSize: number) {
         if (!this.permission?.get) {
-            return [];
+            return { count: 0, data: [] };
         }
 
-        // TODO 从服务器获取标签-区域关系
-        return new Array(pageSize).fill(1).map<ITagZone>((v, i) => ({
-            id: (page - 1) * pageSize + i,
-            zoneId: i,
-            tagId: '0001' + (i + 1).toString(16).padStart(4, '0'),
-            type: Math.random() > 0.5 ? TAG_ZONE_TYPE.IN : TAG_ZONE_TYPE.OUT,
-            tagName: '标签' + i
-        }));
+        const { pagedData }: ResponseData<ITagZone> = await this.$http.get(
+            GET_TAG_ZONE,
+            {
+                currentPage: page,
+                pageSize
+            }
+        );
+
+        return { count: pagedData.totalCount, data: pagedData.datas };
     }
 }
 </script>

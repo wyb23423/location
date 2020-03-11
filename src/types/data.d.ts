@@ -104,7 +104,7 @@ declare interface ITagZone {
     id: number;
     tagId: string;
     zoneId: number;
-    type: 1 | 2;
+    type: 0 | 1;
     tagName: string;
     zoneName?: string;
 }
