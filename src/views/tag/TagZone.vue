@@ -239,9 +239,7 @@ export default class TagZone extends mixins(TableMixin) {
             currentPage: 1
         });
 
-        const zones = (this.zones = datas.filter(this.isFence, this));
-
-        return zones;
+        return (this.zones = datas.filter(this.isFence, this));
     }
 
     private isFence({ mode, id, name }: IZone) {
