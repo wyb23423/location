@@ -11,5 +11,6 @@
     "websoket": {
         "position": "ws://#{ip}:8082/realtime/position",
         "sundries": "ws://#{ip}:8081/sundries"
-    }
+    },
+    "fps": false
 }

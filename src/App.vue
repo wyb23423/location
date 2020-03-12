@@ -1,6 +1,7 @@
 <template>
     <div ref="root">
         <router-view />
+        <FPS v-if="showFps" />
     </div>
 </template>
 
@@ -8,9 +9,17 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { RESIZE } from './constant';
+import FPS from '@/components/notice/FPS.vue';
+import { getConfig } from './assets/utils/util';
 
-@Component
+@Component({
+    components: {
+        FPS
+    }
+})
 export default class App extends Vue {
+    public showFps = getConfig('fps', false);
+
     public created() {
         let timer: number;
         const fn = () => {
