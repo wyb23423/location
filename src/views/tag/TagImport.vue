@@ -50,7 +50,6 @@ import { HttpRequestOptions } from 'element-ui/types/upload';
 @Component
 export default class TagImport extends Loading {
     public readonly tplUrl = DOWBLOAD_TPL;
-    public readonly target = IMOIRT_TAG;
     public tips = [
         {
             title: '标签号',
