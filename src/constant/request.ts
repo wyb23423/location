@@ -21,6 +21,8 @@ export const GET_HISTORY = '/api/tag/queryTagHistory'; // 获取标签历史轨�
 export const GET_INSTANT = '/api/tag/queryInstantInMap'; // 获取一个时刻所有标签的历史位置
 export const UPLOAD_TAGPHOTO = '/api/tag/upload/tagPhoto'; // 上传标签图
 export const UPDATE_TAG_ID = '/api/tag/updateTagId'; // 更换标签
+export const DOWBLOAD_TPL = '/api/tag/batch/template'; // 下载用于批量导入的模板文件
+export const IMOIRT_TAG = '/api/tag/batch/read'; // 上传文件批量导入标签
 
 export const ADD_TAG_ZONE = '/api/tagZone/addTagZone'; // 添加标签与区域关系
 export const RM_TAG_ZONE = '/api/tagZone/deleteTagZone'; // 删除标签与区域关系

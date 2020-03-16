@@ -3,29 +3,31 @@
         <h3 style="color: #009688;">批量导入标签</h3>
         <el-upload
             drag
-            :action="target"
-            accept=".txt, .xls, .xlsx"
+            accept=".xls, .xlsx"
+            action=""
             :class="$style.upload"
             :disabled="isLoading"
+            :http-request="request"
         >
             <i class="el-icon-upload"></i>
             <div class="el-upload__text">
                 将文件拖到此处，或<em>点击上传</em>
             </div>
             <div class="el-upload__tip">
-                只能上传<strong> xls/xlsx/txt </strong>文件
+                只能上传<strong> xls/xlsx </strong>文件
             </div>
         </el-upload>
         <el-card class="bind-item-card">
             <summary slot="header">
                 <span>属性描述</span>
-                <el-button
+                <el-link
                     style="float: right; padding: 3px 0"
-                    type="text"
-                    @click="downloadTemplate"
+                    type="primary"
+                    target="_blank"
+                    :href="tplUrl"
                 >
                     模板文件
-                </el-button>
+                </el-link>
             </summary>
             <ul :class="$style['info-box']">
                 <li v-for="(v, i) of tips" :key="i">
@@ -42,10 +44,13 @@
 import Component from 'vue-class-component';
 import { table2Excel } from '../../assets/utils/download';
 import { Loading } from '../../mixins/loading';
+import { DOWBLOAD_TPL, IMOIRT_TAG } from '@/constant/request';
+import { HttpRequestOptions } from 'element-ui/types/upload';
 
 @Component
 export default class TagImport extends Loading {
-    public readonly target = '/tag/import';
+    public readonly tplUrl = DOWBLOAD_TPL;
+    public readonly target = IMOIRT_TAG;
     public tips = [
         {
             title: '标签号',
@@ -54,7 +59,8 @@ export default class TagImport extends Loading {
         { title: '标签名', description: '标签的识别名。可以是任意字符串' },
         {
             title: '标签图标',
-            description: '标签在地图上显示的图标。值为0(人员)或1(物品)'
+            description:
+                '标签在地图上显示的图标。值为P.png(人员)或item.png(物品)'
         },
         { title: '标签高度', description: '单位: cm' },
         {
@@ -67,39 +73,48 @@ export default class TagImport extends Loading {
         }
     ];
 
-    public downloadTemplate() {
-        const body = [
-            ['id', 'name', 'icon', 'height', 'content', 'type'],
-            ['从这行开始填写数据', ...new Array(5).fill(' ')],
-            [
-                '00000003',
-                'ときさき くるみ',
-                0,
-                140,
-                'Nightmare; B85 / W59 / H87; 157',
-                1
-            ]
-        ];
-        const bodyArr = body.map(tr => {
-            const trArr = tr.map(
-                (td, i) =>
-                    `<td ${
-                        i ? '' : `style="mso-number-format:'\@'"`
-                    }>${td}</td>`
-            );
+    public async request({ file }: HttpRequestOptions) {
+        this.isLoading = true;
+        const res = await this.$http
+            .post(IMOIRT_TAG, { file })
+            .finally(() => (this.isLoading = false));
 
-            return `<tr style="text-align: center">${trArr.join('')}</tr>`;
-        });
-
-        table2Excel(`
-            <thead style="font-weight: 700;>
-                <tr style="text-align: center">
-                    ${this.tips.map(v => `<td>${v.title}</td>`).join('')}
-                </tr>
-            </thead>
-            <tbody>${bodyArr.join('')}</tbody>
-        `);
+        this.$message.success('导入成功');
     }
+
+    // public downloadTemplate() {
+    //     const body = [
+    //         ['id', 'name', 'icon', 'height', 'content', 'type'],
+    //         ['从这行开始填写数据', ...new Array(5).fill(' ')],
+    //         [
+    //             '00000003',
+    //             'ときさき くるみ',
+    //             'P.png',
+    //             140,
+    //             'Nightmare; B85 / W59 / H87; 157',
+    //             1
+    //         ]
+    //     ];
+    //     const bodyArr = body.map(tr => {
+    //         const trArr = tr.map(
+    //             (td, i) =>
+    //                 `<td ${
+    //                     i ? '' : `style="mso-number-format:'\@'"`
+    //                 }>${td}</td>`
+    //         );
+
+    //         return `<tr style="text-align: center">${trArr.join('')}</tr>`;
+    //     });
+
+    //     table2Excel(`
+    //         <thead style="font-weight: 700;>
+    //             <tr style="text-align: center">
+    //                 ${this.tips.map(v => `<td>${v.title}</td>`).join('')}
+    //             </tr>
+    //         </thead>
+    //         <tbody>${bodyArr.join('')}</tbody>
+    //     `);
+    // }
 }
 </script>
 
