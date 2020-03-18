@@ -1,0 +1,81 @@
+/**index.wxss**/
+.main {
+    margin-bottom: 140rpx;
+}
+
+.title {
+    font-size: 28rpx;
+    padding: 40rpx 30rpx 20rpx;
+    color: rgb(175, 170, 170);
+}
+
+.can-use {
+    margin-top: 80rpx;
+    border-top: 2rpx solid #ccc;
+}
+
+.bluetooth-item {
+    padding: 20rpx 30rpx;
+    margin: 0 !important;
+    width: 100% !important;
+    text-align: left;
+    border-radius: 0;
+    font-weight: normal;
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.bluetooth-info {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.button-hover {
+    background-color: rgb(222, 222, 222, 0.5) !important;
+}
+
+.bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    width: 100%;
+    height: 150rpx;
+    border-top: 2rpx solid #ccc;
+    display: flex;
+    flex-direction: column;
+    place-content: center center;
+    background: #fff;
+}
+
+.bottom text {
+    text-align: center;
+}
+
+.el-icon-ali-lanya {
+    color: #66ccff;
+    margin-right: 30rpx;
+    font-size: 38rpx;
+    vertical-align: middle;
+}
+
+.turn {
+    font-size: 46rpx;
+    margin-bottom: 10rpx;
+    transform: rotate(0) translateZ(0);
+    animation-timing-function: linear;
+    animation-duration: 1.5s;
+    animation-name: initial-ture;
+    animation-iteration-count: infinite;
+}
+
+@keyframes initial-ture {
+    0% {
+        transform: rotate(0) translateZ(0);
+    }
+    50% {
+        transform: rotate(180deg) translateZ(0);
+    }
+    100% {
+        transform: rotate(360deg) translateZ(0);
+    }
+}

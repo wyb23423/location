@@ -1,0 +1,48 @@
+/**app.wxss**/
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 200rpx 0;
+  box-sizing: border-box;
+} 
+
+.bg {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+}
+
+@font-face {
+    font-family: 'iconfont';
+    src: url(data:application/font-woff2;charset=utf-8;base64,d09GMgABAAAAAAQ4AA0AAAAACOAAAAPiAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP0ZGVE0cGh4GVgCCUhEICoUchDgLDgABNgIkAxgEIAWFCAdMG4cHUZQvSoHsIyE3sXqJJZYIZbmwtKKVj2Y8/LfG776Z2f0qiElIZp44RLJ4o3NIjfor2kyy+M5/nfZ/4mlKe5IUCl1Bx650tFpPsvRpX66r/7mc3jX8XuBj2YFlGNC//Ztb5F4+FoVxAnE01rYp2kst0ZAbcGciTnnYCwFPH89qBXj18HcWd2uITgwDkpBVQkFClIgHKtLNNIL7wOfjq6VBIakybuC2M5lckPLBh+P43qbXIYbQjQBk2D3eR2wKCmxPgsWAVq0SH3zo+HD8f8PMHpttf9luCYJF1ARbIiH5eQLwwmgaCdSgE914SkwBQAFAVowlu9JoZqZAQ5orHm9qBjXY0ZEWWECnY8K+FUv6kkUB8FlchvBeEIVhE0PCarRfGbpvTOwL/egzIwmkQ0YwoqhMMr4IIEqz3iUDg4kVCPuWK0nA/AjCs+FAuFEeAczzdkNP3AIsEUFrmDDB0mrLozCM3qiKwVxZt2Isb9kApfH4aq8lHV1cO3bCmglQtA4m+sAzDg/p9At9QcvHt1YtT/X6xAEY0/VpcRZJXOq9iL/S+tU1k+zwwY7iSWJjlc9IyIS6NBfEku+jZTn8nAL4G71P9pmtSnWXu4nr0pW1Ga5i8olgjOhgT8BEv4MDiQSUsxvZYwG3CP+bcpNwCwSGg/AWDuC6JvTINnV/n/ra4jX1O/IM+U7dfmP5nWRCNNsW2xXfXObxMYLPdDll23ybsr/HNLB4Bprk64Q/fwgcXkcZULK/8/qCtta2/lbyyFzzjzfwPovVYv3LqnWgf3CqleRc0tIg1Jn9eT233GLVOhZbVFhU6jJXkDT66RR7VYQmRFYiaXZVGQnllfWp/XbFqG1x36Z+e9OvKK0ofvKZfsJjIBCM7FFY1RsnfKN0FJPEZpTmbv6ZrwFaJRAM7KxCgPwT//cAdQHEbqDQWoq7hWUganuRQUK7djQA+r0VgCEBIAitdoEgaXEZBFmr6wIUrR4JUOnwRIBaq9cCtJsXaSDoMBDLsihtmAvA2tArTZt0O6zNejWRRT2rrQw7o6312tW22+Pn8A4zQw6xkhoPS6NqzOWCrY0uwqEgx6/RCKH99oKdRdi/3JcHqTwgfDoAO/AINJFiUQP/qCs1eekUfQ8eNQ1RuotQQUKA3W31oUEhWcm1wLDZC/bzGo1mAmEaNeJzwaemIOMiq4h2PFJSCi6U4e+I8XA0CgIeRlI1zYKwxkb+fph9BcxuSsX/JScBOFd+fUpxggXjl5wMwqnTDQ4rbn5mdr73goVE3W7NITVCihQ5SuuVc02sVpE81Kjxqohjowr3yZVoTECU6oE2FgAA) format('woff2'),
+        url(data:application/font-woff;charset=utf-8;base64,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) format('woff'),
+        url('iconfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class^="el-icon-ali-"], [class*="el-icon-ali-"]
+{
+    font-family:"iconfont" !important;
+    font-size: 16px;
+    font-style:normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.el-icon-ali-shuaxin1:before {
+    content: "\e600";
+}
+
+.el-icon-ali-lanya:before {
+    content: "\e661";
+}
+
+.el-icon-ali-tuichuquanping:before {
+    content: "\e60b";
+}
+  
