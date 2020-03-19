@@ -1,6 +1,6 @@
 /**index.wxss**/
 .main {
-    margin-bottom: 140rpx;
+    margin-bottom: 160rpx;
 }
 
 .title {

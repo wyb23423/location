@@ -9,6 +9,8 @@ import ERROR_INFO from '../../constant/error';
 type BluetoothDevices = WechatMiniprogram.CallbackResultBlueToothDevice;
 
 Page({
+    canUse: false,
+    map: new Map<string, number>(),
     data: {
         bluetooth: [] as BluetoothDevices[],
         isSearch: false,
@@ -16,26 +18,22 @@ Page({
     onLoad() {
         wx.authorize({
             scope: 'scope.userLocation',
-            success: () => {
-                this.search();
-            },
+            success: this.search.bind(this),
         });
         this._applyEvents();
     },
     async search() {
+        if (!this.canUse) {
+            await this._init();
+        }
+
         const isSearch = this.data.isSearch;
         if (isSearch) {
             Bluetooth.stopBluetoothDevicesDiscovery();
-            await Bluetooth.closeBluetoothAdapter();
         } else {
-            try {
-                await this._init();
-            } catch (e) {
-                return;
-            }
-
             this.data.bluetooth.length = 0;
-            Bluetooth.startBluetoothDevicesDiscovery({});
+            this.map.clear();
+            Bluetooth.startBluetoothDevicesDiscovery({ allowDuplicatesKey: true });
         }
 
         this.data.isSearch = !isSearch;
@@ -57,7 +55,7 @@ Page({
             });
         });
 
-        return Bluetooth.openBluetoothAdapter().catch((res: WechatMiniprogram.BluetoothError) => {
+        await Bluetooth.openBluetoothAdapter().catch((res: WechatMiniprogram.BluetoothError) => {
             wx.showModal({
                 title: '提示',
                 content: ERROR_INFO.get(res.errCode) || res.errMsg,
@@ -66,16 +64,25 @@ Page({
 
             return Promise.reject(res.errMsg);
         });
+
+        this.canUse = true;
     },
     _applyEvents() {
         wx.onBluetoothDeviceFound(async ({ devices }) => {
-            const bluetooth = this.data.bluetooth;
+            const data = {} as { [key: string]: BluetoothDevices };
             devices.forEach(v => {
-                const index = bluetooth.findIndex(item => item.deviceId === v.deviceId);
-                bluetooth[index > -1 ? index : bluetooth.length] = v;
+                const index = this.map.get(v.deviceId);
+                let key = `bluetooth[${this.map.size}]`;
+                if (index != null) {
+                    key = `bluetooth[${index}]`;
+                } else {
+                    this.map.set(v.deviceId, this.map.size);
+                }
+
+                data[key] = v;
             });
 
-            this.setData({ bluetooth });
+            this.setData(data);
         });
     },
 });
