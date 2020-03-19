@@ -10,17 +10,15 @@ import ERROR_INFO from '../constant/error';
 type LinkData = {
     bluetooth: BluetoothDevices[]; // 可用设备
     linked: BluetoothDevices[]; // 已配对设备
+    isSearch: boolean;
 };
 
-export class Link {
+export default class Link {
     public data!: LinkData;
+    public setData!: (data: WechatMiniprogram.IAnyObject, callback?: () => void) => void;
 
     private handler?: WechatMiniprogram.OnBLEConnectionStateChangeCallback;
     private map!: IndexMap;
-
-    public setData(data: WechatMiniprogram.IAnyObject, callback?: () => void): void {
-        console.log(data, callback);
-    }
 
     public async linkByBluetooth(e: BaseEvent<{ index: string }>): Promise<void> {
         const index = +e.currentTarget.dataset.index;
@@ -70,13 +68,13 @@ export class Link {
         this.handler = void 0;
     }
 
-    private async _link(index: number, k: keyof LinkData): Promise<BluetoothDevices> {
+    private async _link(index: number, k: 'bluetooth' | 'linked'): Promise<BluetoothDevices> {
         const device = this.data[k][index];
 
         if (device.link === LINK_STATUS.UNCONNECTED) {
             const key = `${k}[${index}].link`;
             this.setData({ [key]: LINK_STATUS.ON_CONNECTION });
-            this.search();
+            this.data.isSearch && this.search();
 
             try {
                 await Bluetooth.createBLEConnection({
@@ -130,6 +128,3 @@ export class Link {
         wx.onBLEConnectionStateChange(this.handler);
     }
 }
-
-const linkMethods = new Link();
-export default linkMethods;

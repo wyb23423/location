@@ -3,13 +3,13 @@
 import * as Bluetooth from '../../utils/bluetooth-promise';
 import ERROR_INFO from '../../constant/error';
 import { LINK_STATUS, BluetoothDevices, IndexMap } from '../../constant/const';
-import linkMethods from '../../mixins/link';
+import Link from '../../mixins/link';
 
 // index.ts
 // 获取应用实例
 
 Page({
-    ...linkMethods,
+    ...Link.prototype,
     canUse: false,
     map: new Map() as IndexMap, // 记录蓝牙设备在数组中的位置
     data: {
