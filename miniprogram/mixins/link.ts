@@ -43,9 +43,22 @@ export class Link {
 
     public async linkByLinked(e: BaseEvent<{ index: string }>): Promise<void> {
         const index = +e.currentTarget.dataset.index;
-        await this._link(index, 'linked');
+        const device = this.data.linked[index];
+        if (device.link === LINK_STATUS.ON_CONNECTION) {
+            return;
+        }
 
-        this.setData({ [`linked[${index}].link`]: LINK_STATUS.CONNECTED });
+        const key = `linked[${index}].link`;
+        if (device.link === LINK_STATUS.CONNECTED) {
+            this.removeConnectionStateChangeListener();
+            await Bluetooth.closeBLEConnection({ deviceId: device.deviceId });
+            this.setData({ [key]: LINK_STATUS.UNCONNECTED });
+
+            return;
+        }
+
+        await this._link(index, 'linked');
+        this.setData({ [key]: LINK_STATUS.CONNECTED });
     }
 
     public async search(): Promise<void> {

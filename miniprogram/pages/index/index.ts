@@ -29,6 +29,9 @@ Page({
         });
         this._applyEvents();
     },
+    none() {
+        //
+    },
     async search() {
         if (!this.canUse) {
             await this._init();

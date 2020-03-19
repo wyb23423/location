@@ -3,7 +3,8 @@
     <image class="bg" mode="widthFix" src="/bg.jpg"></image>
     <view class="main">
         <view class="title">已配对的设备</view>
-        <button wx:for="{{linked}}" wx:key="linked" class="bluetooth-item" data-index="{{index}}">
+        <button wx:for="{{linked}}" wx:key="linked" class="bluetooth-item" data-index="{{index}}"
+            bind:tap="linkByLinked">
             <text class="el-icon-ali-lanya"></text>
             <view class="bluetooth-info{{item.link === LINK_STATUS.ON_CONNECTION ? ' gray' : ''}}">
                 <view>{{item.localName || item.name || item.deviceId}}</view>
@@ -11,13 +12,14 @@
                     {{item.link === LINK_STATUS.ON_CONNECTION ? '正在连接...' : '已连接'}}
                 </view>
             </view>
-            <navigator hover-stop-propagation="{{true}}" class="arraw">
+            <navigator hover-stop-propagation="{{true}}" class="arraw" catch:tap="none">
                 <text class="el-icon-ali-changyongicon-1"></text>
             </navigator>
         </button>
 
         <view class="title can-use">可用设备</view>
-        <button wx:for="{{bluetooth}}" wx:key="bluetooth" class="bluetooth-item" data-index="{{index}}" bind:tap="link">
+        <button wx:for="{{bluetooth}}" wx:key="bluetooth" class="bluetooth-item" data-index="{{index}}"
+            bind:tap="linkByBluetooth">
             <text class="el-icon-ali-lanya"></text>
             <view class="bluetooth-info{{item.link !== LINK_STATUS.UNCONNECTED ? ' gray' : ''}}">
                 <view>{{item.localName || item.name || item.deviceId}}</view>
