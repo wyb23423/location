@@ -9,6 +9,10 @@
     color: rgb(175, 170, 170);
 }
 
+.gray {
+    color: rgb(175, 170, 170);
+}
+
 .can-use {
     margin-top: 80rpx;
     border-top: 2rpx solid #ccc;
@@ -22,11 +26,26 @@
     border-radius: 0;
     font-weight: normal;
     background-color: rgba(255, 255, 255, 0);
+    position: relative;
 }
 
 .bluetooth-info {
     display: inline-block;
     vertical-align: middle;
+}
+
+.arraw {
+    position: absolute;
+    right: 30rpx;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40rpx;
+    height: 40rpx;
+    background-color: rgb(200, 200, 200);
+    font-size: 40rpx;
+    font-weight: 700;
+    display: flex;
+    place-content: center center;
 }
 
 .button-hover {
