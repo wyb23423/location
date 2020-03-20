@@ -5,7 +5,7 @@
         <view style="color: #666; font-size: 28rpx">{{name || '未知设备'}}</view>
     </view>
     <button class="bluetooth-item" style="padding: 30rpx">
-        <view>取消配对</view>
+        <view bind:tap="cancelMatch">取消配对</view>
         <view class="arraw">
             <text class="el-icon-ali-changyongicon-1"></text>
         </view>

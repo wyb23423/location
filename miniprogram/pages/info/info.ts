@@ -1,5 +1,6 @@
 /** @format */
 import * as Bluetooth from '../../utils/bluetooth-promise';
+import { STORGET_KEY_SUFFIX } from '../../constant/const';
 
 type CharacteristicType = 'read' | 'write' | 'notify';
 
@@ -21,6 +22,14 @@ Page({
     onHide() {
         // 取消监听低功耗蓝牙设备的特征值变化事件。
         this.listener && wx.offBLECharacteristicValueChange(this.listener);
+    },
+    cancelMatch() {
+        wx.removeStorage({ key: this.deviceId + STORGET_KEY_SUFFIX });
+
+        const pages = getCurrentPages();
+        pages[pages.length - 2].cancelConnection(this.deviceId);
+
+        wx.navigateBack();
     },
     async _init(deviceId: string) {
         this.deviceId = deviceId;

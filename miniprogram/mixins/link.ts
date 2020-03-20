@@ -68,6 +68,17 @@ export default class Link {
         this.handler = void 0;
     }
 
+    public cancelConnection(deviceId: string): void {
+        const { index } = this.map.get(deviceId) || { index: null };
+        if (index != null) {
+            this.map.delete(deviceId);
+            this.data.linked.splice(index, 1);
+            this.setData({ linked: this.data.linked });
+
+            Bluetooth.closeBLEConnection({ deviceId });
+        }
+    }
+
     private async _link(index: number, k: 'bluetooth' | 'linked'): Promise<BluetoothDevices> {
         const device = this.data[k][index];
 
@@ -83,7 +94,7 @@ export default class Link {
                 });
                 wx.setStorage({ key: device.deviceId + STORGET_KEY_SUFFIX, data: device });
 
-                this._addConnectionStateChangeListener();
+                this.handler || this._addConnectionStateChangeListener();
 
                 return device;
             } catch (e) {

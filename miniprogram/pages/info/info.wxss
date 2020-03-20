@@ -5,3 +5,7 @@
     padding-top: 40rpx;
     border-top: 2rpx solid #ccc;
 }
+
+.arraw {
+    background: #fff;
+}
