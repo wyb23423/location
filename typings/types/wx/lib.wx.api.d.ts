@@ -11054,6 +11054,7 @@ wx.onBLECharacteristicValueChange(function(res) {
 ```
 *
 * 最低基础库： `1.1.0` */
+        offBLECharacteristicValueChange(callback: OnBLECharacteristicValueChangeCallback): void
         onBLECharacteristicValueChange(
             /** 低功耗蓝牙设备的特征值变化事件的回调函数 */
             callback: OnBLECharacteristicValueChangeCallback,

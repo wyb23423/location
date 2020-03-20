@@ -1,0 +1,7 @@
+@import '../index/index.wxss';
+
+.info-main {
+    margin: 20rpx 30rpx 20rpx;
+    padding-top: 40rpx;
+    border-top: 2rpx solid #ccc;
+}

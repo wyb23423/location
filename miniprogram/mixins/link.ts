@@ -4,7 +4,7 @@
  */
 
 import * as Bluetooth from '../utils/bluetooth-promise';
-import { BluetoothDevices, LINK_STATUS, IndexMap } from '../constant/const';
+import { BluetoothDevices, LINK_STATUS, IndexMap, STORGET_KEY_SUFFIX } from '../constant/const';
 import ERROR_INFO from '../constant/error';
 
 type LinkData = {
@@ -81,6 +81,7 @@ export default class Link {
                     deviceId: device.deviceId,
                     timeout: 60000,
                 });
+                wx.setStorage({ key: device.deviceId + STORGET_KEY_SUFFIX, data: device });
 
                 this._addConnectionStateChangeListener();
 
@@ -99,7 +100,7 @@ export default class Link {
 
     private _addConnectionStateChangeListener(): void {
         this.handler = (res): void => {
-            const { index } = this.map.get(res.deviceId) || {};
+            const { index } = this.map.get(res.deviceId) || { index: null };
             if (index != null) {
                 const device = this.data.linked[index];
                 if (device.link === LINK_STATUS.CONNECTED && !res.connected) {
@@ -109,10 +110,10 @@ export default class Link {
                             count++;
                             await Bluetooth.createBLEConnection({
                                 deviceId: device.deviceId,
-                                timeout: 60000,
+                                timeout: 10000,
                             });
                         } catch (e) {
-                            if (count < 10) {
+                            if (count < 3) {
                                 return doLink();
                             }
 

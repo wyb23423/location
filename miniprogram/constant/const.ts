@@ -9,3 +9,5 @@ export enum LINK_STATUS {
     ON_CONNECTION = 1,
     CONNECTED = 2,
 }
+
+export const STORGET_KEY_SUFFIX = '__bluetooth';

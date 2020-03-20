@@ -12,7 +12,8 @@
                     {{item.link === LINK_STATUS.ON_CONNECTION ? '正在连接...' : '已连接'}}
                 </view>
             </view>
-            <navigator hover-stop-propagation="{{true}}" class="arraw" catch:tap="none">
+            <navigator url="../info/info?id={{item.deviceId}}&name={{item.localName || item.name || item.deviceId}}"
+                hover-stop-propagation="{{true}}" class="arraw" catch:tap="none">
                 <text class="el-icon-ali-changyongicon-1"></text>
             </navigator>
         </button>
