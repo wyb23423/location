@@ -47,6 +47,8 @@ type GetServicesOption = WechatMiniprogram.GetBLEDeviceServicesOption;
 type GetServicesResult = Promise<WechatMiniprogram.GetBLEDeviceServicesSuccessCallbackResult>;
 type GetCharacteristicsOption = WechatMiniprogram.GetBLEDeviceCharacteristicsOption;
 type GetCharacteristicsResult = Promise<WechatMiniprogram.GetBLEDeviceCharacteristicsSuccessCallbackResult>;
+type WriteOption = WechatMiniprogram.WriteBLECharacteristicValueOption;
+type ReadOption = WechatMiniprogram.ReadBLECharacteristicValueOption;
 
 export function createBLEConnection(option: ConnectOption): BluetoothError {
     return new Promise((success, fail) => wx.createBLEConnection({ ...option, success, fail }));
@@ -66,4 +68,12 @@ export function getBLEDeviceServices(option: GetServicesOption): GetServicesResu
 
 export function getBLEDeviceCharacteristics(option: GetCharacteristicsOption): GetCharacteristicsResult {
     return new Promise((success, fail) => wx.getBLEDeviceCharacteristics({ ...option, success, fail }));
+}
+
+export function writeBLECharacteristicValue(option: WriteOption): BluetoothError {
+    return new Promise((success, fail) => wx.writeBLECharacteristicValue({ ...option, success, fail }));
+}
+
+export function readBLECharacteristicValue(option: ReadOption): BluetoothError {
+    return new Promise((success, fail) => wx.readBLECharacteristicValue({ ...option, success, fail }));
 }

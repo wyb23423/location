@@ -1,16 +1,24 @@
 <view>
     <image class="bg" mode="widthFix" src="/bg.jpg"></image>
-    <view style="padding: 30rpx">
-        <view>设备名</view>
-        <view style="color: #666; font-size: 28rpx">{{name || '未知设备'}}</view>
-    </view>
-    <button class="bluetooth-item" style="padding: 30rpx">
-        <view bind:tap="cancelMatch">取消配对</view>
-        <view class="arraw">
-            <text class="el-icon-ali-changyongicon-1"></text>
+    <recycle-view id="content" batch="{{batchSetRecycleData}}" scroll-with-animation="{{true}}"
+        scroll-to-index="{{messages.length - 1}}" style="margin-bottom: 100rpx">
+        <view slot="before" id="before">
+            <view style="padding: 30rpx">
+                <view>设备名</view>
+                <view style="color: #666; font-size: 28rpx">{{name || '未知设备'}}</view>
+            </view>
+            <button class="bluetooth-item" style="padding: 30rpx" bind:tap="cancelMatch">
+                <view>取消配对</view>
+                <view class="arraw">
+                    <text class="el-icon-ali-changyongicon-1"></text>
+                </view>
+            </button>
         </view>
-    </button>
-    <view class="info-main">
-        111111111111111111111
-    </view>
+        <view class="info-main">
+            <recycle-item wx:for="{{messages}}" wx:key="messages" class="messages">
+                {{item.value}}
+            </recycle-item>
+        </view>
+    </recycle-view>
+    <view class="bottom"><input placeholder="请输入命令" bindconfirm="send" /></view>
 </view>

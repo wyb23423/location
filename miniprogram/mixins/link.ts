@@ -48,11 +48,18 @@ export default class Link {
 
         const key = `linked[${index}].link`;
         if (device.link === LINK_STATUS.CONNECTED) {
-            this.removeConnectionStateChangeListener();
-            await Bluetooth.closeBLEConnection({ deviceId: device.deviceId });
-            this.setData({ [key]: LINK_STATUS.UNCONNECTED });
-
-            return;
+            const name = device.localName || device.name || device.deviceId;
+            return wx.showModal({
+                title: '断开与该设备的连接吗?',
+                content: `您将断开与${name}的连接。`,
+                success: ({ confirm }) => {
+                    if (confirm) {
+                        this.setData({ [key]: LINK_STATUS.UNCONNECTED });
+                        this.map.delete(device.deviceId);
+                        Bluetooth.closeBLEConnection({ deviceId: device.deviceId });
+                    }
+                },
+            });
         }
 
         await this._link(index, 'linked');
@@ -121,7 +128,7 @@ export default class Link {
                             count++;
                             await Bluetooth.createBLEConnection({
                                 deviceId: device.deviceId,
-                                timeout: 10000,
+                                timeout: 1000,
                             });
                         } catch (e) {
                             if (count < 3) {
