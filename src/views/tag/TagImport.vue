@@ -46,6 +46,7 @@ import { table2Excel } from '../../assets/utils/download';
 import { Loading } from '../../mixins/loading';
 import { DOWBLOAD_TPL, IMOIRT_TAG } from '@/constant/request';
 import { HttpRequestOptions } from 'element-ui/types/upload';
+import HTTP from '@/assets/lib/http';
 
 @Component
 export default class TagImport extends Loading {
@@ -74,7 +75,10 @@ export default class TagImport extends Loading {
 
     public async request({ file }: HttpRequestOptions) {
         this.isLoading = true;
-        const res = await this.$http
+        // 设置超时时间为10分钟，且不重试
+        const http = new HTTP(true, false, 600000);
+        http.timeout = () => this.$message.error('服务器处理超时!');
+        const res = await http
             .post(IMOIRT_TAG, { file })
             .finally(() => (this.isLoading = false));
 
