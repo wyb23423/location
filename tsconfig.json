@@ -8,6 +8,7 @@
         "experimentalDecorators": true,
         "noImplicitThis": true,
         "noImplicitReturns": true,
+        "esModuleInterop": true,
         "alwaysStrict": true,
         "inlineSourceMap": true,
         "inlineSources": true,
