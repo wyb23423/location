@@ -78,18 +78,28 @@ export class WebSocketInit extends Vue {
         });
     }
 
-    // 判断收到的数据是否是需处理的有效数据
+    /**
+     * 判断收到的数据是否是需处理的有效数据
+     * @param data 收到的数据
+     */
     protected isValid(data: ITagInfo) {
         return this.groups.includes(data.groupNo)
             && this.tagAll.has(data.sTagNo)
             && data.position.every(v => +v >= 0);
     }
 
-    // 处理数据的方法
+    /**
+     * 处理数据的方法
+     * @param tag 收到的数据
+     */
     protected handler(tag: ITagInfo) {
         //
     }
 
+    /**
+     * 处理无效数据的方法
+     * @param tag 收到的数据
+     */
     protected invalid(tag: ITagInfo) {
         //
     }

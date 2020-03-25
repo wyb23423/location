@@ -66,12 +66,19 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
         });
     }
 
+    /**
+     * 在地图上创建基站后对基站数据的其他处理逻辑
+     * @param data 基站数据
+     */
     protected initBases(data: IBaseStation[]) {
         //
     }
 
+    /**
+     * 地图创建完成后的操作
+     */
     protected afterMapCreated() {
-        // 其他地图创建完成后的操作
+        //
     }
 
     // 获取标签位置信息后的处理函数
@@ -139,7 +146,9 @@ export default class MonitorMixin extends mixins(MapMixin, WebSocketInit, Link) 
         }
     }
 
-    // 地图创建完成的回调
+    /**
+     * 地图创建完成的回调
+     */
     private mapCreated() {
         // 清除当前在缓冲区的数据
         this.data.length = 0;

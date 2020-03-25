@@ -20,6 +20,6 @@ export class Loading extends Vue {
         this.marker && this.marker.close();
 
         this.marker = this.timer = undefined;
-        this.isLoading = true;
+        this.isLoading = false;
     }
 }

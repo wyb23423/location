@@ -2,7 +2,7 @@
     "APP_KEY": "83a75157d56ffe85317ed7ba1e8120ff",
     "APP_NAME": "hunjingguanchang",
     "SECOND_COUNT": 1,
-    "PROXY_TARGET": "http://192.168.1.238:8080/",
+    "PROXY_TARGET": "http://192.168.1.174:8080/",
     "CHARTS_TARGET": "http://127.0.0.1:3000",
     "adjust": {
         "x": 0,

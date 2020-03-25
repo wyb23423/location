@@ -236,10 +236,16 @@ export class RouteList {
         }
 
         if (postPermission) {
-            routes.push({
-                path: 'calibration', name: 'calibration',
-                component: () => import(/* webpackChunkName: "base" */ '@/views/base/Calibration.vue')
-            });
+            routes.push(
+                {
+                    path: 'calibration', name: 'calibration',
+                    component: () => import(/* webpackChunkName: "base" */ '@/views/base/Calibration.vue')
+                },
+                {
+                    path: 'batch', name: 'batch',
+                    component: () => import(/* webpackChunkName: "base" */ '@/views/base/Batch.vue')
+                },
+            );
         }
 
         if (routes.length) {

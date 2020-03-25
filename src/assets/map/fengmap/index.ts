@@ -69,7 +69,7 @@ export class FengMapMgr extends Transform {
         this.imageMgr.remove(name);
     }
 
-    public on(type: string, callback: any) {
+    public on(type: string, callback: (...args: any[]) => any) {
         this.map.on(type, (e: FMMapClickEvent) => {
             if (e.eventInfo && this.map && e.eventInfo.coord) {
                 const { coord, domEvent } = e.eventInfo;

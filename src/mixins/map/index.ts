@@ -99,6 +99,28 @@ export default class MapMixin extends Loading {
             currentPage: 1,
             pageSize: 10000,
         });
+        // const position = [
+        //     { coordx: 2885, coordy: 2117 },
+        //     { coordx: 503, coordy: 2117 },
+        //     { coordx: 503, coordy: 700 },
+        //     { coordx: 2885, coordy: 700 },
+        // ];
+        // const datas = [15, 23, 25, 30].map<IBaseStation>((v, i) => ({
+        //     id: 'A00000' + v,
+        //     name: 'demo_' + i,
+        //     ip: '192.168.1.' + v,
+        //     main: v === 23,
+        //     groupId: '0001',
+        //     timeCorrectionValue: '0',
+        //     ...position[i],
+        //     coordz: 100,
+        //     installTime:
+        //         Date.now(),
+        //     description: '',
+        //     location: '',
+        //     owner: '',
+        //     mapId: 1
+        // }));
 
         const data = datas.filter(v => this.groups.includes(v.groupId));
         this.mgr && data.forEach(this.createBase.bind(this));
@@ -133,19 +155,33 @@ export default class MapMixin extends Loading {
         return this.mgr.addImage(options, info.name, gid, !!info.isMapCoor);
     }
 
-    // 绑定地图数据
+    /**
+     * 绑定地图事件
+     * @param data 地图数据
+     */
     protected bindEvents(data: IMap) {
         //
     }
-    // 在选择地图后初始化数据
+    /**
+     * 在选择地图后初始化数据
+     * @param data 地图数据
+     */
     protected initData(data: IMap) {
         //
     }
-    // 根据标签是否一组绘制连线
+
+    /**
+     * 根据标签是否一组绘制连线
+     * @param tagNo 标签编号
+     * @param coords 坐标
+     */
     protected link(tagNo: string, coords: Vector3) {
         //
     }
 
+    /**
+     * 释放内存
+     */
     protected dispose() {
         //
     }

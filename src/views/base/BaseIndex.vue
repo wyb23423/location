@@ -24,6 +24,11 @@ export default class BaseIndex extends Vue {
             title: '校准值配置',
             to: '/base/calibration',
             icon: 'el-icon-setting'
+        },
+        {
+            title: '分组配置',
+            to: '/base/batch',
+            icon: 'el-icon-folder-opened'
         }
     ];
 }

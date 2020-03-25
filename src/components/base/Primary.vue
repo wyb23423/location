@@ -3,18 +3,20 @@
         ref="form"
         :model="form"
         :rules="rules"
-        label-width="100px"
+        :label-width="labelWidth"
         style="padding-right: 20%"
     >
-        <el-form-item label="所属组号" required prop="groupCode">
-            <el-input v-model="form.groupCode"></el-input>
-        </el-form-item>
-        <el-form-item label="基站类型">
-            <el-radio-group v-model="form.main">
-                <el-radio :label="0xaa">从基站</el-radio>
-                <el-radio :label="0x55">主基站</el-radio>
-            </el-radio-group>
-        </el-form-item>
+        <slot>
+            <el-form-item label="所属组号" required prop="groupCode">
+                <el-input v-model="form.groupCode"></el-input>
+            </el-form-item>
+            <el-form-item label="基站类型">
+                <el-radio-group v-model="form.main">
+                    <el-radio :label="0xaa">从基站</el-radio>
+                    <el-radio :label="0x55">主基站</el-radio>
+                </el-radio-group>
+            </el-form-item>
+        </slot>
         <el-form-item label="基站模式">
             <el-radio-group v-model="form.mode">
                 <el-radio :label="0x11">单基站</el-radio>
@@ -22,18 +24,20 @@
                 <el-radio :label="0x33">上行模式</el-radio>
             </el-radio-group>
         </el-form-item>
-        <el-form-item label="距离参数" required prop="distance">
+        <!-- <el-form-item label="距离参数" required prop="distance">
             <el-input v-model.number="form.distance">
                 <template slot="append">
                     cm
                 </template>
             </el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="基站信道">
             <el-radio-group v-model="form.channel">
-                <el-radio :label="1"></el-radio>
-                <el-radio :label="2"></el-radio>
-                <el-radio :label="5"></el-radio>
+                <el-radio
+                    v-for="v of [1, 2, 3, 5]"
+                    :key="v"
+                    :label="v"
+                ></el-radio>
             </el-radio-group>
         </el-form-item>
         <!-- <el-form-item label="时间补偿" required prop="time">
@@ -55,7 +59,7 @@
         </el-form-item>
         <el-form-item label="发送等级" :class="$style.item">
             <el-rate
-                v-model="form.power"
+                v-model="form.send"
                 :colors="colors"
                 show-score
                 :low-threshold="4"
@@ -78,7 +82,7 @@ import { ElForm } from 'element-ui/types/form';
 import { SEND_PROTOCOL } from '@/constant/request';
 import { Async } from '@/assets/utils/util';
 
-interface PrimaryConfig {
+export interface PrimaryConfig {
     power: number;
     main: number;
     channel: number;
@@ -93,8 +97,9 @@ interface PrimaryConfig {
 export default class Primary extends Vue {
     private static readonly HEAD = '234501';
 
-    @Prop() public readonly ip!: string;
-    @Prop() public readonly protocols!: string[];
+    @Prop({ default: () => '100px' }) public readonly labelWidth!: string;
+    @Prop() public readonly ip?: string;
+    @Prop({ default: () => [] }) public readonly protocols!: string[];
 
     public readonly colors = ['#99A9BF', '#F7BA2A', '#FF9900'];
     public form = <PrimaryConfig>{
@@ -102,7 +107,8 @@ export default class Primary extends Vue {
         main: 0xaa,
         channel: 2,
         send: 1,
-        mode: 0x11
+        mode: 0x11,
+        distance: 0
     };
     public rules = {
         groupCode: {
@@ -134,11 +140,13 @@ export default class Primary extends Vue {
         await this.elForm.validate();
         await this.$confirm('确认设置?');
 
-        await this.$http.post(SEND_PROTOCOL, {
-            ip: this.ip,
-            protocol: '2341' + this.parse(this.form) + '0D0A'
-        });
-        this.$message.success('设置成功');
+        const protocol = '2341' + this.parse(this.form) + '0D0A';
+        if (this.ip) {
+            await this.$http.post(SEND_PROTOCOL, { ip: this.ip, protocol });
+            this.$message.success('设置成功');
+        } else {
+            this.$emit('submit', this.form, protocol);
+        }
     }
 
     // 解析基站基本配置
@@ -172,7 +180,7 @@ export default class Primary extends Vue {
 
         return keys
             .reduce((a, [k, byte]) => {
-                let data = value[<keyof PrimaryConfig>k];
+                let data = value[<keyof PrimaryConfig>k] || 0;
                 if (k === 'power') {
                     data = this.getPowerForChannel(value.channel, <number>data);
                 }
