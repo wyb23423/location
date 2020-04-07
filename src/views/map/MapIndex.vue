@@ -21,6 +21,11 @@ export default class MapIndex extends Vue {
             icon: 'el-icon-film'
         },
         {
+            title: '视频监控',
+            to: '/monitor/video',
+            icon: 'el-icon-video-camera'
+        },
+        {
             title: '地图编辑',
             to: '/monitor/edit',
             icon: 'el-icon-edit'

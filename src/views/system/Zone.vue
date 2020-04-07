@@ -1,8 +1,8 @@
 <template>
     <div class="map-box">
-        <div ref="map" :class="$style.map"></div>
+        <div ref="map" class="fill-box"></div>
         <div
-            :class="[$style.map, $style.mask]"
+            :class="['fill-box', $style.mask]"
             v-show="isDrawing"
             @pointermove="move"
             @pointerup="addPoint"
@@ -147,11 +147,6 @@
     vertical-align: middle;
     width: 190px;
     margin-left: 10px;
-}
-
-.map {
-    height: 100%;
-    overflow: hidden;
 }
 
 .mask {

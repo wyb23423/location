@@ -6,6 +6,7 @@
         @change="change"
         :multiple="isMultiple"
         :disabled="isDisabled"
+        :placeholder="placeholder"
         collapse-tags
     >
         <el-option label="--" :value="undefined" v-if="canEmpty"> </el-option>
@@ -36,6 +37,7 @@ export default class Select extends Vue {
     @Prop() public readonly url!: string;
     @Prop() public readonly multiple?: boolean;
     @Prop() public readonly disabled?: boolean;
+    @Prop() public readonly placeholder?: string;
 
     @Prop({ default: () => false }) public readonly canEmpty?: boolean;
     @Prop({ default: () => ({}) }) public readonly filters!: IJson;
@@ -89,7 +91,10 @@ export default class Select extends Vue {
         if (!Array.isArray(id)) {
             id = [id];
         }
-        this.$emit('change', id.map(v => this.options.find(o => o.id === v)));
+        this.$emit(
+            'change',
+            id.map(v => this.options.find(o => o.id === v))
+        );
     }
 }
 </script>

@@ -337,8 +337,15 @@ export class RouteList {
                 {
                     path: 'history', name: 'history',
                     component: () => import(/* webpackChunkName: "map" */ '@/views/map/History.vue')
-                }
+                },
             );
+        }
+
+        if (this.hasPermission('tag', 'get') || this.hasPermission('camera', 'get')) {
+            routes.push({
+                path: 'video', name: 'video',
+                component: () => import(/* webpackChunkName: "map" */ '@/views/map/Video.vue')
+            });
         }
 
         if (this.hasPermission('map', 'put')) {

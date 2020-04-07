@@ -506,3 +506,9 @@ input{
 .fm-control-popmarker-closebtn {
     display: none  !important;
 }
+
+.fill-box {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}

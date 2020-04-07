@@ -1,6 +1,6 @@
 <template>
     <div class="map-box">
-        <div ref="map" :class="$style.map"></div>
+        <div ref="map" class="fill-box"></div>
         <div
             class="map-tool-bar flex-center"
             style="justify-content: flex-start"
@@ -9,7 +9,6 @@
                 style="margin-left: 50px"
                 @selectmap="selectMap"
             ></map-select>
-            <div style="display: none">{{ selectedBases.length }}</div>
         </div>
 
         <el-collapse v-model="activeNames" :class="$style.op">
@@ -101,11 +100,6 @@ export default class Batch extends MapMixin {
 </script>
 
 <style lang="postcss" module>
-.map {
-    height: 100%;
-    overflow: hidden;
-}
-
 .op {
     position: absolute;
     top: 0;

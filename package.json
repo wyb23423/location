@@ -13,6 +13,7 @@
     "core-js": "^2.6.11",
     "echarts": "^4.6.0",
     "element-ui": "^2.13.0",
+    "flv.js": "^1.5.0",
     "localforage": "^1.7.3",
     "pixi-action": "^1.0.2",
     "vue": "^2.6.11",

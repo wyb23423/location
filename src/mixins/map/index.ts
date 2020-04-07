@@ -99,28 +99,6 @@ export default class MapMixin extends Loading {
             currentPage: 1,
             pageSize: 10000,
         });
-        // const position = [
-        //     { coordx: 2885, coordy: 2117 },
-        //     { coordx: 503, coordy: 2117 },
-        //     { coordx: 503, coordy: 700 },
-        //     { coordx: 2885, coordy: 700 },
-        // ];
-        // const datas = [15, 23, 25, 30].map<IBaseStation>((v, i) => ({
-        //     id: 'A00000' + v,
-        //     name: 'demo_' + i,
-        //     ip: '192.168.1.' + v,
-        //     main: v === 23,
-        //     groupId: '0001',
-        //     timeCorrectionValue: '0',
-        //     ...position[i],
-        //     coordz: 100,
-        //     installTime:
-        //         Date.now(),
-        //     description: '',
-        //     location: '',
-        //     owner: '',
-        //     mapId: 1
-        // }));
 
         const data = datas.filter(v => this.groups.includes(v.groupId));
         this.mgr && data.forEach(this.createBase.bind(this));
