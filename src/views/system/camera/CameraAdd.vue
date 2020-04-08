@@ -64,8 +64,8 @@ import IpInput from '../../../components/form/IpInput.vue';
 import { ADD_CAMERA, GET_GROUP } from '@/constant/request';
 import { Async, getConfig } from '../../../assets/utils/util';
 
-interface CameraFormData extends ICamera {
-    ip: [string, string, string, string];
+interface CameraFormData<T = [string, string, string, string]> extends ICamera {
+    ip: T;
     port: number; // 设备端口号
     username: string;
     password: string;
@@ -108,7 +108,7 @@ export default class CameraAdd extends Vue {
         form.resetFields();
     }
 
-    private resolveUrl(data: Omit<CameraFormData, 'ip'> & { ip: string }) {
+    private resolveUrl(data: CameraFormData<string>) {
         const RTSP = getConfig('rtsp', [
             'rtsp://[username]:[password]@[ip]:[port]/h264/ch1/main/av_stream',
             'rtsp://[username]:[password]@[ip]:[port]/cam/realmonitor?channel=1&subtype=0',
@@ -120,8 +120,9 @@ export default class CameraAdd extends Vue {
             rtsp = RTSP[data.brand] || rtsp;
         }
 
-        return rtsp.replace(/\[([a-z]+)\]/g, (_, key: keyof CameraFormData) =>
-            data[key].toString()
+        return rtsp.replace(
+            /\[([a-z]+)\]/g,
+            (_, key: keyof CameraFormData) => data[key] + ''
         );
     }
 }
