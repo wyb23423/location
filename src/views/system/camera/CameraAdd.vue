@@ -98,7 +98,7 @@ export default class CameraAdd extends Vue {
         await form.validate();
 
         const data = { ...this.form, ip: this.form.ip.join('.') };
-        data.url = this.resolveUrl();
+        data.url = this.resolveUrl(data);
 
         await this.$http.post(ADD_CAMERA, data, {
             'Content-Type': 'application/json'
@@ -108,7 +108,7 @@ export default class CameraAdd extends Vue {
         form.resetFields();
     }
 
-    private resolveUrl() {
+    private resolveUrl(data: Omit<CameraFormData, 'ip'> & { ip: string }) {
         const RTSP = getConfig('rtsp', [
             'rtsp://[username]:[password]@[ip]:[port]/h264/ch1/main/av_stream',
             'rtsp://[username]:[password]@[ip]:[port]/cam/realmonitor?channel=1&subtype=0',
@@ -116,12 +116,12 @@ export default class CameraAdd extends Vue {
         ]);
 
         let rtsp = RTSP[2];
-        if (!this.form.url && !this.isOtherBrand) {
-            rtsp = RTSP[this.form.brand] || rtsp;
+        if (!data.url && !this.isOtherBrand) {
+            rtsp = RTSP[data.brand] || rtsp;
         }
 
         return rtsp.replace(/\[([a-z]+)\]/g, (_, key: keyof CameraFormData) =>
-            this.form[key].toString()
+            data[key].toString()
         );
     }
 }
