@@ -17,34 +17,32 @@
 </template>
 
 <script lang="ts">
-import Component, { mixins } from 'vue-class-component';
+import Component from 'vue-class-component';
 import { State } from 'vuex-class/lib/bindings';
 import TableMixin from '../../../mixins/table';
 import { RM_CAMERA, GET_CAMERA } from '@/constant/request';
 import { Async } from '@/assets/utils/util';
 
 @Component
-export default class CameraList extends mixins(TableMixin) {
+export default class CameraList extends TableMixin {
     @State public baseUrl!: string;
 
-    public colCfg: any[] = [
+    public tableData!: ICamera[];
+    public colCfg = [
         { prop: 'id', label: '摄像头ID', sortable: true, width: 140 },
-        { prop: 'ip', label: '摄像头IP', width: 260 },
-        { prop: 'port', label: '设备端口号', width: 200 },
-        { prop: 'groupCode', label: '所属组号', sortable: true, width: 200 },
-        { prop: 'username', label: '用户名', width: 220 },
-        { prop: 'windowSplit', label: '窗口分割数', width: 140 }
+        { prop: 'groupId', label: '所属组号', sortable: true, width: 170 },
+        { prop: 'url', label: '取流地址', width: 333 }
     ];
 
     @Async()
-    public async del(row: any) {
-        await this.$confirm(`删除摄像头${row.id}?`);
-        await this.$http.post(RM_CAMERA, { id: row.id });
+    public async del({ id }: ICamera) {
+        await this.$confirm(`删除摄像头${id}?`);
+        await this.$http.post(RM_CAMERA, { id });
         this.refresh().$message.success('删除成功');
     }
 
     protected async fetch(page: number, pageSize: number) {
-        let data: any[] = [];
+        let data: ICamera[] = [];
         let count: number = 0;
         try {
             const res = await this.$http.get(GET_CAMERA, {

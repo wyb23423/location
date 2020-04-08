@@ -28,13 +28,9 @@ declare interface IBaseStation {
 }
 
 declare interface ICamera {
-    ip: string;
-    name: string;
-    port: number; // 设备端口号
-    groupCode: string;
-    username: string;
-    password: string;
-    windowSplit: string; // 窗口分割数
+    id: string;
+    groupId: string;
+    url: string;
 }
 
 declare interface IMap<T extends string | number[][] = number[][]> {

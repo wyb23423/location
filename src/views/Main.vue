@@ -43,11 +43,8 @@ export default class Main extends Vue {
         if (!ip) {
             return;
         }
-        const wsUrl = getConfig<string>(
-            'websoket.sundries',
-            'ws://#{ip}:8081/sundries'
-        );
-        const ws = new WebSocket(wsUrl.replace('#{ip}', ip));
+        const wsUrl = getConfig('websoket.sundries', 'ws://[ip]:8081/sundries');
+        const ws = new WebSocket(wsUrl.replace('[ip]', ip));
         ws.onmessage = (e: MessageEvent) => {
             const data: Alarm = JSON.parse(e.data);
             if (Date.now() - (data.alarmTime || data.time) <= 1000) {

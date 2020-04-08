@@ -87,7 +87,7 @@ export default class Login extends Vue {
                     // =====================================
 
                     initRouter(); // 加载路由
-                    load(GET_TAG, 'id', 'tag'); // 慢加载标签数据
+                    // load(GET_TAG, 'id', 'tag'); // 慢加载标签数据
 
                     this.$router.push('/').catch(data => {
                         //

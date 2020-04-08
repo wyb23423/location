@@ -1,46 +1,54 @@
 <template>
     <div style="padding-left: 5%; padding-top: 3%;">
         <el-form ref="form" :model="form" label-width="auto" style="width: 80%">
-            <el-form-item label="摄像头品牌：">
+            <el-form-item label="摄像头品牌：" required>
                 <el-select v-model="form.brand">
                     <el-option
-                        v-for="(item, index) of ['海康', '大华']"
-                        :key="index"
-                        :label="item"
-                        :value="index + 1"
+                        v-for="(item, index) of CAMERA_BRAND"
+                        :key="item.name"
+                        :label="item.name"
+                        :value="index"
                     ></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="摄像头IP：" required>
-                <ip-input v-model="form.ip"></ip-input>
+            <template v-if="!isOtherBrand">
+                <el-form-item label="摄像头IP：" required>
+                    <ip-input v-model="form.ip"></ip-input>
+                </el-form-item>
+                <el-form-item label="设备端口号：" prop="port" required>
+                    <el-input
+                        v-model.number="form.port"
+                        type="number"
+                    ></el-input>
+                </el-form-item>
+                <el-form-item label="用户名：" prop="username" required>
+                    <el-input v-model="form.username"></el-input>
+                    <!-- 防止自动填充 -->
+                    <el-input class="hidden"></el-input>
+                </el-form-item>
+                <el-form-item label="密码：" prop="password" required>
+                    <!-- 防止自动填充 -->
+                    <el-input class="hidden" type="password"></el-input>
+                    <el-input
+                        v-model="form.password"
+                        type="password"
+                    ></el-input>
+                </el-form-item>
+            </template>
+            <el-form-item label="所在组号：" prop="groupId" required>
+                <app-select
+                    :url="GET_GROUP"
+                    v-model="form.groupId"
+                    :keys="{ id: 'id', name: 'id' }"
+                ></app-select>
             </el-form-item>
-            <el-form-item label="设备端口号：" prop="port" required>
-                <el-input v-model.number="form.port" type="number"></el-input>
-            </el-form-item>
-            <el-form-item label="用户名：" prop="username" required>
-                <el-input v-model="form.username"></el-input>
-                <el-input class="hidden"></el-input>
-            </el-form-item>
-            <el-form-item label="密码：" prop="password" required>
-                <el-input class="hidden" type="password"></el-input>
-                <el-input v-model="form.password" type="password"></el-input>
-            </el-form-item>
-            <el-form-item label="窗口分割数: " prop="windowSplit" required>
-                <el-select v-model="form.windowSplit" placeholder="请选择">
-                    <el-option
-                        v-for="v of [1, 2, 3, 4]"
-                        :key="v"
-                        :value="v"
-                        :label="`${v}X${v}`"
-                    ></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="所在组号：" prop="groupCode" required>
-                <el-input v-model="form.groupCode"></el-input>
+            <el-form-item label="取流地址" prop="url" :required="isOtherBrand">
+                <el-input type="url" v-model="form.url">
+                    <template slot="prepend">rtsp://</template>
+                </el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="onSubmit">立即提交</el-button>
-                <el-button @click="reset">重置</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -53,7 +61,16 @@ import Vue from 'vue';
 import { ElForm } from 'element-ui/types/form';
 import { ElInput } from 'element-ui/types/input';
 import IpInput from '../../../components/form/IpInput.vue';
-import { ADD_CAMERA } from '@/constant/request';
+import { ADD_CAMERA, GET_GROUP } from '@/constant/request';
+import { Async, getConfig } from '../../../assets/utils/util';
+
+interface CameraFormData extends ICamera {
+    ip: [string, string, string, string];
+    port: number; // 设备端口号
+    username: string;
+    password: string;
+    brand: number;
+}
 
 @Component({
     components: {
@@ -61,60 +78,51 @@ import { ADD_CAMERA } from '@/constant/request';
     }
 })
 export default class CameraAdd extends Vue {
-    public form: any = {};
+    public readonly GET_GROUP = GET_GROUP;
+    public readonly CAMERA_BRAND = ['海康', '大华', '其他'];
 
-    public created() {
-        this.init();
+    public form = <CameraFormData>{ brand: 0, ip: ['', '', '', ''] };
+
+    public get isOtherBrand() {
+        const index = this.form.brand;
+        return !this.GET_GROUP[index] || index >= this.GET_GROUP.length - 1;
     }
 
-    public onSubmit() {
-        const isComplete = this.form.ip.every((v: string) => !!v);
+    @Async()
+    public async onSubmit() {
+        if (!this.isOtherBrand && this.form.ip.some((v: string) => !v)) {
+            return this.$message.warning('摄像头ip不完整');
+        }
 
         const form = <ElForm>this.$refs.form;
-        form.validate((valid: boolean) => {
-            if (!isComplete) {
-                return this.$message.warning('摄像头ip不完整');
-            }
+        await form.validate();
 
-            if (isNaN(this.form.groupCode)) {
-                return this.$message.warning('组号只能包含数字');
-            }
+        const data = { ...this.form, ip: this.form.ip.join('.') };
+        data.url = this.resolveUrl();
 
-            if (valid) {
-                const now = Date.now();
-
-                const data = { ...this.form };
-                data.ip = this.form.ip.join('.');
-                data.createTime = data.updateTime = Date.now();
-                data.createUser = data.updateUser = 'string';
-
-                this.$http
-                    .post(ADD_CAMERA, data, {
-                        'Content-Type': 'application/json'
-                    })
-                    .then(() => {
-                        this.$message.success('添加成功');
-                        this.reset();
-                    })
-                    .catch(console.log);
-            }
+        await this.$http.post(ADD_CAMERA, data, {
+            'Content-Type': 'application/json'
         });
-    }
-    public reset() {
-        (<ElForm>this.$refs.form).resetFields();
-        this.init();
+
+        this.$message.success('添加成功');
+        form.resetFields();
     }
 
-    private init() {
-        this.form = {
-            username: '',
-            ip: ['', '', '', ''],
-            port: '',
-            groupCode: '',
-            windowSplit: 1,
-            password: '',
-            brand: 1
-        };
+    private resolveUrl() {
+        const RTSP = getConfig('rtsp', [
+            'rtsp://[username]:[password]@[ip]:[port]/h264/ch1/main/av_stream',
+            'rtsp://[username]:[password]@[ip]:[port]/cam/realmonitor?channel=1&subtype=0',
+            'rtsp://[url]'
+        ]);
+
+        let rtsp = RTSP[2];
+        if (!this.form.url && !this.isOtherBrand) {
+            rtsp = RTSP[this.form.brand] || rtsp;
+        }
+
+        return rtsp.replace(/\[([a-z]+)\]/g, (_, key: keyof CameraFormData) =>
+            this.form[key].toString()
+        );
     }
 }
 </script>

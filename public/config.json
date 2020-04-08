@@ -9,8 +9,13 @@
         "y": 0
     },
     "websoket": {
-        "position": "ws://#{ip}:8082/realtime/position",
-        "sundries": "ws://#{ip}:8081/sundries"
+        "position": "ws://[ip]:8082/realtime/position",
+        "sundries": "ws://[ip]:8081/sundries"
     },
-    "fps": false
+    "fps": false,
+    "rtsp": [
+        "rtsp://[username]:[password]@[ip]:[port]/h264/ch1/main/av_stream",
+        "rtsp://[username]:[password]@[ip]:[port]/cam/realmonitor?channel=1&subtype=0",
+        "rtsp://[url]"
+    ]
 }

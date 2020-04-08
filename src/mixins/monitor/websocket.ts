@@ -68,8 +68,8 @@ export class WebSocketInit extends Vue {
         const ip = getIp();
         if (!ip) { return; }
 
-        const wsUrl = getConfig<string>('websoket.position', 'ws://#{ip}/realtime/position');
-        const ws = this.ws = new WebSocket(wsUrl.replace('#{ip}', ip));
+        const wsUrl = getConfig<string>('websoket.position', 'ws://[ip]/realtime/position');
+        const ws = this.ws = new WebSocket(wsUrl.replace('[ip]', ip));
         ws.addEventListener('open', () => this.count = 0);
         ws.addEventListener('error', () => this.count++ <= 5 && this.initWebSocket(true));
         ws.addEventListener('message', (event: MessageEvent) => {

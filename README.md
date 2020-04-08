@@ -41,7 +41,14 @@ this.emit('update', this.sprite); // 添加
         },
         // 系统中使用的socket地址
         "websoket": {
-            "position": "ws://#{ip}:8082/realtime/position", // 定位
-            "sundries": "ws://#{ip}:8081/sundries" // 报警及其他杂项
-        }
+            "position": "ws://[ip]:8082/realtime/position", // 定位
+            "sundries": "ws://[ip]:8081/sundries" // 报警及其他杂项
+        },
+        "fps": false, // 是否开启fps显示, 用于观察页面刷新情况
+        // 摄像头取流地址
+        "rtsp": [
+            "rtsp://[username]:[password]@[ip]:[port]/h264/ch1/main/av_stream", // 海康
+            "rtsp://[username]:[password]@[ip]:[port]/cam/realmonitor?channel=1&subtype=0", // 大华
+            "rtsp://[url]" // 其他
+        ]
     }
