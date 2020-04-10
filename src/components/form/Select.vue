@@ -1,6 +1,6 @@
 <template>
     <el-select
-        v-model="currValue"
+        :value="value"
         filterable
         default-first-option
         @change="change"
@@ -23,7 +23,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { Emit, Prop, Model } from 'vue-property-decorator';
+import { Emit, Prop, Model, Watch } from 'vue-property-decorator';
 
 interface Option<T> {
     id?: T;
@@ -45,7 +45,6 @@ export default class Select extends Vue {
     public readonly keys!: Option<string>;
 
     public options: Array<Option<any>> = [];
-    public currValue: number | string | Array<number | string> = '';
 
     public get isMultiple() {
         return !(this.multiple == null || this.multiple === false);
@@ -56,9 +55,8 @@ export default class Select extends Vue {
     }
 
     public created() {
-        if (this.isMultiple) {
-            this.currValue = [];
-        }
+        let currValue: number | string | Array<number | string> = this.value;
+        this.isMultiple && (currValue = []);
 
         this.$http
             .get(this.url, {
@@ -73,14 +71,14 @@ export default class Select extends Vue {
                     data: v
                 }));
 
-                if (!(this.currValue || this.canEmpty)) {
-                    this.currValue =
+                if (!(currValue || this.canEmpty)) {
+                    currValue =
                         this.value == null || this.value === ''
                             ? this.options[0].id
                             : this.value;
                 }
 
-                this.change(this.currValue);
+                this.value !== currValue && this.change(currValue);
             })
             .catch(console.log);
     }

@@ -49,9 +49,7 @@ export const RM_GROUP = '/api/group/deleteGroup'; // 删除分组
 export const UPDATE_GROUP = '/api/group/updateGroup'; // 更新分组
 export const GET_GROUP = '/api/group/getall'; // 获取分组数据
 
-export const ADD_CAMERA = '/api/camera/addCamera'; // 添加摄像机
-export const RM_CAMERA = '/api/camera/deleteCamera'; // 删除摄像机
-export const GET_CAMERA = '/api/camera/getall'; // 获取摄像机数据
+export const REQUEST_CAMERA = '/api/camera'; // 摄像机相关api
 
 export const ADD_PROTOCOL = '/api/protocol/addProtocol'; // 添加协议
 export const RM_PROTOCOL = '/api/protocol/deleteProtocol'; // 删除协议

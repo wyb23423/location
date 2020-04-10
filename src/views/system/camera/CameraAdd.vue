@@ -2,11 +2,11 @@
     <div style="padding-left: 5%; padding-top: 3%;">
         <el-form ref="form" :model="form" label-width="auto" style="width: 80%">
             <el-form-item label="摄像头品牌：" required>
-                <el-select v-model="form.brand">
+                <el-select v-model="form.brand" @change="reset">
                     <el-option
                         v-for="(item, index) of CAMERA_BRAND"
-                        :key="item.name"
-                        :label="item.name"
+                        :key="item"
+                        :label="item"
                         :value="index"
                     ></el-option>
                 </el-select>
@@ -61,8 +61,10 @@ import Vue from 'vue';
 import { ElForm } from 'element-ui/types/form';
 import { ElInput } from 'element-ui/types/input';
 import IpInput from '../../../components/form/IpInput.vue';
-import { ADD_CAMERA, GET_GROUP } from '@/constant/request';
+import { GET_GROUP, REQUEST_CAMERA } from '@/constant/request';
 import { Async, getConfig } from '../../../assets/utils/util';
+import { Prop, Ref } from 'vue-property-decorator';
+import Select from '@/components/form/Select.vue';
 
 interface CameraFormData<T = [string, string, string, string]> extends ICamera {
     ip: T;
@@ -74,18 +76,25 @@ interface CameraFormData<T = [string, string, string, string]> extends ICamera {
 
 @Component({
     components: {
-        'ip-input': IpInput
+        'ip-input': IpInput,
+        'app-select': Select
     }
 })
 export default class CameraAdd extends Vue {
+    @Prop({ default: () => 'PUT' }) public readonly method!: 'PUT' | 'POST';
+    @Prop({ default: () => ({ brand: 0, ip: ['', '', '', ''] }) })
+    public form!: CameraFormData;
+
     public readonly GET_GROUP = GET_GROUP;
     public readonly CAMERA_BRAND = ['海康', '大华', '其他'];
 
-    public form = <CameraFormData>{ brand: 0, ip: ['', '', '', ''] };
+    @Ref('form') private readonly formEl!: ElForm;
 
     public get isOtherBrand() {
         const index = this.form.brand;
-        return !this.GET_GROUP[index] || index >= this.GET_GROUP.length - 1;
+        return (
+            !this.CAMERA_BRAND[index] || index >= this.CAMERA_BRAND.length - 1
+        );
     }
 
     @Async()
@@ -94,18 +103,29 @@ export default class CameraAdd extends Vue {
             return this.$message.warning('摄像头ip不完整');
         }
 
-        const form = <ElForm>this.$refs.form;
-        await form.validate();
+        await this.formEl.validate();
 
         const data = { ...this.form, ip: this.form.ip.join('.') };
         data.url = this.resolveUrl(data);
 
-        await this.$http.post(ADD_CAMERA, data, {
-            'Content-Type': 'application/json'
+        await this.$http.request({
+            url: REQUEST_CAMERA,
+            method: this.method,
+            data,
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
 
-        this.$message.success('添加成功');
-        form.resetFields();
+        this.$message.success('操作成功');
+        if (this.method === 'PUT') {
+            this.formEl.resetFields();
+            this.form.ip = ['', '', '', ''];
+        }
+    }
+
+    public reset() {
+        this.formEl.clearValidate();
     }
 
     private resolveUrl(data: CameraFormData<string>) {

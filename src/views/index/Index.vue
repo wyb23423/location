@@ -17,25 +17,6 @@
                 </router-link>
             </div>
 
-            <!-- <el-collapse v-model="activeNames" :class="$style.collapse">
-                <el-collapse-item title="监控信息：图表" name="1">
-                    <el-row :class="$style['collapse-item']">
-                        <el-col :span="12">
-                            <div
-                                ref="main"
-                                style="height: 400px; border-right: 1px solid #ccc;"
-                            ></div>
-                        </el-col>
-                        <el-col :span="12">
-                            <div
-                                ref="myChart2"
-                                style="height: 400px;padding-left: 10%;"
-                            ></div>
-                        </el-col>
-                    </el-row>
-                </el-collapse-item>
-            </el-collapse> -->
-
             <el-collapse v-model="activeNames" :class="$style.collapse">
                 <el-collapse-item title="区域信息：记录" name="2">
                     <el-timeline :class="$style['collapse-item']">
@@ -54,7 +35,62 @@
     </div>
 </template>
 
-<script lang="ts" src="./index.ts">
+<script lang="ts">
+import Vue from 'vue';
+import Component from 'vue-class-component';
+import { GET_ALARM, GET_ZONE, GET_TAG, GET_ADMIN } from '@/constant/request';
+
+interface CardInfo {
+    icon: string;
+    title: string;
+    num: number;
+    to: string;
+}
+
+interface RecordItem {
+    content: string;
+    timestamp: number;
+    type: string;
+}
+
+@Component
+export default class Main extends Vue {
+    public activeNames: string[] = ['1', '2'];
+    public cards: CardInfo[] = [
+        { icon: 'qy', title: '监控区域', num: 3, to: '/system/zone' },
+        { icon: 'adminbg', title: '管理人员', num: 3, to: '/admin/list' },
+        { icon: 'ter', title: '监控人员', num: 3, to: '/tag/list/1' },
+        { icon: 'bj', title: '报警次数', num: 3, to: '/alarm' }
+    ];
+    public records: RecordItem[] = []; // 报警记录
+
+    public created() {
+        this.$http
+            .get(GET_ALARM, {
+                pageSize: 20,
+                currentPage: 1
+            })
+            .then(res => {
+                this.records = res.pagedData.datas.map((v: IAlarm) => ({
+                    type: 'warning',
+                    content: v.content,
+                    timestamp: v.time
+                }));
+            })
+            .catch(console.log);
+    }
+    public mounted() {
+        const api = [GET_ZONE, GET_ADMIN, GET_TAG, GET_ALARM];
+        api.forEach(async (url, i) => {
+            const { value, err } = await this.$async(
+                this.$http.get(url, { currentPage: 1, pageSize: 1 })
+            );
+            value && !err && (this.cards[i].num = value.pagedData.totalCount);
+
+            err && console.error(err);
+        });
+    }
+}
 </script>
 
 <style lang="postcss" module>

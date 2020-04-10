@@ -47,7 +47,7 @@
         <el-form-item label="分组描述">
             <el-input v-model="form.description"></el-input>
         </el-form-item>
-        <el-form-item label="所属地图">
+        <el-form-item label="所属地图" required>
             <app-select :url="GET_MAP" v-model="form.mapId"></app-select>
         </el-form-item>
         <el-form-item>

@@ -29,7 +29,7 @@ import Component from 'vue-class-component';
 import TagSelect from '@/components/form/TagSelect.vue';
 import { Ref, Watch } from 'vue-property-decorator';
 import Select from '@/components/form/Select.vue';
-import { GET_CAMERA } from '@/constant/request';
+import { REQUEST_CAMERA } from '@/constant/request';
 import FlvJs from 'flv.js';
 
 @Component({
@@ -39,7 +39,7 @@ import FlvJs from 'flv.js';
     }
 })
 export default class Video extends WebSocketInit {
-    public readonly GET_CAMERA = GET_CAMERA;
+    public readonly GET_CAMERA = REQUEST_CAMERA;
 
     public isTrack = false; // 是否自动追踪某个标签
     public tag = '';
