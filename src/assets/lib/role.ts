@@ -17,6 +17,7 @@ export class RouteList {
                 //
             }
         }
+        this.roles.people = this.roles.people || this.roles.tag;
 
         ['admin', 'system', 'base', 'people', 'map', 'alarm'].forEach(v => {
             Reflect.get(this, v).call(this);
@@ -250,6 +251,10 @@ export class RouteList {
             });
             redirect = redirect || '/people/add';
         }
+        routes.push({
+            path: 'tagzone', name: 'tagzone',
+            component: () => import(/* webpackChunkName: "people" */ '@/views/people/TagZone.vue')
+        });
 
         if (routes.length) {
             this.routes.push({

@@ -21,10 +21,8 @@ export const GET_HISTORY = '/api/tag/queryTagHistory'; // 获取标签历史轨�
 export const GET_INSTANT = '/api/tag/queryInstantInMap'; // 获取一个时刻所有标签的历史位置
 export const UPLOAD_TAGPHOTO = '/api/tag/upload/tagPhoto'; // 上传标签图
 
-export const ADD_TAG_ZONE = '/api/tagZone/addTagZone'; // 添加标签与区域关系
-export const RM_TAG_ZONE = '/api/tagZone/deleteTagZone'; // 删除标签与区域关系
-export const UPDATE_TAG_ZONE = '/api/tagZone/updateTagZone'; // 更新标签与区域关系
-export const GET_TAG_ZONE = '/api/tagZone/getall'; // 获取标签与区域关系数据
+export const UPDATE_TAG_ZONE = '/api/zone/updateTagZone'; // 更新标签与区域关系
+export const GET_TAG_ZONE = '/api/zone/getTagZone'; // 获取标签与区域关系数据
 
 export const ADD_ADMIN = '/api/admin/addAdmin'; // 添加管理员
 export const RM_ADMIN = '/api/admin/deleteAdmin'; // 删除管理员

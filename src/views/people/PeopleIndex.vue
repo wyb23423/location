@@ -36,6 +36,11 @@ export default class PeopleIndex extends Vue {
             title: '标签添加',
             to: '/people/add',
             icon: 'el-icon-document-add'
+        },
+        {
+            title: '标签权限',
+            to: '/people/tagzone',
+            icon: 'el-icon-s-check'
         }
     ];
 }

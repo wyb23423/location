@@ -33,7 +33,7 @@
             <el-form :model="form" ref="form" label-width="auto">
                 <el-form-item
                     label="标签"
-                    prop="tagId"
+                    prop="tagNo"
                     v-if="form.id == null"
                     required
                 >
@@ -43,7 +43,7 @@
                     ></tag-select>
                 </el-form-item>
                 <el-form-item label="区域" prop="zoneId" required>
-                    <el-select v-model="form.zoneId">
+                    <el-select v-model="form.zoneId" multiple>
                         <el-option
                             v-for="v of zones"
                             :key="v.id"
@@ -51,12 +51,6 @@
                             :label="v.name"
                         ></el-option>
                     </el-select>
-                </el-form-item>
-                <el-form-item label="类型" prop="type" required>
-                    <el-radio-group v-model="form.type">
-                        <el-radio :label="tagZoneType.IN">进入报警</el-radio>
-                        <el-radio :label="tagZoneType.OUT">离开报警</el-radio>
-                    </el-radio-group>
                 </el-form-item>
             </el-form>
             <template slot="footer">
@@ -80,19 +74,12 @@ import TagSelect from '@/components/form/TagSelect.vue';
 import {
     GET_ZONE,
     UPDATE_TAG_ZONE,
-    ADD_TAG_ZONE,
-    RM_TAG_ZONE,
     GET_TAG_ZONE
 } from '../../constant/request';
 import Table from '@/components/Table.vue';
 import TableMixin, { ColCfgItem } from '@/mixins/table';
 import { Ref } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
-
-enum TAG_ZONE_TYPE {
-    IN = 1,
-    OUT = 2
-}
 
 @Component({
     components: {
@@ -104,20 +91,13 @@ export default class TagZone extends mixins(TableMixin) {
     @State public zoneMode!: ZoneMode;
 
     public form = <ITagZone>{};
-    public tagZoneType = TAG_ZONE_TYPE;
     public zones: IZone[] = [];
     public isDialogOpen = false;
 
     public colCfg: ColCfgItem[] = [
         { prop: 'id', label: '编号', width: 100 },
-        { prop: 'tagName', label: '标签', width: 120 },
-        { prop: 'zoneName', label: '区域', width: 120 },
-        {
-            prop: 'type',
-            label: '类型',
-            width: 120,
-            formatter: t => this.tagZoneType[t]
-        }
+        { prop: 'tagNo', label: '标签', width: 120 },
+        { prop: 'zoneId', label: '区域', width: 120 }
     ];
 
     @Ref('form') private readonly elForm!: ElForm;
@@ -140,7 +120,7 @@ export default class TagZone extends mixins(TableMixin) {
     public openDialog(data?: ITagZone) {
         this.isDialogOpen = true;
         const form = (this.form = <ITagZone>{
-            zoneId: '',
+            zoneId: [],
             tagNo: '',
             // type: TAG_ZONE_TYPE.IN,
             ...(data || {})
@@ -155,19 +135,25 @@ export default class TagZone extends mixins(TableMixin) {
     @Async()
     public async remove(data: ITagZone) {
         await this.$confirm(`删除id为${data.id}电子围栏报警设置`);
-        // TODO 发送删除请求
-        // await this.$http.post(RM_TAG_ZONE, { tagId: this.form.tagId });
-        this.refresh().$message.success('删除成功');
+        this.$message.warning('没有提供删除接口');
+        // await this.$http.post(UPDATE_TAG_ZONE, {
+        //     tagNo: data.tagNo,
+        //     zoneIds: null
+        // });
+        // this.refresh().$message.success('删除成功');
     }
 
     public selectTag(id: string, { name }: ITag) {
         this.form.tagNo = id;
-        this.form.tagName = name;
+        // this.form.tagName = name;
     }
 
     @Async(() => ({ count: 0, data: [] }))
     protected async fetch(page: number, pageSize: number) {
-        const promises: [Promise<IZone[]>, Promise<ITagZone[]>] = [
+        const promises: [
+            Promise<IZone[]>,
+            Promise<ResponseData<ITagZone<string>>>
+        ] = [
             Promise.resolve().then(() => {
                 if (this.zones.length) {
                     return this.zones;
@@ -178,20 +164,25 @@ export default class TagZone extends mixins(TableMixin) {
             Promise.resolve().then(this.fetchTagZone.bind(this, page, pageSize))
         ];
 
-        const [zones, tagZones] = await Promise.all(promises);
+        const [
+            zones,
+            {
+                pagedData: { datas, totalCount }
+            }
+        ] = await Promise.all(promises);
 
-        // TODO==================================================
-        tagZones.forEach(v => {
-            const index = Math.floor(v.zoneId / zones.length);
-            v.zoneName = zones[v.zoneId % zones.length].name + index;
-        });
-
-        return { count: tagZones.length * 10, data: tagZones };
+        return {
+            count: totalCount,
+            data: datas
+        };
     }
 
     @Async()
     private async doAdd() {
-        console.log({ ...this.form });
+        const data = { tagNo: this.form.tagNo, zoneIds: this.form.zoneId };
+        await this.$http.post(UPDATE_TAG_ZONE, data, {
+            'Content-Type': 'application/json'
+        });
 
         if (this.tableData.length < this.pageSize) {
             this.refresh(false);
@@ -204,15 +195,14 @@ export default class TagZone extends mixins(TableMixin) {
     @Async()
     private async doUpdate() {
         await this.$confirm('确认提交修改?');
-        console.log(this.form);
+        const data = { tagNo: this.form.tagNo, zoneIds: this.form.zoneId };
+        await this.$http.post(UPDATE_TAG_ZONE, data, {
+            'Content-Type': 'application/json'
+        });
 
         const index = this.tableData.findIndex(v => v.id === this.form.id);
         if (index > -1) {
-            const zone = this.zones.find(v => v.id === this.form.zoneId);
-            if (zone) {
-                this.form.zoneName = zone.name;
-                this.$set(this.tableData, index, this.form);
-            }
+            this.tableData[index].zoneId = this.form.zoneId;
         }
 
         this.$message.success('更新成功');
@@ -237,15 +227,8 @@ export default class TagZone extends mixins(TableMixin) {
         return mode !== group && mode !== switchMode;
     }
 
-    private async fetchTagZone(page: number, pageSize: number) {
-        // TODO 从服务器获取标签-区域关系
-        return new Array(pageSize).fill(1).map<ITagZone>((v, i) => ({
-            id: (page - 1) * pageSize + i,
-            zoneId: i,
-            tagNo: '0001' + (i + 1).toString(16).padStart(4, '0'),
-            // type: Math.random() > 0.5 ? TAG_ZONE_TYPE.IN : TAG_ZONE_TYPE.OUT,
-            tagName: '标签' + i
-        }));
+    private fetchTagZone(currentPage: number, pageSize: number) {
+        return this.$http.get(GET_TAG_ZONE, { currentPage, pageSize });
     }
 }
 </script>

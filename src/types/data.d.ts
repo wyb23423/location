@@ -119,12 +119,12 @@ declare interface IAlarm {
     alarmMsg: string;
 }
 
-declare interface ITagZone {
+declare interface ITagZone<T = number[]> {
     id: number;
-    zoneId: number;
+    zoneId: T;
     tagNo: string;
-    tagName: string;
-    zoneName?: string;
+    // tagName: string;
+    // zoneName?: string;
 }
 
 // ==========================================
