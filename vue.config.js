@@ -1,9 +1,15 @@
 
 const config = require('./public/config.json');
 const PROXY_TARGET = config.PROXY_TARGET;
+const fs = require('fs');
+const path = require('path');
 
 module.exports = {
     devServer: {
+        https: true,
+        key: fs.readFileSync(path.join(__dirname, './cert/private.pem')),
+        cert: fs.readFileSync(path.join(__dirname, './cert/file.crt')),
+        ca: fs.readFileSync(path.join(__dirname, './cert/csr.pem')),
         proxy: {
             '/api': {
                 target: PROXY_TARGET,

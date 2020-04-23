@@ -111,7 +111,7 @@ export default class Monitor extends MonitorMixin {
         { name: '分组列表', active: false, display: true },
         { name: '统计', active: false, display: true }
     ];
-    // public isFullScreen: boolean = false;
+
     public findTarget: string = ''; // 查询标签的标签号
     public isName: number = 0; // 是否通过标签名查询标签
     public showLineTags: string[] = []; // 显示轨迹的标签号

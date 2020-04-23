@@ -79,7 +79,11 @@ export function base642blob(base64: string) {
 
     return new Blob();
 }
-
+/**
+ * 获取配置文件数据
+ * @param key
+ * @param defaultValue
+ */
 export function getConfig<T>(key: string, defaultValue: T) {
     const config = sessionStorage.getItem('config');
 
