@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Async } from '@/assets/utils/await';
+import { RESIZE } from '@/constant';
 
 enum TimerType {
     ANIMATION = 0,
@@ -17,10 +18,11 @@ export default class EventMixin extends Vue {
     private windowHeight = window.innerHeight;
 
     public created() {
-        const onresize = () =>
-            (this.isFullScreen = window.innerHeight > this.windowHeight);
-        window.addEventListener('resize', onresize, false);
-        this.remove.add(() => window.removeEventListener('resize', onresize, false));
+        this.on(
+            RESIZE,
+            () =>
+                (this.isFullScreen = window.innerHeight > this.windowHeight)
+        );
     }
 
     public destroyed() {
