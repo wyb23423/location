@@ -63,6 +63,14 @@ export default class Batch extends MapMixin {
     public group = '';
 
     public onSubmit(data: PrimaryConfig, protocol: string) {
+        if (!this.group) {
+            return this.$message.error('分组不能为空');
+        }
+
+        if (!this.main) {
+            return this.$message.error('主基站不能为空');
+        }
+
         console.log(data, protocol);
     }
 

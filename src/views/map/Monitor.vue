@@ -78,7 +78,7 @@ import Group from '@/components/monitor/Group.vue';
 import Census from '@/components/monitor/Census.vue';
 import TagSelect from '@/components/form/TagSelect.vue';
 import MonitorMixin from '@/mixins/monitor';
-import { ZoneMode } from '@/store';
+import { ZoneMode } from '@/plugins/store';
 import { State } from 'vuex-class/lib/bindings';
 import { Ref } from 'vue-property-decorator';
 import { Async } from '../../assets/utils/util';
@@ -188,11 +188,6 @@ export default class Monitor extends MonitorMixin {
         this.findTarget = '';
     }
 
-    public fullScreen() {
-        document.fullscreenElement
-            ? document.exitFullscreen()
-            : this.root && this.root.requestFullscreen();
-    }
     // ==================================
     protected initData() {
         this.initWebSocket();

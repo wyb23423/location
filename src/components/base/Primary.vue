@@ -24,13 +24,6 @@
                 <el-radio :label="0x33">上行模式</el-radio>
             </el-radio-group>
         </el-form-item>
-        <!-- <el-form-item label="距离参数" required prop="distance">
-            <el-input v-model.number="form.distance">
-                <template slot="append">
-                    cm
-                </template>
-            </el-input>
-        </el-form-item> -->
         <el-form-item label="基站信道">
             <el-radio-group v-model="form.channel">
                 <el-radio
@@ -40,12 +33,6 @@
                 ></el-radio>
             </el-radio-group>
         </el-form-item>
-        <!-- <el-form-item label="时间补偿" required prop="time">
-            <el-input
-                v-model.number="form.time"
-                prefix-icon="el-icon-timer"
-            ></el-input>
-        </el-form-item> -->
         <el-form-item label="频率等级" :class="$style.item">
             <el-rate
                 v-model="form.power"

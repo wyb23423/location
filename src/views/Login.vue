@@ -45,7 +45,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { initRouter } from '@/router';
+import { initRouter } from '@/plugins/router';
 import { ElForm } from 'element-ui/types/form';
 import { load } from '@/assets/utils/download';
 import { LOGIN, GET_TAG } from '@/constant/request';

@@ -78,7 +78,7 @@ export default class Page extends Vue {
     position: absolute;
     transform: translateY(-50%);
     top: 50%;
-    z-index: 10001;
+    z-index: 1001;
     transition: left 300ms ease-out;
 }
 </style>

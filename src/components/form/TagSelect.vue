@@ -26,18 +26,20 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Emit, Prop, Ref } from 'vue-property-decorator';
 import { Async } from '@/assets/utils/util';
 import { ElOption } from 'element-ui/types/option';
 import { ElSelect } from 'element-ui/types/select';
 import { GET_TAG } from '@/constant/request';
+import EventMixin from '@/mixins/event';
 
 type Option = Pick<ElOption, 'label' | 'value' | 'disabled'>;
 
+const REMOTE = Symbol('REMOTE节流');
+
 @Component
-export default class TagSelect extends Vue {
+export default class TagSelect extends EventMixin {
     @Prop({ default: () => false }) public readonly disabled!: boolean;
     @Prop({ default: () => false }) public readonly multiple!: boolean;
     @Prop({ default: () => 5 }) public readonly multipleLimit!: number | null;
@@ -51,7 +53,6 @@ export default class TagSelect extends Vue {
     public loading: boolean = false;
 
     @Ref('form') private readonly elSelect!: ElSelect;
-    private timer?: number;
     private id2data = new Map<string, ITag>();
 
     public created() {
@@ -91,12 +92,13 @@ export default class TagSelect extends Vue {
 
     // 远程搜索标签数据
     public remoteMethod(key: string) {
-        this.timer && clearTimeout(this.timer);
+        this.clearTimer(REMOTE);
         if (!key) {
             return (this.tagOptions = this.filter());
         }
 
-        this.timer = setTimeout(
+        this.setTimeout(
+            REMOTE,
             () => this.fetchTag(key).then(() => (this.loading = false)),
             500
         );

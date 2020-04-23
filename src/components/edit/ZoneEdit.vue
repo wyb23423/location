@@ -79,7 +79,7 @@ import Vue from 'vue';
 import { Component, Prop, Watch, Model, Emit } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
 import { State } from 'vuex-class/lib/bindings';
-import { ZoneMode } from '@/store';
+import { ZoneMode } from '@/plugins/store';
 
 @Component
 export default class ZoneEidt extends Vue {

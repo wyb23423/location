@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { BASE_URL } from './constant';
+import { BASE_URL } from '../constant';
 
 Vue.use(Vuex);
 

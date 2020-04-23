@@ -4,7 +4,7 @@
 
 import Component from 'vue-class-component';
 import { State } from 'vuex-class/lib/bindings';
-import { ZoneMode } from '@/store';
+import { ZoneMode } from '@/plugins/store';
 import { FengMapMgr } from '@/assets/map/fengmap';
 import { PIXIMgr } from '@/assets/map/pixi';
 import ZoneMixin from './index';

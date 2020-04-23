@@ -1,5 +1,5 @@
 <template>
-    <div :class="$style.box" v-show="visible">
+    <div :class="$style.box" v-show="visible" ref="box">
         <div :class="$style.bg"></div>
         <video ref="video" autoplay :class="$style.video" v-show="hasVideo">
             您的浏览器不支持video
@@ -65,13 +65,14 @@ import EventMixin from '@/mixins/event';
 const SHOT_TIMER_NAME = Symbol('视频截图');
 
 @Component
-export default class Qrcode extends mixins(EventMixin) {
+export default class QRcode extends mixins(EventMixin) {
     public visible = false; // 是否显示
     public hasVideo = false; // 是否显示视频
 
     private deviceId?: string; // 当前摄像头deviceId
 
     @Ref('video') private readonly video!: HTMLVideoElement;
+    @Ref('box') private readonly box!: HTMLDivElement;
 
     public created() {
         const onerror = (e: WindowEventMap['error']) => {
@@ -84,6 +85,10 @@ export default class Qrcode extends mixins(EventMixin) {
         this.addRemoveCall(() =>
             window.removeEventListener('error', onerror, false)
         );
+    }
+
+    public mounted() {
+        document.body.appendChild(this.box);
     }
 
     /**
@@ -104,6 +109,7 @@ export default class Qrcode extends mixins(EventMixin) {
             //
         }
 
+        this.deviceId = void 0;
         this.visible = false;
         this.$emit('close', data);
     }
@@ -194,7 +200,7 @@ export default class Qrcode extends mixins(EventMixin) {
         }
 
         const data = await qrcodeParser(raw);
-        if (data.includes('laienwei_base_no.')) {
+        if (data.includes('laienwei_base_no')) {
             this.$message('解析成功');
             this.close(data);
         } else if (data.startsWith('http')) {
@@ -254,6 +260,7 @@ function qrcodeParser(raw: File | Blob): Promise<string> {
 
 .box {
     @mixin position-mixin fixed;
+    z-index: 1002;
 
     & > *:not(video) {
         position: absolute;
@@ -333,7 +340,7 @@ function qrcodeParser(raw: File | Blob): Promise<string> {
 
 .tip {
     width: 100%;
-    bottom: 0;
+    bottom: 20px;
     left: 0;
     color: #ebeef5;
     text-align: center;

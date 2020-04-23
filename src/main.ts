@@ -1,11 +1,13 @@
 /// <reference path="./types/vue-module.d.ts" />
 
+import Vue from 'vue';
 import App from './App.vue';
-import router, { initRouter } from './router';
-import store from './store';
+
+import router, { initRouter } from './plugins/router';
+import store from './plugins/store';
+import vuetify from './plugins/vuetify';
+
 import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
-import './assets/public.css';
 import HTTP from './assets/lib/http';
 import VueWorker from 'vue-worker';
 import VueCropper from 'vue-cropper';
@@ -15,7 +17,11 @@ import Events from './assets/lib/events';
 import { formatDate } from './assets/lib/date';
 import { awaitWrap } from './assets/utils/util';
 import { Route } from 'vue-router';
-import Vue from 'vue';
+
+
+import 'element-ui/lib/theme-chalk/index.css';
+import './assets/public.css';
+
 
 // ========================================全局变量及注入vue实例的属性
 (<any>window).PIXI = PIXI;
@@ -61,7 +67,7 @@ async function init() {
         }
 
         console.log('app init...');
-        new Vue({ router, store, render: (h) => h(App) }).$mount('#app');
+        new Vue({ vuetify, router, store, render: (h) => h(App) }).$mount('#app');
     }
 }
 init();

@@ -229,10 +229,16 @@ export class RouteList {
         }
 
         if (this.hasPermission('base', 'put')) {
-            routes.push({
-                path: 'add', name: 'base-add',
-                component: () => import(/* webpackChunkName: "base" */ '@/views/base/BaseAdd.vue')
-            });
+            routes.push(
+                {
+                    path: 'add/all', name: 'base-add-all',
+                    component: () => import(/* webpackChunkName: "base" */ '@/views/base/BaseAdd.vue')
+                },
+                {
+                    path: 'add/install', name: 'base-add-install', props: route => ({ base: route.query.base }),
+                    component: () => import(/* webpackChunkName: "base" */ '@/views/base/install/Install.vue')
+                }
+            );
         }
 
         if (postPermission) {

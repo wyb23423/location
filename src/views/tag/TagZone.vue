@@ -72,7 +72,7 @@
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
 import { State } from 'vuex-class/lib/bindings';
-import { ZoneMode } from '@/store';
+import { ZoneMode } from '@/plugins/store';
 import { Async } from '@/assets/utils/await';
 import TagSelect from '@/components/form/TagSelect.vue';
 import TableMixin, { ColCfgItem } from '@/mixins/table';

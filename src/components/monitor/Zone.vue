@@ -40,7 +40,7 @@ import { FengMapMgr } from '../../assets/map/fengmap';
 import { State } from 'vuex-class/lib/bindings';
 import { ZONE_SEPARATOR } from '../../constant';
 import DisplayMixin from '@/mixins/zone/display';
-import { ZoneMode } from '@/store';
+import { ZoneMode } from '@/plugins/store';
 import { TableRowOperation } from '../Table.vue';
 
 type ZoneData = IZone & {

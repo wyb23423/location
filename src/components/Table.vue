@@ -75,12 +75,12 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Ref } from 'vue-property-decorator';
 import { SX_WIDTH, DEFAULT_WIDTH } from '../constant';
 import { ElTableColumn, TableColumn } from 'element-ui/types/table-column';
 import { ElTable } from 'element-ui/types/table';
+import EventMixin from '@/mixins/event';
 
 export interface TableRowOperation {
     type: string | IJson;
@@ -89,10 +89,12 @@ export interface TableRowOperation {
     isDisable?: (row: any) => boolean;
 }
 
+const UPDATE = Symbol('请求节流');
+
 @Component({
     filters: { parse: parseOpItem }
 })
-export default class Table extends Vue {
+export default class Table extends EventMixin {
     @Prop() public maxHeight!: number; // 最大高度
     @Prop() public tableData!: any[]; // 表格数据
     @Prop() public totalCount!: number; // 数据总条数
@@ -105,10 +107,8 @@ export default class Table extends Vue {
     public pageSize: number = 10;
     public page: number = 1;
 
-    @Ref('table') public readonly elTable!: ElTable;
-
-    private timer?: any;
     private formatters = new Map<string, (cellValue: any) => any>();
+    @Ref('table') private readonly elTable!: ElTable;
 
     public created() {
         this.colCfg.forEach(
@@ -137,12 +137,9 @@ export default class Table extends Vue {
     public updateData(type: 'page' | 'pageSize', data: number) {
         this[type] = data;
 
-        if (this.timer) {
-            clearTimeout(this.timer);
-            this.timer = null;
-        }
-
-        this.timer = setTimeout(
+        this.clearTimer(UPDATE);
+        this.setTimeout(
+            UPDATE,
             () => this.$emit('updateData', this.page, this.pageSize),
             200
         );

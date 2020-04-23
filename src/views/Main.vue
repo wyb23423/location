@@ -31,7 +31,7 @@ export default class Main extends Vue {
     private queue: Alarm[] = [];
 
     public created() {
-        this.link();
+        // this.link();
     }
 
     public mounted() {
