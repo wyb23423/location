@@ -1,5 +1,5 @@
 <template>
-    <v-form v-model="valid" style="padding: 20px 40px">
+    <v-form v-model="valid" style="padding: 20px 40px;">
         <v-text-field
             v-model="min"
             label="编号1"

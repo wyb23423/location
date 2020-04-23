@@ -11,7 +11,7 @@
         >
             <i class="el-icon-ali-icon26801" style="font-size: 12px"></i>
         </v-btn>
-        <v-form v-model="valid" style="padding: 20px 40px">
+        <v-form v-model="valid" style="padding: 20px 40px; max-width: 800px">
             <v-text-field
                 v-model="baseNo"
                 label="基站编号"
@@ -50,8 +50,7 @@
         <el-drawer
             title="生成二维码"
             :visible.sync="drawerVisible"
-            :modal="false"
-            size="100%"
+            :size="rootWidth < sx ? '100%' : '30%'"
             append-to-body
         >
             <QRcodeCreate></QRcodeCreate>
@@ -67,13 +66,17 @@ import { GET_MAP } from '@/constant/request';
 import QRcode from '@/components/QRcode.vue';
 import QRcodeCreate from './QRcodeCreate.vue';
 import { Ref, Prop } from 'vue-property-decorator';
+import { State } from 'vuex-class/lib/bindings';
+import { SX_WIDTH } from '@/constant';
 
 @Component({
     components: { QRcode, QRcodeCreate }
 })
 export default class Install extends Vue {
+    @State public rootWidth!: number;
     @Prop({ default: () => '' }) public base!: string;
 
+    public sx = SX_WIDTH;
     public valid = false;
     public drawerVisible = false;
 

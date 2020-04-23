@@ -27,7 +27,7 @@ export default class App extends Vue {
                 clearTimeout(timer);
             }
 
-            timer = setTimeout(() => {
+            timer = window.setTimeout(() => {
                 this.$event.emit(RESIZE);
                 this.$store.commit('rootWidth', document.body.offsetWidth);
             }, 200);
