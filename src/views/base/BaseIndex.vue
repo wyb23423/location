@@ -17,7 +17,7 @@ export default class BaseIndex extends Vue {
         { title: '设备信息', to: '/base/info', icon: 'el-icon-info' },
         {
             title: '设备添加',
-            to: '/base/add',
+            to: 'add',
             icon: 'el-icon-circle-plus-outline',
             children: [
                 {
