@@ -28,7 +28,7 @@ export default class BaseIndex extends Vue {
                 {
                     title: '基础数据',
                     to: '/base/add/install',
-                    icon: 'el-icon-circle-plus-outline'
+                    icon: 'el-icon-ali-anzhuang'
                 }
             ]
         },
