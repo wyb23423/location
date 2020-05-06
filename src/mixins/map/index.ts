@@ -55,7 +55,7 @@ export default class MapMixin extends Loading {
         if (!this.twinkleTimer.has(tagNo)) {
             const loop = () => {
                 this.mgr && this.mgr.show(tagNo);
-                this.twinkleTimer.set(tagNo, setTimeout(loop, 200));
+                this.twinkleTimer.set(tagNo, window.setTimeout(loop, 200));
             };
             loop();
         }

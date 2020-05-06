@@ -12,7 +12,7 @@ export class Loading extends Vue {
     public loading(options: LoadingServiceOptions = {}, timeout: number = 60000) {
         this.marker = this.$loading(options);
         this.isLoading = true;
-        this.timer = setTimeout(this.loaded.bind(this), timeout);
+        this.timer = window.setTimeout(this.loaded.bind(this), timeout);
     }
 
     public loaded() {

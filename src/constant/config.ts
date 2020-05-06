@@ -8,7 +8,7 @@ export let APP_KEY: string = '83a75157d56ffe85317ed7ba1e8120ff';
 // 开发者申请应用名称
 export let APP_NAME: string = 'hunjingguanchang';
 // 服务器地址
-export let BASE_URL = process.env.BASE_URL;
+export let BASE_URL = <string>process.env.BASE_URL;
 
 /**
  * 初始化配置

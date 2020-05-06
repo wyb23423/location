@@ -1,8 +1,12 @@
 <template>
     <div class="map-box flex-center" style="flex-direction: column;">
-        <video ref="video" :class="$style.video"></video>
+        <div :class="$style.video">
+            <video ref="video" controls>
+                Your browser is too old which doesn't support HTML5 video.
+            </video>
+        </div>
         <div :class="['flex-center', $style.config]">
-            <el-checkbox v-model="isTrack">追踪模式</el-checkbox>
+            <!-- <el-checkbox v-model="isTrack">追踪模式</el-checkbox> -->
 
             <div style="margin: 0 10px">
                 <TagSelect @change="tag = $event" v-show="isTrack"></TagSelect>
@@ -10,7 +14,8 @@
                     placeholder="请选择摄像头"
                     v-show="!isTrack"
                     :url="GET_CAMERA"
-                    v-model.number="camera"
+                    value=""
+                    @change="camera = $event[0].url"
                 ></Select>
             </div>
 
@@ -43,21 +48,25 @@ export default class Video extends WebSocketInit {
 
     public isTrack = false; // 是否自动追踪某个标签
     public tag = '';
-    public camera = -1;
+    public camera: string = '';
 
     private groupNo = ''; // 追踪标签当前所在的组
     private player?: FlvJs.Player;
 
     @Ref('video') private readonly video!: HTMLVideoElement;
 
-    public switchVideo() {
+    public created() {
+        // this.initWebSocket();
+    }
+
+    public destroyed() {
         this.player?.destroy();
+    }
 
-        if (this.isTrack) {
-            // TODO
-        }
+    public switchVideo() {
+        // TODO 追踪模式（目前不能确定使用哪个摄像头）
 
-        // TODO
+        this.createPlayer();
     }
 
     protected handler(data: ITagInfo) {
@@ -77,15 +86,39 @@ export default class Video extends WebSocketInit {
     protected async initTagAll() {
         //
     }
+
+    private createPlayer() {
+        if (!this.camera) {
+            return;
+        }
+
+        this.player?.destroy();
+        this.player = FlvJs.createPlayer({
+            type: 'flv',
+            isLive: true,
+            hasAudio: false,
+            url: '/videoapi?url=' + this.camera
+        });
+        this.player.attachMediaElement(this.video);
+        this.player.load();
+        this.player.play();
+    }
 }
 </script>
 
 <style lang="postcss" module>
 .video {
+    padding: 20px;
     width: 70%;
     height: 70%;
     background: #000;
     border-radius: 5px 5px 0 0;
+
+    & > video {
+        width: 100%;
+        height: 100%;
+        outline: 0;
+    }
 }
 
 .config {
