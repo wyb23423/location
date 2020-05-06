@@ -5,7 +5,8 @@
     "scripts": {
         "compile": "./node_modules/typescript/bin/tsc",
         "tsc": "node ./node_modules/typescript/lib/tsc.js",
-        "dev": "nodemon server-dist/index.js"
+        "dev": "nodemon dist/index.js",
+        "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
     },
     "author": "",
     "license": "ISC",
@@ -13,13 +14,32 @@
         "fluent-ffmpeg": "^2.1.2"
     },
     "devDependencies": {
+        "@commitlint/config-conventional": "^8.3.4",
+        "@types/node": "^13.13.5",
         "@typescript-eslint/eslint-plugin": "^2.24.0",
         "@typescript-eslint/parser": "^2.24.0",
+        "commitizen": "^4.1.2",
+        "commitlint": "^8.3.5",
+        "conventional-changelog-cli": "^2.0.31",
         "eslint": "^6.8.0",
         "eslint-config-prettier": "^6.10.0",
         "eslint-plugin-prettier": "^3.1.2",
+        "husky": "^4.2.5",
         "nodemon": "^2.0.3",
         "prettier": "^1.19.1",
         "typescript": "^3.3.3333"
+    },
+    "prettier": {
+        "tabWidth": 4
+    },
+    "husky": {
+        "hooks": {
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+        }
+    },
+    "config": {
+        "commitizen": {
+            "path": "./node_modules/commitizen"
+        }
     }
 }

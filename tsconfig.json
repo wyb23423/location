@@ -20,6 +20,7 @@
         "pretty": true,
         "strictPropertyInitialization": true,
         "watch": true,
+        "resolveJsonModule": true,
         "outDir": "dist",
         "rootDir": "src",
         "lib": [
