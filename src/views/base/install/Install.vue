@@ -48,11 +48,10 @@
         <QRcode @close="getBaseNo" ref="qrcode"></QRcode>
 
         <el-drawer
-            title="生成二维码"
             :visible.sync="drawerVisible"
             :size="rootWidth < sx ? '100%' : '30%'"
-            append-to-body
         >
+            <span slot="title" style="outline: 0;">生成二维码</span>
             <QRcodeCreate></QRcodeCreate>
         </el-drawer>
     </v-app>
