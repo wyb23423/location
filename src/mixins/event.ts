@@ -39,10 +39,6 @@ export default class EventMixin extends Vue {
             await new Promise(resolve => setTimeout(resolve, delay));
         }
 
-        if (this.isFullScreen) {
-            return;
-        }
-
         const el: any = document.body;
         const rfs =
             el.requestFullscreen ||

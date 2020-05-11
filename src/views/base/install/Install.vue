@@ -11,7 +11,11 @@
         >
             <i class="el-icon-ali-icon26801" style="font-size: 12px"></i>
         </v-btn>
-        <v-form v-model="valid" style="padding: 20px 40px; max-width: 800px">
+        <v-form
+            v-model="valid"
+            ref="form"
+            style="padding: 20px 40px; max-width: 800px"
+        >
             <v-text-field
                 v-model="baseNo"
                 label="基站编号"
@@ -40,6 +44,7 @@
                 type="primary"
                 style="width: 100%; margin-top: 20px"
                 :disabled="!valid"
+                @click="onSubmit"
             >
                 提交
             </el-button>
@@ -61,12 +66,13 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { hexadecimalRuleFactory } from '@/assets/utils/util';
-import { GET_MAP } from '@/constant/request';
+import { GET_MAP, INSTALL_BASE } from '@/constant/request';
 import QRcode from '@/components/QRcode.vue';
 import QRcodeCreate from './QRcodeCreate.vue';
 import { Ref, Prop } from 'vue-property-decorator';
 import { State } from 'vuex-class/lib/bindings';
 import { SX_WIDTH } from '@/constant';
+import { VForm } from 'vuetify/lib';
 
 @Component({
     components: { QRcode, QRcodeCreate }
@@ -106,6 +112,24 @@ export default class Install extends Vue {
             .then(res => (this.mapOptions = res.pagedData.datas))
             .then(() => (this.mapId = this.mapOptions[0]?.id))
             .catch(console.error);
+    }
+
+    public async onSubmit() {
+        const data = {
+            baseId: this.baseNo.padStart(8, '0'),
+            coordinate: { ...this.position },
+            mapId: this.mapId
+        };
+        (<any>this.$refs.form).reset();
+        const { value, err } = await this.$async(
+            this.$http.post(INSTALL_BASE, data, {
+                'Content-Type': 'application/json'
+            })
+        );
+
+        // if (!value) {
+        //     return;
+        // }
     }
 
     public open() {

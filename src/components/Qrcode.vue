@@ -45,7 +45,7 @@
         >
             <el-button
                 :class="$style.button"
-                @click="isFullScreen && setRemoveCall(200)"
+                @click="isFullScreen && fullScreen(200)"
             >
                 选择二维码文件
             </el-button>

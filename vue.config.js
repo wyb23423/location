@@ -63,5 +63,8 @@ module.exports = {
         performance: {
             hints: false
         }
+    },
+    pwa: {
+        name: '莱恩微室内定位'
     }
 }
