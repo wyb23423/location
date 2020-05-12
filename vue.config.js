@@ -65,6 +65,16 @@ module.exports = {
         }
     },
     pwa: {
-        name: '莱恩微室内定位'
+        name: '莱恩微室内定位',
+        appleMobileWebAppCapable: 'yes',
+        // iconPaths: {
+        //     favicon32: 'favicon.ico',
+        //     favicon16: 'favicon.ico'
+        // },
+        workboxOptions: {
+            navigateFallback: 'index.html',
+            exclude: [/\.(fmi|theme|fmap)$/],
+            skipWaiting: true
+        }
     }
 }

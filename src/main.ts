@@ -18,7 +18,7 @@ import { formatDate } from './assets/lib/date';
 import { awaitWrap } from './assets/utils/util';
 import { Route } from 'vue-router';
 
-
+import './plugins/registerServiceWorker';
 import 'element-ui/lib/theme-chalk/index.css';
 import './assets/public.css';
 
