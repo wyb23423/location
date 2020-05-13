@@ -1,4 +1,4 @@
-import Vuetify, { VForm, VTextField, VSelect, VBtn } from 'vuetify/lib';
+import Vuetify, { VForm, VTextField, VSelect, VBtn, VBadge } from 'vuetify/lib';
 import Vue from 'vue';
 
 Vue.use(Vuetify, {
@@ -6,7 +6,8 @@ Vue.use(Vuetify, {
         VForm,
         VTextField,
         VSelect,
-        VBtn
+        VBtn,
+        VBadge
     }
 });
 

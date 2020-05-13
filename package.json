@@ -7,7 +7,7 @@
         "build": "vue-cli-service build",
         "test:unit": "vue-cli-service test:unit",
         "lint": "vue-cli-service lint",
-        "start": "node server.js"
+        "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
     },
     "dependencies": {
         "core-js": "^2.6.11",
@@ -31,6 +31,7 @@
         "@babel/plugin-proposal-nullish-coalescing-operator": "^7.7.4",
         "@babel/plugin-proposal-optional-chaining": "^7.8.3",
         "@babel/plugin-syntax-dynamic-import": "^7.7.4",
+        "@commitlint/config-conventional": "^8.3.4",
         "@types/chai": "^4.2.7",
         "@types/mocha": "^5.2.4",
         "@types/pixi.js": "^4.8.9",
@@ -42,8 +43,12 @@
         "@vue/cli-service": "^3.12.1",
         "@vue/test-utils": "1.0.0-beta.29",
         "chai": "^4.1.2",
+        "commitlint": "^8.3.5",
+        "conventional-changelog-cli": "^2.0.34",
+        "cz-customizable": "^6.2.0",
         "deepmerge": "^4.2.2",
         "fibers": "^5.0.0",
+        "husky": "^4.2.5",
         "lint-staged": "^8.2.1",
         "postcss-cssnext": "^3.1.0",
         "postcss-each": "^0.10.0",
@@ -58,8 +63,11 @@
         "vue-template-compiler": "^2.6.11",
         "vuetify-loader": "^1.4.3"
     },
-    "gitHooks": {
-        "pre-commit": "lint-staged"
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged",
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+        }
     },
     "lint-staged": {
         "*.ts": [
@@ -70,5 +78,10 @@
             "vue-cli-service lint",
             "git add"
         ]
+    },
+    "config": {
+        "commitizen": {
+            "path": "./node_modules/cz-customizable"
+        }
     }
 }
