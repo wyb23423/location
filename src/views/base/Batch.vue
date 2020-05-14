@@ -50,6 +50,8 @@ import Component from 'vue-class-component';
 import { getCustomInfo } from '@/assets/map/common';
 import { BASE_ERROR_IMG } from '@/constant';
 import Primary, { PrimaryConfig } from '@/components/base/Primary.vue';
+import { Async } from '@/assets/utils/await';
+import { SEND_PROTOCOL } from '@/constant/request';
 
 @Component({
     components: {
@@ -62,7 +64,10 @@ export default class Batch extends MapMixin {
     public main = '';
     public group = '';
 
-    public onSubmit(data: PrimaryConfig, protocol: string) {
+    private ipMap = new Map<string, string>();
+
+    @Async()
+    public async onSubmit(data: PrimaryConfig, protocol: string) {
         if (!this.group) {
             return this.$message.error('分组不能为空');
         }
@@ -71,7 +76,21 @@ export default class Batch extends MapMixin {
             return this.$message.error('主基站不能为空');
         }
 
-        console.log(data, protocol);
+        const item = '[\\da-fA-F]';
+        const pattern = new RegExp(`^(${item}{4})${item}{14}`);
+        const arr = this.selectedBases.map(v => {
+            const main = v === this.main ? '55' : 'AA';
+            return this.$http.post(SEND_PROTOCOL, {
+                ip: this.ipMap.get(v),
+                protocol: protocol.replace(
+                    pattern,
+                    (_, $1) => $1 + v + this.group + main
+                )
+            });
+        });
+
+        await Promise.all(arr);
+        this.$message.success('设置成功');
     }
 
     protected dispose() {
@@ -80,7 +99,12 @@ export default class Batch extends MapMixin {
     }
 
     protected bindEvents() {
-        this.mgr!.on('loadComplete', this.tagAnchor.bind(this));
+        this.mgr!.on('loadComplete', () =>
+            this.tagAnchor().then(data =>
+                data.forEach(v => this.ipMap.set(v.id, v.ip))
+            )
+        );
+
         this.mgr!.on(
             'mapClickNode',
             ({ nodeType, target }: FMMapClickEvent) => {
