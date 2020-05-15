@@ -77,17 +77,16 @@ export default class Batch extends MapMixin {
         }
 
         const item = '[\\da-fA-F]';
-        const pattern = new RegExp(`^(${item}{4})${item}{14}`);
-        const arr = this.selectedBases.map(v => {
-            const main = v === this.main ? '55' : 'AA';
-            return this.$http.post(SEND_PROTOCOL, {
+        const pattern = new RegExp(`^(${item}{4})${item}{6}`);
+        const arr = this.selectedBases.map(v =>
+            this.$http.post(SEND_PROTOCOL, {
                 ip: this.ipMap.get(v),
                 protocol: protocol.replace(
                     pattern,
-                    (_, $1) => $1 + v + this.group + main
+                    (_, $1) => $1 + this.group + (v !== this.main ? '55' : 'AA')
                 )
-            });
-        });
+            })
+        );
 
         await Promise.all(arr);
         this.$message.success('设置成功');

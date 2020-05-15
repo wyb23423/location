@@ -12,8 +12,8 @@
             </el-form-item>
             <el-form-item label="基站类型">
                 <el-radio-group v-model="form.main">
-                    <el-radio :label="0xaa">从基站</el-radio>
-                    <el-radio :label="0x55">主基站</el-radio>
+                    <el-radio :label="0x55">从基站</el-radio>
+                    <el-radio :label="0xaa">主基站</el-radio>
                 </el-radio-group>
             </el-form-item>
         </slot>
@@ -166,6 +166,7 @@ export default class Primary extends Vue {
         }
 
         return keys
+            .slice(1)
             .reduce((a, [k, byte]) => {
                 let data = value[<keyof PrimaryConfig>k] || 0;
                 if (k === 'power') {
