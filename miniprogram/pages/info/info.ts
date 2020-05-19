@@ -7,6 +7,10 @@ import ERROR_INFO from '../../constant/error';
 
 type CharacteristicType = 'read' | 'write' | 'notify';
 
+const BLE_UUID_DW1000_SERVICE = '0000DECA-0000-1000-8000-00805F9B34FB';
+const BLE_UUID_DW1001_STADIOMETRY = '00001001-0000-1000-8000-00805F9B34FB';
+const BLE_UUID_DW1001_ORDER = '00001002-0000-1000-8000-00805F9B34FB';
+
 Page({
     deviceId: '', // 设备deviceId
     uuid: new Map<CharacteristicType, string[]>(),
@@ -14,7 +18,7 @@ Page({
     ctx: null as ReturnType<typeof createRecycleContext> | null,
     data: {
         name: '',
-        messages: [] as { value: string }[],
+        messages: [] as { no: string; distance: number }[],
         scrollTop: 0,
     },
     onLoad({ id, name }) {
@@ -40,7 +44,7 @@ Page({
             },
         });
     },
-    onHide() {
+    onUnload() {
         // 取消监听低功耗蓝牙设备的特征值变化事件。
         this.listener && wx.offBLECharacteristicValueChange(this.listener);
         this.uuid.clear();
@@ -88,7 +92,7 @@ Page({
             const { services } = await Bluetooth.getBLEDeviceServices({ deviceId });
             const arr = [];
             for (const v of services) {
-                if (v.isPrimary) {
+                if (v.uuid === BLE_UUID_DW1000_SERVICE) {
                     arr.push(this._UUID(v.uuid, deviceId));
                 }
             }
@@ -113,9 +117,19 @@ Page({
         });
 
         this.listener = ({ value }): void => {
-            console.log(value);
+            if (!this.ctx) {
+                return;
+            }
 
-            this.ctx && this.ctx.append([{ value: ab2hex(value) }]);
+            const data = ab2hex(value);
+            const no = data.slice(0, -4);
+            const distance = this._hexstr2num(data.slice(-4));
+            const index = this.data.messages.findIndex(v => v.no === no);
+            if (index > -1) {
+                this.ctx.splice(index, 1, [{ no, distance }]);
+            } else {
+                this.ctx.append([{ no, distance }]);
+            }
         };
 
         wx.onBLECharacteristicValueChange(this.listener);
@@ -131,13 +145,23 @@ Page({
                 this.uuid.set('read', [uuid, serviceId]);
             }
 
-            if (!this.uuid.has('write') && properties.write) {
+            if (!this.uuid.has('write') && properties.write && uuid === BLE_UUID_DW1001_ORDER) {
                 this.uuid.set('write', [uuid, serviceId]);
             }
 
-            if (!this.uuid.has('notify') && (properties.notify || properties.indicate)) {
+            if (
+                !this.uuid.has('notify') &&
+                (properties.notify || properties.indicate) &&
+                uuid === BLE_UUID_DW1001_STADIOMETRY
+            ) {
                 this.uuid.set('notify', [uuid, serviceId]);
             }
         }
+    },
+    _hexstr2num(code: string) {
+        const arr = new Uint8Array(1);
+        arr[0] = +`0x${code}`;
+
+        return arr[0];
     },
 });

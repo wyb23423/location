@@ -16,7 +16,7 @@
         </view>
         <view class="info-main">
             <recycle-item wx:for="{{messages}}" wx:key="messages" class="messages">
-                {{item.value}}
+                {{item.no}}: {{item.distance}}cm
             </recycle-item>
         </view>
     </recycle-view>
