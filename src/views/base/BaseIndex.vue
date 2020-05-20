@@ -41,6 +41,11 @@ export default class BaseIndex extends Vue {
             title: '分组配置',
             to: '/base/batch',
             icon: 'el-icon-folder-opened'
+        },
+        {
+            title: '基站二维码',
+            to: '/base/qrcode',
+            icon: 'el-icon-ali-icon26801'
         }
     ];
 }

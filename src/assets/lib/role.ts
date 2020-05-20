@@ -254,6 +254,11 @@ export class RouteList {
             );
         }
 
+        routes.push({
+            path: 'qrcode', name: 'base-qrcode',
+            component: () => import(/* webpackChunkName: "base" */ '@/views/base/QRcodeCreate.vue'),
+        });
+
         if (routes.length) {
             routes[0].alias = '';
             this.routes.push({

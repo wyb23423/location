@@ -8,8 +8,9 @@
             x-small
             color="error"
             @click="drawerVisible = true"
+            v-show="!!errorCount"
         >
-            <i class="el-icon-ali-icon26801" style="font-size: 12px"></i>
+            {{ errorCount }}
         </v-btn>
         <v-form
             v-model="valid"
@@ -75,9 +76,13 @@
         <el-drawer
             :visible.sync="drawerVisible"
             :size="rootWidth < sx ? '100%' : '30%'"
+            title="失败列表"
         >
-            <span slot="title" style="outline: 0;">生成二维码</span>
-            <QRcodeCreate></QRcodeCreate>
+            <Error
+                :count="errorCount"
+                @remove="errorCount--"
+                @edit="editError"
+            ></Error>
         </el-drawer>
     </v-app>
 </template>
@@ -88,7 +93,7 @@ import Component from 'vue-class-component';
 import { hexadecimalRuleFactory, Async } from '@/assets/utils/util';
 import { GET_MAP, INSTALL_BASE } from '@/constant/request';
 import QRcode from '@/components/QRcode.vue';
-import QRcodeCreate from './QRcodeCreate.vue';
+import Error from './Error.vue';
 import { Ref, Prop } from 'vue-property-decorator';
 import { State } from 'vuex-class/lib/bindings';
 import { SX_WIDTH } from '@/constant';
@@ -96,6 +101,7 @@ import { VForm } from 'vuetify/lib';
 import { getAndCreateStore } from '@/assets/lib/localstore';
 
 const store = getAndCreateStore('INSTALL');
+export const storeError = getAndCreateStore('INSTALL_ERROR');
 
 interface InstallData {
     baseId: string;
@@ -104,7 +110,7 @@ interface InstallData {
 }
 
 @Component({
-    components: { QRcode, QRcodeCreate }
+    components: { QRcode, Error }
 })
 export default class Install extends Vue {
     @State public rootWidth!: number;
@@ -112,7 +118,7 @@ export default class Install extends Vue {
 
     public sx = SX_WIDTH; // 小屏宽度
     public valid = false; // 表单是否有效
-    public drawerVisible = false; // 是否显示生成二维码的表单
+    public drawerVisible = false; // 是否显示失败列表
 
     // 表单字段
     public baseNo: string = this.base;
@@ -121,6 +127,7 @@ export default class Install extends Vue {
 
     public dataCount = 0; // 缓存中数据的数量
     public submitCount = 0; // 提交中的数据数量
+    public errorCount = 0; // 提交失败的数据数量
 
     public positionRules = [
         (v: number) => typeof v === 'number' || '必须为有效数字',
@@ -142,7 +149,18 @@ export default class Install extends Vue {
 
     public created() {
         store.length().then(c => (this.dataCount = c));
+        storeError.length().then(c => (this.errorCount = c));
         this.initMapOptions();
+    }
+
+    @Async()
+    public async editError(k: string) {
+        const data = await storeError.getItem<InstallData>(k);
+        this.baseNo = data.baseId;
+        this.position = data.coordinate;
+        this.mapId = data.mapId;
+
+        this.drawerVisible = false;
     }
 
     // 将数据添加到缓存
@@ -153,25 +171,29 @@ export default class Install extends Vue {
             mapId: this.mapId
         };
 
+        // 从错误表中移除数据
+        storeError.removeItem(data.baseId, () =>
+            storeError.length().then(c => (this.errorCount = c))
+        );
+
         // 重置表单
         (<any>this.$refs.form).resetValidation();
         this.baseNo = '';
         this.position = <Vector3>{};
 
         // 判断是否新增
-        const key = 'map_' + data.baseId;
-        const res = await this.$async(store.getItem(key));
+        const res = await this.$async(store.getItem(data.baseId));
         if (!(res.value || res.err)) {
             this.dataCount++;
         }
 
         // 设置缓存
-        await store.setItem(key, data);
+        await store.setItem(data.baseId, data);
 
         // 正在提交, 立即提交数据
         if (this.submitCount > 0) {
             this.submitCount++;
-            this._submit(key, data);
+            this._submit(data.baseId, data);
         }
     }
 
@@ -205,12 +227,13 @@ export default class Install extends Vue {
             await this.$http.post(INSTALL_BASE, data, {
                 'Content-Type': 'application/json'
             });
-            await store.removeItem(k);
-            this.dataCount--;
         } catch (e) {
-            console.error(e);
+            storeError.setItem(k, data);
+            this.errorCount++;
         }
 
+        await store.removeItem(k);
+        this.dataCount--;
         this.submitCount--;
     }
 

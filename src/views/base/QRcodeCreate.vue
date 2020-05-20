@@ -1,27 +1,30 @@
 <template>
-    <v-form v-model="valid" style="padding: 20px 40px;">
-        <v-text-field
-            v-model="min"
-            label="编号1"
-            counter="8"
-            :rules="baseNoRules"
-        ></v-text-field>
-        <v-text-field
-            v-model="max"
-            label="编号2"
-            counter="8"
-            :rules="baseNoRules"
-        >
-        </v-text-field>
-        <el-button
-            type="primary"
-            style="width: 100%; margin-top: 20px"
-            :disabled="!valid"
-            @click="createQRcode"
-        >
-            生成
-        </el-button>
-    </v-form>
+    <v-app style="padding: 40px;">
+        <h4 style="margin-bottom: 10px">生成二维码</h4>
+        <v-form v-model="valid">
+            <v-text-field
+                v-model="min"
+                label="编号1"
+                counter="8"
+                :rules="baseNoRules"
+            ></v-text-field>
+            <v-text-field
+                v-model="max"
+                label="编号2"
+                counter="8"
+                :rules="baseNoRules"
+            >
+            </v-text-field>
+            <el-button
+                type="primary"
+                style="width: 100%; margin-top: 20px"
+                :disabled="!valid"
+                @click="createQRcode"
+            >
+                生成
+            </el-button>
+        </v-form>
+    </v-app>
 </template>
 
 <script lang="ts">

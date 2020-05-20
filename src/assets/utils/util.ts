@@ -42,7 +42,7 @@ export function encodeUtf8(text: string) {
 export function getIp() {
     let ip: string = location.hostname;
     if (process.env.NODE_ENV !== 'production') {
-        const res = BASE_URL.match(/^http:\/\/([\w\d\.]+)(:\d+)?\/$/);
+        const res = BASE_URL.match(/^https?:\/\/([\w\d\.]+)(:\d+)?\/$/);
         if (res) {
             ip = res[1];
         } else {
