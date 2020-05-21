@@ -51,7 +51,7 @@ import { getCustomInfo } from '@/assets/map/common';
 import { BASE_ERROR_IMG } from '@/constant';
 import Primary, { PrimaryConfig } from '@/components/base/Primary.vue';
 import { Async } from '@/assets/utils/await';
-import { SEND_PROTOCOL } from '@/constant/request';
+import { SET_BASE_PROP } from '@/constant/request';
 
 @Component({
     components: {
@@ -79,7 +79,7 @@ export default class Batch extends MapMixin {
         const item = '[\\da-fA-F]';
         const pattern = new RegExp(`^(${item}{4})${item}{6}`);
         const arr = this.selectedBases.map(v =>
-            this.$http.post(SEND_PROTOCOL, {
+            this.$http.post(SET_BASE_PROP, {
                 ip: this.ipMap.get(v),
                 protocol: protocol.replace(
                     pattern,

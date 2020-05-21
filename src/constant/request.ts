@@ -40,6 +40,7 @@ export const RM_ALARM_BATCH = '/api/alarm/batchDeleteAlarm'; // 批量删除报�
 
 export const ADD_BASE = '/api/base/addBase'; // 添加基站
 export const INSTALL_BASE = '/api/base/init'; // 安装时添加基站
+export const SET_BASE_PROP = '/api/base/init/setProperties'; // 初始化配置基站
 export const RM_BASE = '/api/base/deleteBase'; // 删除基站
 export const UPDATE_BASE = '/api/base/updateBase'; // 更新基站
 export const GET_BASE = '/api/base/getall'; // 获取基站数据
