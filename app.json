@@ -1,0 +1,17 @@
+{
+  "name": "baseinit",
+  "displayName": "baseinit",
+  "expo": {
+    "name": "baseinit",
+    "slug": "baseinit",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
