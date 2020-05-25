@@ -1,120 +1,75 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, TextInput, Text, Dimensions } from 'react-native';
-import { TextInputLayout } from 'rn-textinputlayout';
-import Picker from 'react-native-picker';
+import 'react-native-gesture-handler';
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import BaseForm from './src/views/BaseForm/BaseForm';
+import { View, Text } from 'react-native';
+import { events } from './src/lib/events';
 
-type SetStateAction<T> = React.Dispatch<React.SetStateAction<T>>
+const Tab = createBottomTabNavigator();
 
-function usePicker(setMap: SetStateAction<number>): [boolean, SetStateAction<boolean>] {
-    const [visible, setVisible] = useState(false);
-
-    useEffect(() => {
-        const data = [];
-        for (var i = 0; i < 100; i++) {
-            data.push(i);
-        }
-
-        Picker.init({
-            pickerData: data,
-            selectedValue: [data[0]],
-            pickerTitleText: '选择地图',
-            pickerConfirmBtnText: '确认',
-            pickerCancelBtnText: '取消',
-            pickerBg: [255, 255, 255, 1],
-            pickerToolBarBg: [255, 255, 255, 1],
-            onPickerConfirm: data => {
-                setMap(data[0]);
-                Picker.select(data);
-                setVisible(false);
-            },
-            onPickerCancel() {
-                setVisible(false);
-            }
-        });
-    }, []);
-
-    return [visible, setVisible];
+const icons = {
+    BaseForm: '\ue75d',
+    ErrorList: '\ue6c3'
 }
 
 export default function App() {
-    const [mapID, setMap] = useState(-1);
-    const [visible, setVisible] = usePicker(setMap);
+    const [badgeCount, setBadgeCount] = React.useState(0);
+    const setCount = React.useCallback((count: number) => setBadgeCount(Math.min(count, 99)), []);
 
-    const showPicker = useCallback(() => {
-        setVisible(true);
-        Picker.show();
-    }, []);
-
-    const hiddenPicker = useCallback(() => {
-        Picker.hide();
-        setVisible(false);
-    }, [])
+    React.useEffect(() => { events.on('SET_ERROR_COUNT', setCount) }, []);
 
     return (
-        <View>
-            <View style={{ ...styles.inputLayout, ...styles.flex }}>
-                <TextInputLayout style={{ width: '95%', marginRight: 5 }}>
-                    <TextInput
-                        style={styles.textInput}
-                        placeholder='基站编号'
-                    />
-                </TextInputLayout>
-                <Text style={styles.icon}>&#xe601;</Text>
-            </View>
-
-            {
-                ['x', 'y', 'z'].map(v =>
-                    <TextInputLayout style={styles.inputLayout} key={v}>
-                        <TextInput
-                            style={styles.textInput}
-                            placeholder={v}
+        <NavigationContainer>
+            <Tab.Navigator
+                initialRouteName="BaseForm"
+                screenOptions={({ route }) => ({
+                    tabBarIcon: ({ color }) =>
+                        <IconWithBadge
+                            icon={icons[route.name as keyof typeof icons]}
+                            size={20}
+                            color={color}
+                            badgeCount={route.name === 'ErrorList' ? badgeCount : 0}
                         />
-                    </TextInputLayout>
-                )
-            }
-
-            <View onTouchEnd={showPicker} style={styles.inputLayout}>
-                <TextInputLayout>
-                    <TextInput
-                        style={{ ...styles.textInput, color: '#000' }}
-                        editable={false}
-                        value={mapID >= 0 ? mapID + '' : void 0}
-                        placeholder='地图'
-                    />
-                </TextInputLayout>
-            </View>
-
-            {visible ? <View style={styles.modal} onTouchEnd={hiddenPicker} /> : null}
-        </View>
+                })}
+            >
+                <Tab.Screen name="BaseForm" component={BaseForm} options={{ title: '基站录入' }} />
+                <Tab.Screen name="ErrorList" component={BaseForm} options={{ title: '失败列表' }} />
+            </Tab.Navigator>
+        </NavigationContainer>
     );
 }
 
-const styles = StyleSheet.create({
-    flex: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-        justifyContent: 'space-between'
-    },
-    icon: {
-        fontFamily: 'iconfont',
-        fontSize: 24
-    },
-    modal: {
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        minHeight: Dimensions.get('window').height
-    },
-    textInput: {
-        fontSize: 16,
-        height: 40,
-    },
-    inputLayout: {
-        marginTop: 16,
-        marginHorizontal: 36,
-    }
-});
+interface IconWithBadgeProps {
+    icon: string;
+    badgeCount: number;
+    color: string;
+    size: number;
+}
+
+function IconWithBadge({ icon, badgeCount, color, size }: IconWithBadgeProps) {
+    return (
+        <View style={{ width: 24, height: 24, margin: 5 }}>
+            <Text style={{ fontFamily: 'iconfont', fontSize: size, color }}>{icon}</Text>
+            {badgeCount > 0 && (
+                <View
+                    style={{
+                        position: 'absolute',
+                        right: -7,
+                        top: -7,
+                        backgroundColor: 'red',
+                        borderRadius: 8,
+                        width: 15,
+                        height: 15,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    <Text style={{ color: 'white', fontSize: 12, fontWeight: 'bold' }}>
+                        {badgeCount}
+                    </Text>
+                </View>
+            )}
+        </View>
+    );
+}
