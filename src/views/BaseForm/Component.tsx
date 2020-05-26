@@ -35,6 +35,7 @@ export function useBaseId(navigation: BottomTabNavigationProp<RouteParamList>) {
             <View style={styles.flex}>
                 <TextInputLayout style={{ width: '95%', marginRight: 5 }} checkValid={checkValid}>
                     <TextInput
+                        maxLength={8}
                         style={styles.textInput}
                         placeholder='基站编号'
                         value={baseId}
@@ -84,6 +85,7 @@ export function useCoordinate() {
         <View style={styles.inputLayout} key={k}>
             <TextInputLayout checkValid={v => checkValid(v, k)}>
                 <TextInput
+                    keyboardType="numeric"
                     style={styles.textInput}
                     placeholder={k}
                     value={coordinate[k]}
@@ -115,6 +117,7 @@ export function useMap(navigation: BottomTabNavigationProp<RouteParamList>) {
 
     const [visible, setVisible] = useMapPicker(setMap, checkValid, navigation);
     const showPicker = useCallback(() => {
+        TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
         visible ? Picker.hide() : Picker.show();
         setVisible(!visible);
     }, [visible]);
@@ -126,7 +129,6 @@ export function useMap(navigation: BottomTabNavigationProp<RouteParamList>) {
             <TextInputLayout>
                 <TextInput
                     style={{ ...styles.textInput, color: '#000' }}
-                    editable={false}
                     value={mapData}
                     placeholder='地图'
                 />

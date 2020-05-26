@@ -14,7 +14,7 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
 
     const [dataCount, setDataCount] = useState(0); // 缓存中数据的数量
     const [submitCount, setSubmitCount] = useState(0); // 提交中的数据数量
-    const [errorCount, setErrorCount] = useState(0); // 提交失败的数据数量
+    const [_, setErrorCount] = useState(0); // 提交失败的数据数量
 
     useEffect(() => {
         AsyncStorage.getAllKeys((err, keys) => {
@@ -48,8 +48,10 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
             });
         } catch (e) {
             data && AsyncStorage.setItem('ERR' + k, JSON.stringify(data));
-            events.emit(SET_ERROR_COUNT, errorCount + 1);
-            setErrorCount(errorCount + 1);
+            setErrorCount(pre => {
+                events.emit(SET_ERROR_COUNT, pre + 1);
+                return pre + 1;
+            });
         }
 
         await AsyncStorage.removeItem(k);
@@ -90,7 +92,7 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
 
             // 判断是否新增
             const oldData = await AsyncStorage.getItem(data.baseId);
-            oldData && setDataCount(dataCount + 1);
+            oldData || setDataCount(dataCount + 1);
 
             // 设置缓存
             await AsyncStorage.setItem(data.baseId, JSON.stringify(data));
@@ -173,14 +175,15 @@ const styles = StyleSheet.create({
     },
     badge: {
         position: 'absolute',
-        top: -10,
-        right: -10,
-        height: 30,
-        width: 30,
+        top: -6,
+        right: -6,
+        height: 20,
+        width: 20,
         textAlignVertical: 'center',
         textAlign: 'center',
         backgroundColor: '#e00',
         color: '#fff',
-        borderRadius: 24,
+        borderRadius: 10,
+        fontSize: 10
     }
 });
