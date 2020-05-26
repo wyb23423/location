@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, TextInput, Text } from 'react-native';
+import { StyleSheet, View, TextInput, Text, AsyncStorage } from 'react-native';
 import { TextInputLayout } from 'rn-textinputlayout';
 import Picker from 'react-native-picker';
 import { SetStateAction, commonStyles, RouteParamList, Vector3, Vector3Keys } from '../common';
@@ -7,6 +7,7 @@ import { http, SERVER } from '../../lib/http';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { events, SET_COORDINATE, SET_BASEID, SET_MAP } from '../../lib/events';
 
+// ========================================================================
 // 基站编号
 export function useBaseId(navigation: BottomTabNavigationProp<RouteParamList>) {
     const [baseId, setBaseId] = useState('');
@@ -54,6 +55,7 @@ export function useBaseId(navigation: BottomTabNavigationProp<RouteParamList>) {
     return { baseId, el, checkValid };
 }
 
+// ========================================================================
 // 坐标
 export function useCoordinate() {
     const [coordinate, setCoordinate] = useState({} as Vector3);
@@ -95,9 +97,10 @@ export function useCoordinate() {
     return { coordinate, el, checkValid };
 }
 
+// ========================================================================
 // 地图
 export function useMap(navigation: BottomTabNavigationProp<RouteParamList>) {
-    const [mapID, setMap] = useState(-1);
+    const [mapData, setMap] = useState('');
 
     const [errMsg, setErrMsg] = useState('');
     const checkValid = useCallback((value: string) => {
@@ -124,7 +127,7 @@ export function useMap(navigation: BottomTabNavigationProp<RouteParamList>) {
                 <TextInput
                     style={{ ...styles.textInput, color: '#000' }}
                     editable={false}
-                    value={mapID >= 0 ? mapID + '' : void 0}
+                    value={mapData}
                     placeholder='地图'
                 />
             </TextInputLayout>
@@ -132,35 +135,58 @@ export function useMap(navigation: BottomTabNavigationProp<RouteParamList>) {
         </View>
     );
 
-    return { mapID, el, checkValid, showPicker, visible };
+    return { mapData, el, checkValid, showPicker, visible };
 }
 
+interface IMap<T extends string | number[][] = number[][]> {
+    id: number;
+    name: string;
+    margin: T; // 地图边界值[左下, 左上, 右上, 右下, [监控区域宽, 监控区域高]]
+    filepath: string; // 地图文件。背景图或.fmap
+    groupIds: string[]; // 关联的基站分组
+}
+
+// 获取地图数据
 async function initMapOptions() {
-    let options = [];
+    let options: IMap[] = [];
     try {
-        console.log(1111111111111)
-        const res = await http.get(SERVER + '/api/map/getall');
-        console.log(2222222222222222);
+        const res = await http.get(SERVER + '/api/map/getall', {
+            currentPage: 1,
+            pageSize: 100000
+        });
+        options = res.pagedData.datas;
+        AsyncStorage.setItem('MAPS', JSON.stringify(options));
     } catch (e) {
-        console.log(33333333333333);
-        console.log(`${e.status}: ${e.statusText}`);
+        if (e.status === 408) {
+            const data = await AsyncStorage.getItem('MAPS');
+            if (!data) {
+                return [];
+            }
+
+            options = JSON.parse(data);
+        }
     }
+
+    return options.map(v => `${v.id}: ${v.name}`);
 }
 // 创建地图选择器
 function useMapPicker(
-    setMap: SetStateAction<number>,
+    setMap: SetStateAction<string>,
     checkValid: (value: string) => boolean,
     navigation: BottomTabNavigationProp<RouteParamList>
 ): [boolean, SetStateAction<boolean>] {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
-        const data: number[] = [];
-        for (var i = 0; i < 100; i++) {
-            data.push(i);
-        }
+        let isInit = true;
+        let data: string[] = [];
 
-        return navigation.addListener('focus', () => {
+        return navigation.addListener('focus', async () => {
+            if (isInit) {
+                data = await initMapOptions();
+                isInit = false;
+            }
+
             Picker.init({
                 pickerData: data,
                 selectedValue: [data[0]],
@@ -171,8 +197,9 @@ function useMapPicker(
                 pickerToolBarBg: [255, 255, 255, 1],
                 onPickerConfirm: data => {
                     setMap(data[0]);
-                    Picker.select(data);
                     checkValid(data[0]);
+
+                    Picker.select(data);
                     setVisible(false);
                 },
                 onPickerCancel() {

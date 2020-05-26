@@ -10,7 +10,7 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParamList>) {
     const { baseId, el: baseIdEl, checkValid: checkBaseIdValid } = useBaseId(navigation);
     const { coordinate, el: coordinateEl, checkValid: checkCoordinateValid } = useCoordinate();
-    const { mapID, el: mapEl, checkValid: checkMapVaild, showPicker, visible } = useMap(navigation);
+    const { mapData, el: mapEl, checkValid: checkMapVaild, showPicker, visible } = useMap(navigation);
 
     const [dataCount, setDataCount] = useState(0); // 缓存中数据的数量
     const [submitCount, setSubmitCount] = useState(0); // 提交中的数据数量
@@ -20,8 +20,12 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
         AsyncStorage.getAllKeys((err, keys) => {
             if (err) return console.log(err);
 
-            const ec = keys!.filter(k => k.startsWith('ERR')).length;
-            setDataCount(keys!.length - ec);
+            let reduce = 0;
+            const ec = keys!.filter(k => {
+                if (k === 'MAPS') reduce = 1; // 排除缓存的地图数据的影响
+                return k.startsWith('ERR');
+            }).length;
+            setDataCount(keys!.length - ec - reduce);
             setErrorCount(ec);
             events.emit(SET_ERROR_COUNT, ec);
         });
@@ -39,7 +43,7 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
                 data = JSON.parse(storageData);
             }
 
-            await http.post(SERVER + '/api/base/init', data, {
+            await http.post(SERVER + '/api/base/init', { ...data, mapId: +data!.mapData.split(':')[0] }, {
                 'Content-Type': 'application/json'
             });
         } catch (e) {
@@ -63,7 +67,7 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
                 coordinateValid = false;
             }
         }
-        const mapValid = checkMapVaild(mapID < 0 ? '' : mapID + '');
+        const mapValid = checkMapVaild(mapData);
 
         if (!(baseIdValid && coordinateValid && mapValid)) {
             return;
@@ -73,7 +77,7 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
             const data: InstallData = {
                 baseId: baseId.padStart(8, '0'),
                 coordinate: { x: +coordinate.x, y: +coordinate.y, z: +coordinate.z },
-                mapId: mapID
+                mapData
             };
             // 从错误表中移除数据
             AsyncStorage.removeItem('ERR_' + data.baseId)
@@ -99,13 +103,13 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
         } catch (e) {
             console.log(e);
         }
-    }, [baseId, coordinate, mapID]);
+    }, [baseId, coordinate, mapData]);
 
     // 提交缓存中的数据
     const submit = useCallback(() => {
         AsyncStorage.getAllKeys().then(keys => {
             setSubmitCount(keys.filter(k => {
-                if (k.startsWith('ERR')) return false;
+                if (k.startsWith('ERR') || k === 'MAPS') return false;
                 _submit(k);
 
                 return true;

@@ -8,6 +8,7 @@ import { events, SET_ERROR_COUNT } from './src/lib/events';
 
 import BaseForm from './src/views/BaseForm/BaseForm';
 import ScannerScreen from './src/views/ScannerScreen';
+import { http, SERVER } from './src/lib/http';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -43,6 +44,14 @@ function BaseFormTab() {
 }
 
 export default function App() {
+    React.useEffect(() => {
+        http.post({
+            url: SERVER + '/api/admin/login',
+            body: { password: '123456', username: 'laienwei' },
+            headers: { 'Content-Type': 'application/json' }
+        }).catch(console.log);
+    }, []);
+
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ header: () => null }}>

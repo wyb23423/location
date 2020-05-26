@@ -11,7 +11,7 @@ export interface Vector3<T = string> {
 export interface InstallData<T = number> {
     baseId: string;
     coordinate: Vector3<T>;
-    mapId: number;
+    mapData: string;
 }
 
 export type RouteParamList = {

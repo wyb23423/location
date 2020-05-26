@@ -101,11 +101,13 @@ export default class HTTP {
      * @param retryCount 已重试次数
      */
     public timeout(req: RequestConfig, method: string, retryCount: number) {
-        if (this.retry && retryCount++ <= this.maxRetryCount && confirm('请求服务器超时, 是否重试?')) {
-            this.doFetch.bind(this, req, method, retryCount)
-        }
-
         console.log(`request timeover ${method} ${req.url}`);
+
+        if (this.retry && retryCount++ <= this.maxRetryCount && confirm('请求服务器超时, 是否重试?')) {
+            this.doFetch.bind(this, req, method, retryCount);
+        } else {
+            return Promise.reject({ status: 408, statusText: 'timerover' });
+        }
     }
 
     /**
