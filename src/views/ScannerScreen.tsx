@@ -2,8 +2,10 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Text, View, StyleSheet, Animated, Easing, Dimensions, InteractionManager, StatusBar } from 'react-native';
 import { Camera, BarCodeScanningResult } from 'expo-camera';
 import * as Permissions from 'expo-permissions';
-import { commonStyles } from './common';
+import { commonStyles, RouteParamList } from './common';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs/lib/typescript/src/types';
+import { events, SET_BASEID } from '../lib/events';
 
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
@@ -23,32 +25,28 @@ function getPrepareRatio(ratios: string[]) {
     return bestRatio;
 }
 
-export default function ScannerScreen({ resolve }: { resolve?: (data: string) => any }) {
+export default function ScannerScreen({ navigation }: BottomTabScreenProps<RouteParamList, 'ScannerScreen'>) {
     const [hasCameraPermission, setHasCameraPermission] = useState<boolean>();
     const [animation] = useState(new Animated.Value(0));
-    const [show, setShow] = useState(true);
     const [ratio, setRatio] = useState('4:3');
     const camera = useRef<Camera>(null);
 
     useEffect(() => {
         (async () => {
             const { status } = await Permissions.askAsync(Permissions.CAMERA);
-            setHasCameraPermission(status === Permissions.PermissionStatus.GRANTED);
+            const res = status === Permissions.PermissionStatus.GRANTED;
+            setHasCameraPermission(res);
         })();
-
-        return () => setShow(false);
     }, []);
 
     const startAnimation = useCallback(() => {
-        if (!show) return;
-
         animation.setValue(0);
         Animated.timing(animation, {
             toValue: 1,
             duration: 2000,
             easing: Easing.linear,
-        }).start(startAnimation);
-    }, [show]);
+        }).start(({ finished }) => finished && startAnimation());
+    }, []);
     const onCameraReady = useCallback(() => {
         // 获取可用的最佳分辨率
         camera.current?.getSupportedRatiosAsync()
@@ -58,8 +56,19 @@ export default function ScannerScreen({ resolve }: { resolve?: (data: string) =>
         InteractionManager.runAfterInteractions(startAnimation);
     }, []);
 
-    // 解析成功后函数
-    const barcodeReceived = useCallback((e: BarCodeScanningResult) => e && resolve?.(e.data), []);
+    // 解析成功后的处理函数
+    const barcodeReceived = useCallback((e: BarCodeScanningResult) => {
+        if (!e) return;
+        if (e.data.includes('laienwei_base_no')) {
+            const res = e.data.match(/base=([\da-fA-F]{8})/);
+            if (res) {
+                events.emit(SET_BASEID, res[1]);
+                navigation.navigate('BaseFormTab');
+            }
+        } else {
+            alert('二维码错误, 请更换后重试!');
+        }
+    }, []);
 
     if (hasCameraPermission === null) {
         return <View />;
@@ -82,7 +91,7 @@ export default function ScannerScreen({ resolve }: { resolve?: (data: string) =>
             ratio={ratio}
         >
             <StatusBar hidden={true} />
-            <Text style={[commonStyles.icon, styles.back]} onPress={() => console.log(1)}>&#xe62d;</Text>
+            <Text style={[commonStyles.icon, styles.back]} onPress={() => navigation.goBack()}>&#xe62d;</Text>
             <Animated.View style={[styles.animatedStyle, {
                 transform: [{
                     translateY: animation.interpolate({

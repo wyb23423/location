@@ -2,18 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, TextInput, Text } from 'react-native';
 import { TextInputLayout } from 'rn-textinputlayout';
 import Picker from 'react-native-picker';
-import { SetStateAction, commonStyles } from '../common';
+import { SetStateAction, commonStyles, RouteParamList, Vector3, Vector3Keys } from '../common';
 import { http, SERVER } from '../../lib/http';
-
-export interface Vector3<T = string> {
-    x: T;
-    y: T;
-    z: T;
-}
-export const Vector3Keys: Array<keyof Vector3> = ['x', 'y', 'z'];
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { events, SET_COORDINATE, SET_BASEID, SET_MAP } from '../../lib/events';
 
 // 基站编号
-export function useBaseId() {
+export function useBaseId(navigation: BottomTabNavigationProp<RouteParamList>) {
     const [baseId, setBaseId] = useState('');
     const [errMsg, setErrMsg] = useState('');
 
@@ -32,6 +27,8 @@ export function useBaseId() {
         return true;
     }, []);
 
+    useEffect(() => { events.on(SET_BASEID, setBaseId) }, []);
+
     const el = (
         <View style={styles.inputLayout}>
             <View style={styles.flex}>
@@ -43,13 +40,18 @@ export function useBaseId() {
                         onChange={({ nativeEvent: { text } }) => setBaseId(text)}
                     />
                 </TextInputLayout>
-                <Text style={commonStyles.icon}>&#xe601;</Text>
+                <Text
+                    style={commonStyles.icon}
+                    onPress={() => navigation.navigate('ScannerScreen')}
+                >
+                    &#xe601;
+                </Text>
             </View>
             <Text style={{ color: '#e00' }}>{errMsg}</Text>
         </View>
     );
 
-    return { baseId, el, checkValid, setBaseId };
+    return { baseId, el, checkValid };
 }
 
 // 坐标
@@ -74,6 +76,8 @@ export function useCoordinate() {
         return res;
     }, []);
 
+    useEffect(() => { events.on(SET_COORDINATE, setCoordinate) }, []);
+
     const el = Vector3Keys.map(k =>
         <View style={styles.inputLayout} key={k}>
             <TextInputLayout checkValid={v => checkValid(v, k)}>
@@ -88,11 +92,11 @@ export function useCoordinate() {
         </View>
     );
 
-    return { coordinate, el, checkValid, setCoordinate };
+    return { coordinate, el, checkValid };
 }
 
 // 地图
-export function useMap() {
+export function useMap(navigation: BottomTabNavigationProp<RouteParamList>) {
     const [mapID, setMap] = useState(-1);
 
     const [errMsg, setErrMsg] = useState('');
@@ -106,12 +110,13 @@ export function useMap() {
         return true;
     }, []);
 
-    const [visible, setVisible] = useMapPicker(setMap, checkValid);
+    const [visible, setVisible] = useMapPicker(setMap, checkValid, navigation);
     const showPicker = useCallback(() => {
         visible ? Picker.hide() : Picker.show();
         setVisible(!visible);
     }, [visible]);
 
+    useEffect(() => { events.on(SET_MAP, setMap) }, []);
 
     const el = (
         <View onTouchEnd={showPicker} style={styles.inputLayout}>
@@ -127,7 +132,7 @@ export function useMap() {
         </View>
     );
 
-    return { mapID, el, checkValid, showPicker, visible, setMap };
+    return { mapID, el, checkValid, showPicker, visible };
 }
 
 async function initMapOptions() {
@@ -144,35 +149,38 @@ async function initMapOptions() {
 // 创建地图选择器
 function useMapPicker(
     setMap: SetStateAction<number>,
-    checkValid: (value: string) => boolean
+    checkValid: (value: string) => boolean,
+    navigation: BottomTabNavigationProp<RouteParamList>
 ): [boolean, SetStateAction<boolean>] {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
-        const data = [];
+        const data: number[] = [];
         for (var i = 0; i < 100; i++) {
             data.push(i);
         }
 
-        Picker.init({
-            pickerData: data,
-            selectedValue: [data[0]],
-            pickerTitleText: '选择地图',
-            pickerConfirmBtnText: '确认',
-            pickerCancelBtnText: '取消',
-            pickerBg: [255, 255, 255, 1],
-            pickerToolBarBg: [255, 255, 255, 1],
-            onPickerConfirm: data => {
-                setMap(data[0]);
-                Picker.select(data);
-                checkValid(data[0]);
-                setVisible(false);
-            },
-            onPickerCancel() {
-                setVisible(false);
-            }
+        return navigation.addListener('focus', () => {
+            Picker.init({
+                pickerData: data,
+                selectedValue: [data[0]],
+                pickerTitleText: '选择地图',
+                pickerConfirmBtnText: '确认',
+                pickerCancelBtnText: '取消',
+                pickerBg: [255, 255, 255, 1],
+                pickerToolBarBg: [255, 255, 255, 1],
+                onPickerConfirm: data => {
+                    setMap(data[0]);
+                    Picker.select(data);
+                    checkValid(data[0]);
+                    setVisible(false);
+                },
+                onPickerCancel() {
+                    setVisible(false);
+                }
+            });
         });
-    }, []);
+    }, [navigation]);
 
     return [visible, setVisible];
 }

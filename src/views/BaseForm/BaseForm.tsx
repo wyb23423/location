@@ -1,21 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, Text, Dimensions, AsyncStorage } from 'react-native';
-import { commonStyles } from '../common';
+import { StyleSheet, View, Text, AsyncStorage, Dimensions } from 'react-native';
+import { commonStyles, RouteParamList, InstallData, Vector3Keys } from '../common';
 import Button from 'apsl-react-native-button'
-import { events } from '../../lib/events';
-import { useBaseId, useCoordinate, useMap, Vector3, Vector3Keys } from './Component';
+import { events, SET_ERROR_COUNT } from '../../lib/events';
+import { useBaseId, useCoordinate, useMap } from './Component';
 import { http, SERVER } from '../../lib/http';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
-interface InstallData {
-    baseId: string;
-    coordinate: Vector3<number>;
-    mapId: number;
-}
-
-export default function BaseForm() {
-    const { baseId, el: baseIdEl, checkValid: checkBaseIdValid, setBaseId } = useBaseId();
-    const { coordinate, el: coordinateEl, checkValid: checkCoordinateValid, setCoordinate } = useCoordinate();
-    const { mapID, el: mapEl, checkValid: checkMapVaild, showPicker, visible, setMap } = useMap();
+export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParamList>) {
+    const { baseId, el: baseIdEl, checkValid: checkBaseIdValid } = useBaseId(navigation);
+    const { coordinate, el: coordinateEl, checkValid: checkCoordinateValid } = useCoordinate();
+    const { mapID, el: mapEl, checkValid: checkMapVaild, showPicker, visible } = useMap(navigation);
 
     const [dataCount, setDataCount] = useState(0); // 缓存中数据的数量
     const [submitCount, setSubmitCount] = useState(0); // 提交中的数据数量
@@ -28,7 +23,7 @@ export default function BaseForm() {
             const ec = keys!.filter(k => k.startsWith('ERR')).length;
             setDataCount(keys!.length - ec);
             setErrorCount(ec);
-            events.emit('SER_ERROR_COUNT', ec);
+            events.emit(SET_ERROR_COUNT, ec);
         });
     }, []);
 
@@ -49,7 +44,7 @@ export default function BaseForm() {
             });
         } catch (e) {
             data && AsyncStorage.setItem('ERR' + k, JSON.stringify(data));
-            events.emit('SER_ERROR_COUNT', errorCount + 1);
+            events.emit(SET_ERROR_COUNT, errorCount + 1);
             setErrorCount(errorCount + 1);
         }
 
@@ -86,7 +81,7 @@ export default function BaseForm() {
                 .then(keys => {
                     const ec = keys.filter(k => k.startsWith('ERR')).length;
                     setErrorCount(ec);
-                    events.emit('SER_ERROR_COUNT', ec);
+                    events.emit(SET_ERROR_COUNT, ec);
                 }).catch(console.log);
 
             // 判断是否新增
@@ -161,7 +156,7 @@ const styles = StyleSheet.create({
         left: 0,
         width: '100%',
         height: '100%',
-        flex: 1
+        minHeight: Dimensions.get('window').height
     },
     buttonGroup: {
         flex: 1,

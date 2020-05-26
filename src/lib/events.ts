@@ -88,3 +88,8 @@ export default class Events {
 }
 
 export const events = new Events();
+
+export const SET_BASEID = Symbol('SET_BASEID');
+export const SET_MAP = Symbol('SET_MAP');
+export const SET_COORDINATE = Symbol('SET_COORDINATE');
+export const SET_ERROR_COUNT = Symbol('SET_ERROR_COUNT');

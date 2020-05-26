@@ -256,4 +256,4 @@ export default class HTTP {
 }
 
 export const http = new HTTP(false, false, 10000);
-export const SERVER = 'https://192.168.1.174:8443';
+export const SERVER = 'http://192.168.1.174:8080';
