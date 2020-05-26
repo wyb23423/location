@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import BaseForm from './src/views/BaseForm/BaseForm';
 import { View, Text } from 'react-native';
 import { events } from './src/lib/events';
+import ScannerScreen from './src/views/ScannerScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -14,30 +15,34 @@ const icons = {
 }
 
 export default function App() {
-    const [badgeCount, setBadgeCount] = React.useState(0);
-    const setCount = React.useCallback((count: number) => setBadgeCount(Math.min(count, 99)), []);
+    // const [badgeCount, setBadgeCount] = React.useState(0);
+    // const setCount = React.useCallback((count: number) => setBadgeCount(Math.min(count, 99)), []);
 
-    React.useEffect(() => { events.on('SET_ERROR_COUNT', setCount) }, []);
+    // React.useEffect(() => { events.on('SET_ERROR_COUNT', setCount) }, []);
+
+    // return (
+    //     <NavigationContainer>
+    //         <Tab.Navigator
+    //             initialRouteName="BaseForm"
+    //             screenOptions={({ route }) => ({
+    //                 tabBarIcon: ({ color }) =>
+    //                     <IconWithBadge
+    //                         icon={icons[route.name as keyof typeof icons]}
+    //                         size={20}
+    //                         color={color}
+    //                         badgeCount={route.name === 'ErrorList' ? badgeCount : 0}
+    //                     />
+    //             })}
+    //         >
+    //             <Tab.Screen name="BaseForm" component={BaseForm} options={{ title: '基站录入' }} />
+    //             <Tab.Screen name="ErrorList" component={BaseForm} options={{ title: '失败列表' }} />
+    //         </Tab.Navigator>
+    //     </NavigationContainer>
+    // );
 
     return (
-        <NavigationContainer>
-            <Tab.Navigator
-                initialRouteName="BaseForm"
-                screenOptions={({ route }) => ({
-                    tabBarIcon: ({ color }) =>
-                        <IconWithBadge
-                            icon={icons[route.name as keyof typeof icons]}
-                            size={20}
-                            color={color}
-                            badgeCount={route.name === 'ErrorList' ? badgeCount : 0}
-                        />
-                })}
-            >
-                <Tab.Screen name="BaseForm" component={BaseForm} options={{ title: '基站录入' }} />
-                <Tab.Screen name="ErrorList" component={BaseForm} options={{ title: '失败列表' }} />
-            </Tab.Navigator>
-        </NavigationContainer>
-    );
+        <ScannerScreen />
+    )
 }
 
 interface IconWithBadgeProps {

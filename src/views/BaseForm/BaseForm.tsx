@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
         left: 0,
         width: '100%',
         height: '100%',
-        minHeight: Dimensions.get('window').height
+        flex: 1
     },
     buttonGroup: {
         flex: 1,
