@@ -46,6 +46,7 @@ export default class Events {
 
         const set = this.events.get(evt) || new Set();
         set.add(handler);
+        console.log(evt, set.size);
         this.events.set(evt, set);
 
         return this;
@@ -83,6 +84,11 @@ export default class Events {
         const set = this.events.get(evt);
         set && set.forEach(fn => fn(...args));
 
+        return this;
+    }
+
+    public clear() {
+        this.events.clear();
         return this;
     }
 }

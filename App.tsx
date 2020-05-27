@@ -9,6 +9,7 @@ import { events, SET_ERROR_COUNT } from './src/lib/events';
 import BaseForm from './src/views/BaseForm/BaseForm';
 import ScannerScreen from './src/views/ScannerScreen';
 import { http, SERVER } from './src/lib/http';
+import { ErrorList } from './src/views/ErrorList';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -18,8 +19,7 @@ const icons = {
     ErrorList: '\ue6c3'
 }
 
-
-function BaseFormTab() {
+function TabNavigator() {
     const [badgeCount, setBadgeCount] = React.useState(0);
     const setCount = React.useCallback((count: number) => setBadgeCount(Math.min(count, 99)), []);
 
@@ -38,24 +38,32 @@ function BaseFormTab() {
             })}
         >
             <Tab.Screen name="BaseForm" component={BaseForm} options={{ title: '基站录入' }} />
-            <Tab.Screen name="ErrorList" component={BaseForm} options={{ title: '失败列表' }} />
+            <Tab.Screen name="ErrorList" component={ErrorList} options={{ title: '失败列表' }} />
         </Tab.Navigator>
-    )
+    );
 }
 
 export default function App() {
+    const [ready, setReady] = React.useState(false);
+
     React.useEffect(() => {
         http.post({
             url: SERVER + '/api/admin/login',
             body: { password: '123456', username: 'laienwei' },
             headers: { 'Content-Type': 'application/json' }
-        }).catch(console.log);
+        })
+            .catch(console.log)
+            .finally(() => setReady(true));
     }, []);
+
+    if (!ready) {
+        return <View></View>
+    }
 
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ header: () => null }}>
-                <Stack.Screen name="BaseFormTab" component={BaseFormTab}></Stack.Screen>
+                <Stack.Screen name="TabNavigator" component={TabNavigator}></Stack.Screen>
                 <Stack.Screen name="ScannerScreen" component={ScannerScreen}></Stack.Screen>
             </Stack.Navigator>
         </NavigationContainer>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, Text, AsyncStorage, Dimensions } from 'react-native';
-import { commonStyles, RouteParamList, InstallData, Vector3Keys } from '../common';
+import { StyleSheet, View, Text, AsyncStorage, Dimensions, TextInput } from 'react-native';
+import { commonStyles, RouteParamList, InstallData, Vector3Keys, removeErrorData, BASE_KEY, ERROR_KEY } from '../common';
 import Button from 'apsl-react-native-button'
 import { events, SET_ERROR_COUNT } from '../../lib/events';
 import { useBaseId, useCoordinate, useMap } from './Component';
@@ -17,22 +17,25 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
     const [_, setErrorCount] = useState(0); // 提交失败的数据数量
 
     useEffect(() => {
+        events.on(SET_ERROR_COUNT, (count: number, shouldSet = true) => shouldSet && setErrorCount(count));
+
         AsyncStorage.getAllKeys((err, keys) => {
             if (err) return console.log(err);
 
             let reduce = 0;
             const ec = keys!.filter(k => {
-                if (k === 'MAPS') reduce = 1; // 排除缓存的地图数据的影响
-                return k.startsWith('ERR');
+                if (!k.includes(BASE_KEY)) reduce++; // 排除非基站数据的影响
+                return k.startsWith(ERROR_KEY);
             }).length;
             setDataCount(keys!.length - ec - reduce);
-            setErrorCount(ec);
             events.emit(SET_ERROR_COUNT, ec);
         });
     }, []);
 
     // 提交一条数据
     const _submit = useCallback(async (k: string, data?: InstallData) => {
+        if (!k.includes(BASE_KEY)) k = BASE_KEY + k;
+
         try {
             if (!data) {
                 const storageData = await AsyncStorage.getItem(k);
@@ -43,13 +46,17 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
                 data = JSON.parse(storageData);
             }
 
-            await http.post(SERVER + '/api/base/init', { ...data, mapId: +data!.mapData.split(':')[0] }, {
+            await http.post(SERVER + '/api/base/init', {
+                baseId: data!.baseId,
+                coordinate: data!.coordinate,
+                mapId: +data!.mapData.split(':')[0]
+            }, {
                 'Content-Type': 'application/json'
             });
         } catch (e) {
-            data && AsyncStorage.setItem('ERR' + k, JSON.stringify(data));
+            data && AsyncStorage.setItem(ERROR_KEY + k, JSON.stringify(data));
             setErrorCount(pre => {
-                events.emit(SET_ERROR_COUNT, pre + 1);
+                events.emit(SET_ERROR_COUNT, pre + 1, false);
                 return pre + 1;
             });
         }
@@ -76,26 +83,16 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
         }
 
         try {
-            const data: InstallData = {
-                baseId: baseId.padStart(8, '0'),
-                coordinate: { x: +coordinate.x, y: +coordinate.y, z: +coordinate.z },
-                mapData
-            };
+            const data: InstallData = { baseId: baseId.padStart(8, '0'), coordinate, mapData };
             // 从错误表中移除数据
-            AsyncStorage.removeItem('ERR_' + data.baseId)
-                .then(() => AsyncStorage.getAllKeys())
-                .then(keys => {
-                    const ec = keys.filter(k => k.startsWith('ERR')).length;
-                    setErrorCount(ec);
-                    events.emit(SET_ERROR_COUNT, ec);
-                }).catch(console.log);
+            removeErrorData(ERROR_KEY + BASE_KEY + data.baseId);
 
             // 判断是否新增
-            const oldData = await AsyncStorage.getItem(data.baseId);
+            const oldData = await AsyncStorage.getItem(BASE_KEY + data.baseId);
             oldData || setDataCount(dataCount + 1);
 
             // 设置缓存
-            await AsyncStorage.setItem(data.baseId, JSON.stringify(data));
+            await AsyncStorage.setItem(BASE_KEY + data.baseId, JSON.stringify(data));
 
             // 正在提交, 立即提交数据
             if (submitCount > 0) {
@@ -111,9 +108,9 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
     const submit = useCallback(() => {
         AsyncStorage.getAllKeys().then(keys => {
             setSubmitCount(keys.filter(k => {
-                if (k.startsWith('ERR') || k === 'MAPS') return false;
-                _submit(k);
+                if (!k.startsWith(BASE_KEY)) return false;
 
+                _submit(k);
                 return true;
             }).length);
         }).catch(console.log);
@@ -121,6 +118,12 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
 
     return (
         <View>
+            {/* 用于点击空白处关闭软件盘 */}
+            <View
+                style={[styles.modal, { backgroundColor: '#fff' }]}
+                onTouchEnd={() => TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField())}
+            ></View>
+
             {baseIdEl}
             {coordinateEl}
             {mapEl}

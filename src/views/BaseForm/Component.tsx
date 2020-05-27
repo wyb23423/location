@@ -159,6 +159,7 @@ async function initMapOptions() {
         options = res.pagedData.datas;
         AsyncStorage.setItem('MAPS', JSON.stringify(options));
     } catch (e) {
+        console.log(e);
         if (e.status === 408) {
             const data = await AsyncStorage.getItem('MAPS');
             if (!data) {
@@ -189,6 +190,7 @@ function useMapPicker(
                 isInit = false;
             }
 
+            data.length || data.push('暂无数据');
             Picker.init({
                 pickerData: data,
                 selectedValue: [data[0]],
@@ -198,10 +200,12 @@ function useMapPicker(
                 pickerBg: [255, 255, 255, 1],
                 pickerToolBarBg: [255, 255, 255, 1],
                 onPickerConfirm: data => {
-                    setMap(data[0]);
-                    checkValid(data[0]);
+                    if (data[0] !== '暂无数据') {
+                        setMap(data[0]);
+                        checkValid(data[0]);
+                        Picker.select(data);
+                    }
 
-                    Picker.select(data);
                     setVisible(false);
                 },
                 onPickerCancel() {

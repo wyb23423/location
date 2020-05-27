@@ -4,8 +4,8 @@ import { Camera, BarCodeScanningResult } from 'expo-camera';
 import * as Permissions from 'expo-permissions';
 import { commonStyles, RouteParamList } from './common';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs/lib/typescript/src/types';
 import { events, SET_BASEID } from '../lib/events';
+import { StackScreenProps } from '@react-navigation/stack';
 
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
@@ -25,7 +25,7 @@ function getPrepareRatio(ratios: string[]) {
     return bestRatio;
 }
 
-export default function ScannerScreen({ navigation }: BottomTabScreenProps<RouteParamList, 'ScannerScreen'>) {
+export default function ScannerScreen({ navigation }: StackScreenProps<RouteParamList, 'ScannerScreen'>) {
     const [hasCameraPermission, setHasCameraPermission] = useState<boolean>();
     const [animation] = useState(new Animated.Value(0));
     const [ratio, setRatio] = useState('4:3');
@@ -63,7 +63,7 @@ export default function ScannerScreen({ navigation }: BottomTabScreenProps<Route
             const res = e.data.match(/base=([\da-fA-F]{8})/);
             if (res) {
                 events.emit(SET_BASEID, res[1]);
-                navigation.navigate('BaseFormTab');
+                navigation.navigate('TabNavigator');
             }
         } else {
             alert('二维码错误, 请更换后重试!');
