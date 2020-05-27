@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, TextInput, Text, AsyncStorage } from 'react-native';
+import { StyleSheet, View, TextInput, Text } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import { TextInputLayout } from 'rn-textinputlayout';
 import Picker from 'react-native-picker';
 import { SetStateAction, commonStyles, RouteParamList, Vector3, Vector3Keys } from '../common';
-import { http, SERVER } from '../../lib/http';
+import { http, getSERVER } from '../../lib/http';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { events, SET_COORDINATE, SET_BASEID, SET_MAP } from '../../lib/events';
 
@@ -152,7 +153,7 @@ interface IMap<T extends string | number[][] = number[][]> {
 async function initMapOptions() {
     let options: IMap[] = [];
     try {
-        const res = await http.get(SERVER + '/api/map/getall', {
+        const res = await http.get(getSERVER() + '/api/map/getall', {
             currentPage: 1,
             pageSize: 100000
         });

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, AsyncStorage, ListRenderItemInfo, StyleSheet, Text, Dimensions } from "react-native";
+import AsyncStorage from '@react-native-community/async-storage';
+import { View, ListRenderItemInfo, StyleSheet, Text, Dimensions } from "react-native";
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs/lib/typescript/src/types';
 import { RouteParamList, InstallData, removeErrorData, ERROR_KEY } from './common';
 import { FlatList } from 'react-native-gesture-handler';
@@ -21,18 +22,6 @@ export function ErrorList({ navigation }: BottomTabScreenProps<RouteParamList>) 
             });
         });
     }, [navigation]);
-
-    const onPress = useCallback((index: number, isEdit?: boolean) => {
-        if (isEdit) {
-            navigation.goBack();
-        } else {
-            const key = list.splice(index, 1)[0];
-            setList(list);
-            setUpdate(pre => pre + 1);
-
-            removeErrorData(key);
-        }
-    }, [list]);
 
     const goBack = useCallback(() => navigation.goBack(), []);
     const remove = useCallback((index: number) => {

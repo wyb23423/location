@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, Text, AsyncStorage, Dimensions, TextInput } from 'react-native';
-import { commonStyles, RouteParamList, InstallData, Vector3Keys, removeErrorData, BASE_KEY, ERROR_KEY } from '../common';
+import AsyncStorage from '@react-native-community/async-storage';
+import { StyleSheet, View, Text } from 'react-native';
+import { commonStyles, RouteParamList, InstallData, Vector3Keys, removeErrorData, BASE_KEY, ERROR_KEY, HideKeyBorde } from '../common';
 import Button from 'apsl-react-native-button'
 import { events, SET_ERROR_COUNT } from '../../lib/events';
 import { useBaseId, useCoordinate, useMap } from './Component';
-import { http, SERVER } from '../../lib/http';
+import { http, getSERVER } from '../../lib/http';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
 export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParamList>) {
@@ -46,7 +47,7 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
                 data = JSON.parse(storageData);
             }
 
-            await http.post(SERVER + '/api/base/init', {
+            await http.post(getSERVER() + '/api/base/init', {
                 baseId: data!.baseId,
                 coordinate: data!.coordinate,
                 mapId: +data!.mapData.split(':')[0]
@@ -119,10 +120,7 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
     return (
         <View>
             {/* 用于点击空白处关闭软件盘 */}
-            <View
-                style={[styles.modal, { backgroundColor: '#fff' }]}
-                onTouchEnd={() => TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField())}
-            ></View>
+            <HideKeyBorde />
 
             {baseIdEl}
             {coordinateEl}
@@ -151,22 +149,13 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
                 </View>
             </View>
 
-            {visible && <View style={styles.modal} onTouchEnd={showPicker} />}
+            {visible && <View style={[commonStyles.modal, { backgroundColor: 'rgba(0, 0, 0, 0.6)' }]} onTouchEnd={showPicker} />}
         </View>
     );
 }
 
 // ============================================================
 const styles = StyleSheet.create({
-    modal: {
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        minHeight: Dimensions.get('window').height
-    },
     buttonGroup: {
         flex: 1,
         flexDirection: 'row',

@@ -1,8 +1,8 @@
 import { registerRootComponent } from 'expo';
 
-import App from './App';
+import App from './src/App';
 
-console.ignoredYellowBox = true;
+console.disableYellowBox = true;
 
 // registerRootComponent calls AppRegistry.registerComponent('main', () => App);
 // It also ensures that whether you load the app in the Expo client or in a native build,

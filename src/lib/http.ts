@@ -258,4 +258,11 @@ export default class HTTP {
 }
 
 export const http = new HTTP(false, false, 15000);
-export const SERVER = 'http://192.168.1.174:8080';
+
+let SERVER = 'http://192.168.1.174:8080';
+export function getSERVER() {
+    return SERVER;
+}
+export function setSERVER(src: string) {
+    return SERVER = src.trim().replace(/\/$/, '');
+}
