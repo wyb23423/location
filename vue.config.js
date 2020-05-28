@@ -19,10 +19,10 @@ module.exports = {
         }
     },
     devServer: {
-        https: true,
-        key: fs.readFileSync(path.join(__dirname, './cert/private.pem')),
-        cert: fs.readFileSync(path.join(__dirname, './cert/file.crt')),
-        ca: fs.readFileSync(path.join(__dirname, './cert/csr.pem')),
+        // https: true,
+        // key: fs.readFileSync(path.join(__dirname, './cert/private.pem')),
+        // cert: fs.readFileSync(path.join(__dirname, './cert/file.crt')),
+        // ca: fs.readFileSync(path.join(__dirname, './cert/csr.pem')),
         proxy: {
             '/api': {
                 target: PROXY_TARGET,

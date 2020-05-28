@@ -1,5 +1,5 @@
 <template>
-    <v-app style="padding: 40px;">
+    <v-app class="qrcode">
         <h4 style="margin-bottom: 10px">生成二维码</h4>
         <v-form v-model="valid">
             <v-text-field
@@ -94,3 +94,15 @@ export default class QRcodeCreate extends Vue {
     }
 }
 </script>
+
+<style lang="postcss">
+.qrcode {
+    background: none !important;
+    padding: 40px;
+    max-width: 700px;
+
+    & .v-application--wrap {
+        min-height: auto;
+    }
+}
+</style>

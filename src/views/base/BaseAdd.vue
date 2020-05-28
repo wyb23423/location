@@ -4,7 +4,7 @@
             添加基站
         </p>
         <el-form
-            style="max-width: 800px"
+            style="max-width: 800px; margin-top: 20px"
             :model="form"
             :rules="rules"
             label-width="auto"

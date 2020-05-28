@@ -17,20 +17,20 @@ export default class BaseIndex extends Vue {
         { title: '设备信息', to: '/base/info', icon: 'el-icon-info' },
         {
             title: '设备添加',
-            to: 'add',
-            icon: 'el-icon-circle-plus-outline',
-            children: [
-                {
-                    title: '全部数据',
-                    to: '/base/add/all',
-                    icon: 'el-icon-circle-plus-outline'
-                },
-                {
-                    title: '基础数据',
-                    to: '/base/add/install',
-                    icon: 'el-icon-ali-anzhuang'
-                }
-            ]
+            to: '/base/add/all',
+            icon: 'el-icon-circle-plus-outline'
+            // children: [
+            //     {
+            //         title: '全部数据',
+            //         to: '/base/add/all',
+            //         icon: 'el-icon-circle-plus-outline'
+            //     },
+            //     {
+            //         title: '基础数据',
+            //         to: '/base/add/install',
+            //         icon: 'el-icon-ali-anzhuang'
+            //     }
+            // ]
         },
         {
             title: '校准值配置',
