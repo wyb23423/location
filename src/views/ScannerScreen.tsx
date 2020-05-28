@@ -33,9 +33,8 @@ export default function ScannerScreen({ navigation }: StackScreenProps<RoutePara
 
     useEffect(() => {
         (async () => {
-            const { status } = await Permissions.askAsync(Permissions.CAMERA);
-            const res = status === Permissions.PermissionStatus.GRANTED;
-            setHasCameraPermission(res);
+            const status = (await Permissions.askAsync(Permissions.CAMERA)).status;
+            setHasCameraPermission(status === Permissions.PermissionStatus.GRANTED);
         })();
     }, []);
 
@@ -63,17 +62,21 @@ export default function ScannerScreen({ navigation }: StackScreenProps<RoutePara
             const res = e.data.match(/base=([\da-fA-F]{8})/);
             if (res) {
                 events.emit(SET_BASEID, res[1]);
-                navigation.navigate('TabNavigator');
+                navigation.goBack();
             }
         } else {
             alert('二维码错误, 请更换后重试!');
         }
     }, []);
 
-    if (hasCameraPermission === null) {
+    if (hasCameraPermission == null) {
         return <View />;
     } else if (hasCameraPermission === false) {
-        return <View style={{ flex: 1 }}><Text>No access to camera</Text></View>;
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text>No access to camera</Text>
+            </View>
+        );
     }
 
     return (

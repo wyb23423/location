@@ -2,7 +2,7 @@ declare module 'rn-textinputlayout' {
     import { ViewStyle } from 'react-native';
 
     interface TextInputLayoutProps {
-        style: ViewStyle;
+        style: ViewStyle | ViewStyle[];
         hintColor: string;
         errorColor: string;
         focusColor: string;

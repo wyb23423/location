@@ -33,6 +33,11 @@ export function HideKeyBorde() {
 }
 
 export const commonStyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
     icon: {
         fontFamily: 'iconfont',
         fontSize: 24

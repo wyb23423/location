@@ -257,7 +257,7 @@ export default class HTTP {
     }
 }
 
-export const http = new HTTP(false, false, 15000);
+export const http = new HTTP(true, false, 15000);
 
 let SERVER = 'http://192.168.1.174:8080';
 export function getSERVER() {

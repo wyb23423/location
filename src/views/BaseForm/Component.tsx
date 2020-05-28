@@ -130,6 +130,7 @@ export function useMap(navigation: BottomTabNavigationProp<RouteParamList>) {
             <TextInputLayout>
                 <TextInput
                     style={{ ...styles.textInput, color: '#000' }}
+                    caretHidden={true}
                     value={mapData}
                     placeholder='地图'
                 />
@@ -160,15 +161,12 @@ async function initMapOptions() {
         options = res.pagedData.datas;
         AsyncStorage.setItem('MAPS', JSON.stringify(options));
     } catch (e) {
-        console.log(e);
-        if (e.status === 408) {
-            const data = await AsyncStorage.getItem('MAPS');
-            if (!data) {
-                return [];
-            }
-
-            options = JSON.parse(data);
+        const data = await AsyncStorage.getItem('MAPS');
+        if (!data) {
+            return [];
         }
+
+        options = JSON.parse(data);
     }
 
     return options.map(v => `${v.id}: ${v.name}`);
@@ -182,13 +180,12 @@ function useMapPicker(
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
-        let isInit = true;
         let data: string[] = [];
 
         return navigation.addListener('focus', async () => {
-            if (isInit) {
-                data = await initMapOptions();
-                isInit = false;
+            if (!data.length) {
+                const storage = await AsyncStorage.getItem('MAPS');
+                storage && (data = JSON.parse(storage));
             }
 
             data.length || data.push('暂无数据');

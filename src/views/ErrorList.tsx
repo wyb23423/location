@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import { View, ListRenderItemInfo, StyleSheet, Text, Dimensions } from "react-native";
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs/lib/typescript/src/types';
-import { RouteParamList, InstallData, removeErrorData, ERROR_KEY } from './common';
+import { RouteParamList, InstallData, removeErrorData, ERROR_KEY, commonStyles } from './common';
 import { FlatList } from 'react-native-gesture-handler';
 import { events, SET_BASEID, SET_COORDINATE, SET_MAP } from '../lib/events';
 
@@ -34,7 +34,7 @@ export function ErrorList({ navigation }: BottomTabScreenProps<RouteParamList>) 
 
     if (!list.length) {
         return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={commonStyles.container}>
                 <Text style={{ color: '#ccc', fontSize: 200, fontFamily: 'iconfont' }}>&#xe62b;</Text>
                 <Text style={{ fontSize: 24, color: '#ccc', marginTop: 20 }}>暂无数据</Text>
             </View>

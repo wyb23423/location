@@ -18,6 +18,7 @@ import Button from 'apsl-react-native-button'
 
 import { TextInputLayout } from 'rn-textinputlayout';
 import { styles as inputStyles } from './views/BaseForm/Component';
+import Login from './views/Login';
 
 
 const Tab = createBottomTabNavigator();
@@ -32,7 +33,10 @@ function TabNavigator() {
     const [badgeCount, setBadgeCount] = React.useState(0);
     const setCount = React.useCallback((count: number) => setBadgeCount(Math.min(count, 99)), []);
 
-    React.useEffect(() => { events.on(SET_ERROR_COUNT, setCount) }, []);
+    React.useEffect(() => {
+        events.on(SET_ERROR_COUNT, setCount);
+        return () => { events.clear() };
+    }, []);
 
     return (
         <Tab.Navigator
@@ -54,19 +58,8 @@ function TabNavigator() {
 
 export default function App() {
     const [ready, setReady] = React.useState(false);
-
-    const resolveServer = React.useCallback(() => {
-        http.post({
-            url: getSERVER() + '/api/admin/login',
-            body: { password: '123456', username: 'laienwei' },
-            headers: { 'Content-Type': 'application/json' }
-        })
-            .catch(console.log)
-            .finally(() => setReady(true));
-    }, []);
-
     if (!ready) {
-        return <ServerInput resolve={resolveServer} />;
+        return <Login resolve={() => setReady(true)} />;
     }
 
     return (
@@ -98,57 +91,6 @@ function IconWithBadge({ icon, badgeCount, color, size }: IconWithBadgeProps) {
             )}
         </View>
     );
-}
-
-// 确定服务器地址
-function ServerInput({ resolve }: { resolve?(): void }) {
-    const [server, setServer] = React.useState(getSERVER());
-    React.useEffect(() => {
-        (async () => {
-            const data = await AsyncStorage.getItem('SERVER');
-            data && setServer(data);
-        })()
-    }, []);
-
-    const [valid, setValid] = React.useState(true);
-    const checkValid = React.useCallback((value: string) => {
-        const domainReg = '([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}';
-        const ipReg = '((2(5[0-5]|[0-4]\\d))|[0-1]?\\d{1,2})(\\.((2(5[0-5]|[0-4]\\d))|[0-1]?\\d{1,2})){3}';
-        const portReg = '(\\d{1,4}|[1-5]\\d{4}|6[1-4]\\d{3}|65[1-4]\\d{2}|655[1-2]\\d|6553[1-5])';
-
-        const reg = new RegExp(`^https?://(${domainReg}|${ipReg}|localhost)(:${portReg})?/?$`);
-        const result = reg.test(value);
-        setValid(result);
-        return result;
-    }, []);
-
-    const done = React.useCallback(() => {
-        if (!checkValid(server)) {
-            return;
-        }
-        AsyncStorage.setItem('SERVER', server);
-        setSERVER(server);
-
-        resolve?.();
-    }, [server]);
-
-    return (
-        <View style={{ flex: 1, justifyContent: 'center' }}>
-            <HideKeyBorde />
-            <View style={inputStyles.inputLayout}>
-                <TextInputLayout checkValid={checkValid}>
-                    <TextInput
-                        style={inputStyles.textInput}
-                        placeholder="服务器地址"
-                        value={server}
-                        onChange={({ nativeEvent: { text } }) => setServer(text)}
-                    />
-                </TextInputLayout>
-                <Text style={{ color: '#e00' }}>{valid ? '' : '无效地址'}</Text>
-            </View>
-            <Button style={styles.done} textStyle={{ fontWeight: '700' }} onPress={done}>Done</Button>
-        </View>
-    )
 }
 
 const styles = StyleSheet.create({
