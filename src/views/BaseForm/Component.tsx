@@ -142,35 +142,6 @@ export function useMap(navigation: BottomTabNavigationProp<RouteParamList>) {
     return { mapData, el, checkValid, showPicker, visible };
 }
 
-interface IMap<T extends string | number[][] = number[][]> {
-    id: number;
-    name: string;
-    margin: T; // 地图边界值[左下, 左上, 右上, 右下, [监控区域宽, 监控区域高]]
-    filepath: string; // 地图文件。背景图或.fmap
-    groupIds: string[]; // 关联的基站分组
-}
-
-// 获取地图数据
-async function initMapOptions() {
-    let options: IMap[] = [];
-    try {
-        const res = await http.get(getSERVER() + '/api/map/getall', {
-            currentPage: 1,
-            pageSize: 100000
-        });
-        options = res.pagedData.datas;
-        AsyncStorage.setItem('MAPS', JSON.stringify(options));
-    } catch (e) {
-        const data = await AsyncStorage.getItem('MAPS');
-        if (!data) {
-            return [];
-        }
-
-        options = JSON.parse(data);
-    }
-
-    return options.map(v => `${v.id}: ${v.name}`);
-}
 // 创建地图选择器
 function useMapPicker(
     setMap: SetStateAction<string>,
