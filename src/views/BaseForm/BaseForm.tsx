@@ -63,8 +63,8 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
         }
 
         await AsyncStorage.removeItem(k);
-        setDataCount(dataCount - 1);
-        setSubmitCount(submitCount - 1);
+        setDataCount(pre => pre - 1);
+        setSubmitCount(pre => pre - 1);
     }, []);
 
     // 将数据添加到缓存
@@ -90,16 +90,20 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
 
             // 判断是否新增
             const oldData = await AsyncStorage.getItem(BASE_KEY + data.baseId);
-            oldData || setDataCount(dataCount + 1);
+            oldData || setDataCount(pre => pre + 1);
 
             // 设置缓存
             await AsyncStorage.setItem(BASE_KEY + data.baseId, JSON.stringify(data));
 
-            // 正在提交, 立即提交数据
-            if (submitCount > 0) {
-                setSubmitCount(submitCount + 1)
-                _submit(data.baseId, data);
-            }
+            setSubmitCount(pre => {
+                // 正在提交, 立即提交数据
+                if (pre > 0) {
+                    pre++;
+                    _submit(data.baseId, data);
+                }
+
+                return pre;
+            });
         } catch (e) {
             console.log(e);
         }

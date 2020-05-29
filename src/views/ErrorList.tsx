@@ -55,6 +55,7 @@ export function ErrorList({ navigation }: BottomTabScreenProps<RouteParamList>) 
                     <Text style={styles.footer}>已经到底了ヾ(*>∀＜*)(ﾉ∀｀●)⊃</Text>
                     : null
             )}
+            ListHeaderComponent={() => <View style={{ height: 10 }}></View>}
         />
     );
 }
