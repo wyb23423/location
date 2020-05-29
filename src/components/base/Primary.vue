@@ -56,7 +56,14 @@
             ></el-rate>
         </el-form-item>
         <el-form-item>
-            <el-button type="success" @click="onSubmit">设置</el-button>
+            <el-button
+                type="success"
+                @click="onSubmit"
+                :loading="isLoading"
+                :disabled="isLoading"
+            >
+                设置
+            </el-button>
         </el-form-item>
     </el-form>
 </template>
@@ -89,6 +96,7 @@ export default class Primary extends Vue {
     @Prop({ default: () => [] }) public readonly protocols!: string[];
 
     public readonly colors = ['#99A9BF', '#F7BA2A', '#FF9900'];
+    public isLoading = false;
     public form = <PrimaryConfig>{
         power: 1,
         main: 0xaa,
@@ -128,9 +136,11 @@ export default class Primary extends Vue {
         await this.$confirm('确认设置?');
 
         const protocol = '2341' + this.parse(this.form) + '0D0A';
+        this.isLoading = true;
         if (this.ip) {
             await this.$http.post(SEND_PROTOCOL, { ip: this.ip, protocol });
             this.$message.success('设置成功');
+            this.isLoading = true;
         } else {
             this.$emit('submit', this.form, protocol);
         }

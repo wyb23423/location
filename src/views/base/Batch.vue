@@ -17,8 +17,9 @@
                     style="padding-right: 0"
                     label-width="auto"
                     @submit="onSubmit"
+                    ref="config"
                 >
-                    <el-form-item label="所属分组">
+                    <el-form-item label="所属分组" required>
                         <el-select v-model="group">
                             <el-option
                                 v-for="v of groups"
@@ -52,6 +53,7 @@ import { BASE_ERROR_IMG } from '@/constant';
 import Primary, { PrimaryConfig } from '@/components/base/Primary.vue';
 import { Async } from '@/assets/utils/await';
 import { SET_BASE_PROP } from '@/constant/request';
+import { Ref } from 'vue-property-decorator';
 
 @Component({
     components: {
@@ -66,29 +68,31 @@ export default class Batch extends MapMixin {
 
     private ipMap = new Map<string, string>();
 
+    @Ref('config') private readonly configEl!: Primary;
+
     @Async()
     public async onSubmit(data: PrimaryConfig, protocol: string) {
         if (!this.group) {
             return this.$message.error('分组不能为空');
         }
 
-        if (!this.main) {
-            return this.$message.error('主基站不能为空');
-        }
-
         const item = '[\\da-fA-F]';
         const pattern = new RegExp(`^(${item}{4})${item}{6}`);
         const arr = this.selectedBases.map(v =>
-            this.$http.post(SET_BASE_PROP, {
-                ip: this.ipMap.get(v),
-                protocol: protocol.replace(
-                    pattern,
-                    (_, $1) => $1 + this.group + (v !== this.main ? '55' : 'AA')
-                )
+            this.$http.get({
+                url: SET_BASE_PROP,
+                data: {
+                    ip: this.ipMap.get(v),
+                    command: protocol.replace(
+                        pattern,
+                        (_, $1) =>
+                            $1 + this.group + (v !== this.main ? '55' : 'AA')
+                    )
+                }
             })
         );
 
-        await Promise.all(arr);
+        await Promise.all(arr).finally(() => (this.configEl.isLoading = false));
         this.$message.success('设置成功');
     }
 
@@ -135,7 +139,7 @@ export default class Batch extends MapMixin {
     position: absolute;
     top: 0;
     right: 0;
-    width: 400px;
+    width: 420px;
     max-width: 100%;
 
     & div[role='button'] {
