@@ -32,7 +32,7 @@
                 <el-option
                     v-for="v of [1, 2, 3, 5]"
                     :key="v"
-                    :value="+('0x' + v)"
+                    :value="v"
                     :label="'信道' + v"
                 >
                 </el-option>

@@ -29,7 +29,7 @@
             </el-upload>
         </el-form-item>
         <el-divider content-position="left" class="map-edit-divider">
-            定位坐标
+            定位坐标{{ form.url ? '(图纸边缘)' : '' }}
         </el-divider>
         <el-form-item label="左下角" required>
             <el-form-item :class="$style.inline" required prop="l0.x">
