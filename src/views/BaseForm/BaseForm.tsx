@@ -112,12 +112,26 @@ export default function BaseForm({ navigation }: BottomTabScreenProps<RouteParam
     // 提交缓存中的数据
     const submit = useCallback(() => {
         AsyncStorage.getAllKeys().then(keys => {
-            setSubmitCount(keys.filter(k => {
-                if (!k.startsWith(BASE_KEY)) return false;
+            const baseKeys = keys.filter(k => k.startsWith(BASE_KEY));
+            setSubmitCount(baseKeys.length);
+
+            const fn = () => {
+                const k = baseKeys.shift();
+                if (!k) {
+                    return;
+                }
 
                 _submit(k);
-                return true;
-            }).length);
+                setTimeout(fn, 100);
+            }
+            fn();
+
+            // setSubmitCount(keys.filter(k => {
+            //     if (!k.startsWith(BASE_KEY)) return false;
+
+            //     _submit(k);
+            //     return true;
+            // }).length);
         }).catch(console.log);
     }, []);
 
