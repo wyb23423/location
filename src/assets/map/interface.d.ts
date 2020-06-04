@@ -1,5 +1,5 @@
 declare interface MarkerMgr<T> {
-    add(coords: Vector23 | Vector23[], name: string, style?: IJson): any;
+    add(coords: Vector23 | Vector23[], name: string, style?: Record<string, any>): any;
     remove(name?: string | number): void;
     moveTo(
         name: string | number,

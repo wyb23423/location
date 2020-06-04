@@ -65,11 +65,11 @@
 
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
-import TableMixin, { ColCfgItem } from '../../mixins/table';
+import TableMixin, { ColCfgItem } from '@/mixins/table';
 import { Prop, Watch, Ref } from 'vue-property-decorator';
 import TagAdd from './TagAdd.vue';
-import { Async } from '../../assets/utils/util';
-import TagConfig from '../../components/edit/TagConfig.vue';
+import { Async } from '@/assets/utils/util';
+import TagConfig from '@/components/edit/TagConfig.vue';
 import { ElForm } from 'element-ui/types/form';
 import { RM_TAG, UPDATE_TAG, GET_TAG, UPDATE_TAG_ID } from '@/constant/request';
 import { WebSocketInit } from '@/mixins/monitor/websocket';

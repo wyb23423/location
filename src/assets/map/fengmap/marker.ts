@@ -8,7 +8,7 @@ import { getCustomInfo } from '../common';
 import { ZONE_SEPARATOR } from '@/constant';
 
 export class PolygonMgr extends BaseMarkerMgr<fengmap.FMPolygonMarker> {
-    public add(coords: Vector2[], name: string | number, style: IJson = {}) {
+    public add(coords: Vector2[], name: string | number, style: Record<string, any> = {}) {
         const height: number = style.height || randomNum(3, 6);
         const pm = new fengmap.FMPolygonMarker({
             color: style.color || randomColor(),
@@ -24,7 +24,7 @@ export class PolygonMgr extends BaseMarkerMgr<fengmap.FMPolygonMarker> {
 }
 
 export class TextMgr extends BaseMarkerMgr<fengmap.FMTextMarker> {
-    public add(coord: Vector2, name: string, style: IJson = {}): Promise<fengmap.FMTextMarker> {
+    public add(coord: Vector2, name: string, style: Record<string, any> = {}): Promise<fengmap.FMTextMarker> {
         return new Promise(resolve => {
             const tm = new fengmap.FMTextMarker({
                 fillcolor: '255,0,0',
@@ -45,7 +45,7 @@ export class TextMgr extends BaseMarkerMgr<fengmap.FMTextMarker> {
 
 
 export class ImageMgr extends BaseMarkerMgr<fengmap.FMImageMarker> {
-    public add(coord: Vector3, name?: string | number, style: IJson = {}) {
+    public add(coord: Vector3, name?: string | number, style: Record<string, any> = {}) {
         return new Promise(resolve => {
             const im = new fengmap.FMImageMarker({
                 size: 24,

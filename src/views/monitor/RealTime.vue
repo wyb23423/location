@@ -97,7 +97,7 @@ import { GET_ZONE } from '../../constant/request';
         }
     }
 })
-export default class Monitor extends MonitorMixin {
+export default class RealTime extends MonitorMixin {
     @State public readonly zoneMode!: ZoneMode;
 
     public groupData: Record<string, IBaseStation[]> = {}; // 基站分组

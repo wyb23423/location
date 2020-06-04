@@ -18,7 +18,7 @@ export const BASE_ERROR_IMG: string = '/images/anchor-error.png'; // 基站异�
 export const ZONE_SEPARATOR = '@#$$^*&(____^#@&(*||)(&..,';
 
 // 全部权限
-export const ALL_PERMISSION = {
+export const ALL_PERMISSION = <PermissionAll>{
     admin: { put: true, delete: true, post: true, get: true }, // 管理员
     zone: { put: true, delete: true, post: true, get: true }, // 区域(电子围栏)
     camera: { put: true, delete: true, post: true, get: true }, // 摄像机

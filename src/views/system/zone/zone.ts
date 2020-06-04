@@ -1,6 +1,6 @@
 
 import Component, { mixins } from 'vue-class-component';
-import TableMixin from '../../mixins/table';
+import TableMixin from '../../../mixins/table';
 import ZoneEidt from '@/components/edit/ZoneEdit.vue';
 import { Setting, ZoneData } from '@/mixins/zone/setting';
 import { Async } from '@/assets/utils/util';

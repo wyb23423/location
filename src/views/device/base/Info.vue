@@ -56,11 +56,11 @@
 
 <script lang="ts">
 import Component, { mixins } from 'vue-class-component';
-import TableMixin from '../../mixins/table';
-import BaseInfo from '../../components/base/BaseInfo.vue';
-import Primary from '../../components/base/Primary.vue';
-import Net from '../../components/base/Net.vue';
-import Position from '../../components/base/Position.vue';
+import TableMixin from '@/mixins/table';
+import BaseInfo from '@/components/base/BaseInfo.vue';
+import Primary from '@/components/base/Primary.vue';
+import Net from '@/components/base/Net.vue';
+import Position from '@/components/base/Position.vue';
 import { encodeUtf8, Async } from '@/assets/utils/util';
 import { RM_BASE, SEND_RECEIVE, GET_BASE } from '@/constant/request';
 import { Loading } from '@/mixins/loading';

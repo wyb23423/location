@@ -56,7 +56,7 @@ export class Element extends Stage {
      * 添加文本
      */
     public addTextMarker(
-        coord: Vector2 & IJson,
+        coord: Vector2 & Record<string, any>,
         name: string,
         isMapCoor: boolean = false,
         gid?: number

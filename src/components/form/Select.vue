@@ -40,7 +40,10 @@ export default class Select extends Vue {
     @Prop() public readonly placeholder?: string;
 
     @Prop({ default: () => false }) public readonly canEmpty?: boolean;
-    @Prop({ default: () => ({}) }) public readonly filters!: IJson;
+    @Prop({ default: () => ({}) }) public readonly filters!: Record<
+        string,
+        any
+    >;
     @Prop({ default: () => ({ id: 'id', name: 'name' }) })
     public readonly keys!: Option<string>;
 

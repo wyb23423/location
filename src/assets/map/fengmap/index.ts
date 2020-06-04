@@ -126,7 +126,7 @@ export class FengMapMgr extends Transform {
     }
 
     public addTextMarker(
-        coord: Vector2 & IJson,
+        coord: Vector2 & Record<string, any>,
         name: string,
         isMapCoor: boolean = false,
         gid?: number

@@ -60,7 +60,7 @@ import { State } from 'vuex-class/lib/bindings';
 import Vue from 'vue';
 import { ElForm } from 'element-ui/types/form';
 import { ElInput } from 'element-ui/types/input';
-import IpInput from '../../../components/form/IpInput.vue';
+import IpInput from '@/components/form/IpInput.vue';
 import { GET_GROUP, REQUEST_CAMERA } from '@/constant/request';
 import { Async, getConfig } from '../../../assets/utils/util';
 import { Prop, Ref } from 'vue-property-decorator';

@@ -43,7 +43,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
-import IpInput from '../../components/form/IpInput.vue';
+import IpInput from '@/components/form/IpInput.vue';
 import { ElForm } from 'element-ui/types/form';
 import { SEND_PROTOCOL } from '@/constant/request';
 import { Async } from '../../assets/utils/util';
@@ -126,7 +126,7 @@ export default class Net extends Vue {
     }
 
     // 解析基站网络设置
-    private parse(value: string | IJson, index?: number) {
+    private parse(value: string | Record<string, any>, index?: number) {
         // [[key, byte, 是否用数组表示]]
         const keys: Array<[string, number, boolean]> = [
             ['baseIp', 4, true],
@@ -180,7 +180,7 @@ export default class Net extends Vue {
             return arr.map(parse210);
         };
 
-        const data: IJson = {};
+        const data: Record<string, any> = {};
         keys.forEach(([k, byte, isArr]) => {
             const len = <number>byte * 2;
 
@@ -195,7 +195,10 @@ export default class Net extends Vue {
     }
 
     // 显示对象转配置命令串
-    private obj2str(keys: Array<[string, number, boolean]>, value: IJson) {
+    private obj2str(
+        keys: Array<[string, number, boolean]>,
+        value: Record<string, any>
+    ) {
         return keys
             .reduce((a, [k, byte]) => {
                 let str: number | string | number[] = value[k];

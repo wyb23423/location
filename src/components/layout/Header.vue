@@ -108,10 +108,9 @@ export default class Header extends Vue {
             ['首页', '/index'],
             ['管理员设置', '/admin'],
             ['系统设置', '/system'],
-            ['设备管理', '/base'],
+            ['设备管理', '/device'],
             ['标签管理', '/tag'],
-            ['实时监控', '/monitor'],
-            ['报警信息', '/alarm'],
+            ['定位&监控', '/monitor'],
             ['数据图表', '/chart']
         ].filter(v => this.$router.resolve(v[1]).resolved.name !== '404');
 

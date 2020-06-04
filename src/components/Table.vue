@@ -82,10 +82,11 @@ import { ElTableColumn, TableColumn } from 'element-ui/types/table-column';
 import { ElTable } from 'element-ui/types/table';
 import EventMixin from '@/mixins/event';
 
+type TableRowOperationProp = string | Record<string, string>;
 export interface TableRowOperation {
-    type: string | IJson;
-    name: string | IJson;
-    desc: string | IJson;
+    type: TableRowOperationProp;
+    name: TableRowOperationProp;
+    desc: TableRowOperationProp;
     isDisable?: (row: any) => boolean;
 }
 
@@ -129,7 +130,7 @@ export default class Table extends EventMixin {
         return cellValue ? '是' : '否';
     }
 
-    public emit(name: string | IJson, row: any, index: number) {
+    public emit(name: TableRowOperationProp, row: any, index: number) {
         name = parseOpItem(name, row);
         this.$emit(name, row, index);
     }
@@ -148,7 +149,7 @@ export default class Table extends EventMixin {
 
 // 处理表格操作按钮
 function parseOpItem(
-    item: string | Record<string | number, string>,
+    item: TableRowOperationProp,
     row: { id: string | number }
 ): string {
     if (typeof item === 'string') {

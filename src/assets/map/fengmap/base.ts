@@ -14,7 +14,7 @@ export class BaseMarkerMgr<T extends fengmap.FMMarker<any>> implements MarkerMgr
         // map.on('loadComplete', () => this.naviAnalyser = new fengmap.FMNaviAnalyser(map));
     }
 
-    public add(coords: Vector23 | Vector23[], name: string, style?: IJson) {
+    public add(coords: Vector23 | Vector23[], name: string, style?: Record<string, any>) {
         throw new ReferenceError('Method BaseMarkerMgr.prototype.add is not defined');
     }
 

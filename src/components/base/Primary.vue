@@ -162,7 +162,7 @@ export default class Primary extends Vue {
         ];
 
         if (typeof value === 'string') {
-            const data: IJson = {};
+            const data: Record<string, any> = {};
 
             let start: number = Primary.HEAD.length;
             keys.forEach(([k, byte], i) => {

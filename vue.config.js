@@ -19,10 +19,6 @@ module.exports = {
         }
     },
     devServer: {
-        // https: true,
-        // key: fs.readFileSync(path.join(__dirname, './cert/private.pem')),
-        // cert: fs.readFileSync(path.join(__dirname, './cert/file.crt')),
-        // ca: fs.readFileSync(path.join(__dirname, './cert/csr.pem')),
         proxy: {
             '/api': {
                 target: PROXY_TARGET,
@@ -62,19 +58,6 @@ module.exports = {
         ],
         performance: {
             hints: false
-        }
-    },
-    pwa: {
-        name: '莱恩微室内定位',
-        appleMobileWebAppCapable: 'yes',
-        // iconPaths: {
-        //     favicon32: 'favicon.ico',
-        //     favicon16: 'favicon.ico'
-        // },
-        workboxOptions: {
-            navigateFallback: 'index.html',
-            exclude: [/\.(fmi|theme|fmap)$/],
-            skipWaiting: true
         }
     }
 }

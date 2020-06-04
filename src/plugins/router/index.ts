@@ -1,12 +1,11 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-import Login from '../views/Login.vue';
-import Main from '../views/Main.vue';
-import Index from '../views/index/Index.vue';
-import NotFound from '../views/NotFound.vue';
-
-import getRoutes from '../assets/lib/role';
+import Login from '@/views/Login.vue';
+import Main from '@/views/Main.vue';
+import Index from '@/views/index/Index.vue';
+import NotFound from '@/views/NotFound.vue';
+import getRoutes from './route';
 
 Vue.use(Router);
 

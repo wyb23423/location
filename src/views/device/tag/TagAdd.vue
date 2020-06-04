@@ -65,8 +65,8 @@
 import Vue from 'vue';
 import { Ref, Component, Model, Prop } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
-import Select from '../../components/form/Select.vue';
-import Avator from '../../components/Avator.vue';
+import Select from '@/components/form/Select.vue';
+import Avator from '@/components/Avator.vue';
 import { Async } from '@/assets/utils/util';
 import { ADD_TAG } from '@/constant/request';
 

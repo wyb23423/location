@@ -14,10 +14,25 @@ import Page from '@/components/layout/Page.vue';
 })
 export default class System extends Vue {
     public tabs = [
-        { title: '区域', to: '/system/zone', icon: 'el-icon-crop' },
-        { title: '标签绑定', to: '/system/bind', icon: 'el-icon-connection' },
         {
-            title: '分组配置',
+            title: '地图管理',
+            to: 'map',
+            icon: 'el-icon-ali-Mapicon',
+            children: [
+                {
+                    title: '地图编辑',
+                    to: '/system/map/edit',
+                    icon: 'el-icon-edit'
+                },
+                {
+                    title: '地图添加',
+                    to: '/system/map/add',
+                    icon: 'el-icon-document-add'
+                }
+            ]
+        },
+        {
+            title: '分组管理',
             to: 'group',
             icon: 'el-icon-folder',
             children: [
@@ -33,23 +48,7 @@ export default class System extends Vue {
                 }
             ]
         },
-        {
-            title: '摄像头',
-            to: 'camera',
-            icon: 'el-icon-video-camera',
-            children: [
-                {
-                    title: '摄像头添加',
-                    to: '/system/camera/add',
-                    icon: 'el-icon-circle-plus-outline'
-                },
-                {
-                    title: '摄像头列表',
-                    to: '/system/camera/list',
-                    icon: 'el-icon-tickets'
-                }
-            ]
-        },
+        { title: '区域', to: '/system/zone', icon: 'el-icon-crop' },
         {
             title: '协议',
             to: 'protocol',
@@ -71,6 +70,16 @@ export default class System extends Vue {
                     icon: 'el-icon-takeaway-box'
                 }
             ]
+        },
+        {
+            title: '校准值配置',
+            to: '/system/calibration',
+            icon: 'el-icon-setting'
+        },
+        {
+            title: '基站二维码',
+            to: '/system/qrcode',
+            icon: 'el-icon-ali-icon26801'
         }
     ];
 }

@@ -1,6 +1,6 @@
 <template>
     <main style="padding: 0 5% 20px">
-        <h3 style="color: #009688;">批量导入标签</h3>
+        <h3 style="color: #009688;margin: 20px 0">批量导入标签</h3>
         <el-upload
             drag
             accept=".xls, .xlsx"
@@ -42,8 +42,8 @@
 
 <script lang="ts">
 import Component from 'vue-class-component';
-import { table2Excel } from '../../assets/utils/download';
-import { Loading } from '../../mixins/loading';
+import { table2Excel } from '@/assets/utils/download';
+import { Loading } from '@/mixins/loading';
 import { DOWBLOAD_TPL, IMOIRT_TAG } from '@/constant/request';
 import { HttpRequestOptions } from 'element-ui/types/upload';
 import HTTP from '@/assets/lib/http';

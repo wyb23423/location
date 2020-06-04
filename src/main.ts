@@ -18,10 +18,8 @@ import { formatDate } from './assets/lib/date';
 import { awaitWrap } from './assets/utils/util';
 import { Route } from 'vue-router';
 
-import './plugins/registerServiceWorker';
 import 'element-ui/lib/theme-chalk/index.css';
 import './assets/public.css';
-
 
 // ========================================全局变量及注入vue实例的属性
 (<any>window).PIXI = PIXI;

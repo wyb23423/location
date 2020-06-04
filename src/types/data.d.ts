@@ -113,11 +113,6 @@ declare interface VectorAxis {
     zaxis: number;
 }
 
-declare interface IJson {
-    [x: string]: any;
-}
-
-
 // 请求参数
 declare interface RequestParams {
     url: string;
@@ -147,6 +142,9 @@ declare interface Permission {
     put?: boolean;
     get?: boolean;
 }
+
+declare type PermissionKeys = 'admin' | 'zone' | 'camera' | 'protocol' | 'base' | 'tag' | 'people' | 'map' | 'alarm' | 'group' | 'bundle' | 'tagZone';
+declare type PermissionAll = Record<PermissionKeys, Permission>;
 
 declare interface ITagInfo {
     groupNo: string;

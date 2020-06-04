@@ -17,11 +17,16 @@ import { Component, Prop } from 'vue-property-decorator';
 import { TreeNode, TreeData, ElTree } from 'element-ui/types/tree';
 import { ALL_PERMISSION } from '@/constant';
 
+const permissionItemKeys = ['put', 'delete', 'post', 'get'] as Array<
+    'put' | 'delete' | 'post' | 'get'
+>;
 @Component
 export default class Permission extends Vue {
     @Prop() public role?: string;
 
-    private readonly oneLevels: string[] = Object.keys(ALL_PERMISSION);
+    private readonly oneLevels = Object.keys(
+        ALL_PERMISSION
+    ) as PermissionKeys[];
 
     public get defaultChecked() {
         if (!this.role) {
@@ -29,7 +34,7 @@ export default class Permission extends Vue {
         }
 
         const chcked: string[] = [];
-        let role: IJson = {};
+        let role = <PermissionAll>{};
         try {
             role = JSON.parse(this.role);
         } catch (e) {
@@ -39,12 +44,8 @@ export default class Permission extends Vue {
         role.tag = role.tag || role.people;
         this.oneLevels.forEach(k => {
             const permissions: string[] = [];
-            ['put', 'delete', 'post', 'get'].forEach(r => {
-                if (
-                    role[k] &&
-                    (role[k][r] ||
-                        (Array.isArray(role[k]) && role[k].includes(r)))
-                ) {
+            permissionItemKeys.forEach(r => {
+                if (role[k] && role[k][r]) {
                     permissions.push(`${k}:${r}`);
                 }
             });
@@ -95,7 +96,7 @@ export default class Permission extends Vue {
         const oneLevelKeys = tree.getCheckedKeys();
         const twoLevelKeys = tree.getCheckedKeys(true);
 
-        const permission: IJson = {};
+        const permission = {} as PermissionAll;
         this.oneLevels.forEach(k => {
             permission[k] = {
                 put: true,
@@ -104,7 +105,7 @@ export default class Permission extends Vue {
                 get: true
             };
             if (!oneLevelKeys.includes(k)) {
-                Object.keys(permission[k]).forEach(role => {
+                permissionItemKeys.forEach(role => {
                     if (!twoLevelKeys.includes(`${k}:${role}`)) {
                         permission[k][role] = false;
                     }

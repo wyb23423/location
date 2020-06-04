@@ -1,5 +1,5 @@
 <template>
-    <div style="padding: 5%; padding-top: 80px;">
+    <div style="padding: 40px 5%;">
         <p style="color: #e00; font-size: 24px">
             添加基站
         </p>
@@ -79,7 +79,7 @@
 
 <script lang="ts">
 import Component from 'vue-class-component';
-import IpInput from '../../components/form/IpInput.vue';
+import IpInput from '@/components/form/IpInput.vue';
 import { ElForm } from 'element-ui/types/form';
 import Vue from 'vue';
 import { hexadecimalRuleFactory, Async } from '@/assets/utils/util';

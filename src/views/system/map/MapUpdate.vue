@@ -1,6 +1,6 @@
 <template>
     <div style="padding-left: 5%; padding-top: 3%;">
-        <h3 style="color: #009688;">
+        <h3 style="color: #009688; margin-bottom: 20px">
             地图编辑
         </h3>
         <el-form inline>
@@ -39,7 +39,7 @@ import MapSelect from '@/components/form/MapSelect.vue';
 import { Prop, Ref } from 'vue-property-decorator';
 import { Async } from '@/assets/utils/util';
 import { RM_MAP, UPLOAD_MAPFILE, UPDATE_MAP } from '@/constant/request';
-import { Vector } from '../../assets/map/transform/vector';
+import { Vector } from '@/assets/map/transform/vector';
 import { Loading } from '@/mixins/loading';
 
 @Component({
