@@ -33,7 +33,7 @@
 import Component from 'vue-class-component';
 import TableMixin from '../../../mixins/table';
 import { Async } from '@/assets/utils/util';
-import { REQUEST_CAMERA } from '@/constant/request';
+import { REQUEST_CAMERA, GET_CAMERA } from '@/constant/request';
 import CameraAdd from './CameraAdd.vue';
 
 @Component({
@@ -79,12 +79,20 @@ export default class CameraList extends TableMixin {
         let data: ICamera[] = [];
         let count: number = 0;
         try {
-            const res = await this.$http.get(REQUEST_CAMERA, {
+            const res = await this.$http.get(GET_CAMERA, {
                 pageSize,
                 currentPage: page
             });
 
-            data = res.pagedData.datas;
+            data = res.pagedData.datas.map(v => {
+                if (v.description) {
+                    v.description = JSON.parse(v.description);
+                } else {
+                    v.description = {};
+                }
+
+                return v;
+            });
             count = res.pagedData.totalCount;
         } catch (e) {
             console.log(e);

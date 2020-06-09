@@ -8,7 +8,6 @@ export const MAP_DATA_URL: string = '/image';
 
 export const DEFAULT_WIDTH: number = 1600; // 屏幕默认宽度
 export const SX_WIDTH: number = 768; // 小屏宽度
-export const LOSS_TIME: number = 10000; // 用于判断信号是否丢失
 
 export const NOTICE_MAX: number = 5; // 同时出现的最大报警数
 export const MISS_MSG: string = '信号丢失'; // 标签信号丢失时的报警信息

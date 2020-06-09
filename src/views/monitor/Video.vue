@@ -6,18 +6,32 @@
             </video>
         </div>
         <div :class="['flex-center', $style.config]">
-            <!-- <el-checkbox v-model="isTrack">追踪模式</el-checkbox> -->
-
-            <div style="margin: 0 10px">
-                <TagSelect @change="tag = $event" v-show="isTrack"></TagSelect>
-                <Select
-                    placeholder="请选择摄像头"
-                    v-show="!isTrack"
-                    :url="GET_CAMERA"
-                    value=""
-                    @change="camera = $event[0].url"
-                ></Select>
+            <el-checkbox v-model="isTrack">追踪模式</el-checkbox>
+            <div v-show="isTrack">
+                <TagSelect
+                    @change="tag = $event"
+                    style="margin: 0 10px"
+                ></TagSelect>
+                <el-select v-model="camera" placeholder="请选择摄像头">
+                    <el-option
+                        v-for="item of cameras.get(groupNo)"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.url + '|' + item.id"
+                    >
+                    </el-option>
+                </el-select>
             </div>
+
+            <Select
+                v-show="!isTrack"
+                placeholder="请选择摄像头"
+                :url="GET_CAMERA"
+                value=""
+                @change="camera = $event[0].url + '|' + $event[0].id"
+                @init="groupCamera"
+                style="margin: 0 10px"
+            ></Select>
 
             <el-button
                 icon="el-icon-finished"
@@ -34,7 +48,7 @@ import Component from 'vue-class-component';
 import TagSelect from '@/components/form/TagSelect.vue';
 import { Ref, Watch } from 'vue-property-decorator';
 import Select from '@/components/form/Select.vue';
-import { REQUEST_CAMERA } from '@/constant/request';
+import { GET_CAMERA } from '@/constant/request';
 import FlvJs from 'flv.js';
 
 @Component({
@@ -44,7 +58,7 @@ import FlvJs from 'flv.js';
     }
 })
 export default class Video extends WebSocketInit {
-    public readonly GET_CAMERA = REQUEST_CAMERA;
+    public readonly GET_CAMERA = GET_CAMERA;
 
     public isTrack = false; // 是否自动追踪某个标签
     public tag = '';
@@ -52,11 +66,12 @@ export default class Video extends WebSocketInit {
 
     private groupNo = ''; // 追踪标签当前所在的组
     private player?: FlvJs.Player;
+    private cameras = new Map<string, ICamera[]>();
 
     @Ref('video') private readonly video!: HTMLVideoElement;
 
     public created() {
-        // this.initWebSocket();
+        this.initWebSocket();
     }
 
     public destroyed() {
@@ -64,9 +79,23 @@ export default class Video extends WebSocketInit {
     }
 
     public switchVideo() {
-        // TODO 追踪模式（目前不能确定使用哪个摄像头）
+        // TODO 追踪模式（简易）
 
         this.createPlayer();
+    }
+
+    public groupCamera(data: Array<ICamera<string>>) {
+        this.cameras.clear();
+        data.forEach(v => {
+            if (!v.description) {
+                return;
+            }
+
+            const arr = this.cameras.get(v.groupId) || [];
+            arr.push({ ...v, description: JSON.parse(v.description) });
+
+            this.cameras.set(v.groupId, arr);
+        });
     }
 
     protected handler(data: ITagInfo) {
@@ -78,8 +107,7 @@ export default class Video extends WebSocketInit {
         return (
             this.isTrack &&
             data.sTagNo === this.tag &&
-            data.position.every(v => +v >= 0) &&
-            data.groupNo !== this.groupNo
+            data.position.every(v => +v >= 0)
         );
     }
 
@@ -97,7 +125,9 @@ export default class Video extends WebSocketInit {
             type: 'flv',
             isLive: true,
             hasAudio: false,
-            url: '/videoapi?url=' + this.camera
+            url:
+                '/videoapi?url=' +
+                this.camera.slice(0, this.camera.lastIndexOf('|'))
         });
         this.player.attachMediaElement(this.video);
         this.player.load();

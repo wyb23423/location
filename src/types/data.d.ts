@@ -27,10 +27,11 @@ declare interface IBaseStation {
     owner: string; // 安装负责人
 }
 
-declare interface ICamera {
+declare interface ICamera<T extends string | Vector2 = Vector2> {
     id: string;
     groupId: string;
     url: string;
+    description: T;
 }
 
 declare interface IMap<T extends string | number[][] = number[][]> {

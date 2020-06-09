@@ -155,7 +155,7 @@ export default class Header extends Vue {
         right: 9.5%;
     }
 
-    @media (width <= 768px) {
+    @media (width <= 785px) {
         right: 70px;
     }
 }
@@ -163,12 +163,12 @@ export default class Header extends Vue {
 .hidden-xs-only {
     text-align: center;
 
-    @media (width <= 768px) {
+    @media (width <= 785px) {
         display: none;
     }
 }
 
-@media (width >= 769px) {
+@media (width > 785px) {
     .hidden-sm-and-up {
         display: none;
     }

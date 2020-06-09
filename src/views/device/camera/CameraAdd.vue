@@ -47,6 +47,28 @@
                     <template slot="prepend">rtsp://</template>
                 </el-input>
             </el-form-item>
+            <el-form-item label="摄像头位置" required>
+                <div class="flex-center" style="justify-content: flex-start">
+                    <el-form-item
+                        required
+                        prop="description.x"
+                        style="margin-right: 2%"
+                    >
+                        <el-input-number
+                            :step="100"
+                            v-model="form.description.x"
+                            placeholder="x"
+                        ></el-input-number>
+                    </el-form-item>
+                    <el-form-item prop="description.y" required>
+                        <el-input-number
+                            :step="100"
+                            v-model="form.description.y"
+                            placeholder="y"
+                        ></el-input-number>
+                    </el-form-item>
+                </div>
+            </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="onSubmit">立即提交</el-button>
             </el-form-item>
@@ -82,7 +104,9 @@ interface CameraFormData<T = [string, string, string, string]> extends ICamera {
 })
 export default class CameraAdd extends Vue {
     @Prop({ default: () => 'PUT' }) public readonly method!: 'PUT' | 'POST';
-    @Prop({ default: () => ({ brand: 0, ip: ['', '', '', ''] }) })
+    @Prop({
+        default: () => ({ brand: 0, ip: ['', '', '', ''], description: {} })
+    })
     public form!: CameraFormData;
 
     public readonly GET_GROUP = GET_GROUP;
@@ -105,13 +129,18 @@ export default class CameraAdd extends Vue {
 
         await this.formEl.validate();
 
-        const data = { ...this.form, ip: this.form.ip.join('.') };
-        data.url = this.resolveUrl(data);
-
+        const data = {
+            ...this.form,
+            ip: this.form.ip.join('.')
+        };
         await this.$http.request({
             url: REQUEST_CAMERA,
             method: this.method,
-            data,
+            data: {
+                ...data,
+                url: this.resolveUrl(data),
+                description: JSON.stringify(this.form.description)
+            },
             headers: {
                 'Content-Type': 'application/json'
             }

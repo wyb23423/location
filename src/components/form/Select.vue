@@ -68,6 +68,8 @@ export default class Select extends Vue {
                 ...this.filters
             })
             .then(res => {
+                this.$emit('init', res.pagedData.datas);
+
                 this.options = res.pagedData.datas.map((v: any) => ({
                     id: v[this.keys.id || 'id'],
                     name: v[this.keys.name],

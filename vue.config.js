@@ -3,8 +3,6 @@ const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin');
 
 const config = require('./public/config.json');
 const PROXY_TARGET = config.PROXY_TARGET;
-const fs = require('fs');
-const path = require('path');
 
 module.exports = {
     css: {
