@@ -3,7 +3,7 @@
         <h3 style="color: #009688;margin: 20px 0">批量导入标签</h3>
         <el-upload
             drag
-            accept=".xls, .xlsx"
+            accept=".xls,.xlsx"
             action=""
             :class="$style.upload"
             :disabled="isLoading"

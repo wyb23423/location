@@ -187,6 +187,10 @@ export default class HTTP {
     }
 
     private resolveBody(headers: Record<string, any> | Headers, data: Record<string, any> = {}) {
+        if (data instanceof FormData) {
+            return data;
+        }
+
         const contentType = this.getHead(headers, 'Content-Type');
         if (contentType && contentType.includes('application/json')) {
             return JSON.stringify(data);

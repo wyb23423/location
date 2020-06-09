@@ -12,6 +12,7 @@ export const RM_MAP = '/api/map/deleteMap'; // 删除地图
 export const UPDATE_MAP = '/api/map/updateMap'; // 更新地图
 export const GET_MAP = '/api/map/getall'; // 获取地图数据
 export const UPLOAD_MAPFILE = '/api/map/upload/mapfile'; // 上传地图文件
+export const UPLOAD_FILES = '/api/tag/upload/files'; // 上传多个文件
 
 export const ADD_TAG = '/api/tag/addTag'; // 添加标签
 export const RM_TAG = '/api/tag/deleteTag'; // 删除标签
