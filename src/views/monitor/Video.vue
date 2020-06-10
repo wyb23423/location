@@ -1,7 +1,14 @@
 <template>
     <div class="map-box flex-center" style="flex-direction: column;">
-        <div :class="$style.video">
-            <video ref="video" controls>
+        <div
+            :class="$style.video"
+            v-loading="isLoading"
+            element-loading-background="rgba(0, 0, 0, 0.2)"
+        >
+            <video ref="video1" controls v-show="play === 1">
+                Your browser is too old which doesn't support HTML5 video.
+            </video>
+            <video ref="video2" controls v-show="play === 2">
                 Your browser is too old which doesn't support HTML5 video.
             </video>
         </div>
@@ -36,6 +43,8 @@
             <el-button
                 icon="el-icon-finished"
                 plain
+                :disabled="isLoading"
+                :loading="isLoading"
                 @click="switchVideo"
             ></el-button>
         </div>
@@ -63,25 +72,65 @@ export default class Video extends WebSocketInit {
     public isTrack = false; // 是否自动追踪某个标签
     public tag = '';
     public camera: string = '';
+    public play = 2;
+    public isLoading = false;
+    public groupNo = ''; // 追踪标签当前所在的组
 
-    private groupNo = ''; // 追踪标签当前所在的组
-    private player?: FlvJs.Player;
+    private player1?: FlvJs.Player;
+    private player2?: FlvJs.Player;
     private cameras = new Map<string, ICamera[]>();
+    private oldCamera?: string;
+    private time?: number;
 
-    @Ref('video') private readonly video!: HTMLVideoElement;
+    @Ref('video1') private readonly video1!: HTMLVideoElement;
+    @Ref('video2') private readonly video2!: HTMLVideoElement;
 
     public created() {
         this.initWebSocket();
     }
 
     public destroyed() {
-        this.player?.destroy();
+        this.player1?.destroy();
+        this.player2?.destroy();
     }
 
-    public switchVideo() {
-        // TODO 追踪模式（简易）
+    public async switchVideo() {
+        if (!this.camera || this.camera === this.oldCamera) {
+            return;
+        }
 
-        this.createPlayer();
+        const i = this.play === 1 ? 2 : 1;
+        const key = ('player' + i) as 'player1' | 'player2';
+
+        this[key] = FlvJs.createPlayer(
+            {
+                type: 'flv',
+                isLive: true,
+                hasAudio: false,
+                url:
+                    '/videoapi?url=' +
+                    this.camera.slice(0, this.camera.lastIndexOf('|'))
+            },
+            {
+                enableWorker: true,
+                enableStashBuffer: false,
+                stashInitialSize: 128
+            }
+        );
+        this[key]!.attachMediaElement(Reflect.get(this, 'video' + i));
+        this[key]!.load();
+
+        const oldPlayer: FlvJs.Player = Reflect.get(this, 'player' + this.play);
+        this.isLoading = true;
+        oldPlayer?.pause();
+
+        await this[key]!.play();
+
+        this.play = i;
+        this.isLoading = false;
+        oldPlayer?.destroy();
+
+        this.oldCamera = this.camera;
     }
 
     public groupCamera(data: Array<ICamera<string>>) {
@@ -100,10 +149,31 @@ export default class Video extends WebSocketInit {
 
     protected handler(data: ITagInfo) {
         this.groupNo = data.groupNo;
-        // TODO
+        const cameras = this.cameras.get(data.groupNo);
+        if (!cameras) {
+            return;
+        }
+
+        let camera = cameras[0];
+        for (let i = 2; i < cameras.length; i++) {
+            const dis1 = this.distance(camera.description, data.position);
+            const dis2 = this.distance(cameras[i].description, data.position);
+
+            dis2 < dis1 && (camera = cameras[i]);
+        }
+
+        camera && (this.camera = camera.url + '|' + camera.id);
+        this.switchVideo();
     }
 
     protected isValid(data: ITagInfo) {
+        // 节流
+        const now = Date.now();
+        if (this.time && now - this.time < 10000) {
+            return false;
+        }
+        this.time = now;
+
         return (
             this.isTrack &&
             data.sTagNo === this.tag &&
@@ -111,27 +181,13 @@ export default class Video extends WebSocketInit {
         );
     }
 
+    // 不需要全部标签数据, 重写为空
     protected async initTagAll() {
         //
     }
 
-    private createPlayer() {
-        if (!this.camera) {
-            return;
-        }
-
-        this.player?.destroy();
-        this.player = FlvJs.createPlayer({
-            type: 'flv',
-            isLive: true,
-            hasAudio: false,
-            url:
-                '/videoapi?url=' +
-                this.camera.slice(0, this.camera.lastIndexOf('|'))
-        });
-        this.player.attachMediaElement(this.video);
-        this.player.load();
-        this.player.play();
+    private distance(pos1: Vector2, pos2: string[]) {
+        return ((pos1.x - +pos2[0]) ** 2 + (pos1.y - +pos2[1]) ** 2) ** 1 / 2;
     }
 }
 </script>
