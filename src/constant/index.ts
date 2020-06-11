@@ -2,7 +2,7 @@
  * 配置及常量
  */
 // 主题数据位置
-export const MAP_THEME_URL: string = '/data/theme';
+export const MAP_THEME_URL: string = '/image';
 // 地图数据位置
 export const MAP_DATA_URL: string = '/image';
 

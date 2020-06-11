@@ -74,14 +74,14 @@ export default class Device extends Vue {
             icon: 'el-icon-video-camera',
             children: [
                 {
-                    title: '摄像头添加',
-                    to: '/device/camera/add',
-                    icon: 'el-icon-circle-plus-outline'
-                },
-                {
                     title: '摄像头列表',
                     to: '/device/camera/list',
                     icon: 'el-icon-tickets'
+                },
+                {
+                    title: '摄像头添加',
+                    to: '/device/camera/add',
+                    icon: 'el-icon-circle-plus-outline'
                 }
             ]
         }

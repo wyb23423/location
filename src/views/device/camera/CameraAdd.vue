@@ -48,7 +48,10 @@
                 </el-input>
             </el-form-item>
             <el-form-item label="摄像头位置" required>
-                <div class="flex-center" style="justify-content: flex-start">
+                <div
+                    class="flex-center"
+                    style="justify-content: flex-start; flex-wrap: wrap"
+                >
                     <el-form-item
                         required
                         prop="description.x"
@@ -88,7 +91,8 @@ import { Async, getConfig } from '../../../assets/utils/util';
 import { Prop, Ref } from 'vue-property-decorator';
 import Select from '@/components/form/Select.vue';
 
-interface CameraFormData<T = [string, string, string, string]> extends ICamera {
+export interface CameraFormData<T = [string, string, string, string]>
+    extends ICamera {
     ip: T;
     port: number; // 设备端口号
     username: string;
@@ -121,7 +125,7 @@ export default class CameraAdd extends Vue {
         );
     }
 
-    @Async()
+    @Async(console.log)
     public async onSubmit() {
         if (!this.isOtherBrand && this.form.ip.some((v: string) => !v)) {
             return this.$message.warning('摄像头ip不完整');
@@ -131,7 +135,7 @@ export default class CameraAdd extends Vue {
 
         const data = {
             ...this.form,
-            ip: this.form.ip.join('.')
+            ip: (this.form.ip || [0, 0, 0, 0]).join('.')
         };
         await this.$http.request({
             url: REQUEST_CAMERA,
@@ -151,6 +155,8 @@ export default class CameraAdd extends Vue {
             this.formEl.resetFields();
             this.form.ip = ['', '', '', ''];
         }
+
+        this.$emit('submit');
     }
 
     public reset() {

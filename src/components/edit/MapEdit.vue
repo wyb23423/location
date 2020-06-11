@@ -136,7 +136,7 @@ import { Prop, Watch, Emit, Ref } from 'vue-property-decorator';
 import { ElForm } from 'element-ui/types/form';
 import { ElUploadInternalFileDetail } from 'element-ui/types/upload';
 import { Async } from '@/assets/utils/util';
-import { UPLOAD_MAPFILE, UPLOAD_FILES } from '@/constant/request';
+import { UPLOAD_MAPFILE } from '@/constant/request';
 import HTTP from '../../assets/lib/http';
 import Theme from '../form/Theme.vue';
 

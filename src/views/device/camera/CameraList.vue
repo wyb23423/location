@@ -9,7 +9,7 @@
                 :op="op"
                 :op-width="120"
                 @del="del"
-                @setting="camera = $event"
+                @setting="openSetting"
                 @updateData="getData"
                 @toExcel="toExcel"
             ></app-table>
@@ -23,7 +23,11 @@
                 width="80%"
                 @close="camera = null"
             >
-                <camera-form :form="camera" method="POST"></camera-form>
+                <camera-form
+                    :form="camera"
+                    method="POST"
+                    @submit="refresh(false)"
+                ></camera-form>
             </el-dialog>
         </template>
     </div>
@@ -34,7 +38,7 @@ import Component from 'vue-class-component';
 import TableMixin from '../../../mixins/table';
 import { Async } from '@/assets/utils/util';
 import { REQUEST_CAMERA, GET_CAMERA } from '@/constant/request';
-import CameraAdd from './CameraAdd.vue';
+import CameraAdd, { CameraFormData } from './CameraAdd.vue';
 
 @Component({
     components: {
@@ -42,7 +46,7 @@ import CameraAdd from './CameraAdd.vue';
     }
 })
 export default class CameraList extends TableMixin {
-    public camera: ICamera | null = null;
+    public camera: CameraFormData | null = null;
     public tableData!: ICamera[];
     public colCfg = [
         { prop: 'id', label: '摄像头ID', sortable: true, width: 140 },
@@ -73,6 +77,19 @@ export default class CameraList extends TableMixin {
         });
 
         this.refresh().$message.success('删除成功');
+    }
+
+    public openSetting(data: CameraFormData) {
+        const camera = (this.camera = { ...data });
+        if (data.url.endsWith('/h264/ch1/main/av_stream')) {
+            camera.brand = 0;
+        } else if (data.url.endsWith('/cam/realmonitor?channel=1&subtype=0')) {
+            camera.brand = 1;
+        } else {
+            camera.brand = 2;
+        }
+
+        camera.url = camera.url.substr(7);
     }
 
     protected async fetch(page: number, pageSize: number) {

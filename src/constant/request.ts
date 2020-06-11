@@ -12,6 +12,8 @@ export const RM_MAP = '/api/map/deleteMap'; // 删除地图
 export const UPDATE_MAP = '/api/map/updateMap'; // 更新地图
 export const GET_MAP = '/api/map/getall'; // 获取地图数据
 export const UPLOAD_MAPFILE = '/api/map/upload/mapfile'; // 上传地图文件
+export const UPLADE_MULMAPFILE = '/api/map/upload/mapMultiFile'; // 上传主题文件
+
 export const UPLOAD_FILES = '/api/tag/upload/files'; // 上传多个文件
 
 export const ADD_TAG = '/api/tag/addTag'; // 添加标签
@@ -52,7 +54,7 @@ export const RM_GROUP = '/api/group/deleteGroup'; // 删除分组
 export const UPDATE_GROUP = '/api/group/updateGroup'; // 更新分组
 export const GET_GROUP = '/api/group/getall'; // 获取分组数据
 
-export const GET_CAMERA = '/api/camera/group'; // 分页获取摄像头
+export const GET_CAMERA = '/api/camera/all'; // 分页获取摄像头
 export const REQUEST_CAMERA = '/api/camera'; // 摄像机相关api
 
 export const ADD_PROTOCOL = '/api/protocol/addProtocol'; // 添加协议

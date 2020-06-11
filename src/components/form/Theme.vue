@@ -13,7 +13,7 @@
         </div>
 
         <el-dialog title="上传主题文件" :visible.sync="visible" width="70%">
-            <div class="flex-center" style="width: 80%">
+            <div class="flex-center" style="width: 90%">
                 <el-upload
                     accept=".fmi,.theme"
                     :auto-upload="false"
@@ -41,7 +41,7 @@ import Vue from 'vue';
 import { Component } from 'vue-property-decorator';
 import { ElUploadInternalFileDetail } from 'element-ui/types/upload';
 import HTTP from '@/assets/lib/http';
-import { UPLOAD_FILES } from '@/constant/request';
+import { UPLADE_MULMAPFILE } from '@/constant/request';
 
 @Component
 export default class Theme extends Vue {
@@ -73,7 +73,7 @@ export default class Theme extends Vue {
             fromData.append('files', v);
         }
 
-        return this.$http.post(UPLOAD_FILES, fromData);
+        return this.$http.post(UPLADE_MULMAPFILE, fromData);
     }
 }
 </script>
