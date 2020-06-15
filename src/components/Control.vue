@@ -9,6 +9,7 @@
                 <tag-select
                     :disabled="isPlaying"
                     :multiple="true"
+                    :multiple-limit="3"
                     @change="tagNos = $event"
                     @remote="setIcons"
                     style="min-width: 200px"

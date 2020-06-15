@@ -111,7 +111,7 @@ export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
         const line = new fengmap.FMLineMarker();
         line.custom = { style };
         this.lines.set(name, line);
-        this.append(points, name);
+        this.append(points, name, points.length);
     }
 
     public remove(name?: string | number) {
@@ -154,7 +154,12 @@ export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
         this.lines.clear();
     }
 
-    public append(points: Vector3[], name: string | number) {
+    public append(points: Vector3[], name: string | number, count: number) {
+        count = Math.round(count);
+        if (count <= 0) {
+            return;
+        }
+
         const line = this.lines.get(name);
         if (line) {
             if (!points.length) {
@@ -189,7 +194,7 @@ export class LineMgr implements MarkerMgr<fengmap.FMLineMarker> {
                     points.unshift(last.points[last.points.length - 1]);
                 }
 
-                seg.points = points.slice(-LineMgr.MAX_POINT_COUNT);
+                seg.points = points.slice(-Math.min(count, LineMgr.MAX_POINT_COUNT));
                 line.addSegment(seg);
 
                 try {

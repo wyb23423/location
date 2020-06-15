@@ -6,6 +6,7 @@
                 @change="showLineTags = $event"
                 placeholder="显示轨迹的标签"
                 :multiple="true"
+                :multiple-limit="5"
                 style="margin: 0 10px"
             ></TagSelect>
             <div class="flex-center">
@@ -43,6 +44,20 @@
             </el-button>
         </div>
 
+        <el-form
+            style="position: absolute; right: 20px; top: 60px; width: 220px"
+        >
+            <el-form-item label="轨迹线长度" label-width="85px">
+                <el-slider
+                    v-model="linePointsCount"
+                    :max="3000"
+                    :min="100"
+                    :step="1"
+                    :show-tooltip="false"
+                ></el-slider>
+            </el-form-item>
+        </el-form>
+
         <transition name="el-zoom-in-bottom">
             <Census
                 v-if="tools[4].active"
@@ -52,7 +67,6 @@
                 :censusChange="censusChange"
             ></Census>
         </transition>
-
         <transition name="el-fade-in-linear">
             <Group
                 style="opacity: 0.85"

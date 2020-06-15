@@ -5,6 +5,7 @@ import * as PIXI from 'pixi.js';
 import { randomNum } from '@/assets/utils/util';
 
 export default class LineMgr implements MarkerMgr<PIXI.Graphics> {
+    private static readonly MAX_POINT_COUNT = 3000; // 一个片段可包含的最大点数量
     private lines: Map<string | number, PIXI.Graphics> = new Map();
 
     constructor(private stage: PIXI.Container) {
@@ -26,7 +27,7 @@ export default class LineMgr implements MarkerMgr<PIXI.Graphics> {
 
         if (points.length) {
             (<any>painter).start = <Vector3>points.shift();
-            this.append(points, name);
+            this.append(points, name, points.length);
         }
 
         this.stage.addChild(painter);
@@ -66,14 +67,19 @@ export default class LineMgr implements MarkerMgr<PIXI.Graphics> {
         this.remove();
         Reflect.set(this, 'stage', null);
     }
-    public append(points: Vector3[], name: string | number) {
+    public append(points: Vector3[], name: string | number, count: number) {
+        count = Math.round(count);
+        if (count <= 0) {
+            return;
+        }
+
         const line = this.lines.get(name);
         if (line) {
             if (points.length) {
                 const start: Vector3 = (<any>line).start || points.shift();
                 start && line.moveTo(start.x, start.y);
 
-                for (const v of points.slice(-3000)) {
+                for (const v of points.slice(-Math.min(count, LineMgr.MAX_POINT_COUNT))) {
                     line.lineTo(v.x, v.y);
                 }
 

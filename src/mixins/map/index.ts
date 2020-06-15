@@ -19,6 +19,8 @@ import { GET_BASE } from '@/constant/request';
 export default class MapMixin extends Loading {
     public mgr?: FengMapMgr | PIXIMgr;
     public showPath: boolean = false;
+    public linePointsCount = 3000; // 轨迹线包含的最大点数量
+
     public groups: string[] = []; // 当前地图关联组号
     public mapId?: number;
 
@@ -78,7 +80,7 @@ export default class MapMixin extends Loading {
 
                 points.push({ x: v.x, y: v.y, z: 1.1 });
                 if (this.mgr && points.length >= 5) {
-                    this.mgr.appendLine(tagNo, points, true);
+                    this.mgr.appendLine(tagNo, points, true, this.linePointsCount);
                     this.link(tagNo, points.pop()!);
                     points.length = 0;
                 }

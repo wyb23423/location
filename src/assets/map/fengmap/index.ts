@@ -214,9 +214,14 @@ export class FengMapMgr extends Transform {
         this.lineMgr.add(points, name, lineStyle);
     }
     // 为一条线添加片段
-    public appendLine(name: string | number, points: Vector3[], isMapCoor: boolean = false) {
+    public appendLine(
+        name: string | number,
+        points: Vector3[],
+        isMapCoor: boolean = false,
+        count = 3000
+    ) {
         points = isMapCoor ? points : points.map(v => this.location2map(v));
-        this.lineMgr.append(points, name);
+        this.lineMgr.append(points, name, count);
     }
 
     // 为标签添加信息添加弹窗
