@@ -4,6 +4,7 @@
     "SECOND_COUNT": 1,
     "PROXY_TARGET": "http://192.168.1.174:8080/",
     "CHARTS_TARGET": "http://127.0.0.1:3000",
+    "FLV_TARGET": "http://127.0.0.1:3001",
     "adjust": {
         "x": 0,
         "y": 0

@@ -34,8 +34,8 @@
                 v-show="!isTrack"
                 placeholder="请选择摄像头"
                 :url="GET_CAMERA"
-                value=""
-                @change="camera = $event[0].url + '|' + $event[0].id"
+                :value="camera.slice(camera.lastIndexOf('|') + 1)"
+                @change="camera = $event[0].data.url + '|' + $event[0].id"
                 @init="groupCamera"
                 style="margin: 0 10px"
             ></Select>
@@ -59,6 +59,7 @@ import { Ref, Watch } from 'vue-property-decorator';
 import Select from '@/components/form/Select.vue';
 import { GET_CAMERA } from '@/constant/request';
 import FlvJs from 'flv.js';
+import { getConfig } from '@/assets/utils/util';
 
 @Component({
     components: {
@@ -75,6 +76,11 @@ export default class Video extends WebSocketInit {
     public play = 2;
     public isLoading = false;
     public groupNo = ''; // 追踪标签当前所在的组
+
+    private readonly videoServer = getConfig(
+        'FLV_TARGET',
+        'http://127.0.0.1:3001'
+    ).replace(/\/+$/, '');
 
     private player1?: FlvJs.Player;
     private player2?: FlvJs.Player;
@@ -108,6 +114,7 @@ export default class Video extends WebSocketInit {
                 isLive: true,
                 hasAudio: false,
                 url:
+                    this.videoServer +
                     '/videoapi?url=' +
                     this.camera.slice(0, this.camera.lastIndexOf('|'))
             },
@@ -117,6 +124,17 @@ export default class Video extends WebSocketInit {
                 stashInitialSize: 128
             }
         );
+
+        const timer = setTimeout(() => {
+            this[key]?.destroy();
+            this.isLoading = false;
+            this.$message.error('获取数据超时');
+        }, 15000);
+        this[key]!.on(FlvJs.Events.ERROR, (...args) => {
+            this.isLoading = false;
+            this.$message.error(JSON.stringify(args));
+        });
+
         this[key]!.attachMediaElement(Reflect.get(this, 'video' + i));
         this[key]!.load();
 
@@ -126,6 +144,7 @@ export default class Video extends WebSocketInit {
 
         await this[key]!.play();
 
+        clearTimeout(timer);
         this.play = i;
         this.isLoading = false;
         oldPlayer?.destroy();

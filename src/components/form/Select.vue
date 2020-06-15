@@ -72,7 +72,7 @@ export default class Select extends Vue {
 
                 this.options = res.pagedData.datas.map((v: any) => ({
                     id: v[this.keys.id || 'id'],
-                    name: v[this.keys.name],
+                    name: v[this.keys.name] || v.id,
                     data: v
                 }));
 
