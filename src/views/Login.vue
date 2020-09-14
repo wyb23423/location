@@ -1,17 +1,11 @@
 <template>
-    <div style="background: #007DDB; height: 100vh" class="flex-center">
+    <div style="background: #007ddb; height: 100vh" class="flex-center">
         <el-card :class="$style['box-card']" class="flex-center">
             <div :class="$style.title">
                 <h1>莱恩微定位</h1>
                 <h3>后台管理登录</h3>
             </div>
-            <el-form
-                :model="form"
-                :rules="rules"
-                :status-icon="true"
-                label-width="auto"
-                ref="loginForm"
-            >
+            <el-form :model="form" :rules="rules" :status-icon="true" label-width="auto" ref="loginForm">
                 <el-form-item label="用户账号" prop="username">
                     <el-input
                         v-model="form.username"
@@ -29,13 +23,7 @@
                     ></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button
-                        type="primary"
-                        :disabled="!isVaild"
-                        @click="submit"
-                    >
-                        登录
-                    </el-button>
+                    <el-button type="primary" :disabled="!isVaild" @click="submit"> 登录 </el-button>
                 </el-form-item>
             </el-form>
         </el-card>
@@ -61,54 +49,44 @@ export default class Login extends Vue {
     public rules = {
         username: [
             { min: 5, message: '用户名至少得5个字符啊', trigger: 'change' },
-            { required: true, message: '请输入账号', trigger: 'blur' }
+            { required: true, message: '请输入账号', trigger: 'blur' },
         ],
         password: [
             { min: 6, max: 12, message: '密码必须6到12位', trigger: 'change' },
-            { required: true, message: '请输入密码', trigger: 'blur' }
-        ]
+            { required: true, message: '请输入密码', trigger: 'blur' },
+        ],
     };
 
     public submit() {
-        if (!navigator.onLine) {
-            sessionStorage.setItem('login', '1');
-            sessionStorage.setItem(
-                'login',
-                JSON.stringify({ role: { base: { put: true } } })
-            );
-            initRouter(); // 加载路由
-            this.$router.push('/base/add/install');
-        } else {
-            const form = <ElForm>this.$refs.loginForm;
-            form.validate(async (valid: boolean) => {
-                if (valid) {
-                    try {
-                        const res = await this.$http.post({
-                            url: LOGIN,
-                            body: this.form,
-                            headers: { 'Content-Type': 'application/json' }
-                        });
+        const form = <ElForm>this.$refs.loginForm;
+        form.validate(async (valid: boolean) => {
+            if (valid) {
+                try {
+                    const res = await this.$http.post({
+                        url: LOGIN,
+                        body: this.form,
+                        headers: { 'Content-Type': 'application/json' },
+                    });
 
-                        // =======================设置登录信息
-                        const user: IAdmin = res.pagedData.datas[0].admin;
-                        sessionStorage.setItem('login', user.username);
-                        sessionStorage.setItem('user', JSON.stringify(user));
-                        // =====================================
+                    // =======================设置登录信息
+                    const user: IAdmin = res.pagedData.datas[0].admin;
+                    sessionStorage.setItem('login', user.username);
+                    sessionStorage.setItem('user', JSON.stringify(user));
+                    // =====================================
 
-                        initRouter(); // 加载路由
-                        // load(GET_TAG, 'id', 'tag'); // 慢加载标签数据
+                    initRouter(); // 加载路由
+                    // load(GET_TAG, 'id', 'tag'); // 慢加载标签数据
 
-                        this.$router.push('/').catch(data => {
-                            //
-                        });
-                    } catch (e) {
+                    this.$router.push('/').catch((data) => {
                         //
-                    }
-
-                    form && form.resetFields();
+                    });
+                } catch (e) {
+                    //
                 }
-            });
-        }
+
+                form && form.resetFields();
+            }
+        });
     }
 
     public get isVaild() {

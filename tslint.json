@@ -23,7 +23,6 @@
         "no-consecutive-blank-lines": false,
         "no-invalid-this": true,
         "no-invalid-template-strings": true,
-        // "no-for-in-array": true,
         "no-eval": true,
         "no-namespace": false,
         "no-reference": false,

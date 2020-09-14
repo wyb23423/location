@@ -218,7 +218,11 @@ export default class HTTP {
 
         return fetch(req.url, init)
             .finally(() => clearTimeout(timer))
-            .then(this.parseRes.bind(this));
+            .then(this.parseRes.bind(this))
+            .catch((e: Response) => {
+                Message.error(e.statusText);
+                return Promise.reject(e);
+            });
     }
 
     private getHead(headers: any, name: string) {

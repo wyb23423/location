@@ -6,7 +6,9 @@ Object.assign(forage, localforage, {
         return localforageGetItem<T>(key, localforage);
     }
 });
-export default <LocalForage>forage;
+export default forage as {
+    getItem<T>(key: string, callback?: (err: any, value: T | null) => void): Promise<T>;
+} & Omit<LocalForage, 'getItem'>;
 
 // ==================
 export async function localforageGetItem<T>(key: string, storge: LocalForage): Promise<T> {

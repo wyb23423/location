@@ -2,11 +2,7 @@
     <div>
         <el-form label-width="auto" :model="form" ref="form">
             <el-form-item label="地图名称" prop="name" required>
-                <el-input
-                    v-model="form.name"
-                    style="width: 50%"
-                    placeholder="请输入地图名称"
-                ></el-input>
+                <el-input v-model="form.name" style="width: 50%" placeholder="请输入地图名称"></el-input>
             </el-form-item>
             <el-form-item required label="地图">
                 <el-upload
@@ -16,24 +12,11 @@
                     :show-file-list="false"
                     :on-change="changeUpload"
                 >
-                    <el-button
-                        size="small"
-                        type="success"
-                        icon="el-icon-upload"
-                    >
-                        选择文件
-                    </el-button>
+                    <el-button size="small" type="success" icon="el-icon-upload"> 选择文件 </el-button>
                     <div slot="tip" class="el-upload__tip">
-                        <img
-                            v-if="form.url"
-                            :src="form.url"
-                            :class="$style.img"
-                        />
+                        <img v-if="form.url" :src="form.url" :class="$style.img" />
                         <template v-else>
-                            {{
-                                form.filename ||
-                                    '只能上传jpg/png/fmp文件，且不超过5M'
-                            }}
+                            {{ form.filename || '只能上传jpg/png/fmp文件，且不超过5M' }}
                         </template>
                     </div>
                 </el-upload>
@@ -46,82 +29,41 @@
             </el-divider>
             <el-form-item label="左下角" required>
                 <el-form-item :class="$style.inline" required prop="l0.x">
-                    <el-input-number
-                        :step="100"
-                        v-model="form.l0.x"
-                        placeholder="x"
-                    ></el-input-number>
+                    <el-input-number :step="100" v-model="form.l0.x" placeholder="x"></el-input-number>
                 </el-form-item>
                 <el-form-item prop="l0.y" required :class="$style.inline">
-                    <el-input-number
-                        :step="100"
-                        v-model="form.l0.y"
-                        placeholder="y"
-                    ></el-input-number>
+                    <el-input-number :step="100" v-model="form.l0.y" placeholder="y"></el-input-number>
                 </el-form-item>
             </el-form-item>
             <el-form-item label="右上角" required>
                 <el-form-item :class="$style.inline" required prop="l1.x">
-                    <el-input-number
-                        :step="100"
-                        v-model="form.l1.x"
-                        placeholder="x"
-                    ></el-input-number>
+                    <el-input-number :step="100" v-model="form.l1.x" placeholder="x"></el-input-number>
                 </el-form-item>
                 <el-form-item prop="l1.y" required :class="$style.inline">
-                    <el-input-number
-                        :step="100"
-                        v-model="form.l1.y"
-                        placeholder="y"
-                    ></el-input-number>
+                    <el-input-number :step="100" v-model="form.l1.y" placeholder="y"></el-input-number>
                 </el-form-item>
             </el-form-item>
             <template v-if="!!form.filename">
-                <el-divider content-position="left" class="map-edit-divider">
-                    地图坐标
-                </el-divider>
+                <el-divider content-position="left" class="map-edit-divider"> 地图坐标 </el-divider>
                 <el-form-item label="左下角" required>
                     <el-form-item :class="$style.inline" required prop="m0.x">
-                        <el-input-number
-                            :step="100"
-                            v-model="form.m0.x"
-                            placeholder="x"
-                        ></el-input-number>
+                        <el-input-number :step="100" v-model="form.m0.x" placeholder="x"></el-input-number>
                     </el-form-item>
                     <el-form-item prop="m0.y" required :class="$style.inline">
-                        <el-input-number
-                            :step="100"
-                            v-model="form.m0.y"
-                            placeholder="y"
-                        ></el-input-number>
+                        <el-input-number :step="100" v-model="form.m0.y" placeholder="y"></el-input-number>
                     </el-form-item>
                 </el-form-item>
                 <el-form-item label="右上角" required>
                     <el-form-item :class="$style.inline" required prop="m1.x">
-                        <el-input-number
-                            :step="100"
-                            v-model="form.m1.x"
-                            placeholder="x"
-                        ></el-input-number>
+                        <el-input-number :step="100" v-model="form.m1.x" placeholder="x"></el-input-number>
                     </el-form-item>
                     <el-form-item prop="m1.y" required :class="$style.inline">
-                        <el-input-number
-                            :step="100"
-                            v-model="form.m1.y"
-                            placeholder="y"
-                        ></el-input-number>
+                        <el-input-number :step="100" v-model="form.m1.y" placeholder="y"></el-input-number>
                     </el-form-item>
                 </el-form-item>
             </template>
             <el-form-item>
-                <el-button
-                    type="success"
-                    @click="submit"
-                    :loading="loading"
-                    :disabled="loading"
-                >
-                    立即提交
-                </el-button>
+                <el-button type="success" @click="submit" :loading="loading" :disabled="loading"> 立即提交 </el-button>
             </el-form-item>
         </el-form>
 
@@ -168,20 +110,14 @@ export default class MapEdit extends Vue {
         m1: {},
         l0: {},
         l1: {},
-        name: ''
+        name: '',
     };
 
     @Ref('form') private readonly elFrom!: ElForm;
     @Ref('theme') private readonly elTheme?: Theme;
 
     public changeUpload({ raw, name, size }: ElUploadInternalFileDetail) {
-        if (
-            !(
-                raw.type === 'image/png' ||
-                raw.type === 'image/jpeg' ||
-                name.endsWith('.fmap')
-            )
-        ) {
+        if (!(raw.type === 'image/png' || raw.type === 'image/jpeg' || name.endsWith('.fmap'))) {
             return this.$message.error('只能上传jpg/png/fmap文件!');
         }
 
@@ -193,9 +129,7 @@ export default class MapEdit extends Vue {
         Object.assign(
             this.form,
             { map: raw },
-            name.endsWith('.fmap')
-                ? { filename: name, url: '' }
-                : { filename: '', url: URL.createObjectURL(raw) }
+            name.endsWith('.fmap') ? { filename: name, url: '' } : { filename: '', url: URL.createObjectURL(raw) }
         );
     }
 
@@ -211,17 +145,20 @@ export default class MapEdit extends Vue {
         let filepath = filename || url;
         if (map) {
             const themePromise = this.elTheme?.upload();
-            if (!themePromise) {
+            if (this.elTheme && !themePromise) {
                 return;
             }
 
-            const [res] = await Promise.all([
-                this.$http.post(UPLOAD_MAPFILE, {
-                    file: map,
-                    mapName: map.name.split('.')[0] || 'map'
-                }),
-                themePromise
-            ]);
+            const arr = [
+                // this.$http.post(UPLOAD_MAPFILE, {
+                //     file: map,
+                //     mapName: map.name.split('.')[0] || 'map',
+                // }),
+                { resultMap: { mapUrl: '' } },
+            ];
+            themePromise && arr.push(themePromise as any);
+
+            const [res] = await Promise.all(arr);
             filepath = res.resultMap.mapUrl;
         }
 

@@ -41,7 +41,7 @@ export class PIXIMgr extends Element {
                 mapClickNode: 'pointertap'
             };
 
-            this.stage.on(mapping[type] || type, (e: PIXI.interaction.InteractionEvent) => {
+            this.stage.on(mapping[type] || type, (e: PIXI.InteractionEvent) => {
                 let nodeType = fengmap.FMNodeType.ALL;
                 const target = e.target;
                 if (

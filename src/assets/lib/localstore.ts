@@ -4,6 +4,8 @@
 
 import localforage, { localforageGetItem } from './localforage';
 
+type LocalForage = typeof localforage;
+
 const stores: Map<string, LocalForage> = new Map();
 
 /**
@@ -38,8 +40,8 @@ export function getAndCreateStore(name: string): LocalForage {
         return stores.get(name)!;
     }
 
-    const obj = localforage.createInstance({ storeName: name });
-    const store = new Proxy(obj, {
+    const obj = localforage.createInstance({ storeName: name }) as LocalForage;
+    const store = new Proxy<LocalForage>(obj, {
         get(t: LocalForage, k: keyof LocalForage) {
             if (k === 'getItem') {
                 return <T>(key: string): Promise<T> => localforageGetItem<T>(key, t);
