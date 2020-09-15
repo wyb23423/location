@@ -153,9 +153,9 @@ export default class MapEdit extends Vue {
                 this.$http.post(UPLOAD_MAPFILE, {
                     file: map,
                     mapName: map.name.split('.')[0] || 'map',
-                })
+                }),
             ];
-            themePromise && arr.push(themePromise as any);
+            themePromise && arr.push(themePromise);
 
             const [res] = await Promise.all(arr);
             filepath = res.resultMap.mapUrl;
